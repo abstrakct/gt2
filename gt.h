@@ -8,7 +8,7 @@
 
 #define GT_VERSION_MAJ 0
 #define GT_VERSION_MIN 0
-#define GT_VERSION_REV 0
+#define GT_VERSION_REV 1
 
 #define MAIN_DATA_FILE "data/data.cfg"
 

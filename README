@@ -1,0 +1,11 @@
+
+Gullible's Travails (rewrite)
+
+
+Goal: A fun, different roguelike, with a kind of existential approach!
+
+The first version of GT was almost playable, but the code was a mess and too much was
+hard-coded.
+
+In this new version, I have switched to using data files, which makes things a lot nicer.
+So far, there's not much more to the program than parsing the data file which defines the monsters.

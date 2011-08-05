@@ -45,7 +45,7 @@ int parse_data_files()
         printf("Reading %s\n", MAIN_DATA_FILE);
         cfg_monsters = config_lookup(cf, "monsters");
         i = config_setting_length(cfg_monsters);
-        printf("Parsing monsters\nWe have %d monsters", i);
+        printf("Parsing monster file...\nWe have %d monsters", i);
 
         /* 
          * main monster parsing loop 

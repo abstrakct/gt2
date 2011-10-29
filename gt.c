@@ -53,7 +53,7 @@ int parse_data_files()
          * and adds it to a monster structure which is then placed in the
          * linked list monsterdefs.
          *
-         * */
+         */
         
         for(j=0;j<i;j++) {
                 monster_t *m;
@@ -202,10 +202,12 @@ int main(int argc, char *argv[])
 
         dump_monsters();
         sleep(2);
+        
         init_display();
-        mvprintw(20, 20, "ROMPE YE");
+        mvprintw(20, 20, "ROMPE!");
         refresh();
         sleep(1);
+
         shutdown_display();
         clean_up_the_mess();
 

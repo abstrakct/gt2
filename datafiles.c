@@ -12,6 +12,7 @@
 
 #include "utils.h"
 #include "monsters.h"
+#include "objects.h"
 #include "datafiles.h"
 #include "gt.h"
 

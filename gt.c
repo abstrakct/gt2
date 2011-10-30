@@ -74,6 +74,7 @@ void shutdown_display()
 
 int main(int argc, char *argv[])
 {
+        int x,y;
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
@@ -89,10 +90,11 @@ int main(int argc, char *argv[])
                 die("Couldn't parse data files.");
 
         dump_monsters();
-        sleep(2);
+        sleep(1);
         
         init_display();
-        mvprintw(20, 20, "ROMPE!");
+        getmaxyx(stdscr, y, x);
+        mvprintw(y/2, x/2, "ROMPE!");
         refresh();
         sleep(1);
 

@@ -15,7 +15,7 @@
 #include "datafiles.h"
 #include "gt.h"
 
-int parse_data_files()
+int parse_monsters()
 {
         config_t *cf;
         config_setting_t *cfg_monsters;
@@ -127,4 +127,28 @@ int parse_data_files()
 
         config_destroy(cf);
         return 0;
+}
+
+int parse_armor()
+{
+        return 0;
+}
+
+int parse_objects()
+{
+        int ret;
+
+        ret = parse_armor();
+
+        return ret;
+}
+
+int parse_data_files()
+{
+        int ret;
+
+        ret = parse_monsters();
+        ret = parse_objects();
+
+        return ret;
 }

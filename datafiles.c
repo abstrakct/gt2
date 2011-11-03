@@ -16,28 +16,15 @@
 #include "datafiles.h"
 #include "gt.h"
 
+config_t *cf;
+
 int parse_monsters()
 {
-        config_t *cf;
         config_setting_t *cfg_monsters;
-        //config_setting_t *setting;
         int i,j,boolval;
         char sname[100];
         const char *value;
 
-        cf = (config_t *) gtmalloc(sizeof(config_t));
-        config_init(cf);
-
-        if (!config_read_file(cf, MAIN_DATA_FILE)) {
-                fprintf(stderr, "%s:%d - %s\n",
-                                config_error_file(cf),
-                                config_error_line(cf),
-                                config_error_text(cf));
-                config_destroy(cf);
-                return(1);
-        }
-
-        printf("Reading %s\n", MAIN_DATA_FILE);
         cfg_monsters = config_lookup(cf, "monsters");
         i = config_setting_length(cfg_monsters);
         printf("Parsing monster file...\nWe have %d monsters", i);
@@ -125,30 +112,15 @@ int parse_monsters()
         printf(" OK\n");
 
         monsterdefs->head->x = i; // store number of monsters in x of head.
-
-        config_destroy(cf);
         return 0;
 }
 
 int parse_armor()
 {
-        config_t *cf;
         config_setting_t *cfg;
         int i, j;
         char sname[100];
         const char *value;
-
-        cf = (config_t *) gtmalloc(sizeof(config_t));
-        config_init(cf);
-
-        if (!config_read_file(cf, MAIN_DATA_FILE)) {
-                fprintf(stderr, "%s:%d - %s\n",
-                                config_error_file(cf),
-                                config_error_line(cf),
-                                config_error_text(cf));
-                config_destroy(cf);
-                return(1);
-        }
 
         cfg = config_lookup(cf, "armor");
         i = config_setting_length(cfg);
@@ -181,10 +153,8 @@ int parse_armor()
         }
 
         printf(" OK\n");
-
         objdefs->head->ddice = i;
 
-        config_destroy(cf);
         return 0;
 }
 
@@ -201,8 +171,23 @@ int parse_data_files()
 {
         int ret;
 
+        cf = (config_t *) gtmalloc(sizeof(config_t));
+        config_init(cf);
+
+        if (!config_read_file(cf, MAIN_DATA_FILE)) {
+                fprintf(stderr, "%s:%d - %s\n",
+                                config_error_file(cf),
+                                config_error_line(cf),
+                                config_error_text(cf));
+                config_destroy(cf);
+                return(1);
+        }
+
+        printf("Reading %s\n", MAIN_DATA_FILE);
+
         ret = parse_monsters();
         ret = parse_objects();
 
+        config_destroy(cf);
         return ret;
 }

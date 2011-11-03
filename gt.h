@@ -13,5 +13,6 @@
 #define MAIN_DATA_FILE "data/data.cfg"
 
 extern monster_t *monsterdefs;
+extern     obj_t *objdefs;
 
 #endif

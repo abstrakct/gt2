@@ -18,10 +18,12 @@
 #include "utils.h"
 #include "monsters.h"
 #include "datafiles.h"
+#include "objects.h"
 #include "gt.h"
 
-monster_t *monsterdefs;
 
+monster_t *monsterdefs;
+obj_t *objdefs;
 
 void dump_monsters()
 {
@@ -39,6 +41,21 @@ void dump_monsters()
         }
 }
 
+void dump_objects()
+{
+        obj_t *o, *n;
+        int i;
+
+        n = objdefs->head;
+        for(i=0; i<objdefs->head->ddice; i++) {
+                o = n->next;
+                printf("Basename: %s\n", o->basename);
+                printf("Type:     %d\n", o->type);
+                printf("AC:       %d\n", o->ac);
+                printf("\n");
+                n = o;
+        }
+}
 void clean_up_the_mess()
 {
         monster_t *n, *m;
@@ -86,11 +103,16 @@ int main(int argc, char *argv[])
         memset(monsterdefs, 0, sizeof(monster_t));
         monsterdefs->head = monsterdefs;
 
+        objdefs = (obj_t *) gtmalloc(sizeof(obj_t));
+        memset(objdefs, 0, sizeof(obj_t));
+        objdefs->head = objdefs;
+
         if(parse_data_files())
                 die("Couldn't parse data files.");
 
-        dump_monsters();
-        sleep(1);
+//        dump_monsters();
+        dump_objects();
+        sleep(2);
         
         init_display();
         getmaxyx(stdscr, y, x);

@@ -132,6 +132,59 @@ int parse_monsters()
 
 int parse_armor()
 {
+        config_t *cf;
+        config_setting_t *cfg;
+        int i, j;
+        char sname[100];
+        const char *value;
+
+        cf = (config_t *) gtmalloc(sizeof(config_t));
+        config_init(cf);
+
+        if (!config_read_file(cf, MAIN_DATA_FILE)) {
+                fprintf(stderr, "%s:%d - %s\n",
+                                config_error_file(cf),
+                                config_error_line(cf),
+                                config_error_text(cf));
+                config_destroy(cf);
+                return(1);
+        }
+
+        cfg = config_lookup(cf, "armor");
+        i = config_setting_length(cfg);
+        printf("Parsing armor file...\nWe have %d armors", i);
+        for(j=0;j<i;j++) {
+                obj_t *o;
+
+                o = (obj_t *) gtmalloc(sizeof(obj_t));
+                memset(o, 0, sizeof(obj_t));
+
+                sprintf(sname, "armor.[%d].name", j);
+                config_lookup_string(cf, sname, &value);
+                strcpy(o->basename, value);
+
+                sprintf(sname, "armor.[%d].type", j);
+                config_lookup_string(cf, sname, &value);
+                if(!strcmp(value, "bodyarmor"))
+                        o->type = OT_BODYARMOR;
+
+                sprintf(sname, "armor.[%d].ac", j);
+                config_lookup_int(cf, sname, &(o->ac)); 
+
+                o->head = objdefs->head;
+                objdefs->next = o;
+                o->next = NULL;
+                o->prev = objdefs;
+                objdefs = o;
+
+                printf(".");
+        }
+
+        printf(" OK\n");
+
+        objdefs->head->ddice = i;
+
+        config_destroy(cf);
         return 0;
 }
 

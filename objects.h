@@ -20,19 +20,20 @@ struct object {
         char minlevel;
         short quantity;
         char material;
-        char ddice, dsides;
+        int ddice, dsides;
         char skill;             // a particular skill needed to use this weapon?
 };
 
 typedef struct object obj_t;
 
-#define OT_WEAPON 0
-#define OT_ARMOR  1
-#define OT_RING   2
-#define OT_CARD   3
-#define OT_WAND   4
-#define OT_THING  5
-#define OT_GOLD   6
+#define OT_WEAPON     0
+#define OT_ARMOR      1
+#define OT_BODYARMOR  11
+#define OT_RING       2
+#define OT_CARD       3
+#define OT_WAND       4
+#define OT_THING      5
+#define OT_GOLD       6
 
 extern char objchars[];
 
@@ -66,6 +67,9 @@ extern char objchars[];
 #define MAT_BRASS 13
 #define MAT_EBONY 14
 #define MATERIALS 14
+
+// defines so that we can easily use fields in obj_t for various stuff
+#define ac dsides
 
 struct obj_list {
         obj_t *object;

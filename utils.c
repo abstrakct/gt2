@@ -9,6 +9,7 @@
 
 #include "utils.h"
 #include "monsters.h"
+#include "objects.h"
 #include "gt.h"
 
 char *get_version_string()

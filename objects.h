@@ -2,6 +2,12 @@
 #define OBJECTS_H
 
 /*
+ * Gullible's Travails - 2011 Rewrite!
+ *
+ * Copyright 2011 Rolf Klausen
+ */
+
+/*
  * dealing with objects
  */
 

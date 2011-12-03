@@ -21,6 +21,7 @@
 #include "utils.h"
 #include "datafiles.h"
 #include "world.h"
+#include "you.h"
 #include "gt.h"
 
 char *otypestrings[50] = {
@@ -41,6 +42,8 @@ char *otypestrings[50] = {
 monster_t *monsterdefs;
 obj_t *objdefs;
 game_t *game;
+message_t m[500];
+int currmess, maxmess;
 
 
 /* UI / ncurses stuff */
@@ -98,6 +101,66 @@ void clean_up_the_mess()
         free(monsterdefs->head);
 }
 
+/* 
+ * Message window handling!
+ */
+
+void domess()
+{
+        int i;
+
+        currmess++;
+        for(i = maxmess-1; i >= 0; i--) {
+                // stupid screen cleaning....
+                wattron(winfo, COLOR_PAIR(NORMAL));
+                mvwprintw(winfo, i+1, 1, "                                                                                                                                                                                                 ");
+                wattroff(winfo, COLOR_PAIR(NORMAL));
+
+                wattron(winfo, COLOR_PAIR(m[i].color));
+                mvwprintw(winfo, i+1, 1, m[i].text);
+                wattroff(winfo, COLOR_PAIR(m[i].color));
+        }
+
+        wnoutrefresh(winfo);
+        doupdate();
+}
+
+void scrollmessages()
+{
+        int i;
+
+        if (currmess >= maxmess) {
+                currmess = maxmess - 1;
+                for(i = 0; i <= currmess; i++) {
+                        m[i].color = m[i+1].color;
+                        strcpy(m[i].text, m[i+1].text);
+                }
+        }
+}
+
+
+
+void mess(char *message)
+{
+        /* optionally insert check for duplicate messages here! */
+
+        scrollmessages();
+        m[currmess].color = NORMAL;
+        strcpy(m[currmess].text, message);
+        domess();
+}
+
+void messc(int color, char *message)
+{
+        /* optionally insert check for duplicate messages here! */
+
+        scrollmessages();
+        m[currmess].color = color;
+        strcpy(m[currmess].text, message);
+        domess();
+}
+
+
 WINDOW *create_newwin(int height, int width, int starty, int startx)
 {
         WINDOW *local_win;
@@ -118,6 +181,9 @@ void init_display()
 	init_pair(PLAYER, COLOR_RED, COLOR_BLACK);
         init_pair(INFO, COLOR_BLUE, COLOR_BLACK);
         init_pair(NORMAL, COLOR_WHITE, COLOR_BLACK);
+        init_pair(COLOR_WARNING, COLOR_RED, COLOR_BLACK);
+        init_pair(COLOR_GOOD, COLOR_GREEN, COLOR_BLACK);
+        init_pair(COLOR_BAD, COLOR_RED, COLOR_BLACK);
 
         game->width = COLS;
         game->height = LINES;
@@ -126,6 +192,7 @@ void init_display()
         wmap  = subwin(wall, (LINES/3)*2, (COLS/4)*3, 0, 0);      //øverst venstre                                                                                                                                                                                                                                          
         wstat = subwin(wall, (LINES/3)*2, (COLS/4), 0, COLS-((COLS/4)));  //øverst høyre                                                                                                                                                                                                                                    
         winfo = subwin(wall, LINES/3, COLS, LINES-(LINES/3), 0);  //nederst                                                                                                                                                                                                                                                 
+        maxmess = (LINES/3)-2;
 
         box(wmap, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                                    
         box(wstat, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                                   
@@ -143,8 +210,10 @@ void init_display()
         intrflush(wmap, FALSE);
         //map = create_newwin((game->height/3)*2, (game->width/3)*2, 0, 0);
 
-        mvwprintw(winfo, 1, 1, "*** Welcome to Gullible's Travails v.%s ***", get_version_string());
-        mvwprintw(winfo, 2, 1, "Press q to exit.");
+        //mvwprintw(winfo, 1, 1, "*** Welcome to Gullible's Travails v.%s ***", get_version_string());
+        //mvwprintw(winfo, 2, 1, "Press q to exit.");
+        mess("*** Welcome to Gullible's Travails ***");
+        mess("Press q to exit.");
 
         touchwin(wmap);
         touchwin(wstat);
@@ -174,6 +243,8 @@ void draw_world()
 int main(int argc, char *argv[])
 {
         int c;
+        int i = 0;
+        char s[50];
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
@@ -213,6 +284,10 @@ int main(int argc, char *argv[])
         while(c != 'q') {
                 doupdate();
                 c = wgetch(wmap);
+                i++;
+                sprintf(s, "Keypress numba %d", i);
+                you("pressed a key!");
+                messc(rand() % 15, s);
         }
 
         shutdown_display();

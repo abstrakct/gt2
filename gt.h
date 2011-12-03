@@ -18,8 +18,23 @@ typedef struct {
         unsigned int seed;
 } game_t;
 
+typedef struct {
+        int color;
+        char text[250];
+} message_t;
+
+// #define MAX_MESSAGES 100
 
 extern monster_t *monsterdefs;
 extern     obj_t *objdefs;
+
+#define COLOR_WARNING 10
+#define COLOR_GOOD    11
+#define COLOR_BAD     12
+
+/* function prototypes */
+
+void mess(char *message);
+void messc(int color, char *message);
 
 #endif

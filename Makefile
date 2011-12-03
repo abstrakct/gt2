@@ -3,9 +3,9 @@ CFLAGS = -Wall -g -ggdb -I.
 LIBS = -lconfig -lncursesw
 LDFLAGS = -Wl $(LIBS)  # ,-rpath=lib 
 
-SOURCES = gt.c utils.c datafiles.c
-HEADERS = gt.h utils.h monsters.h datafiles.h
-OBJS    = gt.o utils.o datafiles.o
+SOURCES = gt.c utils.c datafiles.c you.c
+HEADERS = gt.h utils.h monsters.h datafiles.h you.h world.h
+OBJS    = gt.o utils.o datafiles.o you.o
 
 #MKOBJS = objects.o makeobjdefs.o
 #MKSRCS = objects.c makeobjdefs.c

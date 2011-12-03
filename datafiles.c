@@ -10,9 +10,9 @@
 #include <unistd.h>
 #include <libconfig.h>
 
-#include "utils.h"
 #include "monsters.h"
 #include "objects.h"
+#include "utils.h"
 #include "datafiles.h"
 #include "gt.h"
 

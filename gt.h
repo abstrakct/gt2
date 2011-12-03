@@ -12,6 +12,13 @@
 
 #define MAIN_DATA_FILE "data/data.cfg"
 
+typedef struct {
+        int width, height;
+        int dead;
+        unsigned int seed;
+} game_t;
+
+
 extern monster_t *monsterdefs;
 extern     obj_t *objdefs;
 

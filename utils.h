@@ -9,5 +9,6 @@
 char *get_version_string();
 void die(char *m);
 void *gtmalloc(size_t size);
+int isarmor(obj_t *o);
 
 #endif

@@ -7,9 +7,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "utils.h"
 #include "monsters.h"
 #include "objects.h"
+#include "utils.h"
 #include "gt.h"
 
 char *get_version_string()
@@ -42,3 +42,14 @@ void *gtmalloc(size_t size)
         return p;
 }
 
+int isarmor(obj_t *o)
+{
+        int retval = 0;
+
+        if(o->type == OT_ARMOR)
+                retval = 1;
+        if(o->type == OT_BODYARMOR)
+                retval = 1;
+
+        return retval;
+}

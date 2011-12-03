@@ -36,6 +36,7 @@ typedef struct object obj_t;
 #define OT_GOLD       6
 
 extern char objchars[];
+extern char *otypestrings[];
 
 #define OF_MAGIC      0x00000001
 #define OF_EATABLE    0x00000002

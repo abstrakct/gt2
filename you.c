@@ -52,7 +52,7 @@ void yousee(char *fmt, ...)
         char s[1000];
         char s2[1020];
 
-        sprintf(s2, "You see");
+        sprintf(s2, "You see ");
 
         va_start(argp, fmt);
         vsprintf(s, fmt, argp);

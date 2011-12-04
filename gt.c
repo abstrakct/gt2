@@ -109,13 +109,12 @@ void domess()
 {
         int i;
 
+        // There might be a better way to clean the window, but this works.
+        wclear(winfo);
+        box(winfo, ACS_VLINE, ACS_HLINE);          
+
         currmess++;
         for(i = maxmess-1; i >= 0; i--) {
-                // stupid screen cleaning....
-                wattron(winfo, COLOR_PAIR(NORMAL));
-                mvwprintw(winfo, i+1, 1, "                                                                                                                                                                                                 ");
-                wattroff(winfo, COLOR_PAIR(NORMAL));
-
                 wattron(winfo, COLOR_PAIR(m[i].color));
                 mvwprintw(winfo, i+1, 1, m[i].text);
                 wattroff(winfo, COLOR_PAIR(m[i].color));
@@ -138,8 +137,6 @@ void scrollmessages()
         }
 }
 
-
-
 void mess(char *message)
 {
         /* optionally insert check for duplicate messages here! */
@@ -159,7 +156,6 @@ void messc(int color, char *message)
         strcpy(m[currmess].text, message);
         domess();
 }
-
 
 WINDOW *create_newwin(int height, int width, int starty, int startx)
 {
@@ -235,7 +231,8 @@ void draw_world()
                 }
         }
 
-        wcolor_set(wmap, 0, 0);
+        //wcolor_set(wmap, 0, 0);
+        wclear(wmap);
         box(wmap, ACS_VLINE, ACS_HLINE);
 }
 
@@ -281,13 +278,14 @@ int main(int argc, char *argv[])
         wnoutrefresh(wstat);
         doupdate();
 
-        while(c != 'q') {
+        while(!game->dead) {
                 doupdate();
                 c = wgetch(wmap);
+                if(c == 'q')
+                        game->dead = 1;
                 i++;
-                sprintf(s, "Keypress numba %d", i);
-                you("pressed a key!");
-                messc(rand() % 15, s);
+                sprintf(s, "Keypress number %d", i);
+                messc(COLOR_GOOD, s);
         }
 
         shutdown_display();

@@ -110,7 +110,7 @@ void domess()
         int i;
 
         // There might be a better way to clean the window, but this works.
-        wclear(winfo);
+        werase(winfo);
         box(winfo, ACS_VLINE, ACS_HLINE);          
 
         currmess++;
@@ -121,7 +121,7 @@ void domess()
         }
 
         wnoutrefresh(winfo);
-        doupdate();
+//        doupdate();
 }
 
 void scrollmessages()

@@ -35,7 +35,7 @@ int dice(int num, int sides, signed int modifier)
 
         result = modifier;
         for(i=0;i<num;i++) {
-                result += ri(1, sides);
+                result += 1 + (rand() % sides);
         }
 
         return result;

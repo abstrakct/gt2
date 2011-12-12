@@ -35,7 +35,16 @@ void generate_world()
 
         for(x = 0; x < XSIZE; x++) {
                 for(y = 0; y < YSIZE; y++) {
-                        world->out[x][y].type = d(1,6);
+                        world->out[y][x].type = d(1,6);
+                        world->out[y][x].flags = 0;
+                        world->out[y][x].color = COLOR_GOOD;
+                        world->out[y][x].monster = NULL;
+                        world->out[y][x].inventory = NULL;
                 }
         }
+
+        world->forests  = ri(game->c.minf, game->c.maxf);
+        world->cities   = ri(game->c.minc, game->c.maxc);
+        world->villages = ri(game->c.minv, game->c.maxv);
+        world->dungeons = ri(game->c.mind, game->c.maxd);
 }

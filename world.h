@@ -20,12 +20,19 @@
 typedef struct {
         char type;
         int flags;
-        obj_t *inventory;
+        int color;
+        monster_t *monster;
+        obj_t     *inventory;
 } cell_t;
 
 typedef struct {
         cell_t out[YSIZE][XSIZE];
+        int villages, cvillage;   // num of villages, current village|
+        int cities, ccity;
+        int forests, cforest;
+        int dungeons;
 } world_t;
+
 
 void generate_world();
 

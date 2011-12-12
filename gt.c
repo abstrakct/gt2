@@ -160,16 +160,6 @@ void messc(int color, char *message)
         domess();
 }
 
-WINDOW *create_newwin(int height, int width, int starty, int startx)
-{
-        WINDOW *local_win;
-
-        local_win = newwin(height, width, starty, startx);
-        box(local_win, 0 , 0);
-        wrefresh(local_win);
-        return local_win;
-}
-
 void init_display()
 {
         initscr();
@@ -213,7 +203,6 @@ void init_display()
         curs_set(0);
         meta(wall, TRUE);
         intrflush(wmap, FALSE);
-        //map = create_newwin((game->height/3)*2, (game->width/3)*2, 0, 0);
 
         //mvwprintw(winfo, 1, 1, "*** Welcome to Gullible's Travails v.%s ***", get_version_string());
         //mvwprintw(winfo, 2, 1, "Press q to exit.");
@@ -237,9 +226,13 @@ void draw_world()
         werase(wmap);
         for(i=1;i<game->mapw;i++) {
                 for(j=1;j<game->maph;j++) {
+                        wattron(wmap, COLOR_PAIR(world->out[j][i].color));
                         mvwaddch(wmap, j, i, mapchars[(int)world->out[j][i].type]);
+                        wattroff(wmap, COLOR_PAIR(world->out[j][i].color));
                 }
         }
+
+        wattron(wmap, COLOR_PAIR(COLOR_NORMAL));
         box(wmap, ACS_VLINE, ACS_HLINE);
         //wcolor_set(wmap, 0, 0);
 }
@@ -285,9 +278,10 @@ int main(int argc, char *argv[])
         dump_objects();
         sleep(1);*/
         
-        init_display();
 
         generate_world();
+
+        init_display();
         draw_world();
 
         wnoutrefresh(wmap);

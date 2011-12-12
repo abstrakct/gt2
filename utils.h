@@ -6,8 +6,13 @@
 #ifndef _GT_UTILS_H
 #define _GT_UTILS_H
 
-#define ri(a,b) (a + (rand() % b))
+// d(a, b)
+// "throw" a b-sided dices without any modifiers
 #define d(a,b) dice(a,b,0)
+
+// ri(a, b)
+// pick a random number in the range [a, b]
+#define ri(a,b) (a + (rand() % (b-a+1)))
 
 char *get_version_string();
 void die(char *m);

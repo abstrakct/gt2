@@ -1,5 +1,5 @@
-#ifndef OBJECTS_H
-#define OBJECTS_H
+#ifndef _OBJECTS_H
+#define _OBJECTS_H
 
 /*
  * Gullible's Travails - 2011 Rewrite!

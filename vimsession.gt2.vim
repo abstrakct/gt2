@@ -1,8 +1,9 @@
 let SessionLoad = 1
 if &cp | set nocp | endif
-map  h
 let s:cpo_save=&cpo
 set cpo&vim
+imap <F3> =strftime("%Y-%m-%d %H:%M")
+map  h
 map <NL> j
 map  k
 map  l
@@ -10,17 +11,18 @@ noremap  
 nnoremap   za
 nmap <silent> ,l :nohlsearch
 map N Nzz
+vmap \ $
+nmap <silent> \t :CommandT
 nmap \ $
 map <silent> \w\t <Plug>VimwikiTabMakeDiaryNote
 map <silent> \w\w <Plug>VimwikiMakeDiaryNote
+nmap <silent> \wi <Plug>VimwikiDiaryIndex
 map <silent> \ws <Plug>VimwikiUISelect
 map <silent> \wt <Plug>VimwikiTabIndex
 map <silent> \ww <Plug>VimwikiIndex
-nmap <silent> \t :CommandT
 map \c :echo g:colors_name
 map \p :CP
 map \n :CN
-vmap \ $
 omap \ $
 nmap <silent> \sv :so $MYVIMRC
 nmap <silent> \ev :e $MYVIMRC
@@ -28,20 +30,24 @@ nmap gx <Plug>NetrwBrowseX
 map g> :%s/>/->/g
 map gr gT
 map n nzz
-nmap <F5> 5wiEurope '72 1972-05-
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
 vnoremap <F5> ygv"=TwiddleCase(@")Pgv
 map <Up> :bnext
 map <Down> :bprevious
 map <Right> :tabnext
 map <Left> :tabprevious
-map <F3> A ->j
-omap <F5> 5wiEurope '72 1972-05-
+nmap <F5> :make
+omap <F5> :make
 nmap <F4> g
+map <F3> A ->j
 map <F2> :tabe %:p:s,.h$,.X123X,:s,.c$,.h,:s,.X123X$,.c,
+map <F6> :!gt<CR>
 inoremap 	 =SuperCleverTab()
+inoremap ( ()<Left>
 map æ @
 map ø :
+inoremap { {
+inoremap { {}O
 let &cpo=s:cpo_save
 unlet s:cpo_save
 set autoindent
@@ -199,7 +205,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 83 - ((82 * winheight(0) + 41) / 83)
+let s:l = 83 - ((44 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -317,7 +323,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 38 - ((37 * winheight(0) + 41) / 83)
+let s:l = 38 - ((20 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -435,7 +441,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 16 - ((15 * winheight(0) + 41) / 83)
+let s:l = 16 - ((8 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -553,7 +559,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 41) / 83)
+let s:l = 1 - ((0 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -671,7 +677,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 11 - ((10 * winheight(0) + 41) / 83)
+let s:l = 11 - ((5 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -789,7 +795,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 82 - ((0 * winheight(0) + 41) / 83)
+let s:l = 82 - ((0 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -907,7 +913,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 41) / 83)
+let s:l = 1 - ((0 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1025,7 +1031,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 41) / 83)
+let s:l = 1 - ((0 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1143,7 +1149,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 9 - ((8 * winheight(0) + 41) / 83)
+let s:l = 9 - ((4 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1261,7 +1267,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 83 - ((77 * winheight(0) + 41) / 83)
+let s:l = 83 - ((42 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1379,7 +1385,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 13 - ((12 * winheight(0) + 41) / 83)
+let s:l = 13 - ((7 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt

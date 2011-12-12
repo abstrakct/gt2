@@ -13,7 +13,6 @@
 #include <locale.h>
 #include <time.h>
 #include <curses.h>
-
 #include <libconfig.h>
 
 #include "objects.h"
@@ -39,17 +38,21 @@ char *otypestrings[50] = {
         "Body armor"
 };
 
+// Important global variables
 monster_t *monsterdefs;
 obj_t *objdefs;
 game_t *game;
+world_t *world;
+
+// Messages
 message_t m[500];
 int currmess, maxmess;
 
 
 /* UI / ncurses stuff */
-WINDOW *map;
-WINDOW *ch;
-WINDOW *inv;
+//WINDOW *map;
+//WINDOW *ch;
+//WINDOW *inv;
 WINDOW *wall;
 WINDOW *wstat;
 WINDOW *winfo;
@@ -142,7 +145,7 @@ void mess(char *message)
         /* optionally insert check for duplicate messages here! */
 
         scrollmessages();
-        m[currmess].color = NORMAL;
+        m[currmess].color = COLOR_NORMAL;
         strcpy(m[currmess].text, message);
         domess();
 }
@@ -170,24 +173,30 @@ WINDOW *create_newwin(int height, int width, int starty, int startx)
 void init_display()
 {
         initscr();
+        if(!has_colors()) {
+                endwin();
+                die("Your terminal has no colors!");
+        }
         start_color();
 
 	init_pair(FOREST, COLOR_GREEN, COLOR_BLACK);
 	init_pair(CITY, COLOR_YELLOW, COLOR_BLACK);
-	init_pair(PLAYER, COLOR_RED, COLOR_BLACK);
-        init_pair(INFO, COLOR_BLUE, COLOR_BLACK);
-        init_pair(NORMAL, COLOR_WHITE, COLOR_BLACK);
+	init_pair(COLOR_PLAYER, COLOR_RED, COLOR_BLACK);
+        init_pair(COLOR_INFO, COLOR_BLUE, COLOR_BLACK);
+        init_pair(COLOR_NORMAL, COLOR_WHITE, COLOR_BLACK);
         init_pair(COLOR_WARNING, COLOR_RED, COLOR_BLACK);
         init_pair(COLOR_GOOD, COLOR_GREEN, COLOR_BLACK);
         init_pair(COLOR_BAD, COLOR_RED, COLOR_BLACK);
 
         game->width = COLS;
         game->height = LINES;
+        game->mapw = ((COLS/4)*3);
+        game->maph = ((LINES/3)*2);
 
         wall  = newwin(0, 0, 0, 0);                                                                                                                                                                                                                                                                                         
-        wmap  = subwin(wall, (LINES/3)*2, (COLS/4)*3, 0, 0);      //øverst venstre                                                                                                                                                                                                                                          
+        wmap  = subwin(wall, game->maph, game->mapw, 0, 0);               //øverst venstre                                                                                                                                                                                                                                          
         wstat = subwin(wall, (LINES/3)*2, (COLS/4), 0, COLS-((COLS/4)));  //øverst høyre                                                                                                                                                                                                                                    
-        winfo = subwin(wall, LINES/3, COLS, LINES-(LINES/3), 0);  //nederst                                                                                                                                                                                                                                                 
+        winfo = subwin(wall, LINES/3, COLS, LINES-(LINES/3), 0);          //nederst                                                                                                                                                                                                                                                 
         maxmess = (LINES/3)-2;
 
         box(wmap, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                                    
@@ -225,17 +234,29 @@ void draw_world()
 {
         int i,j;
 
-        for(i=0;i<game->width;i++) {
-                for(j=0;j<game->height;j++) {
-                        mvwaddch(wmap, j, i, ' ');
+        werase(wmap);
+        for(i=1;i<game->mapw;i++) {
+                for(j=1;j<game->maph;j++) {
+                        mvwaddch(wmap, j, i, mapchars[(int)world->out[j][i].type]);
                 }
         }
-
-        //wcolor_set(wmap, 0, 0);
-        wclear(wmap);
         box(wmap, ACS_VLINE, ACS_HLINE);
+        //wcolor_set(wmap, 0, 0);
 }
 
+void init_variables()
+{
+        monsterdefs = (monster_t *) gtmalloc(sizeof(monster_t));
+        memset(monsterdefs, 0, sizeof(monster_t));
+        monsterdefs->head = monsterdefs;
+
+        objdefs = (obj_t *) gtmalloc(sizeof(obj_t));
+        memset(objdefs, 0, sizeof(obj_t));
+        objdefs->head = objdefs;
+
+        world = (world_t *) gtmalloc(sizeof(world_t));
+        memset(world, 0, sizeof(world_t));
+}
 
 int main(int argc, char *argv[])
 {
@@ -249,19 +270,13 @@ int main(int argc, char *argv[])
         game = (game_t *) gtmalloc(sizeof(game_t));
         game->dead = 0;
         game->seed = time(0);
-        printf("Random seed is %d\n", game->seed);
         srand(game->seed);
+        printf("Random seed is %d\n", game->seed);
 
         printf("Gullible's Travails v%s\n", get_version_string());
         printf("Reading data files...\n");
 
-        monsterdefs = (monster_t *) gtmalloc(sizeof(monster_t));
-        memset(monsterdefs, 0, sizeof(monster_t));
-        monsterdefs->head = monsterdefs;
-
-        objdefs = (obj_t *) gtmalloc(sizeof(obj_t));
-        memset(objdefs, 0, sizeof(obj_t));
-        objdefs->head = objdefs;
+        init_variables();
 
         if(parse_data_files())
                 die("Couldn't parse data files.");
@@ -272,20 +287,23 @@ int main(int argc, char *argv[])
         
         init_display();
 
+        generate_world();
         draw_world();
+
         wnoutrefresh(wmap);
         wnoutrefresh(winfo);
         wnoutrefresh(wstat);
         doupdate();
 
         while(!game->dead) {
-                doupdate();
                 c = wgetch(wmap);
                 if(c == 'q')
                         game->dead = 1;
                 i++;
                 sprintf(s, "Keypress number %d", i);
                 messc(COLOR_GOOD, s);
+                draw_world();
+                doupdate();
         }
 
         shutdown_display();

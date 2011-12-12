@@ -14,6 +14,7 @@
 #include "objects.h"
 #include "utils.h"
 #include "datafiles.h"
+#include "world.h"
 #include "gt.h"
 
 config_t *cf;
@@ -27,7 +28,7 @@ int parse_monsters()
 
         cfg_monsters = config_lookup(cf, "monsters");
         i = config_setting_length(cfg_monsters);
-        printf("Parsing monster file...\nWe have %d monsters", i);
+        printf("Parsing monster file...\n  We have %d monsters", i);
 
         /* 
          * main monster parsing loop 
@@ -124,7 +125,7 @@ int parse_armor()
 
         cfg = config_lookup(cf, "armor");
         i = config_setting_length(cfg);
-        printf("Parsing armor file...\nWe have %d armors", i);
+        printf("Parsing armor file...\n  We have %d armors", i);
         for(j=0;j<i;j++) {
                 obj_t *o;
 
@@ -167,6 +168,41 @@ int parse_objects()
         return ret;
 }
 
+int parse_configfile()
+{
+        config_setting_t *cfg;
+        int i;
+        char sname[100];
+
+        cfg = config_lookup(cf, "config");
+        i = config_setting_length(cfg);
+        printf("Parsing configuration file...");
+        if(i > 1) {
+                printf("Something is wrong here...?\n");
+                return 1;
+        }
+
+        sprintf(sname, "config.[0].min_forests");
+        config_lookup_int(cf, sname, &game->c.minf);
+        sprintf(sname, "config.[0].max_forests");
+        config_lookup_int(cf, sname, &game->c.maxf);
+        sprintf(sname, "config.[0].min_cities");
+        config_lookup_int(cf, sname, &game->c.minc);
+        sprintf(sname, "config.[0].max_cities");
+        config_lookup_int(cf, sname, &game->c.maxc);
+        sprintf(sname, "config.[0].min_villages");
+        config_lookup_int(cf, sname, &game->c.minv);
+        sprintf(sname, "config.[0].max_villages");
+        config_lookup_int(cf, sname, &game->c.maxv);
+        sprintf(sname, "config.[0].min_dungeons");
+        config_lookup_int(cf, sname, &game->c.mind);
+        sprintf(sname, "config.[0].max_dungeons");
+        config_lookup_int(cf, sname, &game->c.maxd);
+
+        printf(" OK\n");
+        
+        return 0;
+}
 int parse_data_files()
 {
         int ret;
@@ -185,6 +221,10 @@ int parse_data_files()
 
         printf("Reading %s\n", MAIN_DATA_FILE);
 
+        /* TODO:
+         * This return value stuff makes no sense!!
+         */
+        ret = parse_configfile();
         ret = parse_monsters();
         ret = parse_objects();
 

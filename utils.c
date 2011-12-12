@@ -10,6 +10,7 @@
 #include "monsters.h"
 #include "objects.h"
 #include "utils.h"
+#include "world.h"
 #include "gt.h"
 
 char *get_version_string()
@@ -26,6 +27,18 @@ void die(char *m)
 {
         fprintf(stderr, "FATAL ERROR: %s\n", m);
         exit(1);
+}
+
+int dice(int num, int sides, signed int modifier)
+{
+        int i, result;
+
+        result = modifier;
+        for(i=0;i<num;i++) {
+                result += ri(1, sides);
+        }
+
+        return result;
 }
 
 void *gtmalloc(size_t size)

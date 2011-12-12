@@ -10,6 +10,7 @@
 
 #include "monsters.h"
 #include "objects.h"
+#include "world.h"
 #include "gt.h"
 #include "you.h"
 

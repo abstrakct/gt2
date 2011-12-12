@@ -3,8 +3,8 @@
  *
  * Copyright 2011 Rolf Klausen
  */
-#ifndef DATAFILES_H
-#define DATAFILES_H
+#ifndef _DATAFILES_H
+#define _DATAFILES_H
 
 #define MAIN_DATA_FILE "data/data.cfg"
 

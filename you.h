@@ -1,5 +1,5 @@
-#ifndef YOU_H
-#define YOU_H
+#ifndef _YOU_H
+#define _YOU_H
 /*
  * Gullible's Travails - 2011 Rewrite!
  *

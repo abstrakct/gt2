@@ -289,7 +289,7 @@ int main(int argc, char *argv[])
         wnoutrefresh(wstat);
         doupdate();
 
-        while(!game->dead) {
+        do {
                 c = wgetch(wmap);
                 if(c == 'q')
                         game->dead = 1;
@@ -298,7 +298,7 @@ int main(int argc, char *argv[])
                 messc(COLOR_GOOD, s);
                 draw_world();
                 doupdate();
-        }
+        } while(!game->dead);
 
         shutdown_display();
         clean_up_the_mess();

@@ -12,9 +12,8 @@ noremap  
 nnoremap   za
 nmap <silent> ,l :nohlsearch
 map N Nzz
-nmap \ $
+map \ $
 nmap <silent> \t :CommandT
-vmap \ $
 map <silent> \w\t <Plug>VimwikiTabMakeDiaryNote
 map <silent> \w\w <Plug>VimwikiMakeDiaryNote
 nmap <silent> \wi <Plug>VimwikiDiaryIndex
@@ -24,25 +23,26 @@ map <silent> \ww <Plug>VimwikiIndex
 map \c :echo g:colors_name
 map \p :CP
 map \n :CN
-omap \ $
 nmap <silent> \sv :so $MYVIMRC
 nmap <silent> \ev :e $MYVIMRC
 nmap gx <Plug>NetrwBrowseX
 map g> :%s/>/->/g
 map gr gT
 map n nzz
-map <F6> :!gt
-nmap <F5> :make
-nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
-nmap <F4> g
 vnoremap <F5> ygv"=TwiddleCase(@")Pgv
+nmap <F3> o=strftime("%Y-%m-%d %H:%M")
+nmap <F5> :make
+omap <F5> :make
+map <F6> :!gt
+nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
+nmap <F4> mz:execute FunctionHeading()`zjA
 map <Up> :bnext
 map <Down> :bprevious
 map <Right> :tabnext
 map <Left> :tabprevious
-omap <F5> :make
 nmap <F7> g
-map <F3> A ->j
+vmap <F3> A ->j
+omap <F3> A ->j
 map <F2> :tabe %:p:s,.h$,.X123X,:s,.c$,.h,:s,.X123X$,.c,
 inoremap 	 =SuperCleverTab()
 inoremap ( ()<Left>
@@ -75,7 +75,6 @@ set title
 set visualbell
 set wildmenu
 set wildmode=list:longest,full
-set window=23
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
@@ -105,6 +104,16 @@ wincmd t
 set winheight=1 winwidth=1
 argglobal
 2argu
+iabbr <buffer> <silent> intmain =MapNoContext('intmain', 'int main (int argc, char **argv)\<CR\>{\<CR\>x;\<CR\>return 0;\<CR\>}\<CR\>\<C-O\>?x;\<CR\>\<Del\>\<Del\>\<C-R\>=Eatchar()\<CR\>')
+iabbr <buffer> <silent> ifelse =MapNoContext('ifelse', 'if() {\<CR\>} else {\<CR\>}\<C-O\>?)\<CR\>\<C-R\>=Eatchar()\<CR\>')
+iabbr <buffer> <silent> else =MapNoContext('else', 'else {\<CR\>x;\<CR\>}\<C-O\>?x;\<CR\>\<Del\>\<Del\>\<C-R\>=Eatchar()\<CR\>')
+iabbr <buffer> <silent> while =MapNoContext('while', 'while() {\<CR\>}\<C-O\>?)\<CR\>\<C-R\>=Eatchar()\<CR\>')
+iabbr <buffer> <silent> for =MapNoContext('for', 'for(;;) {\<CR\>}\<C-O\>?;;\<CR\>\<C-R\>=Eatchar()\<CR\>')
+iabbr <buffer> <silent> if =MapNoContext('if', 'if() {\<CR\>}\<Left\>\<C-O\>?)\<CR\>\<C-R\>=Eatchar()\<CR\>')
+iabbr <buffer> <silent> printf =MapNoContext('printf', 'printf(\"\\n\");\<C-O\>?\\\<CR\>\<C-R\>=Eatchar()\<CR\>')
+iabbr <buffer> <silent> #I =MapNoContext('#I', '#include \"\"\<Left\>\<C-R\>=Eatchar()\<CR\>')
+iabbr <buffer> <silent> #i =MapNoContext('#i', '#include \<\>\<Left\>\<C-R\>=Eatchar()\<CR\>')
+iabbr <buffer> <silent> #d =MapNoContext('#d', '#define \<C-R\>=Eatchar()\<CR\>')
 setlocal keymap=
 setlocal noarabic
 setlocal autoindent
@@ -150,7 +159,7 @@ setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
 setlocal formatexpr=
-setlocal formatoptions=croql
+setlocal formatoptions=tcq
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
 setlocal iminsert=2
@@ -209,11 +218,11 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 318 - ((166 * winheight(0) + 10) / 21)
+let s:l = 254 - ((112 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-318
+254
 normal! 0
 tabedit gt.h
 set splitbelow splitright
@@ -262,6 +271,7 @@ setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
 setlocal foldmarker={{{,}}}
+set foldmethod=syntax
 setlocal foldmethod=manual
 setlocal foldminlines=1
 setlocal foldnestmax=20
@@ -748,6 +758,7 @@ setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
 setlocal foldmarker={{{,}}}
+set foldmethod=syntax
 setlocal foldmethod=manual
 setlocal foldminlines=1
 setlocal foldnestmax=20
@@ -984,6 +995,7 @@ setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
 setlocal foldmarker={{{,}}}
+set foldmethod=syntax
 setlocal foldmethod=manual
 setlocal foldminlines=1
 setlocal foldnestmax=20
@@ -1102,6 +1114,7 @@ setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
 setlocal foldmarker={{{,}}}
+set foldmethod=syntax
 setlocal foldmethod=manual
 setlocal foldminlines=1
 setlocal foldnestmax=20
@@ -1220,6 +1233,7 @@ setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
 setlocal foldmarker={{{,}}}
+set foldmethod=syntax
 setlocal foldmethod=manual
 setlocal foldminlines=1
 setlocal foldnestmax=20
@@ -1456,6 +1470,7 @@ setlocal foldexpr=0
 setlocal foldignore=#
 setlocal foldlevel=0
 setlocal foldmarker={{{,}}}
+set foldmethod=syntax
 setlocal foldmethod=manual
 setlocal foldminlines=1
 setlocal foldnestmax=20

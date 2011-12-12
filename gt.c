@@ -48,11 +48,7 @@ world_t *world;
 message_t m[500];
 int currmess, maxmess;
 
-
-/* UI / ncurses stuff */
-//WINDOW *map;
-//WINDOW *ch;
-//WINDOW *inv;
+// Ncurses stuff
 WINDOW *wall;
 WINDOW *wstat;
 WINDOW *winfo;
@@ -90,6 +86,7 @@ void dump_objects()
                 n = o;
         }
 }
+
 void clean_up_the_mess()
 {
         monster_t *n, *m;

@@ -76,6 +76,7 @@ set title
 set visualbell
 set wildmenu
 set wildmode=list:longest,full
+set window=47
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
@@ -85,7 +86,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +1 datafiles.c
-badd +1 gt.c
+badd +8 gt.c
 badd +2 utils.c
 badd +1 ~/src/gt2/datafiles.h
 badd +1 gt.h
@@ -96,7 +97,7 @@ badd +1 world.h
 badd +51 you.c
 badd +1 you.h
 badd +40 world.c
-badd +208 ~/.vimrc
+badd +168 ~/.vimrc
 args datafiles.c gt.c utils.c
 edit gt.c
 set splitbelow splitright
@@ -220,11 +221,13 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 267 - ((50 * winheight(0) + 10) / 21)
+104
+normal zc
+let s:l = 252 - ((203 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-267
+252
 normal! 0
 tabedit gt.h
 set splitbelow splitright
@@ -274,7 +277,7 @@ setlocal foldignore=#
 setlocal foldlevel=0
 setlocal foldmarker={{{,}}}
 set foldmethod=syntax
-setlocal foldmethod=manual
+setlocal foldmethod=syntax
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
@@ -338,13 +341,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 18 - ((17 * winheight(0) + 10) / 21)
+let s:l = 28 - ((27 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-18
-normal! 016l
+28
+normal! 015l
 tabedit world.c
 set splitbelow splitright
 set nosplitbelow
@@ -467,7 +469,7 @@ normal zc
 normal zc
 33
 normal zc
-let s:l = 35 - ((21 * winheight(0) + 10) / 21)
+let s:l = 35 - ((34 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -589,7 +591,7 @@ setlocal wrapmargin=0
 normal zo
 28
 normal zo
-let s:l = 20 - ((3 * winheight(0) + 10) / 21)
+let s:l = 20 - ((7 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -707,7 +709,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 38 - ((21 * winheight(0) + 10) / 21)
+let s:l = 38 - ((28 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -826,7 +828,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 12 - ((11 * winheight(0) + 10) / 21)
+let s:l = 12 - ((11 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -944,7 +946,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 82 - ((59 * winheight(0) + 10) / 21)
+let s:l = 82 - ((60 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1063,7 +1065,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 10) / 21)
+let s:l = 1 - ((0 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1117,7 +1119,7 @@ setlocal foldignore=#
 setlocal foldlevel=0
 setlocal foldmarker={{{,}}}
 set foldmethod=syntax
-setlocal foldmethod=manual
+setlocal foldmethod=syntax
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
@@ -1181,13 +1183,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 10) / 21)
+let s:l = 11 - ((10 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+11
+normal! 014l
 tabedit objects.h
 set splitbelow splitright
 set nosplitbelow
@@ -1236,7 +1237,7 @@ setlocal foldignore=#
 setlocal foldlevel=0
 setlocal foldmarker={{{,}}}
 set foldmethod=syntax
-setlocal foldmethod=manual
+setlocal foldmethod=syntax
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldtext=foldtext()
@@ -1300,12 +1301,13 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-silent! normal! zE
-let s:l = 9 - ((2 * winheight(0) + 10) / 21)
+14
+normal zc
+let s:l = 16 - ((15 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-9
+16
 normal! 0
 tabedit you.c
 set splitbelow splitright
@@ -1419,7 +1421,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 13 - ((12 * winheight(0) + 10) / 21)
+let s:l = 13 - ((12 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1538,12 +1540,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 12 - ((2 * winheight(0) + 10) / 21)
+let s:l = 1 - ((0 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-12
-normal! 029l
+1
+normal! 013l
 tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

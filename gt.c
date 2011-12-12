@@ -43,6 +43,7 @@ monster_t *monsterdefs;
 obj_t *objdefs;
 game_t *game;
 world_t *world;
+FILE *messagefile;
 
 // Messages
 message_t m[500];
@@ -99,6 +100,8 @@ void clean_up_the_mess()
                 n = m;
         }
         free(monsterdefs->head);
+
+        fclose(messagefile);
 }
 
 /* 
@@ -120,6 +123,7 @@ void domess()
                 wattroff(winfo, COLOR_PAIR(m[i].color));
         }
 
+        fprintf(messagefile, "%s\n", m[currmess-1].text);
         wnoutrefresh(winfo);
 //        doupdate();
 }
@@ -256,6 +260,8 @@ int main(int argc, char *argv[])
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
+
+        messagefile = fopen("messages.txt", "w");
 
         game = (game_t *) gtmalloc(sizeof(game_t));
         game->dead = 0;

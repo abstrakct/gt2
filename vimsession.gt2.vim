@@ -25,7 +25,7 @@ map \p :CP
 map \n :CN
 nmap <silent> \sv :so $MYVIMRC
 nmap <silent> \ev :e $MYVIMRC
-nmap _if ofprintf(0stderr, "%s: %d - \n", __FILE__, __LINE__);F\i
+nmap _if ofprintf(0stderr, "DEBUG: %s:%d - \n", __FILE__, __LINE__);F\i
 nmap gx <Plug>NetrwBrowseX
 map g> :%s/>/->/g
 map gr gT
@@ -220,19 +220,11 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-255
-normal zo
-277
-normal zo
-292
-normal zo
-255
-normal zo
-let s:l = 273 - ((16 * winheight(0) + 10) / 21)
+let s:l = 267 - ((50 * winheight(0) + 10) / 21)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-273
+267
 normal! 0
 tabedit gt.h
 set splitbelow splitright

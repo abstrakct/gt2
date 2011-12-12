@@ -264,7 +264,7 @@ int main(int argc, char *argv[])
         game->dead = 0;
         game->seed = time(0);
         srand(game->seed);
-        printf("Random seed is %d\n", game->seed);
+fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->seed);
 
         printf("Gullible's Travails v%s\n", get_version_string());
         printf("Reading data files...\n");

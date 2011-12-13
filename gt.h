@@ -40,12 +40,11 @@ extern game_t *game;
 extern monster_t *monsterdefs;
 extern obj_t *objdefs;
 
-#define COLOR_NORMAL  1
-#define COLOR_PLAYER  2
-#define COLOR_INFO    3
-#define COLOR_WARNING 10
-#define COLOR_GOOD    11
-#define COLOR_BAD     12
+/*extern WINDOW *wall;
+extern WINDOW *wstat;
+extern WINDOW *winfo;
+extern WINDOW *wmap;*/
+
 
 /* function prototypes */
 

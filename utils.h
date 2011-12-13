@@ -17,6 +17,7 @@
 char *get_version_string();
 void die(char *m);
 void *gtmalloc(size_t size);
+void *gtcalloc(size_t num, size_t size);
 int isarmor(obj_t *o);
 int dice(int num, int sides, signed int modifier);
 

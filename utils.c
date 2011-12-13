@@ -55,6 +55,20 @@ void *gtmalloc(size_t size)
         return p;
 }
 
+void *gtcalloc(size_t num, size_t size)
+{
+        void *p;
+
+        p = calloc(num, size);
+        if(!p) {
+                char m[200];
+                sprintf(m, "calloc %d * %d (total %d) in gtcalloc failed! Exiting.\n", (int) num, (int) size, (int) (num*size));
+                die(m);
+        }
+
+        return p;
+}
+
 int isarmor(obj_t *o)
 {
         int retval = 0;

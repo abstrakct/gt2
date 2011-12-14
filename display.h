@@ -24,5 +24,15 @@
 void init_display();
 void shutdown_display();
 void draw_world();
+void gtmapaddch(int x, int y, int color, char c);
+void update_screen();
+void initial_update_screen();
+char gtgetch();
+void domess();
+void scrollmessages();
+void mess(char *message);
+void messc(int color, char *message);
+
+
 
 #endif

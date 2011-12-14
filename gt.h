@@ -15,6 +15,7 @@
 typedef struct {
         int width, height;
         int mapw, maph;    // width, height of map window
+        int vx, vy;        // upper left corner of viewport
         int dead;
         unsigned int seed;
         struct {
@@ -25,7 +26,7 @@ typedef struct {
         } c;
 } game_t;
 
-typedef struct {
+typedef struct {       // message_t
         int color;
         char text[250];
 } message_t;
@@ -39,6 +40,11 @@ extern obj_t *objdefs;
 extern game_t *game;
 extern monster_t *monsterdefs;
 extern obj_t *objdefs;
+extern actor_t *player;
+extern int mapcx, mapcy;
+extern FILE *messagefile;
+extern message_t m[500];
+extern int currmess, maxmess;
 
 /*extern WINDOW *wall;
 extern WINDOW *wstat;

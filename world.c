@@ -18,6 +18,7 @@
 #include "world.h"
 #include "you.h"
 #include "display.h"
+#include "actor.h"
 #include "gt.h"
 
 #define MAXFORESTSIZE 70

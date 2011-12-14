@@ -15,6 +15,7 @@
 #include "utils.h"
 #include "datafiles.h"
 #include "world.h"
+#include "actor.h"
 #include "gt.h"
 
 config_t *cf;

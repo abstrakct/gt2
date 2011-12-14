@@ -18,6 +18,7 @@
 #include "world.h"
 #include "you.h"
 #include "display.h"
+#include "actor.h"
 #include "gt.h"
 
 #ifdef GT_USE_NCURSES
@@ -60,9 +61,9 @@ void init_display()
         winfo = subwin(wall, LINES/3, COLS, LINES-(LINES/3), 0);          //nederst                                                                                                                                                                                                                                                 
         maxmess = (LINES/3)-2;
 
-        box(wmap, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                                    
-        box(wstat, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                                   
-        box(winfo, ACS_VLINE, ACS_HLINE);          
+        box(wmap, ACS_VLINE, ACS_HLINE);
+        box(wstat, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                         
+        box(winfo, ACS_VLINE, ACS_HLINE);
 
         cbreak();
         // raw(); bruk denne istedet hvis vi skal takle interrupt handling.
@@ -93,13 +94,21 @@ void shutdown_display()
 void draw_world()
 {
         int i,j;
+        int dx, dy;  // coordinates on screen!
 
         werase(wmap);
-        for(i=1;i<game->mapw;i++) {
-                for(j=1;j<game->maph;j++) {
-                        wattron(wmap, COLOR_PAIR(world->out[j][i].color));
-                        mvwaddch(wmap, j, i, mapchars[(int)world->out[j][i].type]);
-                        wattroff(wmap, COLOR_PAIR(world->out[j][i].color));
+        for(j = player->py, dy = 0; j < (player->py + game->maph); j++, dy++) {
+                for(i = player->px, dx = 0; i < (player->px + game->mapw); i++, dx++) {
+                        /*
+                         * in this function, (j,i) are the coordinates on the map,
+                         * dx,dy = coordinates on screen.
+                         * so, player->py/px describes the upper left corner of the map
+                         */
+
+                        gtmapaddch(dx, dy, world->out[j][i].color, mapchars[(int)world->out[j][i].type]);
+                        
+                        if(j == player->y && i == player->x)
+                                gtmapaddch(dx, dy, COLOR_PLAYER, '@');
                 }
         }
 
@@ -107,6 +116,93 @@ void draw_world()
         box(wmap, ACS_VLINE, ACS_HLINE);
         //wcolor_set(wmap, 0, 0);
 }
+
+void gtmapaddch(int x, int y, int color, char c)
+{
+        wattron(wmap, COLOR_PAIR(color));
+        mvwaddch(wmap, y, x, c);
+        wattroff(wmap, COLOR_PAIR(color));
+}
+
+void update_screen()
+{
+        doupdate();
+}
+
+void initial_update_screen()
+{
+        wnoutrefresh(wmap);
+        wnoutrefresh(winfo);
+        wnoutrefresh(wstat);
+        doupdate();
+}
+
+char gtgetch()
+{
+        char c;
+        c = wgetch(wmap);
+        return c;
+}
+
+void domess()
+{
+        int i;
+
+        // There might be a better way to clean the window, but this works.
+        werase(winfo);
+        box(winfo, ACS_VLINE, ACS_HLINE);          
+
+        currmess++;
+        for(i = maxmess-1; i >= 0; i--) {
+                wattron(winfo, COLOR_PAIR(m[i].color));
+                mvwprintw(winfo, i+1, 1, m[i].text);
+                wattroff(winfo, COLOR_PAIR(m[i].color));
+        }
+
+        fprintf(messagefile, "%d %s\n", m[currmess-1].color, m[currmess-1].text);
+        wnoutrefresh(winfo);
+//        doupdate();
+}
+
+void scrollmessages()
+{
+        int i;
+
+        if (currmess >= maxmess) {
+                currmess = maxmess - 1;
+                for(i = 0; i <= currmess; i++) {
+                        m[i].color = m[i+1].color;
+                        strcpy(m[i].text, m[i+1].text);
+                }
+        }
+}
+
+void mess(char *message)
+{
+        /* optionally insert check for duplicate messages here! */
+
+        scrollmessages();
+        m[currmess].color = COLOR_NORMAL;
+        strcpy(m[currmess].text, message);
+        domess();
+}
+
+void messc(int color, char *message)
+{
+        /* optionally insert check for duplicate messages here! */
+
+        scrollmessages();
+        m[currmess].color = color;
+        strcpy(m[currmess].text, message);
+        domess();
+}
+
+
+
+
+
+
+
 
 #else
 
@@ -124,4 +220,18 @@ void draw_world()
 {
         printf("Imagine a beautiful landscape... Trees, mountains, birds...\n");
 }
+
+void gtmapaddch(int x, int y, int color, char c)
+{
+        printf("%c", c);
+}
+
+void initial_update_screen()
+{
+}
+
+void update_screen()
+{
+}
+
 #endif

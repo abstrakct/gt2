@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -g -ggdb -I. -DGT_USE_NCURSES -O0
+CFLAGS = -Wall -g -ggdb -I. -DGT_USE_NCURSES
 #DEFINES = -DGT_USE_DUMMY
 LIBS = -lconfig -lncursesw
 LDFLAGS = -Wl $(LIBS)  # ,-rpath=lib 

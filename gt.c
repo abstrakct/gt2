@@ -23,6 +23,7 @@
 #include "world.h"
 #include "you.h"
 #include "display.h"
+#include "actor.h"
 #include "gt.h"
 
 char *otypestrings[50] = {
@@ -45,7 +46,9 @@ monster_t *monsterdefs;
 obj_t *objdefs;
 game_t *game;
 world_t *world;
+actor_t *player;
 FILE *messagefile;
+int mapcx, mapcy;
 
 // Messages
 message_t m[500];
@@ -114,58 +117,6 @@ void shutdown_gt()
  * Message window handling!
  */
 
-void domess()
-{
-        int i;
-
-        // There might be a better way to clean the window, but this works.
-        werase(winfo);
-        box(winfo, ACS_VLINE, ACS_HLINE);          
-
-        currmess++;
-        for(i = maxmess-1; i >= 0; i--) {
-                wattron(winfo, COLOR_PAIR(m[i].color));
-                mvwprintw(winfo, i+1, 1, m[i].text);
-                wattroff(winfo, COLOR_PAIR(m[i].color));
-        }
-
-        fprintf(messagefile, "%s\n", m[currmess-1].text);
-        wnoutrefresh(winfo);
-//        doupdate();
-}
-
-void scrollmessages()
-{
-        int i;
-
-        if (currmess >= maxmess) {
-                currmess = maxmess - 1;
-                for(i = 0; i <= currmess; i++) {
-                        m[i].color = m[i+1].color;
-                        strcpy(m[i].text, m[i+1].text);
-                }
-        }
-}
-
-void mess(char *message)
-{
-        /* optionally insert check for duplicate messages here! */
-
-        scrollmessages();
-        m[currmess].color = COLOR_NORMAL;
-        strcpy(m[currmess].text, message);
-        domess();
-}
-
-void messc(int color, char *message)
-{
-        /* optionally insert check for duplicate messages here! */
-
-        scrollmessages();
-        m[currmess].color = color;
-        strcpy(m[currmess].text, message);
-        domess();
-}
 
 void init_variables()
 {
@@ -179,6 +130,30 @@ void init_variables()
 
         world = (world_t *) gtmalloc(sizeof(world_t));
         memset(world, 0, sizeof(world_t));
+
+        game = (game_t *) gtmalloc(sizeof(game_t));
+        game->dead = 0;
+        game->seed = time(0);
+        game->vx = game->vy = 0;
+        srand(game->seed);
+fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->seed);
+        
+        player = (actor_t *) gtmalloc(sizeof(actor_t));
+}
+
+/*********************************************
+* Description - initialize player
+* Author - RK
+* Date - Dec 14 2011
+* *******************************************/
+void init_player()
+{
+        player->x = XSIZE-80;
+        player->y = YSIZE-80;
+        player->px = player->x - game->mapw / 2;
+        player->py = player->y - game->maph / 2;
+        mapcx = game->mapw + 2;
+        mapcy = game->maph + 2;
 }
 
 int main(int argc, char *argv[])
@@ -192,17 +167,11 @@ int main(int argc, char *argv[])
 
         messagefile = fopen("messages.txt", "w");
 
-        game = (game_t *) gtmalloc(sizeof(game_t));
-        game->dead = 0;
-        game->seed = time(0);
-        srand(game->seed);
-fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->seed);
-
         printf("Gullible's Travails v%s\n", get_version_string());
-        printf("Reading data files...\n");
 
         init_variables();
 
+        printf("Reading data files...\n");
         if(parse_data_files())
                 die("Couldn't parse data files.");
 
@@ -215,24 +184,60 @@ fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->
         generate_world();
 
         init_display();
+        init_player();
         draw_world();
 
-        wnoutrefresh(wmap);
-        wnoutrefresh(winfo);
-        wnoutrefresh(wstat);
-        doupdate();
+        initial_update_screen();
 
         do {
-                c = wgetch(wmap);
-                if(c == 'q')
-                        game->dead = 1;
-                i++;
-                sprintf(s, "Keypress number %d", i);
-                messc(COLOR_GOOD, s);
+                c = gtgetch();
+                switch(c) {
+                        case 'q':
+                                game->dead = 1;
+                                break;
+                        case 'j':
+                                player->y++;
+                                if(player->y >= YSIZE-6)
+                                        player->y = YSIZE-7;
+                                if(player->y >= (player->py + (mapcy/6*5)))
+                                        player->py++;
+                                if(player->py >= YSIZE-mapcy-2)
+                                        player->py = YSIZE - mapcy - 3;
+                                break;
+                        case 'k':
+                                player->y--;
+                                if(player->y < 3)
+                                        player->y = 3;
+                                if(player->y <= (player->py + (mapcy/6)))
+                                        player->py--;
+                                if(player->py < 2)
+                                        player->py = 2;
+                                break;
+                        case 'h':
+                                player->x--;
+                                if(player->x < 3)
+                                        player->x = 3;
+                                if(player->x <= (player->px+(mapcx/6)))
+                                        player->px--;
+                                if(player->px < 2)
+                                        player->px = 2;
+                                break;
+                        case 'l':
+                                player->x++;
+                                if(player->x >= XSIZE-4)
+                                        player->x = XSIZE-5;
+                                if(player->x >= (player->px+(mapcx/6*5)))
+                                        player->px++;
+                                if(player->px >= XSIZE-mapcx)
+                                        player->px = XSIZE-mapcx-1;
+                                break;
+                        default:
+                                break;
+                }
 
-                draw_world();
                 // TODO: make all display drawing functions library/output independent
-                doupdate();
+                draw_world();
+                update_screen();
         } while(!game->dead);
 
         shutdown_display();

@@ -150,6 +150,8 @@ fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->
 void do_action(int action)
 {
         switch(action) {
+                case ACTION_NOTHING:
+                        break;
                 case ACTION_PLAYER_MOVE_DOWN:
                         player->y++;
                         if(player->y >= YSIZE-6)
@@ -308,6 +310,7 @@ int main(int argc, char *argv[])
                                 add_to_action_queue(ACTION_PLAYER_MOVE_RIGHT);
                                 break;
                         default:
+                                add_to_action_queue(ACTION_NOTHING);
                                 break;
                 }
 

@@ -47,6 +47,7 @@ obj_t *objdefs;
 game_t *game;
 world_t *world;
 actor_t *player;
+struct actionqueue *aq;
 FILE *messagefile;
 int mapcx, mapcy;
 
@@ -123,6 +124,11 @@ void init_variables()
         memset(objdefs, 0, sizeof(obj_t));
         objdefs->head = objdefs;
 
+        aq = (struct actionqueue *) gtmalloc(sizeof(struct actionqueue));
+        aq->head = aq;
+        aq->next = 0;
+        aq->action = ACTION_NOTHING;
+
         world = (world_t *) gtmalloc(sizeof(world_t));
         memset(world, 0, sizeof(world_t));
 
@@ -134,6 +140,113 @@ void init_variables()
 fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->seed);
         
         player = (actor_t *) gtmalloc(sizeof(actor_t));
+}
+
+/*********************************************
+* Description - Do an action specified by parameter action
+* Author - RK
+* Date - Dec 14 2011
+* *******************************************/
+void do_action(int action)
+{
+        switch(action) {
+                case ACTION_PLAYER_MOVE_DOWN:
+                        player->y++;
+                        if(player->y >= YSIZE-6)
+                                player->y = YSIZE-7;
+                        if(player->y >= (player->py + (mapcy/6*5)))
+                                player->py++;
+                        if(player->py >= YSIZE-mapcy-2)
+                                player->py = YSIZE - mapcy - 3;
+                        break;
+                case ACTION_PLAYER_MOVE_UP:
+                        player->y--;
+                        if(player->y < 3)
+                                player->y = 3;
+                        if(player->y <= (player->py + (mapcy/6)))
+                                player->py--;
+                        if(player->py < 2)
+                                player->py = 2;
+                        break;
+                case ACTION_PLAYER_MOVE_LEFT:
+                        player->x--;
+                        if(player->x < 3)
+                                player->x = 3;
+                        if(player->x <= (player->px+(mapcx/6)))
+                                player->px--;
+                        if(player->px < 2)
+                                player->px = 2;
+                        break;
+                case ACTION_PLAYER_MOVE_RIGHT:
+                        player->x++;
+                        if(player->x >= XSIZE-4)
+                                player->x = XSIZE-5;
+                        if(player->x >= (player->px+(mapcx/6*5)))
+                                player->px++;
+                        if(player->px >= XSIZE-mapcx)
+                                player->px = XSIZE-mapcx-1;
+                        break;
+                default:
+                        fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attemted!\n", __FILE__, __LINE__, action);
+                        break;
+        }
+}
+
+/*********************************************
+* Description - Add action to action queue
+* Parameters: int action = ACTION_#define to add
+* Author - RK
+* Date - Dec 14 2011
+* *******************************************/
+void add_to_action_queue(int action)
+{
+        struct actionqueue *tmp, *prev;
+
+        prev = aq;
+        tmp = aq->next;
+        
+        while(tmp) {
+                prev = tmp;
+                tmp = tmp->next; 
+        }
+
+        tmp = (struct actionqueue *) gtmalloc(sizeof(struct actionqueue));
+        tmp->head = aq;
+        tmp->next = 0;
+        tmp->action = action;
+        prev->next = tmp;
+}
+
+/*********************************************
+* Description - Process the first action in the action queue
+* Author - RK
+* Date - Dec 14 2011
+* *******************************************/
+void do_one_thing_in_queue() // needs a better name..
+{
+        struct actionqueue *tmp;
+
+        tmp = aq->next;
+
+        do_action(tmp->action);
+
+        aq->next = tmp->next;
+        free(tmp);
+}
+
+/* mainly a debugging function */
+void dump_action_queue()
+{
+        int i;
+        struct actionqueue *tmp;
+
+        tmp = aq;
+        i = 0;
+        while(tmp) {
+                gtprintf("item %d - action %d\n", i, tmp->action);
+                tmp = tmp->next; 
+                i++;
+        }
 }
 
 /*********************************************
@@ -159,7 +272,6 @@ int main(int argc, char *argv[])
                 die("couldn't set locale.");
 
         messagefile = fopen("messages.txt", "w");
-
         printf("Gullible's Travails v%s\n", get_version_string());
 
         init_variables();
@@ -180,55 +292,33 @@ int main(int argc, char *argv[])
                 c = gtgetch();
                 switch(c) {
                         case 'q':
+                                add_to_action_queue(ACTION_NOTHING);
                                 game->dead = 1;
                                 break;
                         case 'j':
-                                player->y++;
-                                if(player->y >= YSIZE-6)
-                                        player->y = YSIZE-7;
-                                if(player->y >= (player->py + (mapcy/6*5)))
-                                        player->py++;
-                                if(player->py >= YSIZE-mapcy-2)
-                                        player->py = YSIZE - mapcy - 3;
+                                add_to_action_queue(ACTION_PLAYER_MOVE_DOWN);
                                 break;
                         case 'k':
-                                player->y--;
-                                if(player->y < 3)
-                                        player->y = 3;
-                                if(player->y <= (player->py + (mapcy/6)))
-                                        player->py--;
-                                if(player->py < 2)
-                                        player->py = 2;
+                                add_to_action_queue(ACTION_PLAYER_MOVE_UP);
                                 break;
                         case 'h':
-                                player->x--;
-                                if(player->x < 3)
-                                        player->x = 3;
-                                if(player->x <= (player->px+(mapcx/6)))
-                                        player->px--;
-                                if(player->px < 2)
-                                        player->px = 2;
+                                add_to_action_queue(ACTION_PLAYER_MOVE_LEFT);
                                 break;
                         case 'l':
-                                player->x++;
-                                if(player->x >= XSIZE-4)
-                                        player->x = XSIZE-5;
-                                if(player->x >= (player->px+(mapcx/6*5)))
-                                        player->px++;
-                                if(player->px >= XSIZE-mapcx)
-                                        player->px = XSIZE-mapcx-1;
+                                add_to_action_queue(ACTION_PLAYER_MOVE_RIGHT);
                                 break;
                         default:
                                 break;
                 }
 
-                // TODO: make all display drawing functions library/output independent
+                do_one_thing_in_queue();
                 draw_world();
                 update_screen();
         } while(!game->dead);
 
         shutdown_display();
         shutdown_gt();
+        dump_action_queue();
 
         return 0;
 }

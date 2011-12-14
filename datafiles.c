@@ -36,7 +36,6 @@ int parse_monsters()
          * goes through each possible setting, looks it up in the cfg file
          * and adds it to a monster structure which is then placed in the
          * linked list monsterdefs.
-         *
          */
         
         for(j=0;j<i;j++) {
@@ -205,6 +204,7 @@ int parse_configfile()
         
         return 0;
 }
+
 int parse_data_files()
 {
         int ret;

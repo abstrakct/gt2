@@ -31,6 +31,18 @@ typedef struct {       // message_t
         char text[250];
 } message_t;
 
+struct actionqueue {
+        struct actionqueue *head;
+        struct actionqueue *next;
+        int action;
+};
+
+#define ACTION_NOTHING            0
+#define ACTION_PLAYER_MOVE_LEFT   1
+#define ACTION_PLAYER_MOVE_RIGHT  2
+#define ACTION_PLAYER_MOVE_UP     3
+#define ACTION_PLAYER_MOVE_DOWN   4
+
 // #define MAX_MESSAGES 100
 
 // global variables

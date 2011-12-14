@@ -47,7 +47,6 @@ void youc(int color, char *fmt, ...)
         messc(color, s2);
 }
 
-
 void yousee(char *fmt, ...)
 {
         va_list argp;

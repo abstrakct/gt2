@@ -228,10 +228,37 @@ void gtmapaddch(int x, int y, int color, char c)
 
 void initial_update_screen()
 {
+        printf("%s:%d - initial_update_screen\n", __FILE__, __LINE__);
 }
 
 void update_screen()
 {
+        printf("%s:%d - update_screen\n", __FILE__, __LINE__);
+}
+
+char gtgetch()
+{
+        return (char) ri(97,122);
+}
+
+void domess()
+{
+        printf("%s:%d - domess\n", __FILE__, __LINE__);
+}
+
+void scrollmessages()
+{
+        printf("%s:%d - scrollmessages\n", __FILE__, __LINE__);
+}
+
+void mess(char *message)
+{
+        printf("%s:%d - %s\n", __FILE__, __LINE__, message);
+}
+
+void messc(int color, char *message)
+{
+        printf("%s:%d - %s\n", __FILE__, __LINE__, message);
 }
 
 #endif

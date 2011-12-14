@@ -113,11 +113,6 @@ void shutdown_gt()
         fclose(messagefile);
 }
 
-/* 
- * Message window handling!
- */
-
-
 void init_variables()
 {
         monsterdefs = (monster_t *) gtmalloc(sizeof(monster_t));
@@ -148,8 +143,8 @@ fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->
 * *******************************************/
 void init_player()
 {
-        player->x = XSIZE-80;
-        player->y = YSIZE-80;
+        player->x = XSIZE/2;
+        player->y = YSIZE/2;
         player->px = player->x - game->mapw / 2;
         player->py = player->y - game->maph / 2;
         mapcx = game->mapw + 2;
@@ -159,8 +154,6 @@ void init_player()
 int main(int argc, char *argv[])
 {
         int c;
-        int i = 0;
-        char s[50];
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
@@ -175,12 +168,6 @@ int main(int argc, char *argv[])
         if(parse_data_files())
                 die("Couldn't parse data files.");
 
-        /*  dump/debug stuff
-         *  dump_monsters();
-         *  dump_objects();
-         * sleep(1);
-         */
-        
         generate_world();
 
         init_display();
@@ -245,3 +232,10 @@ int main(int argc, char *argv[])
 
         return 0;
 }
+
+        /*  dump/debug stuff
+         *  dump_monsters();
+         *  dump_objects();
+         * sleep(1);
+         */
+        

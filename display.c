@@ -105,7 +105,7 @@ void draw_world()
                          * so, player->py/px describes the upper left corner of the map
                          */
 
-                        gtmapaddch(dx, dy, world->out[j][i].color, mapchars[(int)world->out[j][i].type]);
+                        gtmapaddch(dx, dy, world->cmap[j][i].color, mapchars[(int)world->cmap[j][i].type]);
                         
                         if(j == player->y && i == player->x)
                                 gtmapaddch(dx, dy, COLOR_PLAYER, '@');

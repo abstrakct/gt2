@@ -35,8 +35,102 @@ char mapchars[50] = {
         '>',  //dungeon
         '.',  //city    nohouse
         '.',  //village nohouse
-        '.'   //foreest nohouse
+        '.',  //foreest nohouse
+        '~',  //lake
+        '.',  //lake nohouse
+        '.',  //dungeonfloor
+        '#'   //dungeonwall
 };
+
+/*********************************************
+* Description - Generate a dungeon, labyrinthine
+* maxsize = well, max size
+* Author - RK
+* Date - Dec 12 2011
+* *******************************************/
+void generate_dungeon_labyrinthine(int maxsize)
+{
+        int tx, ty, xsize, ysize; 
+        int fx, fy;
+        int a, chance = 0;
+        int csx, cex, csy, cey;
+        float outerlinesx, outerlinesy;
+        int edgex, edgey;
+        //int color;
+
+        tx = 10; //ri(0, 10);  // starting X
+        ty = 10; //ri(0, 10);  // starting y
+        xsize = maxsize;  // total size X
+        ysize = maxsize;  // total size Y - rather uneccessary these two, eh?
+
+fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, __LINE__, tx, ty, xsize, ysize);
+        // let's not go over the edge
+        if(tx+xsize >= XSIZE)
+                xsize = XSIZE-tx;
+        if(ty+ysize >= YSIZE)
+                ysize = YSIZE-ty;
+
+        // now let's find center and edges 
+        csx = tx + (xsize/2) - (xsize/4);
+        cex = tx + (xsize/2) + (xsize/4);
+        csy = ty + (ysize/2) - (ysize/4);
+        cey = ty + (ysize/2) + (ysize/4);
+        outerlinesx = ((float) xsize / 100) * 10;   // outer 10%
+        outerlinesy = ((float) ysize / 100) * 10;
+        edgex = (int) outerlinesx;
+        edgey = (int) outerlinesy;
+        if(edgex <= 0)
+                edgex = 1;
+        if(edgey <= 0)
+                edgey = 1;
+
+        for(fy=ty;fy<(ty+ysize);fy++) {
+                for(fx=tx;fx<(tx+xsize);fx++) {
+                        world->dng[fy][fx].type = DNG_WALL;
+                        world->dng[fy][fx].color = COLOR_NORMAL;
+                        /*world->forest[i].x1 = tx;
+                        world->forest[i].y1 = ty;
+                        world->forest[i].x2 = tx+xsize-1;
+                        world->forest[i].y2 = ty+ysize-1;
+                        world->forest[i].flags = 0;;
+                        world->out[fy][fx].type = AREA_FOREST_NOTREE;
+                        world->out[fy][fx].color = COLOR_NORMAL;
+                        break;*/
+                }
+        }
+
+
+        for(fy=ty;fy<ty+ysize;fy++) {
+                for(fx=tx;fx<tx+xsize;fx++) {
+                        a = ri(1,100);
+                        chance = 60;
+                        // ensure less chance of trees at the edge of the forest and greater chance around the center
+                        //if(((fx == (tx-(xsize/2))) || (fx == (tx-(xsize/2)+1))) && ((fy == (ty-(ysize/2))) || (fy == (ty-(ysize/2)+1))))
+                        
+                        if(fx <= tx+edgex)
+                                chance = 90;
+                        if(fy <= ty+edgey)
+                                chance = 90;
+                        if(fy >= ty+ysize-edgey)
+                                chance = 90;
+                        if(fx >= tx+xsize-edgex)
+                                chance = 90;
+                        if(fx >= csx && fx <= cex && fy >= csy && fy <= cey) {
+                                chance = 20;
+                        }
+
+                        // testing testing chance percentage
+                        chance = 25;
+
+                        if(a >= chance && fy != ty && fy != (ty+ysize) && fx != tx && fx != (tx+xsize)) {
+                                world->dng[fy][fx].type = DNG_FLOOR;
+                                world->dng[fy][fx].color = COLOR_NORMAL;
+                        }
+                }
+        }
+
+}
+
 
 /*********************************************
 * Description - Generate an area
@@ -225,6 +319,58 @@ void generate_village(int num)
                 generate_area(i, AREA_VILLAGE, 1, VILLAGESIZE);
 }
 
+
+/*********************************************
+* Description - Flood fill to test dungeon gen
+* Author - RK
+* Date - Dec 14 2011
+* *******************************************/
+void floodfill(int x, int y)
+{
+//fprintf(stderr, "DEBUG: %s:%d - entering floodfill! x,y = %d,%d\n", __FILE__, __LINE__, x, y);
+        if(world->cmap[y][x].type == DNG_FLOOR) {
+                world->cmap[y][x].type = DNG_FILL;
+                world->cmap[y][x].color = COLOR_LAKE;
+                floodfill(x-1, y);
+                floodfill(x+1, y);
+                floodfill(x, y-1);
+                floodfill(x, y+1);
+                floodfill(x+1, y+1);
+                floodfill(x+1, y-1);
+                floodfill(x-1, y+1);
+                floodfill(x-1, y-1);
+        }
+}
+
+/*********************************************
+* Description - Paint a room in a dungeon
+* Author - RK
+* Date - Dec 14 2011
+* *******************************************/
+void paint_room(map_ptr *m, int x, int y, int sx, int sy, int join_overlapping)
+{
+        int i, j;
+
+        for(i = x; i <= (x+sx); i++) {
+                for(j = y; j <= (y+sy); j++) {
+                        if((j == y) || (j == y+sy) || (i == x) || (i == x+sx)) {
+                                if(join_overlapping) {
+                                        if(m[j][i].type != AREA_NOTHING) {
+                                                m[j][i].type = DNG_WALL;
+                                                m[j][i].color = COLOR_NORMAL;
+                                        }
+                                } else {
+                                        m[j][i].type = DNG_WALL;
+                                        m[j][i].color = COLOR_NORMAL;
+                                }
+
+                        } else {
+                                m[j][i].type = AREA_NOTHING;
+                                m[j][i].color = COLOR_NORMAL;
+                        }
+                }
+        }
+}
 /*********************************************
 * Description - One big function which should
 * take care of all world generation stuff.
@@ -233,8 +379,12 @@ void generate_village(int num)
 * *******************************************/
 void generate_world()
 {
-        int x, y;
+        map_ptr *mapp;
+        int x, y, rooms;
 
+        /*
+         * Generate the outside world first.
+         */
         for(x = 0; x < XSIZE; x++) {
                 for(y = 0; y < YSIZE; y++) {
                         world->out[y][x].type = AREA_PLAIN;
@@ -250,7 +400,6 @@ void generate_world()
         world->villages = ri(game->c.minv, game->c.maxv);
         world->dungeons = ri(game->c.mind, game->c.maxd);
 
-        
 fprintf(stderr, "DEBUG: %s:%d - Generating %d forests\n", __FILE__, __LINE__, world->forests);
         world->forest = (forest_t *) gtcalloc((size_t)world->forests, sizeof(forest_t));
         generate_forest(world->forests);
@@ -262,4 +411,17 @@ fprintf(stderr, "DEBUG: %s:%d - Generating %d cities\n", __FILE__, __LINE__, wor
 fprintf(stderr, "DEBUG: %s:%d - Generating %d villages\n", __FILE__, __LINE__, world->villages);
         world->village = gtcalloc((size_t)world->villages, sizeof(city_t));
         generate_village(world->villages);
+
+
+fprintf(stderr, "DEBUG: %s:%d - Generating dungoen!!\n", __FILE__, __LINE__);
+        mapp = world->dng;
+        generate_dungeon_labyrinthine(789);
+//        paint_room(mapp, 10, 10, 789, 789);
+
+        rooms = 10;
+        for(x = 0; x < rooms; x++)
+                for(y = 0; y < rooms; y++) {
+                        paint_room(mapp, ri(15, 740), ri(15, 740), ri(20, 60), ri(10, 35), 1);
+                        paint_room(mapp, ri(15, 740), ri(15, 740), ri(20, 60), ri(10, 35), 0);
+                }
 }

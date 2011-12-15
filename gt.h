@@ -66,8 +66,6 @@ extern WINDOW *wmap;*/
 
 /* function prototypes */
 
-void mess(char *message);
-void messc(int color, char *message);
-
+void queue(int action);
 
 #endif

@@ -167,8 +167,8 @@ void do_action(int action)
                                 player->y = 3;
                         if(player->y <= (player->py + (mapcy/6)))
                                 player->py--;
-                        if(player->py < 2)
-                                player->py = 2;
+                        if(player->py < 0)
+                                player->py = 0;
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
                         player->x--;
@@ -176,8 +176,8 @@ void do_action(int action)
                                 player->x = 3;
                         if(player->x <= (player->px+(mapcx/6)))
                                 player->px--;
-                        if(player->px < 2)
-                                player->px = 2;
+                        if(player->px < 0)
+                                player->px = 0;
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
                         player->x++;
@@ -200,7 +200,7 @@ void do_action(int action)
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-void add_to_action_queue(int action)
+void queue(int action)
 {
         struct actionqueue *tmp, *prev;
 
@@ -236,6 +236,22 @@ void do_one_thing_in_queue() // needs a better name..
         free(tmp);
 }
 
+void do_all_things_in_queue() // needs a better name..
+{
+        struct actionqueue *tmp;
+
+        tmp = aq->next;
+
+        while(tmp) {
+                if(tmp)
+                        do_action(tmp->action);
+                tmp = tmp->next;
+                if(tmp)
+                        free(tmp);
+        }
+}
+
+
 /* mainly a debugging function */
 void dump_action_queue()
 {
@@ -258,8 +274,8 @@ void dump_action_queue()
 * *******************************************/
 void init_player()
 {
-        player->x = XSIZE/2;
-        player->y = YSIZE/2;
+        player->x = game->mapw / 2;
+        player->y = game->maph / 2;
         player->px = player->x - game->mapw / 2;
         player->py = player->y - game->maph / 2;
         mapcx = game->mapw + 2;
@@ -269,6 +285,7 @@ void init_player()
 int main(int argc, char *argv[])
 {
         int c;
+        int x;
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
@@ -283,39 +300,61 @@ int main(int argc, char *argv[])
                 die("Couldn't parse data files.");
 
         generate_world();
+        world->cmap = world->out;
 
         init_display();
         init_player();
         draw_world();
 
+        gtprintf("player x,y = %d, %d - px,py = %d, %d", player->x, player->y, player->px, player->py);
         initial_update_screen();
 
         do {
                 c = gtgetch();
                 switch(c) {
                         case 'q':
-                                add_to_action_queue(ACTION_NOTHING);
+                                queue(ACTION_NOTHING);
                                 game->dead = 1;
                                 break;
+                        case 'd':
+                                queue(ACTION_NOTHING);
+                                if(world->cmap == world->out) {
+                                        world->cmap = world->dng;
+                                } else {
+                                        world->cmap = world->out;
+                                }
+                                break;
+                        case 'f':
+                                // this should ensure floodfill working every time!
+                                x = ri(11,111);
+                                while(world->dng[x][x].type != DNG_FLOOR) {
+                                        x = ri(11,111);
+                                }
+                                gtprintf("floodfilling from %d, %d\n", x, x);
+                                floodfill(x, x);
+                                queue(ACTION_NOTHING);
+                                break;
                         case 'j':
-                                add_to_action_queue(ACTION_PLAYER_MOVE_DOWN);
+                                queue(ACTION_PLAYER_MOVE_DOWN);
                                 break;
                         case 'k':
-                                add_to_action_queue(ACTION_PLAYER_MOVE_UP);
+                                queue(ACTION_PLAYER_MOVE_UP);
                                 break;
                         case 'h':
-                                add_to_action_queue(ACTION_PLAYER_MOVE_LEFT);
+                                queue(ACTION_PLAYER_MOVE_LEFT);
                                 break;
                         case 'l':
-                                add_to_action_queue(ACTION_PLAYER_MOVE_RIGHT);
+                                queue(ACTION_PLAYER_MOVE_RIGHT);
                                 break;
                         default:
-                                add_to_action_queue(ACTION_NOTHING);
+                                queue(ACTION_NOTHING);
                                 break;
                 }
 
                 do_one_thing_in_queue();
+                do_all_things_in_queue();
                 draw_world();
+                gtprintf("player x,y = %d, %d - px,py = %d, %d", player->x, player->y, player->px, player->py);
                 update_screen();
         } while(!game->dead);
 

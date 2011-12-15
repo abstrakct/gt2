@@ -18,6 +18,9 @@
 #define AREA_FOREST_NOTREE   9
 #define AREA_LAKE           10
 #define AREA_LAKE_NOWATER   11
+#define DNG_FLOOR 12
+#define DNG_WALL  13
+#define DNG_FILL DNG_WALL
 
 #define YSIZE 800
 #define XSIZE 800
@@ -29,6 +32,8 @@ typedef struct {
         monster_t *monster;
         obj_t     *inventory;
 } cell_t;
+
+typedef cell_t map_ptr[XSIZE];
 
 typedef struct {
         int x1, y1, x2, y2;     // start/end coordinates
@@ -45,6 +50,7 @@ typedef struct {
 
 typedef struct {
         cell_t out[YSIZE][XSIZE];
+        cell_t dng[YSIZE][XSIZE];
         int villages, cvillage;   // num of villages, current village|
         int cities, ccity;
         int forests, cforest;
@@ -52,10 +58,12 @@ typedef struct {
         city_t *city;
         city_t *village;
         forest_t *forest;
+        map_ptr *cmap;
 } world_t;
 
 
 void generate_world();
+void floodfill(int x, int y);
 
 extern char mapchars[];
 

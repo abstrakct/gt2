@@ -154,6 +154,8 @@ void do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_DOWN:
                         player->y++;
+                        if(world->cmap[player->y][player->x].type == DNG_WALL)
+                                player->y--;
                         if(player->y >= YSIZE-6)
                                 player->y = YSIZE-7;
                         if(player->y >= (player->py + (mapcy/6*5)))
@@ -163,6 +165,8 @@ void do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_UP:
                         player->y--;
+                        if(world->cmap[player->y][player->x].type == DNG_WALL)
+                                player->y++;
                         if(player->y < 3)
                                 player->y = 3;
                         if(player->y <= (player->py + (mapcy/6)))
@@ -172,6 +176,8 @@ void do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
                         player->x--;
+                        if(world->cmap[player->y][player->x].type == DNG_WALL)
+                                player->x++;
                         if(player->x < 3)
                                 player->x = 3;
                         if(player->x <= (player->px+(mapcx/6)))
@@ -181,6 +187,8 @@ void do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
                         player->x++;
+                        if(world->cmap[player->y][player->x].type == DNG_WALL)
+                                player->x--;
                         if(player->x >= XSIZE-4)
                                 player->x = XSIZE-5;
                         if(player->x >= (player->px+(mapcx/6*5)))
@@ -364,10 +372,3 @@ int main(int argc, char *argv[])
 
         return 0;
 }
-
-        /*  dump/debug stuff
-         *  dump_monsters();
-         *  dump_objects();
-         * sleep(1);
-         */
-        

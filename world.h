@@ -29,6 +29,7 @@ typedef struct {
         char type;
         int flags;
         int color;
+        short visible;
         monster_t *monster;
         obj_t     *inventory;
 } cell_t;

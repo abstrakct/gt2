@@ -1,12 +1,12 @@
 CC = gcc
 CFLAGS = -Wall -g -ggdb -I. -DGT_USE_NCURSES
 #DEFINES = -DGT_USE_DUMMY
-LIBS = -lconfig -lncursesw
+LIBS = -lm -lconfig -lncursesw
 LDFLAGS = -Wl $(LIBS)  # ,-rpath=lib 
 
-SOURCES = gt.c utils.c datafiles.c you.c world.c display.c
+SOURCES = gt.c utils.c monsters.c datafiles.c you.c world.c display.c
 HEADERS = gt.h utils.h monsters.h datafiles.h you.h world.h display.h
-OBJS    = gt.o utils.o datafiles.o you.o world.o display.o
+OBJS    = gt.o utils.o monsters.o datafiles.o you.o world.o display.o
 
 #MKOBJS = objects.o makeobjdefs.o
 #MKSRCS = objects.c makeobjdefs.c

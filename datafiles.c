@@ -23,12 +23,13 @@ config_t *cf;
 int parse_monsters()
 {
         config_setting_t *cfg_monsters;
-        int i,j,boolval;
+        int i,j,boolval,tmp;
         char sname[100];
         const char *value;
 
         cfg_monsters = config_lookup(cf, "monsters");
         i = config_setting_length(cfg_monsters);
+        game->monsterdefs = i;
         printf("Parsing monster file...\n  We have %d monsters", i);
 
         /* 
@@ -97,6 +98,10 @@ int parse_monsters()
                 if(config_lookup_bool(cf, sname, &boolval))
                         if(boolval)
                                 m->flags |= MF_CANUSESIMPLESWORD;
+
+                sprintf(sname, "monsters.[%d].aitype", j);
+                config_lookup_int(cf, sname, &tmp);
+                m->ai = aitable[tmp];
 
                 /*
                  * the following was written in one go, it's beautiful and seems totally bugfree!!

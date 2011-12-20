@@ -351,11 +351,11 @@ iabbr <buffer> <silent> #d =MapNoContext('#d', '#define \<C-R\>=Eatchar()\<C
 iabbr <buffer> <silent> #i =MapNoContext('#i', '#include \<\>\<Left\>\<C-R\>=Eatchar()\<CR\>')
 iabbr <buffer> <silent> #I =MapNoContext('#I', '#include \"\"\<Left\>\<C-R\>=Eatchar()\<CR\>')
 iabbr <buffer> <silent> printf =MapNoContext('printf', 'printf(\"\\n\");\<C-O\>?\\\<CR\>\<C-R\>=Eatchar()\<CR\>')
-iabbr <buffer> <silent> if =MapNoContext('if', 'if() {\<CR\>}\<Left\>\<C-O\>?)\<CR\>\<C-R\>=Eatchar()\<CR\>')
-iabbr <buffer> <silent> for =MapNoContext('for', 'for(;;) {\<CR\>}\<C-O\>?;;\<CR\>\<C-R\>=Eatchar()\<CR\>')
-iabbr <buffer> <silent> while =MapNoContext('while', 'while() {\<CR\>}\<C-O\>?)\<CR\>\<C-R\>=Eatchar()\<CR\>')
-iabbr <buffer> <silent> else =MapNoContext('else', 'else {\<CR\>x;\<CR\>}\<C-O\>?x;\<CR\>\<Del\>\<Del\>\<C-R\>=Eatchar()\<CR\>')
-iabbr <buffer> <silent> ifelse =MapNoContext('ifelse', 'if() {\<CR\>} else {\<CR\>}\<C-O\>?)\<CR\>\<C-R\>=Eatchar()\<CR\>')
+" iabbr <buffer> <silent> if =MapNoContext('if', 'if() {\<CR\>}\<Left\>\<C-O\>?)\<CR\>\<C-R\>=Eatchar()\<CR\>')
+" iabbr <buffer> <silent> for =MapNoContext('for', 'for(;;) {\<CR\>}\<C-O\>?;;\<CR\>\<C-R\>=Eatchar()\<CR\>')
+" iabbr <buffer> <silent> while =MapNoContext('while', 'while() {\<CR\>}\<C-O\>?)\<CR\>\<C-R\>=Eatchar()\<CR\>')
+" iabbr <buffer> <silent> else =MapNoContext('else', 'else {\<CR\>x;\<CR\>}\<C-O\>?x;\<CR\>\<Del\>\<Del\>\<C-R\>=Eatchar()\<CR\>')
+" iabbr <buffer> <silent> ifelse =MapNoContext('ifelse', 'if() {\<CR\>} else {\<CR\>}\<C-O\>?)\<CR\>\<C-R\>=Eatchar()\<CR\>')
 iabbr <buffer> <silent> intmain =MapNoContext('intmain', 'int main (int argc, char **argv)\<CR\>{\<CR\>x;\<CR\>return 0;\<CR\>}\<CR\>\<C-O\>?x;\<CR\>\<Del\>\<Del\>\<C-R\>=Eatchar()\<CR\>')
 setlocal keymap=
 setlocal noarabic

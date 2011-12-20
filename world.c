@@ -88,6 +88,7 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
                 for(fx=tx;fx<(tx+xsize);fx++) {
                         world->dng[fy][fx].type = DNG_WALL;
                         world->dng[fy][fx].color = COLOR_NORMAL;
+                        world->dng[fy][fx].visible = 0;
                         /*world->forest[i].x1 = tx;
                         world->forest[i].y1 = ty;
                         world->forest[i].x2 = tx+xsize-1;
@@ -392,6 +393,7 @@ void generate_world()
                         world->out[y][x].color = COLOR_PLAIN;
                         world->out[y][x].monster = NULL;
                         world->out[y][x].inventory = NULL;
+                        world->out[y][x].visible = 0;
                 }
         }
 

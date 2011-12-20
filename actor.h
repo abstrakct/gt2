@@ -11,6 +11,7 @@
 typedef struct {     // actor_t
         int x, y;
         int px, py;
+        int viewradius;
 } actor_t;
 
 #endif

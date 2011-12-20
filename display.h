@@ -20,6 +20,7 @@
 #define COLOR_INFO    13
 #define COLOR_PLAYER  COLOR_BAD
 #define COLOR_NORMAL  COLOR_PLAIN
+#define COLOR_INVISIBLE 15
 
 void init_display();
 void shutdown_display();

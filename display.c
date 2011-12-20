@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "objects.h"
 #include "monsters.h"
@@ -49,6 +50,7 @@ void init_display()
         init_pair(COLOR_INFO,    COLOR_BLUE, COLOR_BLACK);
         init_pair(COLOR_WARNING, COLOR_RED, COLOR_BLACK);
         init_pair(COLOR_LAKE,    COLOR_BLUE, COLOR_BLACK);
+        init_pair(COLOR_INVISIBLE, COLOR_BLACK, COLOR_BLACK);
 
         game->width = COLS;
         game->height = LINES;
@@ -91,12 +93,74 @@ void shutdown_display()
         endwin();
 }
 
+bool blocks_light(int type)
+{
+        if(type != AREA_PLAIN && type != DNG_WALL && type != AREA_CITY_NOHOUSE && type != AREA_FOREST_NOTREE)
+                return true;
+        
+        return false;
+}
+
+void clear_map_to_invisible()
+{
+        int x, y;
+
+        for(y = 0; y < game->height; y++) {
+                for(x = 0; x < game->width; x++) {
+                        world->cmap[y][x].visible = 0;
+                }
+        }
+}
+
+/*
+ * The next two functions are about FOV.
+ * Stolen/adapted from http://roguebasin.roguelikedevelopment.org/index.php/Eligloscode
+ */
+
+void dofov(float x, float y)
+{
+        int i;
+        float ox, oy;
+
+        ox = (float) player->x + 0.5f;
+        oy = (float) player->y + 0.5f;
+
+        for(i = 0; i < player->viewradius; i++) {
+                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < YSIZE && (int)ox < XSIZE) {
+                        world->cmap[(int)oy][(int)ox].visible = 1;
+                        if(game->context == CONTEXT_DUNGEON)
+                                if(!blocks_light(world->cmap[(int)oy][(int)ox].type))
+                                        return;
+                        if(game->context == CONTEXT_OUTSIDE)
+                                if(blocks_light(world->cmap[(int)oy][(int)ox].type))
+                                        return;
+                }
+
+                ox += x;
+                oy += y;
+        }
+}
+
+void FOV()
+{
+        float x, y;
+        int i;
+
+        //clear_map_to_invisible();
+        for(i = 0; i < 360; i++) {
+                x = cos((float) i * 0.01745f);
+                y = sin((float) i * 0.01745f);
+                dofov(x, y);
+        }
+}
+
 void draw_world()
 {
         int i,j;
         int dx, dy;  // coordinates on screen!
 
         werase(wmap);
+        FOV();
         for(j = player->py, dy = 0; j < (player->py + game->maph); j++, dy++) {
                 for(i = player->px, dx = 0; i < (player->px + game->mapw); i++, dx++) {
                         /*
@@ -105,10 +169,13 @@ void draw_world()
                          * so, player->py/px describes the upper left corner of the map
                          */
 
-                        gtmapaddch(dx, dy, world->cmap[j][i].color, mapchars[(int)world->cmap[j][i].type]);
+                        if(world->cmap[j][i].visible)
+                                gtmapaddch(dx, dy, world->cmap[j][i].color, mapchars[(int)world->cmap[j][i].type]);
                         
                         if(j == player->y && i == player->x)
                                 gtmapaddch(dx, dy, COLOR_PLAYER, '@');
+                        if(world->cmap[j][i].monster)
+                                gtmapaddch(dx, dy, COLOR_RED, (char) world->cmap[j][i].monster->c);
                 }
         }
 
@@ -196,9 +263,6 @@ void messc(int color, char *message)
         strcpy(m[currmess].text, message);
         domess();
 }
-
-
-
 
 
 

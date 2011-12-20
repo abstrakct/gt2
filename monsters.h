@@ -8,7 +8,7 @@
 #define _MONSTERS_H
 
 
-typedef struct {
+typedef struct { // sattr_t
         signed char str;
         signed char phys;
         signed char intl;
@@ -17,7 +17,7 @@ typedef struct {
         signed char cha;
 } sattr_t;
 
-typedef struct {
+typedef struct { // uattr_t
         int str;
         int phys;
         int intl;
@@ -26,7 +26,7 @@ typedef struct {
         int cha;
 } uattr_t;
 
-typedef struct {
+typedef struct { // wear_t
         struct object *head;
         struct object *body;
         struct object *gloves;
@@ -36,8 +36,9 @@ typedef struct {
         struct object *ring[10];
 } wear_t;
 
+
 struct monster {
-        char name[30];
+        char name[50];
 	int x, y;
         int hp, maxhp;
         int xp;
@@ -54,7 +55,7 @@ struct monster {
         int c;             // character, for monsters.
         double speed;
         double movement;
-        //void (*ai)(struct creature *, struct creature *);      // artificial intelligence handler!!
+        void (*ai)(struct monster *);      // artificial intelligence handler!!
         int goalx, goaly;                   // for simple outdoor pathfinder ai
         struct monster *prev;
         struct monster *next;
@@ -65,6 +66,9 @@ struct monster {
 };
 
 typedef struct monster monster_t;
+typedef void (*aifunction)(monster_t *);
+
+extern aifunction aitable[];
 
 #define MF_ISHOSTILE         0x00000001
 #define MF_CANUSEWEAPON      0x00000002
@@ -72,5 +76,9 @@ typedef struct monster monster_t;
 #define MF_CANHAVEGOLD       0x00000008
 #define MF_CANUSESIMPLESWORD 0x00000010
 
+// Prototypes
+struct monster *get_monsterdef(int n);
+void simpleai(monster_t *m);
+void advancedai(monster_t *m);
 
 #endif

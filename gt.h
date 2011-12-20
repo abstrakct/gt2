@@ -12,12 +12,14 @@
 
 #define MAIN_DATA_FILE "data/data.cfg"
 
-typedef struct {
+typedef struct {           // game_t
         int width, height;
         int mapw, maph;    // width, height of map window
         int vx, vy;        // upper left corner of viewport
         int dead;
+        int context;
         unsigned int seed;
+        int monsterdefs;   // number of monster definitions
         struct {
                 int minf, maxf;
                 int minc, maxc;
@@ -42,6 +44,9 @@ struct actionqueue {
 #define ACTION_PLAYER_MOVE_RIGHT  2
 #define ACTION_PLAYER_MOVE_UP     3
 #define ACTION_PLAYER_MOVE_DOWN   4
+
+#define CONTEXT_OUTSIDE 0
+#define CONTEXT_DUNGEON 1
 
 // #define MAX_MESSAGES 100
 

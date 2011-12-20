@@ -12,9 +12,11 @@
 #include <unistd.h>
 #include <locale.h>
 #include <time.h>
-#include <curses.h>
 #include <signal.h>
 #include <libconfig.h>
+#ifdef GT_USE_NCURSES
+#include <curses.h>
+#endif
 
 #include "objects.h"
 #include "monsters.h"
@@ -55,11 +57,13 @@ int mapcx, mapcy;
 message_t m[500];
 int currmess, maxmess;
 
+#ifdef GT_USE_NCURSES
 // Ncurses stuff
 WINDOW *wall;
 WINDOW *wstat;
 WINDOW *winfo;
 WINDOW *wmap;
+#endif
 
 void dump_monsters()
 {
@@ -259,7 +263,6 @@ void do_all_things_in_queue() // needs a better name..
         }
 }
 
-
 /* mainly a debugging function */
 void dump_action_queue()
 {
@@ -288,12 +291,14 @@ void init_player()
         player->py = player->y - game->maph / 2;
         mapcx = game->mapw + 2;
         mapcy = game->maph + 2;
+        player->viewradius = 10;
 }
 
 int main(int argc, char *argv[])
 {
         int c;
         int x;
+        monster_t *monster;
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
@@ -315,6 +320,13 @@ int main(int argc, char *argv[])
         draw_world();
 
         gtprintf("player x,y = %d, %d - px,py = %d, %d", player->x, player->y, player->px, player->py);
+        monster = get_monsterdef(ri(1, game->monsterdefs));
+        gtprintf("monster: %s", monster->name);
+        monster->x = player->x + ri(5,15);
+        monster->y = player->y + ri(5,15);
+        world->cmap[monster->y][monster->x].monster = monster;
+        game->context = CONTEXT_OUTSIDE;
+
         initial_update_screen();
 
         do {
@@ -328,8 +340,11 @@ int main(int argc, char *argv[])
                                 queue(ACTION_NOTHING);
                                 if(world->cmap == world->out) {
                                         world->cmap = world->dng;
+                                        game->context = CONTEXT_DUNGEON;
+                                        player->viewradius = 5;
                                 } else {
                                         world->cmap = world->out;
+                                        game->context = CONTEXT_OUTSIDE;
                                 }
                                 break;
                         case 'f':
@@ -361,6 +376,9 @@ int main(int argc, char *argv[])
 
                 do_one_thing_in_queue();
                 do_all_things_in_queue();
+                if(monster->ai)
+                        monster->ai(monster);
+
                 draw_world();
                 gtprintf("player x,y = %d, %d - px,py = %d, %d", player->x, player->y, player->px, player->py);
                 update_screen();
@@ -368,7 +386,6 @@ int main(int argc, char *argv[])
 
         shutdown_display();
         shutdown_gt();
-        dump_action_queue();
 
         return 0;
 }

@@ -95,7 +95,7 @@ void shutdown_display()
 
 bool blocks_light(int type)
 {
-        if(type != AREA_PLAIN && type != DNG_WALL && type != AREA_CITY_NOHOUSE && type != AREA_FOREST_NOTREE)
+        if(type != AREA_PLAIN && type != DNG_WALL && type != AREA_CITY_NOHOUSE && type != AREA_FOREST_NOTREE && type != AREA_CITY && type != AREA_FOREST && type != AREA_VILLAGE)
                 return true;
         
         return false;
@@ -131,13 +131,15 @@ void dofov(float x, float y)
                         if(game->context == CONTEXT_DUNGEON)
                                 if(!blocks_light(world->cmap[(int)oy][(int)ox].type))
                                         return;
-                        if(game->context == CONTEXT_OUTSIDE)
+
+                        if(game->context == CONTEXT_OUTSIDE) {
                                 if(blocks_light(world->cmap[(int)oy][(int)ox].type))
                                         return;
-                }
+                        }
 
-                ox += x;
-                oy += y;
+                        ox += x;
+                        oy += y;
+                }
         }
 }
 
@@ -169,13 +171,14 @@ void draw_world()
                          * so, player->py/px describes the upper left corner of the map
                          */
 
-                        if(world->cmap[j][i].visible)
+                        if(world->cmap[j][i].visible) {
                                 gtmapaddch(dx, dy, world->cmap[j][i].color, mapchars[(int)world->cmap[j][i].type]);
+                                if(world->cmap[j][i].monster)
+                                        gtmapaddch(dx, dy, COLOR_RED, (char) world->cmap[j][i].monster->c);
+                        }
                         
                         if(j == player->y && i == player->x)
                                 gtmapaddch(dx, dy, COLOR_PLAYER, '@');
-                        if(world->cmap[j][i].monster)
-                                gtmapaddch(dx, dy, COLOR_RED, (char) world->cmap[j][i].monster->c);
                 }
         }
 

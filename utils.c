@@ -6,6 +6,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
 
 #include "monsters.h"
 #include "objects.h"
@@ -40,6 +43,17 @@ int dice(int num, int sides, signed int modifier)
         }
 
         return result;
+}
+
+int perc(int i)
+{
+        int x;
+
+        x = ri(1, 100);
+        if(x <= i)
+                return TRUE;
+        else
+                return FALSE;
 }
 
 void *gtmalloc(size_t size)

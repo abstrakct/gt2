@@ -48,6 +48,8 @@ struct actionqueue {
 #define CONTEXT_OUTSIDE 0
 #define CONTEXT_DUNGEON 1
 
+#define FALSE 0
+#define TRUE 1
 // #define MAX_MESSAGES 100
 
 // global variables

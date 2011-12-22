@@ -345,6 +345,7 @@ int main(int argc, char *argv[])
                                 } else {
                                         world->cmap = world->out;
                                         game->context = CONTEXT_OUTSIDE;
+                                        player->viewradius = 10;
                                 }
                                 break;
                         case 'f':

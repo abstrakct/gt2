@@ -64,6 +64,7 @@ extern int mapcx, mapcy;
 extern FILE *messagefile;
 extern message_t m[500];
 extern int currmess, maxmess;
+extern struct actionqueue *aq;
 
 /*extern WINDOW *wall;
 extern WINDOW *wstat;

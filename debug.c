@@ -6,6 +6,7 @@
  * Copyright 2011 Rolf Klausen
  */
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "objects.h"
 #include "monsters.h"

@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <stdbool.h>
 
 #include "monsters.h"
 #include "objects.h"

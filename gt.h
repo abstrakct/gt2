@@ -12,7 +12,7 @@
 
 #define MAIN_DATA_FILE "data/data.cfg"
 
-typedef struct {           // game_t
+typedef struct {            // game_t
         int width, height;
         int mapw, maph;    // width, height of map window
         int vx, vy;        // upper left corner of viewport
@@ -44,6 +44,10 @@ struct actionqueue {
 #define ACTION_PLAYER_MOVE_RIGHT  2
 #define ACTION_PLAYER_MOVE_UP     3
 #define ACTION_PLAYER_MOVE_DOWN   4
+#define ACTION_PLAYER_MOVE_NW     5
+#define ACTION_PLAYER_MOVE_NE     6
+#define ACTION_PLAYER_MOVE_SW     7
+#define ACTION_PLAYER_MOVE_SE     8
 
 #define CONTEXT_OUTSIDE 0
 #define CONTEXT_DUNGEON 1
@@ -51,6 +55,14 @@ struct actionqueue {
 #define FALSE 0
 #define TRUE 1
 // #define MAX_MESSAGES 100
+
+// define some shortcuts
+#define ply player->y
+#define plx player->x
+#define ppx player->px
+#define ppy player->py
+#define pyxt world->cmap[player->y][player->x].type
+#define pt(a,b) world->cmap[a][b].type
 
 // global variables
 extern world_t *world;

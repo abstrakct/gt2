@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #include "objects.h"
 #include "monsters.h"
@@ -89,17 +90,8 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
                         world->dng[fy][fx].type = DNG_WALL;
                         world->dng[fy][fx].color = COLOR_NORMAL;
                         world->dng[fy][fx].visible = 0;
-                        /*world->forest[i].x1 = tx;
-                        world->forest[i].y1 = ty;
-                        world->forest[i].x2 = tx+xsize-1;
-                        world->forest[i].y2 = ty+ysize-1;
-                        world->forest[i].flags = 0;;
-                        world->out[fy][fx].type = AREA_FOREST_NOTREE;
-                        world->out[fy][fx].color = COLOR_NORMAL;
-                        break;*/
                 }
         }
-
 
         for(fy=ty;fy<ty+ysize;fy++) {
                 for(fx=tx;fx<tx+xsize;fx++) {
@@ -131,7 +123,6 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
         }
 
 }
-
 
 /*********************************************
 * Description - Generate an area
@@ -320,7 +311,6 @@ void generate_village(int num)
                 generate_area(i, AREA_VILLAGE, 1, VILLAGESIZE);
 }
 
-
 /*********************************************
 * Description - Flood fill to test dungeon gen
 * Author - RK
@@ -372,6 +362,17 @@ void paint_room(map_ptr *m, int x, int y, int sx, int sy, int join_overlapping)
                 }
         }
 }
+
+bool passable(int type)
+{
+        if(type == DNG_WALL)
+                return false;
+        if(type == AREA_LAKE)
+                return false;
+
+        return true;
+}
+
 /*********************************************
 * Description - One big function which should
 * take care of all world generation stuff.
@@ -417,7 +418,7 @@ fprintf(stderr, "DEBUG: %s:%d - Generating %d villages\n", __FILE__, __LINE__, w
 
 fprintf(stderr, "DEBUG: %s:%d - Generating dungoen!!\n", __FILE__, __LINE__);
         mapp = world->dng;
-        generate_dungeon_labyrinthine(789);
+        generate_dungeon_labyrinthine(DUNGEON_SIZE);
 //        paint_room(mapp, 10, 10, 789, 789);
 
         rooms = 10;

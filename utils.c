@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "monsters.h"
 #include "objects.h"

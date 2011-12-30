@@ -14,6 +14,8 @@
 #include <time.h>
 #include <signal.h>
 #include <libconfig.h>
+#include <stdbool.h>
+
 #ifdef GT_USE_NCURSES
 #include <curses.h>
 #endif
@@ -185,6 +187,44 @@ void do_action(int action)
                         if(player->px >= XSIZE-mapcx)
                                 player->px = XSIZE-mapcx-1;
                         break;
+                case ACTION_PLAYER_MOVE_NW:
+                        if(pt(ply-1,plx-1) != DNG_WALL) {
+                                ply--;
+                                plx--;
+                        }
+                        if(ply < 3)
+                                ply = 3;
+                        if(ply <= (player->py + (mapcy/6)))
+                                player->py--;
+                        if(player->py < 0)
+                                player->py = 0;
+
+                        if(plx < 3)
+                                plx = 3;
+                        if(plx <= (player->px + (mapcx/6)))
+                                player->px--;
+                        if(player->px < 0)
+                                player->px = 0;
+                        break;
+                case ACTION_PLAYER_MOVE_NE:
+                        if(passable(pt(ply-1,plx+1))) {
+                                ply--; plx++;
+                        }
+                        
+                        if(plx >= XSIZE-4)
+                                plx = XSIZE-5;
+                        if(plx >= (ppx+(mapcx/6*5)))
+                                ppx++;
+                        if(ppx >= XSIZE-mapcx)
+                                ppx = XSIZE-mapcx-1;
+
+                        if(ply < 3)
+                                ply = 3;
+                        if(ply <= (ppy+(mapcy/6)))
+                                ppy--;
+                        if(ppy < 0)
+                                ppy = 0;
+                        break;
                 default:
                         fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attemted!\n", __FILE__, __LINE__, action);
                         break;
@@ -295,6 +335,18 @@ int main(int argc, char *argv[])
                                 if(world->cmap == world->out) {
                                         world->cmap = world->dng;
                                         game->context = CONTEXT_DUNGEON;
+                                        while(world->cmap[player->y][player->x].type != DNG_FLOOR) {
+                                                player->y = ri(15, DUNGEON_SIZE);
+                                                player->x = ri(15, DUNGEON_SIZE);
+                                        }
+                                        player->py = player->y - (game->maph / 2);
+                                        player->px = player->x - (game->mapw / 2);
+                                        if(player->py <= 0)
+                                                player->py = 0;
+                                        if(player->px <= 0)
+                                                player->px = 0;
+
+
                                         player->viewradius = 5;
                                 } else {
                                         world->cmap = world->out;
@@ -323,6 +375,18 @@ int main(int argc, char *argv[])
                                 break;
                         case 'l':
                                 queue(ACTION_PLAYER_MOVE_RIGHT);
+                                break;
+                        case 'y':
+                                queue(ACTION_PLAYER_MOVE_NW);
+                                break;
+                        case 'u':
+                                queue(ACTION_PLAYER_MOVE_NE);
+                                break;
+                        case 'b':
+                                queue(ACTION_PLAYER_MOVE_SW);
+                                break;
+                        case 'n':
+                                queue(ACTION_PLAYER_MOVE_SE);
                                 break;
                         default:
                                 queue(ACTION_NOTHING);

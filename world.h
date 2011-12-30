@@ -6,6 +6,8 @@
 #ifndef _WORLD_H
 #define _WORLD_H
 
+#include <stdbool.h>
+
 #define AREA_NOTHING         0
 #define AREA_PLAIN	     1
 #define AREA_MOUNTAIN	     2
@@ -18,12 +20,14 @@
 #define AREA_FOREST_NOTREE   9
 #define AREA_LAKE           10
 #define AREA_LAKE_NOWATER   11
-#define DNG_FLOOR 12
-#define DNG_WALL  13
-#define DNG_FILL DNG_WALL
+
+#define DNG_FLOOR           12
+#define DNG_WALL            13
+#define DNG_FILL            DNG_WALL
 
 #define YSIZE 800
 #define XSIZE 800
+#define DUNGEON_SIZE 200
 
 typedef struct {
         char type;
@@ -65,6 +69,7 @@ typedef struct {
 
 void generate_world();
 void floodfill(int x, int y);
+bool passable(int type);
 
 extern char mapchars[];
 

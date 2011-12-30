@@ -61,7 +61,7 @@ void dump_action_queue()
         tmp = aq;
         i = 0;
         while(tmp) {
-                gtprintf("item %d - action %d\n", i, tmp->action);
+                gtprintf("item %d\taction %d\tnum %d\n", i, tmp->action, tmp->num);
                 tmp = tmp->next; 
                 i++;
         }

@@ -53,6 +53,7 @@ game_t *game;
 world_t *world;
 actor_t *player;
 struct actionqueue *aq;
+long actionnum;
 FILE *messagefile;
 int mapcx, mapcy;
 
@@ -110,7 +111,7 @@ void init_player()
         player->py = player->y - game->maph / 2;
         mapcx = game->mapw + 2;
         mapcy = game->maph + 2;
-        player->viewradius = 10;
+        player->viewradius = 50;
 }
 
 void shutdown_gt()
@@ -144,9 +145,8 @@ void do_action(int action)
                 case ACTION_NOTHING:
                         break;
                 case ACTION_PLAYER_MOVE_DOWN:
-                        player->y++;
-                        if(world->cmap[player->y][player->x].type == DNG_WALL)
-                                player->y--;
+                        if(passable(pt(ply+1,plx)))
+                                player->y++;
                         if(player->y >= YSIZE-6)
                                 player->y = YSIZE-7;
                         if(player->y >= (player->py + (mapcy/6*5)))
@@ -155,9 +155,8 @@ void do_action(int action)
                                 player->py = YSIZE - mapcy - 3;
                         break;
                 case ACTION_PLAYER_MOVE_UP:
-                        player->y--;
-                        if(world->cmap[player->y][player->x].type == DNG_WALL)
-                                player->y++;
+                        if(passable(pt(ply-1,plx)))
+                                player->y--;
                         if(player->y < 3)
                                 player->y = 3;
                         if(player->y <= (player->py + (mapcy/6)))
@@ -166,9 +165,8 @@ void do_action(int action)
                                 player->py = 0;
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
-                        player->x--;
-                        if(world->cmap[player->y][player->x].type == DNG_WALL)
-                                player->x++;
+                        if(passable(pt(ply,plx-1)))
+                                player->x--;
                         if(player->x < 3)
                                 player->x = 3;
                         if(player->x <= (player->px+(mapcx/6)))
@@ -177,9 +175,8 @@ void do_action(int action)
                                 player->px = 0;
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
-                        player->x++;
-                        if(world->cmap[player->y][player->x].type == DNG_WALL)
-                                player->x--;
+                        if(passable(pt(ply,plx+1)))
+                                player->x++;
                         if(player->x >= XSIZE-4)
                                 player->x = XSIZE-5;
                         if(player->x >= (player->px+(mapcx/6*5)))
@@ -188,7 +185,7 @@ void do_action(int action)
                                 player->px = XSIZE-mapcx-1;
                         break;
                 case ACTION_PLAYER_MOVE_NW:
-                        if(pt(ply-1,plx-1) != DNG_WALL) {
+                        if(passable(pt(ply-1,plx-1))) {
                                 ply--;
                                 plx--;
                         }
@@ -225,6 +222,42 @@ void do_action(int action)
                         if(ppy < 0)
                                 ppy = 0;
                         break;
+                case ACTION_PLAYER_MOVE_SW:
+                        if(passable(pt(ply+1, plx-1))) {
+                                ply++; plx--;
+                        }
+
+                        if(ply >= YSIZE-6)
+                                ply = YSIZE-7;
+                        if(ply >= (ppy+(mapcy/6*5)))
+                                ppy++;
+                        if(ppy >= YSIZE-mapcy-2)
+                                ppy = YSIZE-mapcy-3;
+
+                        //if(plx < 0)
+                        //        plx = 0;
+                        if(plx <= (ppx+(mapcx/6)))
+                                ppx--;
+                        if(ppx <= 0)
+                                ppx = 0;
+                        break;
+                case ACTION_PLAYER_MOVE_SE:
+                        if(passable(pt(ply+1, plx+1))) {
+                                ply++; plx++;
+                        }
+                        if(ply >= YSIZE-6)
+                                ply = YSIZE-7;
+                        if(ply >= (ppy+(mapcy/6*5)))
+                                ppy++;
+                        if(ppy >= YSIZE-mapcy-2)
+                                ppy = YSIZE-mapcy-3;
+                        if(plx >= XSIZE-4)
+                                plx = XSIZE-5;
+                        if(plx >= (ppx+(mapcx/6*5)))
+                                ppx++;
+                        if(ppx >= XSIZE-mapcx)
+                                ppx = XSIZE-mapcx-1;
+                        break;
                 default:
                         fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attemted!\n", __FILE__, __LINE__, action);
                         break;
@@ -253,6 +286,8 @@ void queue(int action)
         tmp->head = aq;
         tmp->next = 0;
         tmp->action = action;
+        actionnum++;
+        tmp->num = actionnum;
         prev->next = tmp;
 }
 
@@ -280,11 +315,8 @@ void do_all_things_in_queue() // needs a better name..
         tmp = aq->next;
 
         while(tmp) {
-                if(tmp)
-                        do_action(tmp->action);
+                do_one_thing_in_queue();
                 tmp = tmp->next;
-                if(tmp)
-                        free(tmp);
         }
 }
 
@@ -320,10 +352,13 @@ int main(int argc, char *argv[])
         monster->y = player->y + ri(5,15);
         world->cmap[monster->y][monster->x].monster = monster;
         game->context = CONTEXT_OUTSIDE;
+        actionnum = 0;
 
         initial_update_screen();
 
         do {
+                bool do_all = false;
+
                 c = gtgetch();
                 switch(c) {
                         case 'q':
@@ -351,7 +386,7 @@ int main(int argc, char *argv[])
                                 } else {
                                         world->cmap = world->out;
                                         game->context = CONTEXT_OUTSIDE;
-                                        player->viewradius = 10;
+                                        player->viewradius = 50;
                                 }
                                 break;
                         case 'f':
@@ -388,13 +423,40 @@ int main(int argc, char *argv[])
                         case 'n':
                                 queue(ACTION_PLAYER_MOVE_SE);
                                 break;
+                        case 'J':
+                                for(x=0;x<20;x++)
+                                        queue(ACTION_PLAYER_MOVE_DOWN);
+                                do_all = true;
+                                break;
+                        case 'K':
+                                for(x=0;x<20;x++)
+                                        queue(ACTION_PLAYER_MOVE_UP);
+                                do_all = true;
+                                break;
+                        case 'H':
+                                for(x=0;x<20;x++)
+                                        queue(ACTION_PLAYER_MOVE_LEFT);
+                                do_all = true;
+                                break;
+                        case 'L':
+                                for(x=0;x<20;x++)
+                                        queue(ACTION_PLAYER_MOVE_RIGHT);
+                                do_all = true;
+                                break;
+                        case 'a':
+                                dump_action_queue();
                         default:
                                 queue(ACTION_NOTHING);
                                 break;
                 }
 
-                do_one_thing_in_queue();
-                do_all_things_in_queue();
+                if(!do_all) {
+                        do_one_thing_in_queue();
+                } else {
+                        do_all_things_in_queue();
+                        do_all = false;
+                }
+
                 if(monster->ai)
                         monster->ai(monster);
 

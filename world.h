@@ -25,6 +25,8 @@
 #define DNG_WALL            13
 #define DNG_FILL            DNG_WALL
 
+#define AREA_WALL           100
+
 #define YSIZE 800
 #define XSIZE 800
 #define DUNGEON_SIZE 200

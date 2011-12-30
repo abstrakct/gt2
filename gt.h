@@ -37,6 +37,7 @@ struct actionqueue {
         struct actionqueue *head;
         struct actionqueue *next;
         int action;
+        long num;
 };
 
 #define ACTION_NOTHING            0

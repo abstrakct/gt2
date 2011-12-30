@@ -96,7 +96,7 @@ void shutdown_display()
 
 bool blocks_light(int type)
 {
-        if(type != AREA_PLAIN && type != DNG_WALL && type != AREA_CITY_NOHOUSE && type != AREA_FOREST_NOTREE && type != AREA_CITY && type != AREA_FOREST && type != AREA_VILLAGE)
+        if(type != AREA_PLAIN && type != DNG_WALL && type != AREA_CITY_NOHOUSE && type != AREA_FOREST_NOTREE && type != AREA_CITY && type != AREA_FOREST && type != AREA_VILLAGE && type != AREA_WALL)
                 return true;
         
         return false;
@@ -176,6 +176,10 @@ void draw_world()
                                 gtmapaddch(dx, dy, world->cmap[j][i].color, mapchars[(int)world->cmap[j][i].type]);
                                 if(world->cmap[j][i].monster)
                                         gtmapaddch(dx, dy, COLOR_RED, (char) world->cmap[j][i].monster->c);
+                        }
+
+                        if(world->cmap[j][i].type == AREA_WALL) {
+                                gtmapaddch(dx, dy, COLOR_PLAIN, mapchars[DNG_WALL]);
                         }
                         
                         if(j == player->y && i == player->x)

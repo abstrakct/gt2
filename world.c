@@ -369,6 +369,8 @@ bool passable(int type)
                 return false;
         if(type == AREA_LAKE)
                 return false;
+        if(type == AREA_WALL)
+                return false;
 
         return true;
 }
@@ -427,4 +429,18 @@ fprintf(stderr, "DEBUG: %s:%d - Generating dungoen!!\n", __FILE__, __LINE__);
                         paint_room(mapp, ri(15, 740), ri(15, 740), ri(20, 60), ri(10, 35), 1);
                         paint_room(mapp, ri(15, 740), ri(15, 740), ri(20, 60), ri(10, 35), 0);
                 }
+
+        // create the edge of the world
+        for(x=0; x<XSIZE; x++) {
+                world->out[1][x].type = AREA_WALL;
+                world->out[2][x].type = AREA_WALL;
+                world->out[792][x].type = AREA_WALL;
+                world->out[793][x].type = AREA_WALL;
+        }
+        for(y=0; y<YSIZE; y++) {
+                world->out[y][1].type = AREA_WALL;
+                world->out[y][2].type = AREA_WALL;
+                world->out[y][796].type = AREA_WALL;
+                world->out[y][797].type = AREA_WALL;
+        }
 }

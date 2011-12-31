@@ -123,8 +123,8 @@ void dofov(float x, float y)
         int i;
         float ox, oy;
 
-        ox = (float) player->x + 0.5f;
-        oy = (float) player->y + 0.5f;
+        ox = (float) plx + 0.5f;
+        oy = (float) ply + 0.5f;
 
         for(i = 0; i < player->viewradius; i++) {
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < YSIZE && (int)ox < XSIZE) {
@@ -173,16 +173,16 @@ void draw_world()
                          */
 
                         if(world->cmap[j][i].visible) {
-                                gtmapaddch(dx, dy, world->cmap[j][i].color, mapchars[(int)world->cmap[j][i].type]);
+                                gtmapaddch(dx, dy, world->cmap[j][i].color, mapchars[(int) pt(j,i)]);
                                 if(world->cmap[j][i].monster)
                                         gtmapaddch(dx, dy, COLOR_RED, (char) world->cmap[j][i].monster->c);
                         }
 
-                        if(world->cmap[j][i].type == AREA_WALL) {
+                        if(pt(j,i) == AREA_WALL) {
                                 gtmapaddch(dx, dy, COLOR_PLAIN, mapchars[DNG_WALL]);
                         }
                         
-                        if(j == player->y && i == player->x)
+                        if(j == ply && i == plx)
                                 gtmapaddch(dx, dy, COLOR_PLAYER, '@');
                 }
         }

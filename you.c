@@ -9,10 +9,10 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
+#include "actor.h"
 #include "monsters.h"
 #include "objects.h"
 #include "world.h"
-#include "actor.h"
 #include "display.h"
 #include "gt.h"
 #include "you.h"

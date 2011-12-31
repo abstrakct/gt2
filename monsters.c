@@ -10,13 +10,13 @@
 #include <unistd.h>
 
 #include "objects.h"
+#include "actor.h"
 #include "monsters.h"
 #include "utils.h"
 #include "datafiles.h"
 #include "world.h"
 #include "you.h"
 #include "display.h"
-#include "actor.h"
 #include "gt.h"
 
 aifunction aitable[] = {
@@ -84,7 +84,7 @@ void advancedai(monster_t *m)
 monster_t get_monsterdef(int n)
 {
         int i;
-        struct monster *tmp;
+        struct actorstruct *tmp;
 
         gtprintf("getting monsterdef %d", n);
 

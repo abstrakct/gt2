@@ -21,13 +21,13 @@
 #endif
 
 #include "objects.h"
+#include "actor.h"
 #include "monsters.h"
 #include "utils.h"
 #include "datafiles.h"
 #include "world.h"
 #include "you.h"
 #include "display.h"
-#include "actor.h"
 #include "debug.h"
 #include "gt.h"
 
@@ -145,7 +145,7 @@ void do_action(int action)
                 case ACTION_NOTHING:
                         break;
                 case ACTION_PLAYER_MOVE_DOWN:
-                        if(passable(pt(ply+1,plx)))
+                        if(passable(ct(ply+1,plx)))
                                 ply++;
                         if(ply >= YSIZE-6)
                                 ply = YSIZE-7;
@@ -155,7 +155,7 @@ void do_action(int action)
                                 ppy = YSIZE - mapcy - 3;
                         break;
                 case ACTION_PLAYER_MOVE_UP:
-                        if(passable(pt(ply-1,plx)))
+                        if(passable(ct(ply-1,plx)))
                                 ply--;
                         if(ply < 3)
                                 ply = 3;
@@ -165,7 +165,7 @@ void do_action(int action)
                                 ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
-                        if(passable(pt(ply,plx-1)))
+                        if(passable(ct(ply,plx-1)))
                                 plx--;
                         if(plx < 3)
                                 plx = 3;
@@ -175,7 +175,7 @@ void do_action(int action)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
-                        if(passable(pt(ply,plx+1)))
+                        if(passable(ct(ply,plx+1)))
                                 plx++;
                         if(plx >= XSIZE-4)
                                 plx = XSIZE-5;
@@ -185,7 +185,7 @@ void do_action(int action)
                                 ppx = XSIZE-mapcx-1;
                         break;
                 case ACTION_PLAYER_MOVE_NW:
-                        if(passable(pt(ply-1,plx-1))) {
+                        if(passable(ct(ply-1,plx-1))) {
                                 ply--;
                                 plx--;
                         }
@@ -204,7 +204,7 @@ void do_action(int action)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_NE:
-                        if(passable(pt(ply-1,plx+1))) {
+                        if(passable(ct(ply-1,plx+1))) {
                                 ply--; plx++;
                         }
                         
@@ -223,7 +223,7 @@ void do_action(int action)
                                 ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_SW:
-                        if(passable(pt(ply+1, plx-1))) {
+                        if(passable(ct(ply+1, plx-1))) {
                                 ply++; plx--;
                         }
 
@@ -242,7 +242,7 @@ void do_action(int action)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_SE:
-                        if(passable(pt(ply+1, plx+1))) {
+                        if(passable(ct(ply+1, plx+1))) {
                                 ply++; plx++;
                         }
                         if(ply >= YSIZE-6)

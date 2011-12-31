@@ -11,12 +11,12 @@
 #include <libconfig.h>
 #include <stdbool.h>
 
+#include "actor.h"
 #include "monsters.h"
 #include "objects.h"
 #include "utils.h"
 #include "datafiles.h"
 #include "world.h"
-#include "actor.h"
 #include "gt.h"
 
 config_t *cf;

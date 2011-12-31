@@ -11,11 +11,11 @@
 #include <math.h>
 #include <stdbool.h>
 
+#include "actor.h"
 #include "monsters.h"
 #include "objects.h"
 #include "utils.h"
 #include "world.h"
-#include "actor.h"
 #include "gt.h"
 
 char *get_version_string()

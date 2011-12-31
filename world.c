@@ -13,13 +13,13 @@
 #include <stdbool.h>
 
 #include "objects.h"
+#include "actor.h"
 #include "monsters.h"
 #include "utils.h"
 #include "datafiles.h"
 #include "world.h"
 #include "you.h"
 #include "display.h"
-#include "actor.h"
 #include "gt.h"
 
 #define MAXFORESTSIZE 70
@@ -204,7 +204,6 @@ void generate_area(int i, int type, int modifier, int maxsize)
                         }                        
                 }
         }
-
 
         for(fy=ty;fy<ty+ysize;fy++) {
                 for(fx=tx;fx<tx+xsize;fx++) {
@@ -440,7 +439,7 @@ fprintf(stderr, "DEBUG: %s:%d - Generating dungoen!!\n", __FILE__, __LINE__);
         for(y=0; y<YSIZE; y++) {
                 world->out[y][1].type = AREA_WALL;
                 world->out[y][2].type = AREA_WALL;
-                world->out[y][796].type = AREA_WALL;
-                world->out[y][797].type = AREA_WALL;
+                world->out[y][794].type = AREA_WALL;
+                world->out[y][795].type = AREA_WALL;
         }
 }

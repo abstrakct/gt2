@@ -105,10 +105,10 @@ fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->
 * *******************************************/
 void init_player()
 {
-        player->x = game->mapw / 2;
-        player->y = game->maph / 2;
-        player->px = player->x - game->mapw / 2;
-        player->py = player->y - game->maph / 2;
+        plx = game->mapw / 2;
+        ply = game->maph / 2;
+        ppx = plx - game->mapw / 2;
+        ppy = ply - game->maph / 2;
         mapcx = game->mapw + 2;
         mapcy = game->maph + 2;
         player->viewradius = 50;
@@ -146,43 +146,43 @@ void do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_DOWN:
                         if(passable(pt(ply+1,plx)))
-                                player->y++;
-                        if(player->y >= YSIZE-6)
-                                player->y = YSIZE-7;
-                        if(player->y >= (player->py + (mapcy/6*5)))
-                                player->py++;
-                        if(player->py >= YSIZE-mapcy-2)
-                                player->py = YSIZE - mapcy - 3;
+                                ply++;
+                        if(ply >= YSIZE-6)
+                                ply = YSIZE-7;
+                        if(ply >= (ppy + (mapcy/6*5)))
+                                ppy++;
+                        if(ppy >= YSIZE-mapcy-2)
+                                ppy = YSIZE - mapcy - 3;
                         break;
                 case ACTION_PLAYER_MOVE_UP:
                         if(passable(pt(ply-1,plx)))
-                                player->y--;
-                        if(player->y < 3)
-                                player->y = 3;
-                        if(player->y <= (player->py + (mapcy/6)))
-                                player->py--;
-                        if(player->py < 0)
-                                player->py = 0;
+                                ply--;
+                        if(ply < 3)
+                                ply = 3;
+                        if(ply <= (ppy + (mapcy/6)))
+                                ppy--;
+                        if(ppy < 0)
+                                ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
                         if(passable(pt(ply,plx-1)))
-                                player->x--;
-                        if(player->x < 3)
-                                player->x = 3;
-                        if(player->x <= (player->px+(mapcx/6)))
-                                player->px--;
-                        if(player->px < 0)
-                                player->px = 0;
+                                plx--;
+                        if(plx < 3)
+                                plx = 3;
+                        if(plx <= (ppx+(mapcx/6)))
+                                ppx--;
+                        if(ppx < 0)
+                                ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
                         if(passable(pt(ply,plx+1)))
-                                player->x++;
-                        if(player->x >= XSIZE-4)
-                                player->x = XSIZE-5;
-                        if(player->x >= (player->px+(mapcx/6*5)))
-                                player->px++;
-                        if(player->px >= XSIZE-mapcx)
-                                player->px = XSIZE-mapcx-1;
+                                plx++;
+                        if(plx >= XSIZE-4)
+                                plx = XSIZE-5;
+                        if(plx >= (ppx+(mapcx/6*5)))
+                                ppx++;
+                        if(ppx >= XSIZE-mapcx)
+                                ppx = XSIZE-mapcx-1;
                         break;
                 case ACTION_PLAYER_MOVE_NW:
                         if(passable(pt(ply-1,plx-1))) {
@@ -191,17 +191,17 @@ void do_action(int action)
                         }
                         if(ply < 3)
                                 ply = 3;
-                        if(ply <= (player->py + (mapcy/6)))
-                                player->py--;
-                        if(player->py < 0)
-                                player->py = 0;
+                        if(ply <= (ppy + (mapcy/6)))
+                                ppy--;
+                        if(ppy < 0)
+                                ppy = 0;
 
                         if(plx < 3)
                                 plx = 3;
-                        if(plx <= (player->px + (mapcx/6)))
-                                player->px--;
-                        if(player->px < 0)
-                                player->px = 0;
+                        if(plx <= (ppx + (mapcx/6)))
+                                ppx--;
+                        if(ppx < 0)
+                                ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_NE:
                         if(passable(pt(ply-1,plx+1))) {
@@ -345,11 +345,11 @@ int main(int argc, char *argv[])
         init_player();
         draw_world();
 
-        gtprintf("player x,y = %d, %d - px,py = %d, %d", player->x, player->y, player->px, player->py);
+        gtprintf("player x,y = %d, %d - px,py = %d, %d", plx, ply, ppx, ppy);
         monster = get_monsterdef(ri(1, game->monsterdefs));
         gtprintf("monster: %s", monster->name);
-        monster->x = player->x + ri(5,15);
-        monster->y = player->y + ri(5,15);
+        monster->x = plx + ri(5,15);
+        monster->y = ply + ri(5,15);
         world->cmap[monster->y][monster->x].monster = monster;
         game->context = CONTEXT_OUTSIDE;
         actionnum = 0;
@@ -370,16 +370,16 @@ int main(int argc, char *argv[])
                                 if(world->cmap == world->out) {
                                         world->cmap = world->dng;
                                         game->context = CONTEXT_DUNGEON;
-                                        while(world->cmap[player->y][player->x].type != DNG_FLOOR) {
-                                                player->y = ri(15, DUNGEON_SIZE);
-                                                player->x = ri(15, DUNGEON_SIZE);
+                                        while(world->cmap[ply][plx].type != DNG_FLOOR) {
+                                                ply = ri(15, DUNGEON_SIZE);
+                                                plx = ri(15, DUNGEON_SIZE);
                                         }
-                                        player->py = player->y - (game->maph / 2);
-                                        player->px = player->x - (game->mapw / 2);
-                                        if(player->py <= 0)
-                                                player->py = 0;
-                                        if(player->px <= 0)
-                                                player->px = 0;
+                                        ppy = ply - (game->maph / 2);
+                                        ppx = plx - (game->mapw / 2);
+                                        if(ppy <= 0)
+                                                ppy = 0;
+                                        if(ppx <= 0)
+                                                ppx = 0;
 
 
                                         player->viewradius = 5;
@@ -461,7 +461,7 @@ int main(int argc, char *argv[])
                         monster->ai(monster);
 
                 draw_world();
-                gtprintf("player x,y = %d, %d - px,py = %d, %d", player->x, player->y, player->px, player->py);
+                gtprintf("player x,y = %d, %d - px,py = %d, %d", plx, ply, ppx, ppy);
                 update_screen();
         } while(!game->dead);
 

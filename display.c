@@ -56,11 +56,11 @@ void init_display()
         game->width = COLS;
         game->height = LINES;
         game->mapw = ((COLS/4)*3);
-        game->maph = ((LINES/3)*2);
+        game->maph = ((LINES/3)*2)-1;
 
         wall  = newwin(0, 0, 0, 0);                                                                                                                                                                                                                                                                                         
         wmap  = subwin(wall, game->maph, game->mapw, 0, 0);               //øverst venstre                                                                                                                                                                                                                                          
-        wstat = subwin(wall, (LINES/3)*2, (COLS/4), 0, COLS-((COLS/4)));  //øverst høyre                                                                                                                                                                                                                                    
+        wstat = subwin(wall, (LINES/3)*2-1, (COLS/4), 0, COLS-((COLS/4)));  //øverst høyre                                                                                                                                                                                                                                    
         winfo = subwin(wall, LINES/3, COLS, LINES-(LINES/3)-1, 0);          //nederst                                                                                                                                                                                                                                                 
         maxmess = (LINES/3)-2;
 

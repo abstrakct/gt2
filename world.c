@@ -44,7 +44,7 @@ char mapchars[50] = {
 };
 
 /*********************************************
-* Description - Generate a dungeon, labyrinthine
+* Description - Generate a dungeon, labyrinthine (or perhaps more like a cavern?)
 * maxsize = well, max size
 * Author - RK
 * Date - Dec 12 2011

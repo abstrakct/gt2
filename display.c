@@ -96,9 +96,26 @@ void shutdown_display()
 
 bool blocks_light(int type)
 {
-        if(type != AREA_PLAIN && type != DNG_WALL && type != AREA_CITY_NOHOUSE && type != AREA_FOREST_NOTREE && type != AREA_CITY && type != AREA_FOREST && type != AREA_VILLAGE && type != AREA_WALL)
+        /*if(type != AREA_PLAIN && type != DNG_WALL && type != AREA_CITY_NOHOUSE && type != AREA_FOREST_NOTREE && type != AREA_CITY && type != AREA_FOREST && type != AREA_VILLAGE && type != AREA_WALL)
                 return true;
         
+        return false;*/
+
+        if(game->context == CONTEXT_OUTSIDE) {
+                if(type == AREA_NOTHING || type == AREA_MOUNTAIN)
+                        return true;
+                else
+                        return false;
+        }
+
+        if(game->context == CONTEXT_DUNGEON) {
+                if(type != DNG_WALL)
+                        return true;
+                else
+                        return false;
+        }
+
+        // shouldn't be reached...
         return false;
 }
 

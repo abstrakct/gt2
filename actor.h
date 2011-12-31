@@ -38,6 +38,7 @@ typedef struct { // wear_t
 } wear_t;
 
 typedef struct actorstruct {     // actor_t
+        int id;                  // e.g. for saving and loading etc.
         int x, y;
         int px, py;
         int viewradius;

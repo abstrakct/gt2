@@ -20,11 +20,12 @@
 #include "gt.h"
 
 config_t *cf;
+int objid;             // to keep track of all parsed objects, to give each a unique ID
 
 int parse_monsters()
 {
         config_setting_t *cfg_monsters;
-        int i,j,boolval,tmp;
+        int i, j, boolval, tmp, id;
         char sname[100];
         const char *value;
 
@@ -45,6 +46,7 @@ int parse_monsters()
 
                 m = (monster_t *) gtmalloc(sizeof(monster_t));
                 memset(m, 0, sizeof(monster_t));
+                id = j+1;
 
                 sprintf(sname, "monsters.[%d].name", j);
                 config_lookup_string(cf, sname, &value);
@@ -103,6 +105,8 @@ int parse_monsters()
                 sprintf(sname, "monsters.[%d].aitype", j);
                 config_lookup_int(cf, sname, &tmp);
                 m->ai = aitable[tmp];
+                m->id = id;
+                printf("parsed monster with id %d\n", id);
 
                 /*
                  * the following was written in one go, it's beautiful and seems totally bugfree!!
@@ -149,6 +153,9 @@ int parse_armor()
 
                 sprintf(sname, "armor.[%d].ac", j);
                 config_lookup_int(cf, sname, &(o->ac)); 
+
+                printf("parsed objid %d\n", objid);
+                o->id = objid; objid++;
 
                 o->head = objdefs->head;
                 objdefs->next = o;
@@ -227,6 +234,7 @@ int parse_data_files()
                 return(1);
         }
 
+        objid = 1;
         printf("Reading %s\n", MAIN_DATA_FILE);
 
         /* TODO:

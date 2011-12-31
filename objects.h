@@ -15,6 +15,7 @@ struct object {
         struct object *prev;
         struct object *next;
         struct object *head;
+        int id;                 // unique id
         short type;             // see OT_defines below
         long flags;             // 4 bytes = 32 bits/flags, see OF_defines below
         char unique;            // is this an unique object in the world?

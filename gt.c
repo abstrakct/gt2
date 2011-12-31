@@ -346,7 +346,8 @@ int main(int argc, char *argv[])
         draw_world();
 
         gtprintf("player x,y = %d, %d - px,py = %d, %d", plx, ply, ppx, ppy);
-        monster = get_monsterdef(ri(1, game->monsterdefs));
+        monster = gtmalloc(sizeof(monster_t));
+        *monster = get_monsterdef(ri(1, game->monsterdefs));
         gtprintf("monster: %s", monster->name);
         monster->x = plx + ri(5,15);
         monster->y = ply + ri(5,15);
@@ -465,6 +466,7 @@ int main(int argc, char *argv[])
                 update_screen();
         } while(!game->dead);
 
+        free(monster);
         shutdown_display();
         shutdown_gt();
 

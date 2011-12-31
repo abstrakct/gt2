@@ -77,7 +77,7 @@ extern aifunction aitable[];
 #define MF_CANUSESIMPLESWORD 0x00000010
 
 // Prototypes
-struct monster *get_monsterdef(int n);
+monster_t get_monsterdef(int n);
 void simpleai(monster_t *m);
 void advancedai(monster_t *m);
 

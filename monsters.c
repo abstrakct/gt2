@@ -81,7 +81,7 @@ void advancedai(monster_t *m)
         simpleai(m);
 }
 
-struct monster *get_monsterdef(int n)
+monster_t get_monsterdef(int n)
 {
         int i;
         struct monster *tmp;
@@ -93,5 +93,5 @@ struct monster *get_monsterdef(int n)
                 tmp = tmp->next;
         }
 
-        return tmp;
+        return *tmp;
 }

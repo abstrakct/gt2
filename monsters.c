@@ -96,7 +96,6 @@ monster_t get_monsterdef(int n)
 
 void spawn_monster(int n, monster_t *head)
 {
-        int i;
         monster_t *tmp;
 
         tmp = head->next;

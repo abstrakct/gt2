@@ -27,6 +27,7 @@ void shutdown_display();
 void draw_world(level_t *level);
 void gtmapaddch(int x, int y, int color, char c);
 void update_screen();
+void update_player();
 void initial_update_screen();
 char gtgetch();
 void domess();

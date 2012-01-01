@@ -57,6 +57,7 @@ gt_config_t gtconfig;
 long actionnum;
 FILE *messagefile;
 int mapcx, mapcy;
+bool mapchanged;
 
 // Messages
 message_t m[500];
@@ -85,6 +86,7 @@ void init_variables()
         aq->head = aq;
         aq->next = 0;
         aq->action = ACTION_NOTHING;
+        actionnum = 0;
 
         world = (world_t *) gtmalloc(sizeof(world_t));
         memset(world, 0, sizeof(world_t));
@@ -95,8 +97,8 @@ void init_variables()
         world->out->ysize = YSIZE;
         init_level(world->out);
 
-        world->dng[1].xsize = 200;
-        world->dng[1].ysize = 200;
+        world->dng[1].xsize = 50;
+        world->dng[1].ysize = 50;
         init_level(&(world->dng[1]));
 
         game = (game_t *) gtmalloc(sizeof(game_t));
@@ -155,12 +157,16 @@ void do_action(int action)
                 case ACTION_PLAYER_MOVE_DOWN:
                         if(passable(ply+1, plx))
                                 ply++;
-                        if(ply >= world->curlevel->ysize)
-                                ply = world->curlevel->ysize-1;
-                        if(ply >= (ppy + (mapcy/6*5)))
+         //               if(ply >= world->curlevel->ysize)
+         //                       ply = world->curlevel->ysize-1;
+                        if(ply >= (ppy + (mapcy/6*5))) {
+                                mapchanged = true;
                                 ppy++;
-                        if(ppy >= world->curlevel->ysize-mapcy-2)
-                                ppy = world->curlevel->ysize - mapcy - 3;
+                        }
+                        if(ppy >= world->curlevel->ysize-mapcy) {
+                                mapchanged = true;
+                                ppy = world->curlevel->ysize - mapcy - 1;
+                        }
                         if(ppy < 0)
                                 ppy = 0;
                         break;
@@ -169,8 +175,10 @@ void do_action(int action)
                                 ply--;
                         if(ply < 0)
                                 ply = 0;
-                        if(ply <= (ppy + (mapcy/6)))
+                        if(ply <= (ppy + (mapcy/6))) {
+                                mapchanged = true;
                                 ppy--;
+                        }
                         if(ppy < 0)
                                 ppy = 0;
                         break;
@@ -179,20 +187,26 @@ void do_action(int action)
                                 plx--;
                         if(plx < 0)
                                 plx = 0;
-                        if(plx <= (ppx+(mapcx/6)))
+                        if(plx <= (ppx+(mapcx/6))) {
+                                mapchanged = true;
                                 ppx--;
+                        }
                         if(ppx < 0)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
                         if(passable(ply,plx+1))
                                 plx++;
-                        if(plx >= world->curlevel->xsize)
-                                plx = world->curlevel->xsize-1;
-                        if(plx >= (ppx+(mapcx/6*5)))
+        //                if(plx >= world->curlevel->xsize)
+        //                        plx = world->curlevel->xsize-1;
+                        if(plx >= (ppx+(mapcx/6*5))) {
+                                mapchanged = true;
                                 ppx++;
-                        if(ppx >= world->curlevel->xsize-mapcx)
+                        }
+                        if(ppx >= world->curlevel->xsize-mapcx) {
+                                mapchanged = true;
                                 ppx = world->curlevel->xsize-mapcx-1;
+                        }
                         if(ppx < 0)
                                 ppx = 0;
                         break;
@@ -203,15 +217,19 @@ void do_action(int action)
                         }
                         if(ply < 0)
                                 ply = 0;
-                        if(ply <= (ppy + (mapcy/6)))
+                        if(ply <= (ppy + (mapcy/6))) {
+                                mapchanged = true;
                                 ppy--;
+                        }
                         if(ppy < 0)
                                 ppy = 0;
 
                         if(plx < 0)
                                 plx = 0;
-                        if(plx <= (ppx + (mapcx/6)))
+                        if(plx <= (ppx + (mapcx/6))) {
+                                mapchanged = true;
                                 ppx--;
+                        }
                         if(ppx < 0)
                                 ppx = 0;
                         break;
@@ -222,17 +240,23 @@ void do_action(int action)
                         
                         if(plx >= world->curlevel->xsize)
                                 plx = world->curlevel->xsize-1;
-                        if(plx >= (ppx+(mapcx/6*5)))
+                        if(plx >= (ppx+(mapcx/6*5))) {
+                                mapchanged = true;
                                 ppx++;
-                        if(ppx >= world->curlevel->xsize-mapcx)
+                        }
+                        if(ppx >= world->curlevel->xsize-mapcx) {
+                                mapchanged = true;
                                 ppx = world->curlevel->xsize-mapcx-1;
+                        }
                         if(ppx < 0)
                                 ppx = 0;
 
                         if(ply < 0)
                                 ply = 0;
-                        if(ply <= (ppy+(mapcy/6)))
+                        if(ply <= (ppy+(mapcy/6))) {
+                                mapchanged = true;
                                 ppy--;
+                        }
                         if(ppy < 0)
                                 ppy = 0;
                         break;
@@ -243,17 +267,23 @@ void do_action(int action)
 
                         if(ply >= world->curlevel->ysize)
                                 ply = world->curlevel->ysize-1;
-                        if(ply >= (ppy+(mapcy/6*5)))
+                        if(ply >= (ppy+(mapcy/6*5))) {
+                                mapchanged = true;
                                 ppy++;
-                        if(ppy >= world->curlevel->ysize-mapcy-2)
-                                ppy = world->curlevel->ysize-mapcy-3;
+                        }
+                        if(ppy >= world->curlevel->ysize-mapcy) {
+                                mapchanged = true;
+                                ppy = world->curlevel->ysize-mapcy-1;
+                        }
                         if(ppy < 0)
                                 ppy = 0;
 
                         //if(plx < 0)
                         //        plx = 0;
-                        if(plx <= (ppx+(mapcx/6)))
+                        if(plx <= (ppx+(mapcx/6))) {
+                                mapchanged = true;
                                 ppx--;
+                        }
                         if(ppx < 0)
                                 ppx = 0;
                         break;
@@ -263,19 +293,27 @@ void do_action(int action)
                         }
                         if(ply >= world->curlevel->ysize)
                                 ply = world->curlevel->ysize-1;
-                        if(ply >= (ppy+(mapcy/6*5)))
+                        if(ply >= (ppy+(mapcy/6*5))) {
+                                mapchanged = true;
                                 ppy++;
-                        if(ppy >= world->curlevel->ysize - mapcy - 2)
-                                ppy = world->curlevel->ysize - mapcy - 3;
+                        }
+                        if(ppy >= world->curlevel->ysize - mapcy) {
+                                mapchanged = true;
+                                ppy = world->curlevel->ysize - mapcy - 1;
+                        }
                         if(ppy < 0)
                                 ppy = 0;
 
                         if(plx >= world->curlevel->xsize)
                                 plx = world->curlevel->xsize - 1;
-                        if(plx >= (ppx+(mapcx/6*5)))
+                        if(plx >= (ppx+(mapcx/6*5))) {
+                                mapchanged = true;
                                 ppx++;
-                        if(ppx >= world->curlevel->xsize - mapcx)
+                        }
+                        if(ppx >= world->curlevel->xsize - mapcx) {
+                                mapchanged = true;
                                 ppx = world->curlevel->xsize - mapcx-1;
+                        }
                         if(ppx < 0)
                                 ppx = 0;
                         break;
@@ -325,10 +363,11 @@ void do_one_thing_in_queue() // needs a better name..
 
         tmp = aq->next;
 
-        do_action(tmp->action);
-
-        aq->next = tmp->next;
-        free(tmp);
+        if(tmp) {
+                do_action(tmp->action);
+                aq->next = tmp->next;
+                free(tmp);
+        }
 }
 
 void do_all_things_in_queue() // needs a better name..
@@ -345,9 +384,7 @@ void do_all_things_in_queue() // needs a better name..
 
 int main(int argc, char *argv[])
 {
-        int c;
-        int x;
-        monster_t *monster;
+        int c, x;
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
@@ -368,24 +405,18 @@ int main(int argc, char *argv[])
         init_player();
 
         world->curlevel = world->out;
-        draw_world(world->curlevel);
-
-        gtprintf("player x,y = %d, %d - px,py = %d, %d", plx, ply, ppx, ppy);
-        monster = gtmalloc(sizeof(monster_t));
-        *monster = get_monsterdef(ri(1, game->monsterdefs));
-        gtprintf("monster: %s", monster->name);
-        monster->x = plx + ri(5,15);
-        monster->y = ply + ri(5,15);
-        world->cmap[monster->y][monster->x].monster = monster;
         game->context = CONTEXT_OUTSIDE;
-        actionnum = 0;
-
+        draw_world(world->curlevel);
         initial_update_screen();
 
         do {
                 bool do_all = false;
 
                 c = gtgetch();
+                mapchanged = false;
+                player->oldx = plx;
+                player->oldy = ply;
+
                 switch(c) {
                         case 'q':
                                 queue(ACTION_NOTHING);
@@ -397,18 +428,22 @@ int main(int argc, char *argv[])
                                         world->cmap = world->dng[1].c;
                                         world->curlevel = &(world->dng[1]);
                                         game->context = CONTEXT_DUNGEON;
+
                                         ply = ri((world->curlevel->ysize/2) - 5, (world->curlevel->ysize/2) + 5);
                                         plx = ri((world->curlevel->xsize/2) - 5, (world->curlevel->xsize/2) + 5);
                                         while(world->cmap[ply][plx].type != DNG_FLOOR) {
                                                 ply = ri((world->curlevel->ysize/2) - 5, (world->curlevel->ysize/2) + 5);
                                                 plx = ri((world->curlevel->xsize/2) - 5, (world->curlevel->xsize/2) + 5);
                                         }
+
                                         ppy = ply - (game->maph / 2);
                                         ppx = plx - (game->mapw / 2);
+                                        
                                         if(ppy <= 0)
                                                 ppy = 0;
                                         if(ppx <= 0)
                                                 ppx = 0;
+                                        
                                         player->viewradius = 5;
                                 } else {
                                         world->cmap = world->out->c;
@@ -455,6 +490,8 @@ int main(int argc, char *argv[])
                                         queue(ACTION_PLAYER_MOVE_RIGHT);
                                 do_all = true;
                                 break;
+                        case 'v':
+                                set_all_visible(); queue(ACTION_NOTHING); break;
                         case 'a': dump_action_queue();
                         default: queue(ACTION_NOTHING); break;
                 }
@@ -466,15 +503,11 @@ int main(int argc, char *argv[])
                         do_all = false;
                 }
 
-                if(monster->ai)
-                        monster->ai(monster);
-
                 draw_world(world->curlevel);
                 gtprintf("player x,y = %d, %d\tpx,py = %d, %d\tmapcx,y = %d,%d", plx, ply, ppx, ppy, mapcx, mapcy);
                 update_screen();
         } while(!game->dead);
 
-        free(monster);
         shutdown_display();
         shutdown_gt();
 

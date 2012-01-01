@@ -62,7 +62,7 @@ void init_level(level_t *level)
 * Author - RK
 * Date - Dec 12 2011
 * *******************************************/
-void generate_dungeon_labyrinthine(int maxsize, int d)
+void generate_dungeon_labyrinthine(int d)
 {
         int tx, ty, xsize, ysize; 
         int fx, fy;
@@ -72,10 +72,10 @@ void generate_dungeon_labyrinthine(int maxsize, int d)
         int edgex, edgey;
         //int color;
 
-        tx = 2; //ri(0, 10);  // starting X
-        ty = 2; //ri(0, 10);  // starting y
-        xsize = maxsize-tx;  // total size X
-        ysize = maxsize-ty;  // total size Y - rather uneccessary these two, eh?
+        tx = 0; //ri(0, 10);  // starting X
+        ty = 0; //ri(0, 10);  // starting y
+        xsize = world->dng[d].xsize - tx;  // total size X
+        ysize = world->dng[d].ysize - ty;  // total size Y - rather uneccessary these two, eh?
 
 fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, __LINE__, tx, ty, xsize, ysize);
         // let's not go over the edge
@@ -98,8 +98,8 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
         if(edgey <= 0)
                 edgey = 1;
 
-        for(fy=ty;fy<=ysize;fy++) {
-                for(fx=tx;fx<=xsize;fx++) {
+        for(fy = ty; fy < ysize; fy++) {
+                for(fx = tx; fx < xsize; fx++) {
                         world->dng[d].c[fy][fx].type = DNG_WALL;
                         world->dng[d].c[fy][fx].color = COLOR_NORMAL;
                         world->dng[d].c[fy][fx].visible = 0;
@@ -135,14 +135,15 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
                 }
         }
 
-        for(ty=0;ty<maxsize;ty++) {
-                world->dng[d].c[ty][0].type = DNG_WALL;
-                world->dng[d].c[ty][maxsize-1].type = DNG_WALL;
+        // the edges
+        for(ty=0;ty<ysize;ty++) {
+                world->dng[d].c[ty][1].type = DNG_WALL;
+                world->dng[d].c[ty][xsize-1].type = DNG_WALL;
         }
 
-        for(tx=0;tx<maxsize;tx++) {
-                world->dng[d].c[0][tx].type = DNG_WALL;
-                world->dng[d].c[maxsize-1][tx].type = DNG_WALL;
+        for(tx=0;tx<xsize;tx++) {
+                world->dng[d].c[1][tx].type = DNG_WALL;
+                world->dng[d].c[ysize-5][tx].type = DNG_WALL;
         }
 }
 
@@ -354,6 +355,17 @@ void floodfill(int x, int y)
         }
 }
 
+void set_all_visible()
+{
+        int x,y;
+
+        for(y=0;y<world->curlevel->ysize;y++) {
+                for(x=0;x<world->curlevel->xsize;x++) {
+                        world->curlevel->c[y][x].visible = true;
+                }
+        }
+}
+
 /*********************************************
 * Description - Paint a room in a dungeon
 * Author - RK
@@ -412,8 +424,7 @@ bool passable(int y, int x)
 * *******************************************/
 void generate_world()
 {
-        map_ptr mapp;
-        int x, y, rooms;
+        int x, y;
 
         /*
          * Generate the outside world first.
@@ -446,12 +457,8 @@ void generate_world()
         world->village = gtcalloc((size_t)world->villages, sizeof(city_t));
         generate_village(world->villages);
 
-
         fprintf(stderr, "DEBUG: %s:%d - Generating dungoen!!\n", __FILE__, __LINE__);
-        mapp = world->dng[1].c;
-        generate_dungeon_labyrinthine(world->dng[1].xsize, 1);
-//        paint_room(mapp, 10, 10, 789, 789);
-
+        generate_dungeon_labyrinthine(1);
 
         // create the edge of the world
         for(x=0; x<XSIZE; x++) {

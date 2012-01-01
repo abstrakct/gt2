@@ -38,7 +38,6 @@ void dump_monsterdefs()
 void dump_monsters(monster_t *list)
 {
         monster_t *m;
-        int i;
 
         m = list->next;
         while(m) {

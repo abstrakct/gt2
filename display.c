@@ -181,8 +181,8 @@ void draw_world(level_t *level)
 
         werase(wmap);
         FOV();
-        for(j = ppy, dy = 0; j < (ppy + level->ysize); j++, dy++) {
-                for(i = ppx, dx = 0; i < (ppx + level->xsize); i++, dx++) {
+        for(j = ppy, dy = 0; j <= (ppy + level->ysize); j++, dy++) {
+                for(i = ppx, dx = 0; i <= (ppx + level->xsize); i++, dx++) {
                         /*
                          * in this function, (j,i) are the coordinates on the map,
                          * dx,dy = coordinates on screen.
@@ -210,6 +210,12 @@ void draw_world(level_t *level)
         wattron(wmap, COLOR_PAIR(COLOR_NORMAL));
         box(wmap, ACS_VLINE, ACS_HLINE);
         //wcolor_set(wmap, 0, 0);
+}
+
+void update_player()
+{
+        gtmapaddch(player->oldx, player->oldy, cc(player->oldy, player->oldx), mapchars[(int) ct(player->oldy, player->oldx)]);
+        gtmapaddch(plx, ply, COLOR_PLAYER, '@');
 }
 
 void gtmapaddch(int x, int y, int color, char c)

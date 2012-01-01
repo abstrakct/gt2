@@ -8,6 +8,7 @@
 #ifndef _GT_DEBUG_H
 #define _GT_DEBUG_H
 
+void dump_monsterdefs();
 void dump_monsters();
 void dump_objects();
 void dump_action_queue();

@@ -84,9 +84,7 @@ void advancedai(monster_t *m)
 monster_t get_monsterdef(int n)
 {
         int i;
-        struct actorstruct *tmp;
-
-        gtprintf("getting monsterdef %d", n);
+        monster_t *tmp;
 
         tmp = monsterdefs->head;
         for(i=0; i<n; i++) {
@@ -94,4 +92,19 @@ monster_t get_monsterdef(int n)
         }
 
         return *tmp;
+}
+
+void spawn_monster(int n, monster_t *head)
+{
+        int i;
+        monster_t *tmp;
+
+        tmp = head->next;
+        head->next = gtmalloc(sizeof(monster_t));
+        memset(head->next, 0, sizeof(monster_t));
+        *head->next = get_monsterdef(n);
+        head->next->next = tmp;
+        head->next->prev = head->next;
+        head->next->head = head;
+        gtprintf("spawned monster %s\n", head->next->name);
 }

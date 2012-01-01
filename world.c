@@ -48,6 +48,7 @@ void init_level(level_t *level)
         int i;
         
         level->c = gtmalloc(level->ysize * (sizeof(cell_t)));
+        level->monsters = gtmalloc(sizeof(monster_t));
         memset(level->c, 0, level->ysize);
         for(i = 0; i<level->xsize; i++) {
                 level->c[i] = gtmalloc(level->xsize * (sizeof(cell_t)));

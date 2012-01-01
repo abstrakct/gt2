@@ -59,7 +59,7 @@ typedef struct actorstruct {     // actor_t
         double speed;
         double movement;
         void (*ai)(struct actorstruct *);      // artificial intelligence handler!!
-        int goalx, goaly;                   // for simple outdoor pathfinder ai
+        int goalx, goaly;                      // for simple outdoor pathfinder ai
         struct actorstruct *prev;
         struct actorstruct *next;
         struct actorstruct *attacker;

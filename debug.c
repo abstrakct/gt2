@@ -19,7 +19,7 @@
 #include "debug.h"
 #include "gt.h"
 
-void dump_monsters()
+void dump_monsterdefs()
 {
         monster_t *m, *n;
         int i;
@@ -32,6 +32,18 @@ void dump_monsters()
                 printf("Can use weapon: %s\tCan use armor: %s\tCan have gold: %s\n", m->flags & MF_CANUSEWEAPON ? "Yes" : "No", m->flags & MF_CANUSEARMOR ? "Yes" : "No", m->flags & MF_CANHAVEGOLD ? "Yes" : "No");
                 printf("\n");
                 n = m;
+        }
+}
+
+void dump_monsters(monster_t *list)
+{
+        monster_t *m;
+        int i;
+
+        m = list->next;
+        while(m) {
+               gtprintf("monsterdump: %s\n", m->name);
+               m = m->next;
         }
 }
 

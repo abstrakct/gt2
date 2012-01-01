@@ -380,7 +380,6 @@ int main(int argc, char *argv[])
         game->context = CONTEXT_OUTSIDE;
         actionnum = 0;
 
-
         initial_update_screen();
 
         do {

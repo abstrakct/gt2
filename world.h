@@ -67,7 +67,8 @@ typedef struct {
         //cell_t dng[YSIZE][XSIZE];
         level_t *out;               // shall point to dng[0]
         level_t *dng;
-        int villages, cvillage;   // num of villages, current village
+        level_t *curlevel;          // needed?
+        int villages, cvillage;     // num of villages, current village
         int cities, ccity;
         int forests, cforest;
         int dungeons;
@@ -80,7 +81,7 @@ typedef struct {
 
 void generate_world();
 void floodfill(int x, int y);
-bool passable(int type);
+bool passable(int y, int x);
 void init_level(level_t *level);
 
 extern char mapchars[];

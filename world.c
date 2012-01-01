@@ -71,8 +71,8 @@ void generate_dungeon_labyrinthine(int maxsize, int d)
         int edgex, edgey;
         //int color;
 
-        tx = 1; //ri(0, 10);  // starting X
-        ty = 1; //ri(0, 10);  // starting y
+        tx = 2; //ri(0, 10);  // starting X
+        ty = 2; //ri(0, 10);  // starting y
         xsize = maxsize-tx;  // total size X
         ysize = maxsize-ty;  // total size Y - rather uneccessary these two, eh?
 
@@ -134,6 +134,15 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
                 }
         }
 
+        for(ty=0;ty<maxsize;ty++) {
+                world->dng[d].c[ty][0].type = DNG_WALL;
+                world->dng[d].c[ty][maxsize-1].type = DNG_WALL;
+        }
+
+        for(tx=0;tx<maxsize;tx++) {
+                world->dng[d].c[0][tx].type = DNG_WALL;
+                world->dng[d].c[maxsize-1][tx].type = DNG_WALL;
+        }
 }
 
 /*********************************************
@@ -374,8 +383,16 @@ void paint_room(map_ptr m, int x, int y, int sx, int sy, int join_overlapping)
         }
 }
 
-bool passable(int type)
+bool passable(int y, int x)
 {
+        int type;
+
+        if(x >= world->curlevel->xsize)
+                return false;
+        if(y >= world->curlevel->ysize)
+                return false;
+
+        type = world->curlevel->c[y][x].type;
         if(type == DNG_WALL)
                 return false;
         if(type == AREA_LAKE)

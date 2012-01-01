@@ -152,121 +152,134 @@ void shutdown_gt()
 void do_action(int action)
 {
         switch(action) {
-                case ACTION_NOTHING:
-                        break;
                 case ACTION_PLAYER_MOVE_DOWN:
-                        if(passable(ct(ply+1,plx)))
+                        if(passable(ply+1, plx))
                                 ply++;
-                        if(ply >= YSIZE-6)
-                                ply = YSIZE-7;
+                        if(ply >= world->curlevel->ysize)
+                                ply = world->curlevel->ysize-1;
                         if(ply >= (ppy + (mapcy/6*5)))
                                 ppy++;
-                        if(ppy >= YSIZE-mapcy-2)
-                                ppy = YSIZE - mapcy - 3;
+                        if(ppy >= world->curlevel->ysize-mapcy-2)
+                                ppy = world->curlevel->ysize - mapcy - 3;
+                        if(ppy < 0)
+                                ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_UP:
-                        if(passable(ct(ply-1,plx)))
+                        if(passable(ply-1,plx))
                                 ply--;
-                        if(ply < 3)
-                                ply = 3;
+                        if(ply < 0)
+                                ply = 0;
                         if(ply <= (ppy + (mapcy/6)))
                                 ppy--;
                         if(ppy < 0)
                                 ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
-                        if(passable(ct(ply,plx-1)))
+                        if(passable(ply, plx-1))
                                 plx--;
-                        if(plx < 3)
-                                plx = 3;
+                        if(plx < 0)
+                                plx = 0;
                         if(plx <= (ppx+(mapcx/6)))
                                 ppx--;
                         if(ppx < 0)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
-                        if(passable(ct(ply,plx+1)))
+                        if(passable(ply,plx+1))
                                 plx++;
-                        if(plx >= XSIZE-4)
-                                plx = XSIZE-5;
+                        if(plx >= world->curlevel->xsize)
+                                plx = world->curlevel->xsize-1;
                         if(plx >= (ppx+(mapcx/6*5)))
                                 ppx++;
-                        if(ppx >= XSIZE-mapcx)
-                                ppx = XSIZE-mapcx-1;
+                        if(ppx >= world->curlevel->xsize-mapcx)
+                                ppx = world->curlevel->xsize-mapcx-1;
+                        if(ppx < 0)
+                                ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_NW:
-                        if(passable(ct(ply-1,plx-1))) {
+                        if(passable(ply-1,plx-1)) {
                                 ply--;
                                 plx--;
                         }
-                        if(ply < 3)
-                                ply = 3;
+                        if(ply < 0)
+                                ply = 0;
                         if(ply <= (ppy + (mapcy/6)))
                                 ppy--;
                         if(ppy < 0)
                                 ppy = 0;
 
-                        if(plx < 3)
-                                plx = 3;
+                        if(plx < 0)
+                                plx = 0;
                         if(plx <= (ppx + (mapcx/6)))
                                 ppx--;
                         if(ppx < 0)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_NE:
-                        if(passable(ct(ply-1,plx+1))) {
+                        if(passable(ply-1,plx+1)) {
                                 ply--; plx++;
                         }
                         
-                        if(plx >= XSIZE-4)
-                                plx = XSIZE-5;
+                        if(plx >= world->curlevel->xsize)
+                                plx = world->curlevel->xsize-1;
                         if(plx >= (ppx+(mapcx/6*5)))
                                 ppx++;
-                        if(ppx >= XSIZE-mapcx)
-                                ppx = XSIZE-mapcx-1;
+                        if(ppx >= world->curlevel->xsize-mapcx)
+                                ppx = world->curlevel->xsize-mapcx-1;
+                        if(ppx < 0)
+                                ppx = 0;
 
-                        if(ply < 3)
-                                ply = 3;
+                        if(ply < 0)
+                                ply = 0;
                         if(ply <= (ppy+(mapcy/6)))
                                 ppy--;
                         if(ppy < 0)
                                 ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_SW:
-                        if(passable(ct(ply+1, plx-1))) {
+                        if(passable(ply+1, plx-1)) {
                                 ply++; plx--;
                         }
 
-                        if(ply >= YSIZE-6)
-                                ply = YSIZE-7;
+                        if(ply >= world->curlevel->ysize)
+                                ply = world->curlevel->ysize-1;
                         if(ply >= (ppy+(mapcy/6*5)))
                                 ppy++;
-                        if(ppy >= YSIZE-mapcy-2)
-                                ppy = YSIZE-mapcy-3;
+                        if(ppy >= world->curlevel->ysize-mapcy-2)
+                                ppy = world->curlevel->ysize-mapcy-3;
+                        if(ppy < 0)
+                                ppy = 0;
 
                         //if(plx < 0)
                         //        plx = 0;
                         if(plx <= (ppx+(mapcx/6)))
                                 ppx--;
-                        if(ppx <= 0)
+                        if(ppx < 0)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_SE:
-                        if(passable(ct(ply+1, plx+1))) {
+                        if(passable(ply+1, plx+1)) {
                                 ply++; plx++;
                         }
-                        if(ply >= YSIZE-6)
-                                ply = YSIZE-7;
+                        if(ply >= world->curlevel->ysize)
+                                ply = world->curlevel->ysize-1;
                         if(ply >= (ppy+(mapcy/6*5)))
                                 ppy++;
-                        if(ppy >= YSIZE-mapcy-2)
-                                ppy = YSIZE-mapcy-3;
-                        if(plx >= XSIZE-4)
-                                plx = XSIZE-5;
+                        if(ppy >= world->curlevel->ysize - mapcy - 2)
+                                ppy = world->curlevel->ysize - mapcy - 3;
+                        if(ppy < 0)
+                                ppy = 0;
+
+                        if(plx >= world->curlevel->xsize)
+                                plx = world->curlevel->xsize - 1;
                         if(plx >= (ppx+(mapcx/6*5)))
                                 ppx++;
-                        if(ppx >= XSIZE-mapcx)
-                                ppx = XSIZE-mapcx-1;
+                        if(ppx >= world->curlevel->xsize - mapcx)
+                                ppx = world->curlevel->xsize - mapcx-1;
+                        if(ppx < 0)
+                                ppx = 0;
+                        break;
+                case ACTION_NOTHING:
                         break;
                 default:
                         fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attemted!\n", __FILE__, __LINE__, action);
@@ -353,7 +366,9 @@ int main(int argc, char *argv[])
 
         init_display();
         init_player();
-        draw_world();
+
+        world->curlevel = world->out;
+        draw_world(world->curlevel);
 
         gtprintf("player x,y = %d, %d - px,py = %d, %d", plx, ply, ppx, ppy);
         monster = gtmalloc(sizeof(monster_t));
@@ -364,6 +379,7 @@ int main(int argc, char *argv[])
         world->cmap[monster->y][monster->x].monster = monster;
         game->context = CONTEXT_OUTSIDE;
         actionnum = 0;
+
 
         initial_update_screen();
 
@@ -380,10 +396,13 @@ int main(int argc, char *argv[])
                                 queue(ACTION_NOTHING);
                                 if(world->cmap == world->out->c) {
                                         world->cmap = world->dng[1].c;
+                                        world->curlevel = &(world->dng[1]);
                                         game->context = CONTEXT_DUNGEON;
+                                        ply = ri((world->curlevel->ysize/2) - 5, (world->curlevel->ysize/2) + 5);
+                                        plx = ri((world->curlevel->xsize/2) - 5, (world->curlevel->xsize/2) + 5);
                                         while(world->cmap[ply][plx].type != DNG_FLOOR) {
-                                                ply = ri(15, DUNGEON_SIZE);
-                                                plx = ri(15, DUNGEON_SIZE);
+                                                ply = ri((world->curlevel->ysize/2) - 5, (world->curlevel->ysize/2) + 5);
+                                                plx = ri((world->curlevel->xsize/2) - 5, (world->curlevel->xsize/2) + 5);
                                         }
                                         ppy = ply - (game->maph / 2);
                                         ppx = plx - (game->mapw / 2);
@@ -394,6 +413,7 @@ int main(int argc, char *argv[])
                                         player->viewradius = 5;
                                 } else {
                                         world->cmap = world->out->c;
+                                        world->curlevel = world->out;
                                         game->context = CONTEXT_OUTSIDE;
                                         player->viewradius = 50;
                                 }
@@ -408,30 +428,14 @@ int main(int argc, char *argv[])
                                 floodfill(x, x);
                                 queue(ACTION_NOTHING);
                                 break;
-                        case 'j':
-                                queue(ACTION_PLAYER_MOVE_DOWN);
-                                break;
-                        case 'k':
-                                queue(ACTION_PLAYER_MOVE_UP);
-                                break;
-                        case 'h':
-                                queue(ACTION_PLAYER_MOVE_LEFT);
-                                break;
-                        case 'l':
-                                queue(ACTION_PLAYER_MOVE_RIGHT);
-                                break;
-                        case 'y':
-                                queue(ACTION_PLAYER_MOVE_NW);
-                                break;
-                        case 'u':
-                                queue(ACTION_PLAYER_MOVE_NE);
-                                break;
-                        case 'b':
-                                queue(ACTION_PLAYER_MOVE_SW);
-                                break;
-                        case 'n':
-                                queue(ACTION_PLAYER_MOVE_SE);
-                                break;
+                        case 'j': queue(ACTION_PLAYER_MOVE_DOWN); break;
+                        case 'k': queue(ACTION_PLAYER_MOVE_UP); break;
+                        case 'h': queue(ACTION_PLAYER_MOVE_LEFT); break;
+                        case 'l': queue(ACTION_PLAYER_MOVE_RIGHT); break;
+                        case 'y': queue(ACTION_PLAYER_MOVE_NW); break;
+                        case 'u': queue(ACTION_PLAYER_MOVE_NE); break;
+                        case 'b': queue(ACTION_PLAYER_MOVE_SW); break;
+                        case 'n': queue(ACTION_PLAYER_MOVE_SE); break;
                         case 'J':
                                 for(x=0;x<20;x++)
                                         queue(ACTION_PLAYER_MOVE_DOWN);
@@ -452,11 +456,8 @@ int main(int argc, char *argv[])
                                         queue(ACTION_PLAYER_MOVE_RIGHT);
                                 do_all = true;
                                 break;
-                        case 'a':
-                                dump_action_queue();
-                        default:
-                                queue(ACTION_NOTHING);
-                                break;
+                        case 'a': dump_action_queue();
+                        default: queue(ACTION_NOTHING); break;
                 }
 
                 if(!do_all) {
@@ -469,8 +470,8 @@ int main(int argc, char *argv[])
                 if(monster->ai)
                         monster->ai(monster);
 
-                draw_world();
-                gtprintf("player x,y = %d, %d - px,py = %d, %d", plx, ply, ppx, ppy);
+                draw_world(world->curlevel);
+                gtprintf("player x,y = %d, %d\tpx,py = %d, %d\tmapcx,y = %d,%d", plx, ply, ppx, ppy, mapcx, mapcy);
                 update_screen();
         } while(!game->dead);
 

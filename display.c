@@ -144,7 +144,7 @@ void dofov(float x, float y)
         oy = (float) ply + 0.5f;
 
         for(i = 0; i < player->viewradius; i++) {
-                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < YSIZE && (int)ox < XSIZE) {
+                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < world->curlevel->ysize && (int)ox < world->curlevel->xsize) {
                         cv((int)oy, (int)ox) = 1;
                         if(game->context == CONTEXT_DUNGEON)
                                 if(!blocks_light(ct((int)oy, (int)ox)))
@@ -174,30 +174,33 @@ void FOV()
         }
 }
 
-void draw_world()
+void draw_world(level_t *level)
 {
         int i,j;
         int dx, dy;  // coordinates on screen!
 
         werase(wmap);
         FOV();
-        for(j = player->py, dy = 0; j < (player->py + game->maph); j++, dy++) {
-                for(i = player->px, dx = 0; i < (player->px + game->mapw); i++, dx++) {
+        for(j = ppy, dy = 0; j < (ppy + level->ysize); j++, dy++) {
+                for(i = ppx, dx = 0; i < (ppx + level->xsize); i++, dx++) {
                         /*
                          * in this function, (j,i) are the coordinates on the map,
                          * dx,dy = coordinates on screen.
                          * so, player->py/px describes the upper left corner of the map
                          */
 
-                        if(cv(j,i)) {
-                                gtmapaddch(dx, dy, world->cmap[j][i].color, mapchars[(int) ct(j,i)]);
-                                if(world->cmap[j][i].monster)
-                                        gtmapaddch(dx, dy, COLOR_RED, (char) world->cmap[j][i].monster->c);
+                        if(j < level->ysize && i < level->xsize) {
+                                if(cv(j,i)) {
+                                        gtmapaddch(dx, dy, cc(j,i), mapchars[(int) ct(j,i)]);
+                                        if(world->cmap[j][i].monster)
+                                                gtmapaddch(dx, dy, COLOR_RED, (char) world->cmap[j][i].monster->c);
+                                }
+
+                                if(ct(j,i) == AREA_WALL) {
+                                        gtmapaddch(dx, dy, COLOR_PLAIN, mapchars[DNG_WALL]);
+                                }
                         }
 
-                        if(ct(j,i) == AREA_WALL) {
-                                gtmapaddch(dx, dy, COLOR_PLAIN, mapchars[DNG_WALL]);
-                        }
                         
                         if(j == ply && i == plx)
                                 gtmapaddch(dx, dy, COLOR_PLAYER, '@');

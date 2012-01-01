@@ -399,10 +399,10 @@ void generate_world()
                 }
         }
 
-        world->forests  = ri(game->c.minf, game->c.maxf);
-        world->cities   = ri(game->c.minc, game->c.maxc);
-        world->villages = ri(game->c.minv, game->c.maxv);
-        world->dungeons = ri(game->c.mind, game->c.maxd);
+        world->forests  = ri(gtconfig.minf, gtconfig.maxf);
+        world->cities   = ri(gtconfig.minc, gtconfig.maxc);
+        world->villages = ri(gtconfig.minv, gtconfig.maxv);
+        world->dungeons = ri(gtconfig.mind, gtconfig.maxd);
 
 fprintf(stderr, "DEBUG: %s:%d - Generating %d forests\n", __FILE__, __LINE__, world->forests);
         world->forest = (forest_t *) gtcalloc((size_t)world->forests, sizeof(forest_t));

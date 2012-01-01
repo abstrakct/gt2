@@ -196,21 +196,21 @@ int parse_configfile()
         }
 
         sprintf(sname, "config.[0].min_forests");
-        config_lookup_int(cf, sname, &game->c.minf);
+        config_lookup_int(cf, sname, &gtconfig.minf);
         sprintf(sname, "config.[0].max_forests");
-        config_lookup_int(cf, sname, &game->c.maxf);
+        config_lookup_int(cf, sname, &gtconfig.maxf);
         sprintf(sname, "config.[0].min_cities");
-        config_lookup_int(cf, sname, &game->c.minc);
+        config_lookup_int(cf, sname, &gtconfig.minc);
         sprintf(sname, "config.[0].max_cities");
-        config_lookup_int(cf, sname, &game->c.maxc);
+        config_lookup_int(cf, sname, &gtconfig.maxc);
         sprintf(sname, "config.[0].min_villages");
-        config_lookup_int(cf, sname, &game->c.minv);
+        config_lookup_int(cf, sname, &gtconfig.minv);
         sprintf(sname, "config.[0].max_villages");
-        config_lookup_int(cf, sname, &game->c.maxv);
+        config_lookup_int(cf, sname, &gtconfig.maxv);
         sprintf(sname, "config.[0].min_dungeons");
-        config_lookup_int(cf, sname, &game->c.mind);
+        config_lookup_int(cf, sname, &gtconfig.mind);
         sprintf(sname, "config.[0].max_dungeons");
-        config_lookup_int(cf, sname, &game->c.maxd);
+        config_lookup_int(cf, sname, &gtconfig.maxd);
 
         printf(" OK\n");
         

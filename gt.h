@@ -12,6 +12,13 @@
 
 #define MAIN_DATA_FILE "data/data.cfg"
 
+typedef struct {
+        int minf, maxf;
+        int minc, maxc;
+        int minv, maxv;
+        int mind, maxd;
+} gt_config_t;
+
 typedef struct {            // game_t
         int width, height;
         int mapw, maph;    // width, height of map window
@@ -20,12 +27,6 @@ typedef struct {            // game_t
         int context;
         unsigned int seed;
         int monsterdefs;   // number of monster definitions
-        struct {
-                int minf, maxf;
-                int minc, maxc;
-                int minv, maxv;
-                int mind, maxd;
-        } c;
 } game_t;
 
 typedef struct {       // message_t
@@ -84,6 +85,7 @@ extern FILE *messagefile;
 extern message_t m[500];
 extern int currmess, maxmess;
 extern struct actionqueue *aq;
+extern gt_config_t gtconfig;
 
 /*extern WINDOW *wall;
 extern WINDOW *wstat;

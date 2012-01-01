@@ -53,6 +53,7 @@ game_t *game;
 world_t *world;
 actor_t *player;
 struct actionqueue *aq;
+gt_config_t gtconfig;
 long actionnum;
 FILE *messagefile;
 int mapcx, mapcy;

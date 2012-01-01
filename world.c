@@ -43,13 +43,25 @@ char mapchars[50] = {
         '#'   //dungeonwall
 };
 
+void init_level(level_t *level)
+{
+        int i;
+        
+        level->c = gtmalloc(level->ysize * (sizeof(cell_t)));
+        memset(level->c, 0, level->ysize);
+        for(i = 0; i<level->xsize; i++) {
+                level->c[i] = gtmalloc(level->xsize * (sizeof(cell_t)));
+                memset(level->c[i], 0, level->xsize);
+        }
+}
+
 /*********************************************
 * Description - Generate a dungeon, labyrinthine (or perhaps more like a cavern?)
 * maxsize = well, max size
 * Author - RK
 * Date - Dec 12 2011
 * *******************************************/
-void generate_dungeon_labyrinthine(int maxsize)
+void generate_dungeon_labyrinthine(int maxsize, int d)
 {
         int tx, ty, xsize, ysize; 
         int fx, fy;
@@ -59,10 +71,10 @@ void generate_dungeon_labyrinthine(int maxsize)
         int edgex, edgey;
         //int color;
 
-        tx = 10; //ri(0, 10);  // starting X
-        ty = 10; //ri(0, 10);  // starting y
-        xsize = maxsize;  // total size X
-        ysize = maxsize;  // total size Y - rather uneccessary these two, eh?
+        tx = 1; //ri(0, 10);  // starting X
+        ty = 1; //ri(0, 10);  // starting y
+        xsize = maxsize-tx;  // total size X
+        ysize = maxsize-ty;  // total size Y - rather uneccessary these two, eh?
 
 fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, __LINE__, tx, ty, xsize, ysize);
         // let's not go over the edge
@@ -85,11 +97,11 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
         if(edgey <= 0)
                 edgey = 1;
 
-        for(fy=ty;fy<(ty+ysize);fy++) {
-                for(fx=tx;fx<(tx+xsize);fx++) {
-                        world->dng[fy][fx].type = DNG_WALL;
-                        world->dng[fy][fx].color = COLOR_NORMAL;
-                        world->dng[fy][fx].visible = 0;
+        for(fy=ty;fy<=ysize;fy++) {
+                for(fx=tx;fx<=xsize;fx++) {
+                        world->dng[d].c[fy][fx].type = DNG_WALL;
+                        world->dng[d].c[fy][fx].color = COLOR_NORMAL;
+                        world->dng[d].c[fy][fx].visible = 0;
                 }
         }
 
@@ -116,8 +128,8 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
                         chance = 25;
 
                         if(a >= chance && fy != ty && fy != (ty+ysize) && fx != tx && fx != (tx+xsize)) {
-                                world->dng[fy][fx].type = DNG_FLOOR;
-                                world->dng[fy][fx].color = COLOR_NORMAL;
+                                world->dng[d].c[fy][fx].type = DNG_FLOOR;
+                                world->dng[d].c[fy][fx].color = COLOR_NORMAL;
                         }
                 }
         }
@@ -178,17 +190,17 @@ void generate_area(int i, int type, int modifier, int maxsize)
                                         world->forest[i].x2 = tx+xsize-1;
                                         world->forest[i].y2 = ty+ysize-1;
                                         world->forest[i].flags = 0;;
-                                        world->out[fy][fx].type = AREA_FOREST_NOTREE;
-                                        world->out[fy][fx].color = COLOR_NORMAL;
+                                        world->out->c[fy][fx].type = AREA_FOREST_NOTREE;
+                                        world->out->c[fy][fx].color = COLOR_NORMAL;
                                         break;
                                 case AREA_VILLAGE:
                                         world->village[i].x1 = tx;
                                         world->village[i].y1 = ty;
                                         world->village[i].x2 = tx+xsize-1;
                                         world->village[i].y2 = ty+ysize-1;
-                                        if(world->out[fy][fx].type == AREA_PLAIN) {
-                                                world->out[fy][fx].type = AREA_VILLAGE_NOHOUSE;
-                                                world->out[fy][fx].color = COLOR_NORMAL;
+                                        if(world->out->c[fy][fx].type == AREA_PLAIN) {
+                                                world->out->c[fy][fx].type = AREA_VILLAGE_NOHOUSE;
+                                                world->out->c[fy][fx].color = COLOR_NORMAL;
                                         }
                                         break;
                                 case AREA_CITY:
@@ -196,9 +208,9 @@ void generate_area(int i, int type, int modifier, int maxsize)
                                         world->city[i].y1 = ty;
                                         world->city[i].x2 = tx+xsize-1;
                                         world->city[i].y2 = ty+ysize-1;
-                                        if(world->out[fy][fx].type == AREA_PLAIN) {
-                                                world->out[fy][fx].type = AREA_CITY_NOHOUSE;
-                                                world->out[fy][fx].color = COLOR_NORMAL;
+                                        if(world->out->c[fy][fx].type == AREA_PLAIN) {
+                                                world->out->c[fy][fx].type = AREA_CITY_NOHOUSE;
+                                                world->out->c[fy][fx].color = COLOR_NORMAL;
                                         }
                                         break;
                         }                        
@@ -233,37 +245,37 @@ void generate_area(int i, int type, int modifier, int maxsize)
                         }
 
                         if(a >= chance) {
-                                world->out[fy][fx].type = type;
+                                world->out->c[fy][fx].type = type;
                                 switch(type) {
                                         case AREA_FOREST:
-                                                world->out[fy][fx].color = COLOR_FOREST;
+                                                world->out->c[fy][fx].color = COLOR_FOREST;
                                                 break;
                                         case AREA_VILLAGE:
                                         case AREA_CITY:
-                                                world->out[fy][fx].color = COLOR_CITY;
+                                                world->out->c[fy][fx].color = COLOR_CITY;
                                                 break;
                                 }
                                 /*
                                 switch(type) {
                                         case FOREST:
                                                 color = ri(0,4);
-                                                world->out[fy][fx].color = forestcolors[color];
+                                                world->out->c[fy][fx].color = forestcolors[color];
                                                 break;
                                         case VILLAGE:
                                                 color = ri(0,1); 
-                                                world->out[fy][fx].color = citycolors[color];
+                                                world->out->c[fy][fx].color = citycolors[color];
                                                 world->village[i].houses++;
                                                 break;
                                         case CITY:
                                                 color = ri(0,1);
-                                                world->out[fy][fx].color = citycolors[color];
+                                                world->out->c[fy][fx].color = citycolors[color];
                                                 world->city[i].houses++;
                                                 break;
                                         case DUNGEON:
                                                 color = ri(0,2);
-                                                world->out[fy][fx].color = dungeoncolors[color];
+                                                world->out->c[fy][fx].color = dungeoncolors[color];
                                                 world->dungeons++;
-                                                world->out[fy][fx].flags |= HAS_DUNGEON;
+                                                world->out->c[fy][fx].flags |= HAS_DUNGEON;
                                                 break;
                                 }*/
                         }
@@ -337,7 +349,7 @@ void floodfill(int x, int y)
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-void paint_room(map_ptr *m, int x, int y, int sx, int sy, int join_overlapping)
+void paint_room(map_ptr m, int x, int y, int sx, int sy, int join_overlapping)
 {
         int i, j;
 
@@ -382,7 +394,7 @@ bool passable(int type)
 * *******************************************/
 void generate_world()
 {
-        map_ptr *mapp;
+        map_ptr mapp;
         int x, y, rooms;
 
         /*
@@ -390,12 +402,12 @@ void generate_world()
          */
         for(x = 0; x < XSIZE; x++) {
                 for(y = 0; y < YSIZE; y++) {
-                        world->out[y][x].type = AREA_PLAIN;
-                        world->out[y][x].flags = 0;
-                        world->out[y][x].color = COLOR_PLAIN;
-                        world->out[y][x].monster = NULL;
-                        world->out[y][x].inventory = NULL;
-                        world->out[y][x].visible = 0;
+                        world->out->c[y][x].type = AREA_PLAIN;
+                        world->out->c[y][x].flags = 0;
+                        world->out->c[y][x].color = COLOR_PLAIN;
+                        world->out->c[y][x].monster = NULL;
+                        world->out->c[y][x].inventory = NULL;
+                        world->out->c[y][x].visible = 0;
                 }
         }
 
@@ -404,42 +416,36 @@ void generate_world()
         world->villages = ri(gtconfig.minv, gtconfig.maxv);
         world->dungeons = ri(gtconfig.mind, gtconfig.maxd);
 
-fprintf(stderr, "DEBUG: %s:%d - Generating %d forests\n", __FILE__, __LINE__, world->forests);
+        fprintf(stderr, "DEBUG: %s:%d - Generating %d forests\n", __FILE__, __LINE__, world->forests);
         world->forest = (forest_t *) gtcalloc((size_t)world->forests, sizeof(forest_t));
         generate_forest(world->forests);
 
-fprintf(stderr, "DEBUG: %s:%d - Generating %d cities\n", __FILE__, __LINE__, world->cities);
+        fprintf(stderr, "DEBUG: %s:%d - Generating %d cities\n", __FILE__, __LINE__, world->cities);
         world->city = gtcalloc((size_t)world->cities, sizeof(city_t));
         generate_city(world->cities);
 
-fprintf(stderr, "DEBUG: %s:%d - Generating %d villages\n", __FILE__, __LINE__, world->villages);
+        fprintf(stderr, "DEBUG: %s:%d - Generating %d villages\n", __FILE__, __LINE__, world->villages);
         world->village = gtcalloc((size_t)world->villages, sizeof(city_t));
         generate_village(world->villages);
 
 
-fprintf(stderr, "DEBUG: %s:%d - Generating dungoen!!\n", __FILE__, __LINE__);
-        mapp = world->dng;
-        generate_dungeon_labyrinthine(DUNGEON_SIZE);
+        fprintf(stderr, "DEBUG: %s:%d - Generating dungoen!!\n", __FILE__, __LINE__);
+        mapp = world->dng[1].c;
+        generate_dungeon_labyrinthine(world->dng[1].xsize, 1);
 //        paint_room(mapp, 10, 10, 789, 789);
 
-        rooms = 10;
-        for(x = 0; x < rooms; x++)
-                for(y = 0; y < rooms; y++) {
-                        paint_room(mapp, ri(15, 740), ri(15, 740), ri(20, 60), ri(10, 35), 1);
-                        paint_room(mapp, ri(15, 740), ri(15, 740), ri(20, 60), ri(10, 35), 0);
-                }
 
         // create the edge of the world
         for(x=0; x<XSIZE; x++) {
-                world->out[1][x].type = AREA_WALL;
-                world->out[2][x].type = AREA_WALL;
-                world->out[792][x].type = AREA_WALL;
-                world->out[793][x].type = AREA_WALL;
+                world->out->c[1][x].type = AREA_WALL;
+                world->out->c[2][x].type = AREA_WALL;
+                world->out->c[792][x].type = AREA_WALL;
+                world->out->c[793][x].type = AREA_WALL;
         }
         for(y=0; y<YSIZE; y++) {
-                world->out[y][1].type = AREA_WALL;
-                world->out[y][2].type = AREA_WALL;
-                world->out[y][794].type = AREA_WALL;
-                world->out[y][795].type = AREA_WALL;
+                world->out->c[y][1].type = AREA_WALL;
+                world->out->c[y][2].type = AREA_WALL;
+                world->out->c[y][794].type = AREA_WALL;
+                world->out->c[y][795].type = AREA_WALL;
         }
 }

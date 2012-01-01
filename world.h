@@ -40,7 +40,8 @@ typedef struct {
         obj_t     *inventory;
 } cell_t;
 
-typedef cell_t map_ptr[XSIZE];
+//typedef cell_t map_ptr[XSIZE];
+typedef cell_t** map_ptr;
 
 typedef struct {
         int x1, y1, x2, y2;     // start/end coordinates
@@ -56,22 +57,31 @@ typedef struct {
 } forest_t;
 
 typedef struct {
-        cell_t out[YSIZE][XSIZE];
-        cell_t dng[YSIZE][XSIZE];
-        int villages, cvillage;   // num of villages, current village|
+        cell_t **c;
+        int xsize, ysize;
+        monster_t *monsters;      // point to head of linked lists of monsters on this level
+} level_t;
+
+typedef struct {
+        //cell_t out[YSIZE][XSIZE];
+        //cell_t dng[YSIZE][XSIZE];
+        level_t *out;               // shall point to dng[0]
+        level_t *dng;
+        int villages, cvillage;   // num of villages, current village
         int cities, ccity;
         int forests, cforest;
         int dungeons;
         city_t *city;
         city_t *village;
         forest_t *forest;
-        map_ptr *cmap;
+        cell_t **cmap;
 } world_t;
 
 
 void generate_world();
 void floodfill(int x, int y);
 bool passable(int type);
+void init_level(level_t *level);
 
 extern char mapchars[];
 

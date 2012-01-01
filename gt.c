@@ -89,10 +89,19 @@ void init_variables()
         world = (world_t *) gtmalloc(sizeof(world_t));
         memset(world, 0, sizeof(world_t));
 
+        world->dng = gtcalloc(4, sizeof(level_t));    // allocate 4 levels, 0 = outside, 1..n = dungeons
+        world->out = world->dng;                      // i.e. it points to world->dng[0]
+        world->out->xsize = XSIZE;
+        world->out->ysize = YSIZE;
+        init_level(world->out);
+
+        world->dng[1].xsize = 200;
+        world->dng[1].ysize = 200;
+        init_level(&(world->dng[1]));
+
         game = (game_t *) gtmalloc(sizeof(game_t));
         game->dead = 0;
         game->seed = time(0);
-        game->vx = game->vy = 0;
         srand(game->seed);
 fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->seed);
         
@@ -340,7 +349,7 @@ int main(int argc, char *argv[])
                 die("Couldn't parse data files.");
 
         generate_world();
-        world->cmap = world->out;
+        world->cmap = world->out->c;
 
         init_display();
         init_player();
@@ -369,8 +378,8 @@ int main(int argc, char *argv[])
                                 break;
                         case 'd':
                                 queue(ACTION_NOTHING);
-                                if(world->cmap == world->out) {
-                                        world->cmap = world->dng;
+                                if(world->cmap == world->out->c) {
+                                        world->cmap = world->dng[1].c;
                                         game->context = CONTEXT_DUNGEON;
                                         while(world->cmap[ply][plx].type != DNG_FLOOR) {
                                                 ply = ri(15, DUNGEON_SIZE);
@@ -382,11 +391,9 @@ int main(int argc, char *argv[])
                                                 ppy = 0;
                                         if(ppx <= 0)
                                                 ppx = 0;
-
-
                                         player->viewradius = 5;
                                 } else {
-                                        world->cmap = world->out;
+                                        world->cmap = world->out->c;
                                         game->context = CONTEXT_OUTSIDE;
                                         player->viewradius = 50;
                                 }
@@ -394,7 +401,7 @@ int main(int argc, char *argv[])
                         case 'f':
                                 // this should ensure floodfill working every time!
                                 x = ri(11,111);
-                                while(world->dng[x][x].type != DNG_FLOOR) {
+                                while(world->dng[1].c[x][x].type != DNG_FLOOR) {
                                         x = ri(11,111);
                                 }
                                 gtprintf("floodfilling from %d, %d\n", x, x);

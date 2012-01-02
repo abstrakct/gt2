@@ -58,6 +58,7 @@ long actionnum;
 FILE *messagefile;
 int mapcx, mapcy;
 bool mapchanged;
+int tempxsize, tempysize;
 
 // Messages
 message_t m[500];
@@ -429,11 +430,11 @@ int main(int argc, char *argv[])
                                         world->curlevel = &(world->dng[1]);
                                         game->context = CONTEXT_DUNGEON;
 
-                                        ply = ri((world->curlevel->ysize/2) - 5, (world->curlevel->ysize/2) + 5);
-                                        plx = ri((world->curlevel->xsize/2) - 5, (world->curlevel->xsize/2) + 5);
+                                        ply = ri((world->curlevel->ysize/2) - 25, (world->curlevel->ysize/2) + 25);
+                                        plx = ri((world->curlevel->xsize/2) - 25, (world->curlevel->xsize/2) + 25);
                                         while(world->cmap[ply][plx].type != DNG_FLOOR) {
-                                                ply = ri((world->curlevel->ysize/2) - 5, (world->curlevel->ysize/2) + 5);
-                                                plx = ri((world->curlevel->xsize/2) - 5, (world->curlevel->xsize/2) + 5);
+                                                ply = ri((world->curlevel->ysize/2) - 25, (world->curlevel->ysize/2) + 25);
+                                                plx = ri((world->curlevel->xsize/2) - 25, (world->curlevel->xsize/2) + 25);
                                         }
 
                                         ppy = ply - (game->maph / 2);

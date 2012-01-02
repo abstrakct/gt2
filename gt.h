@@ -12,11 +12,12 @@
 
 #define MAIN_DATA_FILE "data/data.cfg"
 
-typedef struct {
+typedef struct {                    // config
         int minf, maxf;
         int minc, maxc;
         int minv, maxv;
         int mind, maxd;
+        int dxsize, dysize;
 } gt_config_t;
 
 typedef struct {            // game_t
@@ -85,6 +86,7 @@ extern message_t m[500];
 extern int currmess, maxmess;
 extern struct actionqueue *aq;
 extern gt_config_t gtconfig;
+extern int tempxsize, tempysize;
 
 /*extern WINDOW *wall;
 extern WINDOW *wstat;

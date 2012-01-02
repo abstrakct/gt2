@@ -211,6 +211,10 @@ int parse_configfile()
         config_lookup_int(cf, sname, &gtconfig.mind);
         sprintf(sname, "config.[0].max_dungeons");
         config_lookup_int(cf, sname, &gtconfig.maxd);
+        sprintf(sname, "config.[0].dxsize");
+        config_lookup_int(cf, sname, &gtconfig.dxsize);
+        sprintf(sname, "config.[0].dysize");
+        config_lookup_int(cf, sname, &gtconfig.dysize);
 
         printf(" OK\n");
         

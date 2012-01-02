@@ -429,8 +429,8 @@ void generate_world()
         /*
          * Generate the outside world first.
          */
-        for(x = 0; x < XSIZE; x++) {
-                for(y = 0; y < YSIZE; y++) {
+        for(x = 0; x < world->out->xsize; x++) {
+                for(y = 0; y < world->out->ysize; y++) {
                         world->out->c[y][x].type = AREA_PLAIN;
                         world->out->c[y][x].flags = 0;
                         world->out->c[y][x].color = COLOR_PLAIN;
@@ -461,13 +461,13 @@ void generate_world()
         generate_dungeon_labyrinthine(1);
 
         // create the edge of the world
-        for(x=0; x<XSIZE; x++) {
+        for(x=0; x<world->out->xsize; x++) {
                 world->out->c[1][x].type = AREA_WALL;
                 world->out->c[2][x].type = AREA_WALL;
                 world->out->c[792][x].type = AREA_WALL;
                 world->out->c[793][x].type = AREA_WALL;
         }
-        for(y=0; y<YSIZE; y++) {
+        for(y=0; y<world->out->ysize; y++) {
                 world->out->c[y][1].type = AREA_WALL;
                 world->out->c[y][2].type = AREA_WALL;
                 world->out->c[y][794].type = AREA_WALL;

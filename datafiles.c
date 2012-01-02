@@ -106,7 +106,6 @@ int parse_monsters()
                 config_lookup_int(cf, sname, &tmp);
                 m->ai = aitable[tmp];
                 m->id = id;
-                printf("parsed monster with id %d\n", id);
 
                 /*
                  * the following was written in one go, it's beautiful and seems totally bugfree!!
@@ -154,7 +153,6 @@ int parse_armor()
                 sprintf(sname, "armor.[%d].ac", j);
                 config_lookup_int(cf, sname, &(o->ac)); 
 
-                printf("parsed objid %d\n", objid);
                 o->id = objid; objid++;
 
                 o->head = objdefs->head;
@@ -218,7 +216,10 @@ int parse_configfile()
 
         printf(" OK\n");
         
-        
+        world->dng[1].xsize = gtconfig.dxsize;
+        world->dng[1].ysize = gtconfig.dysize;
+        init_level(&world->dng[1]);
+
         return 0;
 }
 

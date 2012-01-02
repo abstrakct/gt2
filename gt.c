@@ -98,10 +98,6 @@ void init_variables()
         world->out->ysize = YSIZE;
         init_level(world->out);
 
-        world->dng[1].xsize = 50;
-        world->dng[1].ysize = 50;
-        init_level(&(world->dng[1]));
-
         game = (game_t *) gtmalloc(sizeof(game_t));
         game->dead = 0;
         game->seed = time(0);
@@ -493,6 +489,11 @@ int main(int argc, char *argv[])
                                 break;
                         case 'v':
                                 set_all_visible(); queue(ACTION_NOTHING); break;
+                        case 's':
+                                spawn_monster_at(plx+5, ply+5, ri(0, game->monsterdefs), world->curlevel->monsters, world->curlevel);
+                                dump_monsters(world->curlevel->monsters);
+                                queue(ACTION_NOTHING);
+                                break;
                         case 'a': dump_action_queue();
                         default: queue(ACTION_NOTHING); break;
                 }

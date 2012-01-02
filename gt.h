@@ -20,13 +20,13 @@ typedef struct {                    // config
         int dxsize, dysize;
 } gt_config_t;
 
-typedef struct {            // game_t
+typedef struct {                     // game_t
         int width, height;
-        int mapw, maph;     // width, height of map window
-        int dead;           // is the game/player dead?
-        int context;        // which context are we in? see CONTEXT_ defines
-        unsigned int seed;  // random seed
-        int monsterdefs;    // number of monster definitions
+        int mapw, maph;              // width, height of map window
+        int dead;                    // is the game/player dead?
+        int context;                 // which context are we in? see CONTEXT_ defines
+        unsigned int seed;           // random seed
+        int monsterdefs;             // number of monster definitions
 } game_t;
 
 typedef struct {       // message_t

@@ -190,10 +190,10 @@ void draw_world(level_t *level)
                          */
 
                         if(j < level->ysize && i < level->xsize) {
-                                if(cv(j,i)) {
-                                        gtmapaddch(dx, dy, cc(j,i), mapchars[(int) ct(j,i)]);
-                                        if(world->cmap[j][i].monster)
-                                                gtmapaddch(dx, dy, COLOR_RED, (char) world->cmap[j][i].monster->c);
+                                if(level->c[j][i].visible) {
+                                        gtmapaddch(dx, dy, cc(j,i), mapchars[(int) level->c[j][i].type]);
+                                        if(level->c[j][i].monster)
+                                                gtmapaddch(dx, dy, COLOR_RED, (char) level->c[j][i].monster->c);
                                 }
 
                                 if(ct(j,i) == AREA_WALL) {

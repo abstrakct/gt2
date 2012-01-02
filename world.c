@@ -43,17 +43,33 @@ char mapchars[50] = {
         '#'   //dungeonwall
 };
 
+/*********************************************
+* Description - Initialize a level_t struct.
+* This function will allocate memory for xsize*ysize*sizeof(cell_t)
+* If memory already has been allocated, it will be free'd and reallocated!
+* Author - RK
+* Date - Jan 02 2012
+* *******************************************/
 void init_level(level_t *level)
 {
         int i;
         
-        level->c = gtmalloc(level->ysize * (sizeof(cell_t)));
-        level->monsters = gtmalloc(sizeof(monster_t));
+        if(!level->c) {
+                level->c = gtmalloc(level->ysize * (sizeof(cell_t)));
+        } else {
+                free(level->c);
+                for(i = 0; i<level->xsize; i++)
+                        free(level->c[i]);
+                level->c = gtmalloc(level->ysize * (sizeof(cell_t)));
+        }
+
         memset(level->c, 0, level->ysize);
         for(i = 0; i<level->xsize; i++) {
                 level->c[i] = gtmalloc(level->xsize * (sizeof(cell_t)));
                 memset(level->c[i], 0, level->xsize);
         }
+
+        level->monsters = gtmalloc(sizeof(monster_t));
 }
 
 /*********************************************

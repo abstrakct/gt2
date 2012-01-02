@@ -1,2 +1,3 @@
-bruk passable(type) for alle sjekker
-bytt player-> etc med makroer
+* Signal handler!
+* Garbage collection!?
+gtmalloc må holde styr på hva som er allokert?

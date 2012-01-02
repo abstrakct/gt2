@@ -9,7 +9,7 @@
 #define _GT_DEBUG_H
 
 void dump_monsterdefs();
-void dump_monsters();
+void dump_monsters(monster_t *list);
 void dump_objects();
 void dump_action_queue();
 

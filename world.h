@@ -32,18 +32,6 @@
 #define DUNGEON_SIZE 200
 
 typedef struct {
-        char type;
-        int flags;
-        int color;
-        short visible;
-        monster_t *monster;
-        obj_t     *inventory;
-} cell_t;
-
-//typedef cell_t map_ptr[XSIZE];
-typedef cell_t** map_ptr;
-
-typedef struct {
         int x1, y1, x2, y2;     // start/end coordinates
         char name[50];
         int alignment;          // not sure what this is for.... good/evil alignment??
@@ -57,10 +45,22 @@ typedef struct {
 } forest_t;
 
 typedef struct {
+        char type;
+        int flags;
+        int color;
+        short visible;
+        monster_t *monster;
+        obj_t     *inventory;
+} cell_t;
+
+struct levelstruct {
         cell_t **c;
         int xsize, ysize;
         monster_t *monsters;      // point to head of linked lists of monsters on this level
-} level_t;
+};
+
+typedef struct levelstruct level_t;
+typedef cell_t** map_ptr;
 
 typedef struct {
         //cell_t out[YSIZE][XSIZE];

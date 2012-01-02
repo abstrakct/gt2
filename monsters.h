@@ -23,6 +23,9 @@ extern aifunction aitable[];
 // Prototypes
 monster_t get_monsterdef(int n);
 void spawn_monster(int n, monster_t *head);
+bool spawn_monster_at(int x, int y, int n, monster_t *head, void *level);
+
+// AI
 void simpleai(monster_t *m);
 void advancedai(monster_t *m);
 

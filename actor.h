@@ -57,14 +57,16 @@ typedef struct actorstruct {     // actor_t
         int c;             // character, for monsters.
         double speed;
         double movement;
+        int thac0;
+        float skill[10];
+        /* monster specific stuff */
         void (*ai)(struct actorstruct *);      // artificial intelligence handler!!
         int goalx, goaly;                      // for simple outdoor pathfinder ai
         struct actorstruct *prev;
         struct actorstruct *next;
         struct actorstruct *attacker;
         struct actorstruct *head;
-        int thac0;
-        float skill[10];
+        // infinite recursion inclusion fuck shit level_t *l;                            // pointer to the level where it's at
 } actor_t;
 
 #endif

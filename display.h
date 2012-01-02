@@ -29,7 +29,7 @@ void gtmapaddch(int x, int y, int color, char c);
 void update_screen();
 void update_player();
 void initial_update_screen();
-char gtgetch();
+int  gtgetch();
 void domess();
 void scrollmessages();
 void mess(char *message);

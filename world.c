@@ -387,26 +387,29 @@ void set_all_visible()
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-void paint_room(map_ptr m, int x, int y, int sx, int sy, int join_overlapping)
+void paint_room(level_t *l, int x, int y, int sx, int sy, int join_overlapping)
 {
         int i, j;
+
+        if(((x+sx) >= l->xsize) || ((y+sy) >= l->ysize))
+                return;
 
         for(i = x; i <= (x+sx); i++) {
                 for(j = y; j <= (y+sy); j++) {
                         if((j == y) || (j == y+sy) || (i == x) || (i == x+sx)) {
                                 if(join_overlapping) {
-                                        if(m[j][i].type != AREA_NOTHING) {
-                                                m[j][i].type = DNG_WALL;
-                                                m[j][i].color = COLOR_NORMAL;
+                                        if(l->c[j][i].type != DNG_FLOOR) {
+                                                l->c[j][i].type = DNG_WALL;
+                                                l->c[j][i].color = COLOR_NORMAL;
                                         }
                                 } else {
-                                        m[j][i].type = DNG_WALL;
-                                        m[j][i].color = COLOR_NORMAL;
+                                        l->c[j][i].type = DNG_WALL;
+                                        l->c[j][i].color = COLOR_NORMAL;
                                 }
 
                         } else {
-                                m[j][i].type = AREA_NOTHING;
-                                m[j][i].color = COLOR_NORMAL;
+                                l->c[j][i].type = DNG_FLOOR;
+                                l->c[j][i].color = COLOR_NORMAL;
                         }
                 }
         }

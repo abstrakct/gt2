@@ -166,6 +166,7 @@ int parse_armor()
 
         printf(" OK\n");
         objdefs->head->ddice = i;
+        game->objdefs = i;
 
         return 0;
 }

@@ -29,6 +29,7 @@
 #include "you.h"
 #include "display.h"
 #include "debug.h"
+#include "saveload.h"
 #include "gt.h"
 
 char *otypestrings[50] = {
@@ -491,12 +492,16 @@ int main(int argc, char *argv[])
                         case 'v':
                                 set_all_visible(); queue(ACTION_NOTHING); break;
                         case 's':
-                                spawn_monster_at(plx+5, ply+5, ri(0, game->monsterdefs), world->curlevel->monsters, world->curlevel);
+                                spawn_monster_at(plx+5, ply+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel);
                                 dump_monsters(world->curlevel->monsters);
                                 queue(ACTION_NOTHING);
                                 break;
                         case 'w':
                                 game->wizardmode = (game->wizardmode ? false : true); queue(ACTION_NOTHING); break;
+                        case KEY_F(5):
+                                save_game();
+                                queue(ACTION_NOTHING);
+                                break;
                         case 'a': dump_action_queue();
                         default: queue(ACTION_NOTHING); break;
                 }
@@ -508,6 +513,7 @@ int main(int argc, char *argv[])
                         do_all = false;
                 }
 
+                move_monsters();
                 draw_world(world->curlevel);
                 gtprintf("player x,y = %d, %d\tpx,py = %d, %d\tmapcx,y = %d,%d", plx, ply, ppx, ppy, mapcx, mapcy);
                 update_screen();

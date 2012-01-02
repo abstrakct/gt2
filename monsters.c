@@ -27,10 +27,11 @@ aifunction aitable[] = {
 
 void simpleai(monster_t *m)
 {
-        int dir;
+        int dir, ox, oy;
 
         dir = ri(1,9);
-        world->cmap[m->y][m->x].monster = NULL;
+        ox = m->x; oy = m->y;
+
         switch(dir) {
                 case 1:
                         m->x--;
@@ -64,15 +65,21 @@ void simpleai(monster_t *m)
                         break;
         }
 
+        if(!passable(m->y, m->x)) {
+                m->x = ox; m->y = oy;
+                return;
+        }
+
+        world->cmap[oy][ox].monster = NULL;
         if(m->x < 0)
                 m->x = 0;
         if(m->y < 0)
                 m->y = 0;
 
-        if(m->x >= XSIZE-1)
+        /*if(m->x >= XSIZE-1)
                 m->x = XSIZE-2;
         if(m->y >= YSIZE-1)
-                m->y = YSIZE-2;
+                m->y = YSIZE-2;*/
 
         world->cmap[m->y][m->x].monster = m;
 }
@@ -80,6 +87,23 @@ void simpleai(monster_t *m)
 void advancedai(monster_t *m)
 {
         simpleai(m);
+}
+
+void move_monsters()
+{
+        monster_t *m;
+
+        m = world->curlevel->monsters;
+        if(m)
+                m = m->next;
+        else
+                return;
+
+        while(m) {
+                if(m->ai)
+                        m->ai(m);
+                m = m->next;
+        }
 }
 
 monster_t get_monsterdef(int n)
@@ -129,7 +153,8 @@ void unspawn_monster(monster_t *m)
 {
         if(m) {
                 m->prev->next = m->next;
-                m->next->prev = m->prev;
+                if(m->next)
+                        m->next->prev = m->prev;
                 free(m);
         }
 }

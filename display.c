@@ -238,9 +238,9 @@ void initial_update_screen()
         doupdate();
 }
 
-char gtgetch()
+int gtgetch()
 {
-        char c;
+        int c;
         c = wgetch(wmap);
         return c;
 }

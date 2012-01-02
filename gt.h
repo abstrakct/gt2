@@ -23,10 +23,11 @@ typedef struct {                    // config
 typedef struct {                     // game_t
         int width, height;
         int mapw, maph;              // width, height of map window
-        int dead;                    // is the game/player dead?
+        bool dead;                    // is the game/player dead?
         int context;                 // which context are we in? see CONTEXT_ defines
         unsigned int seed;           // random seed
         int monsterdefs;             // number of monster definitions
+        int objdefs;                 // number of object definitions
         bool wizardmode;             // yay!
 } game_t;
 

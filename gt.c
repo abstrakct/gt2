@@ -102,6 +102,7 @@ void init_variables()
         game->dead = 0;
         game->seed = time(0);
         srand(game->seed);
+        game->wizardmode = false;
 fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->seed);
         
         player = (actor_t *) gtmalloc(sizeof(actor_t));
@@ -494,6 +495,8 @@ int main(int argc, char *argv[])
                                 dump_monsters(world->curlevel->monsters);
                                 queue(ACTION_NOTHING);
                                 break;
+                        case 'w':
+                                game->wizardmode = (game->wizardmode ? false : true); queue(ACTION_NOTHING); break;
                         case 'a': dump_action_queue();
                         default: queue(ACTION_NOTHING); break;
                 }

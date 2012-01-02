@@ -416,6 +416,9 @@ bool passable(int y, int x)
 {
         int type;
 
+        if(game->wizardmode)   // if we are in wizard mode, ignore this! dangerous, but useful
+                return true;
+
         if(x >= world->curlevel->xsize)
                 return false;
         if(y >= world->curlevel->ysize)

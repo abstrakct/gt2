@@ -27,6 +27,7 @@ typedef struct {                     // game_t
         int context;                 // which context are we in? see CONTEXT_ defines
         unsigned int seed;           // random seed
         int monsterdefs;             // number of monster definitions
+        bool wizardmode;             // yay!
 } game_t;
 
 typedef struct {       // message_t

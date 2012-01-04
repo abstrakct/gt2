@@ -39,6 +39,7 @@
 bool save_game()
 {
         char filename[255];
+        char cmd[260];
         FILE *f;
         struct savefile_header header;
         int i;
@@ -74,7 +75,13 @@ bool save_game()
                 }
         }
 
+        /* then, lets save world and levels */
+        
+
         fclose(f);
+        sprintf(cmd, "xz %s", filename);
+        system(cmd);
+
         return true;
 }
 

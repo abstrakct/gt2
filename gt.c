@@ -49,10 +49,10 @@ char *otypestrings[50] = {
 
 // Important global variables
 monster_t *monsterdefs;
-obj_t *objdefs;
-game_t *game;
-world_t *world;
-actor_t *player;
+obj_t     *objdefs;
+game_t    *game;
+world_t   *world;
+actor_t   *player;
 struct actionqueue *aq;
 gt_config_t gtconfig;
 long actionnum;
@@ -351,6 +351,37 @@ void queue(int action)
         prev->next = tmp;
 }
 
+/*
+ *  Queue num actions
+ */
+void queuex(int num, int action)
+{
+        int i;
+
+        for(i=0; i<num; i++)
+                queue(action);
+}
+
+/*
+ * Queue up many actions. Argument list must
+ * end with ENDOFLIST
+ */
+void queuemany(int first, ...)
+{
+        va_list args;
+        int i;
+
+        va_start(args, first);
+        queue(first);
+
+        i = va_arg(args, int);
+        while(i != ENDOFLIST) {
+                queue(i);
+                i = va_arg(args, int);
+        }
+        va_end(args);
+}
+
 /*********************************************
 * Description - Process the first action in the action queue
 * Author - RK
@@ -422,7 +453,7 @@ int main(int argc, char *argv[])
                                 game->dead = 1;
                                 break;
                         case 'd':
-                                queue(ACTION_NOTHING);
+                                //queue(ACTION_NOTHING);
                                 if(world->cmap == world->out->c) {
                                         world->cmap = world->dng[1].c;
                                         world->curlevel = &(world->dng[1]);
@@ -470,23 +501,19 @@ int main(int argc, char *argv[])
                         case 'b': queue(ACTION_PLAYER_MOVE_SW); break;
                         case 'n': queue(ACTION_PLAYER_MOVE_SE); break;
                         case 'J':
-                                for(x=0;x<20;x++)
-                                        queue(ACTION_PLAYER_MOVE_DOWN);
+                                queuex(20, ACTION_PLAYER_MOVE_DOWN);
                                 do_all = true;
                                 break;
                         case 'K':
-                                for(x=0;x<20;x++)
-                                        queue(ACTION_PLAYER_MOVE_UP);
+                                queuex(20, ACTION_PLAYER_MOVE_UP);
                                 do_all = true;
                                 break;
                         case 'H':
-                                for(x=0;x<20;x++)
-                                        queue(ACTION_PLAYER_MOVE_LEFT);
+                                queuex(20, ACTION_PLAYER_MOVE_LEFT);
                                 do_all = true;
                                 break;
                         case 'L':
-                                for(x=0;x<20;x++)
-                                        queue(ACTION_PLAYER_MOVE_RIGHT);
+                                queuex(20, ACTION_PLAYER_MOVE_RIGHT);
                                 do_all = true;
                                 break;
                         case 'v':
@@ -498,6 +525,8 @@ int main(int argc, char *argv[])
                                 break;
                         case 'w':
                                 game->wizardmode = (game->wizardmode ? false : true); queue(ACTION_NOTHING); break;
+                        case KEY_F(4):
+                                queuemany(ACTION_PLAYER_MOVE_DOWN, ACTION_PLAYER_MOVE_LEFT, ACTION_PLAYER_MOVE_UP, ACTION_PLAYER_MOVE_RIGHT, ENDOFLIST); do_all = true; break;
                         case KEY_F(5):
                                 save_game();
                                 queue(ACTION_NOTHING);

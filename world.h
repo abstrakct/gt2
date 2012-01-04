@@ -63,8 +63,6 @@ typedef struct levelstruct level_t;
 typedef cell_t** map_ptr;
 
 typedef struct {
-        //cell_t out[YSIZE][XSIZE];
-        //cell_t dng[YSIZE][XSIZE];
         level_t *out;               // shall point to dng[0]
         level_t *dng;
         level_t *curlevel;          // needed?

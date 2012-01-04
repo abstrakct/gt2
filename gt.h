@@ -59,6 +59,7 @@ struct actionqueue {
 #define FALSE 0
 #define TRUE 1
 // #define MAX_MESSAGES 100
+#define ENDOFLIST -577
 
 // define some shortcuts
 #define ply player->y

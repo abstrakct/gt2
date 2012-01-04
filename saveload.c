@@ -24,6 +24,18 @@
 #include "saveload.h"
 #include "gt.h"
 
+
+/*
+ * Structure of the save file:
+ *
+ * - header struct
+ * - gtconfig struct
+ * - game struct
+ * - the monsterdefs (it also saves all pointers! this must (if possible) be fixed when loading!!
+ * - the objectdefs  (same)
+ *
+ */
+
 bool save_game()
 {
         char filename[255];
@@ -31,6 +43,7 @@ bool save_game()
         struct savefile_header header;
         int i;
         monster_t *m;
+        obj_t *o;
 
         sprintf(filename, "%s/%d.gtsave", SAVE_DIRECTORY, game->seed);
         gtprintf("Saving game to file %s", filename);
@@ -50,6 +63,14 @@ bool save_game()
                 while(m) {
                         fwrite(m, sizeof(monster_t), 1, f);
                         m = m->next;
+                }
+        }
+
+        o = objdefs->head;
+        for(i=0; i < game->objdefs; i++) {
+                while(o) {
+                        fwrite(o, sizeof(obj_t), 1, f);
+                        o = o->next;
                 }
         }
 

@@ -387,6 +387,7 @@ void set_all_visible()
 void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping)
 {
         int i, j;
+        int door;
 
         if(((x+sx) >= l->xsize) || ((y+sy) >= l->ysize))
                 return;
@@ -403,11 +404,13 @@ void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping)
                                         l->c[j][i].type = DNG_WALL;
                                         l->c[j][i].color = COLOR_NORMAL;
                                 }
-
                         } else {
                                 l->c[j][i].type = DNG_FLOOR;
                                 l->c[j][i].color = COLOR_NORMAL;
                         }
+                        door = ri(1,100);
+                        if(door >= 99)
+                                l->c[j][i].type = DNG_FLOOR;
                 }
         }
 }
@@ -486,7 +489,7 @@ void generate_world()
 
         fprintf(stderr, "DEBUG: %s:%d - Generating dungoen!!\n", __FILE__, __LINE__);
         generate_dungeon_labyrinthine(1);
-        //paint_room(&world->dng[1], 1, 1, world->dng[1].ysize-5, world->dng[1].xsize-5, 1);
+        paint_room(&world->dng[1], 10, 10, 10, 10, 0);
 
         // create the edge of the world
         for(x=0; x<world->out->xsize; x++) {

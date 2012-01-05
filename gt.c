@@ -319,6 +319,8 @@ void do_action(int action)
                         fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attemted!\n", __FILE__, __LINE__, action);
                         break;
         }
+        move_monsters();
+        game->turn++;
 }
 
 /*********************************************
@@ -395,7 +397,6 @@ void do_one_thing_in_queue() // needs a better name..
                 aq->next = tmp->next;
                 free(tmp);
         }
-        game->turn++;
 }
 
 void do_all_things_in_queue() // needs a better name..
@@ -461,11 +462,11 @@ int main(int argc, char *argv[])
                                         world->curlevel = &(world->dng[1]);
                                         game->context = CONTEXT_DUNGEON;
 
-                                        ply = ri(1, world->curlevel->ysize);
-                                        plx = ri(1, world->curlevel->xsize);
+                                        ply = ri((world->curlevel->ysize/2)-(world->curlevel->ysize/5), (world->curlevel->ysize/2)+(world->curlevel->ysize/5));
+                                        plx = ri((world->curlevel->xsize/2)-(world->curlevel->xsize/5), (world->curlevel->xsize/2)+(world->curlevel->xsize/5));
                                         while(!passable(ply, plx)) {
-                                                ply = ri(1, world->curlevel->ysize);
-                                                plx = ri(1, world->curlevel->xsize);
+                                                ply = ri((world->curlevel->ysize/2)-(world->curlevel->ysize/5), (world->curlevel->ysize/2)+(world->curlevel->ysize/5));
+                                                plx = ri((world->curlevel->xsize/2)-(world->curlevel->xsize/5), (world->curlevel->xsize/2)+(world->curlevel->xsize/5));
                                         }
 
 
@@ -545,7 +546,7 @@ int main(int argc, char *argv[])
                         do_all = false;
                 }
 
-                move_monsters();
+//                move_monsters();
                 draw_world(world->curlevel);
                 gtprintf("player y,x = %d, %d\tppy,ppx = %d, %d\tmapcy,x = %d,%d", ply, plx, ppy, ppx, mapcy, mapcx);
                 update_screen();

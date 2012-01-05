@@ -25,7 +25,7 @@
 void init_display();
 void shutdown_display();
 void draw_world(level_t *level);
-void gtmapaddch(int x, int y, int color, char c);
+void gtmapaddch(int y, int x, int color, char c);
 void update_screen();
 void update_player();
 void initial_update_screen();

@@ -181,29 +181,28 @@ void draw_world(level_t *level)
 
         werase(wmap);
         FOV();
-        for(j = ppy, dy = 0; j <= (ppy + level->ysize); j++, dy++) {
-                for(i = ppx, dx = 0; i <= (ppx + level->xsize); i++, dx++) {
+        for(i = ppx, dx = 0; i <= (ppx + level->xsize); i++, dx++) {
+                for(j = ppy, dy = 0; j <= (ppy + level->ysize); j++, dy++) {
                         /*
                          * in this function, (j,i) are the coordinates on the map,
                          * dx,dy = coordinates on screen.
                          * so, player->py/px describes the upper left corner of the map
                          */
-
                         if(j < level->ysize && i < level->xsize) {
                                 if(level->c[j][i].visible) {
-                                        gtmapaddch(dx, dy, cc(j,i), mapchars[(int) level->c[j][i].type]);
+                                        gtmapaddch(dy, dx, cc(j,i), mapchars[(int) level->c[j][i].type]);
                                         if(level->c[j][i].monster)
-                                                gtmapaddch(dx, dy, COLOR_RED, (char) level->c[j][i].monster->c);
+                                                gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
                                 }
 
                                 if(ct(j,i) == AREA_WALL) {
-                                        gtmapaddch(dx, dy, COLOR_PLAIN, mapchars[DNG_WALL]);
+                                        gtmapaddch(dy, dx, COLOR_PLAIN, mapchars[DNG_WALL]);
                                 }
                         }
 
                         
                         if(j == ply && i == plx)
-                                gtmapaddch(dx, dy, COLOR_PLAYER, '@');
+                                gtmapaddch(dy, dx, COLOR_PLAYER, '@');
                 }
         }
 
@@ -214,11 +213,11 @@ void draw_world(level_t *level)
 
 void update_player()
 {
-        gtmapaddch(player->oldx, player->oldy, cc(player->oldy, player->oldx), mapchars[(int) ct(player->oldy, player->oldx)]);
-        gtmapaddch(plx, ply, COLOR_PLAYER, '@');
+        gtmapaddch(player->oldy, player->oldx, cc(player->oldy, player->oldx), mapchars[(int) ct(player->oldy, player->oldx)]);
+        gtmapaddch(ply, plx, COLOR_PLAYER, '@');
 }
 
-void gtmapaddch(int x, int y, int color, char c)
+void gtmapaddch(int y, int x, int color, char c)
 {
         wattron(wmap, COLOR_PAIR(color));
         mvwaddch(wmap, y, x, c);
@@ -255,12 +254,12 @@ void domess()
 
         currmess++;
         for(i = maxmess-1; i >= 0; i--) {
-                wattron(winfo, COLOR_PAIR(m[i].color));
-                mvwprintw(winfo, i+1, 1, m[i].text);
-                wattroff(winfo, COLOR_PAIR(m[i].color));
+                wattron(winfo, COLOR_PAIR(messages[i].color));
+                mvwprintw(winfo, i+1, 1, messages[i].text);
+                wattroff(winfo, COLOR_PAIR(messages[i].color));
         }
 
-        fprintf(messagefile, "%d %s\n", m[currmess-1].color, m[currmess-1].text);
+        fprintf(messagefile, "%d %s\n", messages[currmess-1].color, messages[currmess-1].text);
         wnoutrefresh(winfo);
 //        doupdate();
 }
@@ -272,8 +271,8 @@ void scrollmessages()
         if (currmess >= maxmess) {
                 currmess = maxmess - 1;
                 for(i = 0; i <= currmess; i++) {
-                        m[i].color = m[i+1].color;
-                        strcpy(m[i].text, m[i+1].text);
+                        messages[i].color = messages[i+1].color;
+                        strcpy(messages[i].text, messages[i+1].text);
                 }
         }
 }
@@ -283,8 +282,8 @@ void mess(char *message)
         /* optionally insert check for duplicate messages here! */
 
         scrollmessages();
-        m[currmess].color = COLOR_NORMAL;
-        strcpy(m[currmess].text, message);
+        messages[currmess].color = COLOR_NORMAL;
+        strcpy(messages[currmess].text, message);
         domess();
 }
 
@@ -293,8 +292,8 @@ void messc(int color, char *message)
         /* optionally insert check for duplicate messages here! */
 
         scrollmessages();
-        m[currmess].color = color;
-        strcpy(m[currmess].text, message);
+        messages[currmess].color = color;
+        strcpy(messages[currmess].text, message);
         domess();
 }
 
@@ -319,7 +318,7 @@ void draw_world()
         printf("Imagine a beautiful landscape... Trees, mountains, birds...\n");
 }
 
-void gtmapaddch(int x, int y, int color, char c)
+void gtmapaddch(int y, int x, int color, char c)
 {
         printf("%c", c);
 }

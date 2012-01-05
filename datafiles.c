@@ -217,10 +217,6 @@ int parse_configfile()
 
         printf(" OK\n");
         
-        world->dng[1].xsize = gtconfig.dxsize;
-        world->dng[1].ysize = gtconfig.dysize;
-        init_level(&world->dng[1]);
-
         return 0;
 }
 

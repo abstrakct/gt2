@@ -65,7 +65,7 @@ void simpleai(monster_t *m)
                         break;
         }
 
-        if(!passable(m->y, m->x)) {
+        if(!monster_passable(m->y, m->x)) {
                 m->x = ox; m->y = oy;
                 return;
         }
@@ -119,11 +119,14 @@ monster_t get_monsterdef(int n)
         return *tmp;
 }
 
-bool place_monster_at(int x, int y, monster_t *monster, level_t *level)
+/*
+ * place a spawned monster at (y,x)
+ */
+bool place_monster_at(int y, int x, monster_t *monster, level_t *level)
 {
         monster->x = x;
         monster->y = y;
-        if(passable(y, x) && level->c[monster->y][monster->x].monster == NULL) {
+        if(monster_passable(y, x) && level->c[monster->y][monster->x].monster == NULL) {
                 level->c[monster->y][monster->x].monster = monster;
                 return true;
         } else {
@@ -131,10 +134,6 @@ bool place_monster_at(int x, int y, monster_t *monster, level_t *level)
         }
 }
 
-// TODO: plassere monster på level?
-// eller egen funksjon for det?
-// *head bor jo i level_t, men.. (eller skal gjøre det..)
-//
 void spawn_monster(int n, monster_t *head)
 {
         monster_t *tmp;
@@ -159,10 +158,13 @@ void unspawn_monster(monster_t *m)
         }
 }
 
-bool spawn_monster_at(int x, int y, int n, monster_t *head, void *level)
+/*
+ * spawn a monster and place it at (y,x)
+ */
+bool spawn_monster_at(int y, int x, int n, monster_t *head, void *level)
 {
         spawn_monster(n, head);
-        if(!place_monster_at(x, y, head->next, (level_t *) level)) {
+        if(!place_monster_at(y, x, head->next, (level_t *) level)) {
                 gtprintf("place_monster failed! probably tried to spawn at non-passable cell");
                 unspawn_monster(head->next);
                 return false;

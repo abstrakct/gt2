@@ -80,6 +80,7 @@ typedef struct {
 void generate_world();
 void floodfill(int x, int y);
 bool passable(int y, int x);
+bool monster_passable(int y, int x);
 void init_level(level_t *level);
 void set_all_visible();
 

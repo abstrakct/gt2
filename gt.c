@@ -62,7 +62,7 @@ bool mapchanged;
 int tempxsize, tempysize;
 
 // Messages
-message_t m[500];
+message_t messages[500];
 int currmess, maxmess;
 
 #ifdef GT_USE_NCURSES
@@ -398,6 +398,7 @@ void do_one_thing_in_queue() // needs a better name..
                 aq->next = tmp->next;
                 free(tmp);
         }
+        game->turn++;
 }
 
 void do_all_things_in_queue() // needs a better name..
@@ -427,6 +428,10 @@ int main(int argc, char *argv[])
         printf("Reading data files...\n");
         if(parse_data_files())
                 die("Couldn't parse data files.");
+
+        world->dng[1].xsize = gtconfig.dxsize;
+        world->dng[1].ysize = gtconfig.dysize;
+        init_level(&world->dng[1]);
 
         generate_world();
         world->cmap = world->out->c;
@@ -459,12 +464,13 @@ int main(int argc, char *argv[])
                                         world->curlevel = &(world->dng[1]);
                                         game->context = CONTEXT_DUNGEON;
 
-                                        ply = ri((world->curlevel->ysize/2) - 25, (world->curlevel->ysize/2) + 25);
-                                        plx = ri((world->curlevel->xsize/2) - 25, (world->curlevel->xsize/2) + 25);
-                                        while(world->cmap[ply][plx].type != DNG_FLOOR) {
-                                                ply = ri((world->curlevel->ysize/2) - 25, (world->curlevel->ysize/2) + 25);
-                                                plx = ri((world->curlevel->xsize/2) - 25, (world->curlevel->xsize/2) + 25);
+                                        ply = ri(1, world->curlevel->ysize);
+                                        plx = ri(1, world->curlevel->xsize);
+                                        while(!passable(ply, plx)) {
+                                                ply = ri(1, world->curlevel->ysize);
+                                                plx = ri(1, world->curlevel->xsize);
                                         }
+
 
                                         ppy = ply - (game->maph / 2);
                                         ppx = plx - (game->mapw / 2);
@@ -519,7 +525,7 @@ int main(int argc, char *argv[])
                         case 'v':
                                 set_all_visible(); queue(ACTION_NOTHING); break;
                         case 's':
-                                spawn_monster_at(plx+5, ply+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel);
+                                spawn_monster_at(ply+5, plx+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel);
                                 dump_monsters(world->curlevel->monsters);
                                 queue(ACTION_NOTHING);
                                 break;
@@ -544,7 +550,7 @@ int main(int argc, char *argv[])
 
                 move_monsters();
                 draw_world(world->curlevel);
-                gtprintf("player x,y = %d, %d\tpx,py = %d, %d\tmapcx,y = %d,%d", plx, ply, ppx, ppy, mapcx, mapcy);
+                gtprintf("player y,x = %d, %d\tppy,ppx = %d, %d\tmapcy,x = %d,%d", ply, plx, ppy, ppx, mapcy, mapcx);
                 update_screen();
         } while(!game->dead);
 

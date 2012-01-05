@@ -21,10 +21,11 @@ typedef struct {                    // config
 } gt_config_t;
 
 typedef struct {                     // game_t
-        int width, height;
+        int width, height;           // width, height of screen
         int mapw, maph;              // width, height of map window
-        bool dead;                    // is the game/player dead?
+        bool dead;                   // is the game/player dead?
         int context;                 // which context are we in? see CONTEXT_ defines
+        int turn;                    // count turns
         unsigned int seed;           // random seed
         int monsterdefs;             // number of monster definitions
         int objdefs;                 // number of object definitions
@@ -85,7 +86,7 @@ extern obj_t *objdefs;
 extern actor_t *player;
 extern int mapcx, mapcy;
 extern FILE *messagefile;
-extern message_t m[500];
+extern message_t messages[500];
 extern int currmess, maxmess;
 extern struct actionqueue *aq;
 extern gt_config_t gtconfig;

@@ -18,6 +18,14 @@
 #include "world.h"
 #include "gt.h"
 
+int ri(int a, int b) 
+{
+        int result;
+        result = (a + (rand() % (b-a+1)));
+
+        return result;
+}
+
 char *get_version_string()
 {
         char *s;

@@ -63,13 +63,14 @@ void init_level(level_t *level)
                 level->c = gtmalloc(level->ysize * (sizeof(cell_t)));
         }
 
-        memset(level->c, 0, level->ysize);
+        memset(level->c, 0, level->ysize*sizeof(cell_t));
         for(i = 0; i<level->xsize; i++) {
                 level->c[i] = gtmalloc(level->xsize * (sizeof(cell_t)));
-                memset(level->c[i], 0, level->xsize);
+                memset(level->c[i], 0, level->xsize*sizeof(cell_t));
         }
 
         level->monsters = gtmalloc(sizeof(monster_t));
+        memset(level->monsters, 0, sizeof(monster_t));
 }
 
 /*********************************************
@@ -354,7 +355,7 @@ void generate_village(int num)
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-void floodfill(int x, int y)
+void floodfill(int y, int x)
 {
 //fprintf(stderr, "DEBUG: %s:%d - entering floodfill! x,y = %d,%d\n", __FILE__, __LINE__, x, y);
         if(world->cmap[y][x].type == DNG_FLOOR) {
@@ -387,7 +388,7 @@ void set_all_visible()
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-void paint_room(level_t *l, int x, int y, int sx, int sy, int join_overlapping)
+void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping)
 {
         int i, j;
 
@@ -438,6 +439,14 @@ bool passable(int y, int x)
         return true;
 }
 
+bool monster_passable(int y, int x)
+{
+        if(ct(y,x) == AREA_VILLAGE || ct(y,x) == AREA_CITY)
+                return false;
+        else
+                return passable(y, x);
+}
+
 /*********************************************
 * Description - One big function which should
 * take care of all world generation stuff.
@@ -481,6 +490,7 @@ void generate_world()
 
         fprintf(stderr, "DEBUG: %s:%d - Generating dungoen!!\n", __FILE__, __LINE__);
         generate_dungeon_labyrinthine(1);
+        //paint_room(&world->dng[1], 1, 1, world->dng[1].ysize-5, world->dng[1].xsize-5, 1);
 
         // create the edge of the world
         for(x=0; x<world->out->xsize; x++) {

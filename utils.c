@@ -76,6 +76,8 @@ void *gtmalloc(size_t size)
                 die(m);
         }
 
+        memset(p, 0, size);
+
         return p;
 }
 

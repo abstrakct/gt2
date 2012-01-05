@@ -77,11 +77,9 @@ WINDOW *wmap;
 void init_variables()
 {
         monsterdefs = (monster_t *) gtmalloc(sizeof(monster_t));
-        memset(monsterdefs, 0, sizeof(monster_t));
         monsterdefs->head = monsterdefs;
 
         objdefs = (obj_t *) gtmalloc(sizeof(obj_t));
-        memset(objdefs, 0, sizeof(obj_t));
         objdefs->head = objdefs;
 
         aq = (struct actionqueue *) gtmalloc(sizeof(struct actionqueue));
@@ -91,7 +89,6 @@ void init_variables()
         actionnum = 0;
 
         world = (world_t *) gtmalloc(sizeof(world_t));
-        memset(world, 0, sizeof(world_t));
 
         world->dng = gtcalloc(4, sizeof(level_t));    // allocate 4 levels, 0 = outside, 1..n = dungeons
         world->out = world->dng;                      // i.e. it points to world->dng[0]

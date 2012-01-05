@@ -25,8 +25,7 @@ gt.: $(SOURCES) $(HEADERS)
 #makeobjdefs.: $(MKSRCS) $(MKHDRS)
 
 clean:
-	rm *.o gt #makeobjdefs
-
+	rm -f *.o gt core 
 
 all: gt
 #makeobjdefs

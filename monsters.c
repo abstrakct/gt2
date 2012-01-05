@@ -140,7 +140,6 @@ void spawn_monster(int n, monster_t *head)
 
         tmp = head->next;
         head->next = gtmalloc(sizeof(monster_t));
-        memset(head->next, 0, sizeof(monster_t));
         *head->next = get_monsterdef(n);
         head->next->next = tmp;
         head->next->prev = head;

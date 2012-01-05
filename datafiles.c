@@ -45,7 +45,6 @@ int parse_monsters()
                 monster_t *m;
 
                 m = (monster_t *) gtmalloc(sizeof(monster_t));
-                memset(m, 0, sizeof(monster_t));
                 id = j+1;
 
                 sprintf(sname, "monsters.[%d].name", j);
@@ -139,7 +138,6 @@ int parse_armor()
                 obj_t *o;
 
                 o = (obj_t *) gtmalloc(sizeof(obj_t));
-                memset(o, 0, sizeof(obj_t));
 
                 sprintf(sname, "armor.[%d].name", j);
                 config_lookup_string(cf, sname, &value);

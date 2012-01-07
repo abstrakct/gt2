@@ -30,6 +30,7 @@
 #include "display.h"
 #include "debug.h"
 #include "saveload.h"
+#include "commands.h"
 #include "gt.h"
 
 char *otypestrings[50] = {
@@ -319,8 +320,6 @@ void do_action(int action)
                         fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attemted!\n", __FILE__, __LINE__, action);
                         break;
         }
-        move_monsters();
-        game->turn++;
 }
 
 /*********************************************
@@ -386,7 +385,7 @@ void queuemany(int first, ...)
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-void do_one_thing_in_queue() // needs a better name..
+void do_next_thing_in_queue() // needs a better name..
 {
         struct actionqueue *tmp;
 
@@ -397,6 +396,7 @@ void do_one_thing_in_queue() // needs a better name..
                 aq->next = tmp->next;
                 free(tmp);
         }
+        game->turn++;
 }
 
 void do_all_things_in_queue() // needs a better name..
@@ -406,9 +406,19 @@ void do_all_things_in_queue() // needs a better name..
         tmp = aq->next;
 
         while(tmp) {
-                do_one_thing_in_queue();
+                do_next_thing_in_queue();
                 tmp = tmp->next;
         }
+}
+
+void do_turn(int do_all)
+{
+        if(!do_all)
+                do_next_thing_in_queue();
+        else
+                do_all_things_in_queue();
+
+        move_monsters();
 }
 
 int main(int argc, char *argv[])
@@ -436,27 +446,32 @@ int main(int argc, char *argv[])
 
         init_display();
         init_player();
+        init_commands();
 
         world->curlevel = world->out;
         game->context = CONTEXT_OUTSIDE;
         draw_world(world->curlevel);
+        draw_wstat();
         initial_update_screen();
 
         do {
-                bool do_all = false;
+                draw_world(world->curlevel);
+                draw_wstat();
+                update_screen();
 
-                c = gtgetch();
+                c = get_command();
+
                 mapchanged = false;
+                bool do_all = false;
                 player->oldx = plx;
                 player->oldy = ply;
 
                 switch(c) {
-                        case 'q':
+                        case CMD_QUIT:
                                 queue(ACTION_NOTHING);
                                 game->dead = 1;
                                 break;
-                        case 'd':
-                                //queue(ACTION_NOTHING);
+                        case CMD_ENTERDUNGEON:
                                 if(world->cmap == world->out->c) {
                                         world->cmap = world->dng[1].c;
                                         world->curlevel = &(world->dng[1]);
@@ -486,7 +501,7 @@ int main(int argc, char *argv[])
                                         player->viewradius = 50;
                                 }
                                 break;
-                        case 'f':
+                        case CMD_FLOODFILL:
                                 // this should ensure floodfill working every time!
                                 x = ri(11,111);
                                 while(world->dng[1].c[x][x].type != DNG_FLOOR) {
@@ -496,60 +511,51 @@ int main(int argc, char *argv[])
                                 floodfill(x, x);
                                 queue(ACTION_NOTHING);
                                 break;
-                        case 'j': queue(ACTION_PLAYER_MOVE_DOWN); break;
-                        case 'k': queue(ACTION_PLAYER_MOVE_UP); break;
-                        case 'h': queue(ACTION_PLAYER_MOVE_LEFT); break;
-                        case 'l': queue(ACTION_PLAYER_MOVE_RIGHT); break;
-                        case 'y': queue(ACTION_PLAYER_MOVE_NW); break;
-                        case 'u': queue(ACTION_PLAYER_MOVE_NE); break;
-                        case 'b': queue(ACTION_PLAYER_MOVE_SW); break;
-                        case 'n': queue(ACTION_PLAYER_MOVE_SE); break;
-                        case 'J':
+                        case CMD_DOWN: queue(ACTION_PLAYER_MOVE_DOWN); break;
+                        case CMD_UP: queue(ACTION_PLAYER_MOVE_UP); break;
+                        case CMD_LEFT: queue(ACTION_PLAYER_MOVE_LEFT); break;
+                        case CMD_RIGHT: queue(ACTION_PLAYER_MOVE_RIGHT); break;
+                        case CMD_NW: queue(ACTION_PLAYER_MOVE_NW); break;
+                        case CMD_NE: queue(ACTION_PLAYER_MOVE_NE); break;
+                        case CMD_SW: queue(ACTION_PLAYER_MOVE_SW); break;
+                        case CMD_SE: queue(ACTION_PLAYER_MOVE_SE); break;
+                        case CMD_LONGDOWN:
                                 queuex(20, ACTION_PLAYER_MOVE_DOWN);
                                 do_all = true;
                                 break;
-                        case 'K':
+                        case CMD_LONGUP:
                                 queuex(20, ACTION_PLAYER_MOVE_UP);
                                 do_all = true;
                                 break;
-                        case 'H':
+                        case CMD_LONGLEFT:
                                 queuex(20, ACTION_PLAYER_MOVE_LEFT);
                                 do_all = true;
                                 break;
-                        case 'L':
+                        case CMD_LONGRIGHT:
                                 queuex(20, ACTION_PLAYER_MOVE_RIGHT);
                                 do_all = true;
                                 break;
-                        case 'v':
+                        case CMD_TOGGLEFOV:
                                 set_all_visible(); queue(ACTION_NOTHING); break;
-                        case 's':
+                        case CMD_SPAWNMONSTER:
                                 spawn_monster_at(ply+5, plx+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel);
                                 dump_monsters(world->curlevel->monsters);
                                 queue(ACTION_NOTHING);
                                 break;
-                        case 'w':
+                        case CMD_WIZARDMODE:
                                 game->wizardmode = (game->wizardmode ? false : true); queue(ACTION_NOTHING); break;
-                        case KEY_F(4):
-                                queuemany(ACTION_PLAYER_MOVE_DOWN, ACTION_PLAYER_MOVE_LEFT, ACTION_PLAYER_MOVE_UP, ACTION_PLAYER_MOVE_RIGHT, ENDOFLIST); do_all = true; break;
-                        case KEY_F(5):
+                        case CMD_SAVE:
                                 save_game();
                                 queue(ACTION_NOTHING);
                                 break;
-                        case 'a': dump_action_queue();
+                        //case 'a': dump_action_queue();
                         default: queue(ACTION_NOTHING); break;
                 }
 
-                if(!do_all) {
-                        do_one_thing_in_queue();
-                } else {
-                        do_all_things_in_queue();
-                        do_all = false;
-                }
+                do_turn(do_all);
+
 
 //                move_monsters();
-                draw_world(world->curlevel);
-                gtprintf("player y,x = %d, %d\tppy,ppx = %d, %d\tmapcy,x = %d,%d", ply, plx, ppy, ppx, mapcy, mapcx);
-                update_screen();
         } while(!game->dead);
 
         shutdown_display();

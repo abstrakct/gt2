@@ -166,7 +166,7 @@ void FOV()
         float x, y;
         int i;
 
-        //clear_map_to_invisible();
+        clear_map_to_invisible();
         for(i = 0; i < 360; i++) {
                 x = cos((float) i * 0.01745f);
                 y = sin((float) i * 0.01745f);
@@ -211,6 +211,13 @@ void draw_world(level_t *level)
         //wcolor_set(wmap, 0, 0);
 }
 
+void draw_wstat()
+{
+        mvwprintw(wstat, 1, 1, "Name:");
+        mvwprintw(wstat, 2, 1, "Turn: %d", game->turn);
+        mvwprintw(wstat, 3, 1, "(y,x) = (%d,%d)", ply, plx);
+}
+
 void update_player()
 {
         gtmapaddch(player->oldy, player->oldx, cc(player->oldy, player->oldx), mapchars[(int) ct(player->oldy, player->oldx)]);
@@ -226,6 +233,7 @@ void gtmapaddch(int y, int x, int color, char c)
 
 void update_screen()
 {
+        wnoutrefresh(wstat);
         doupdate();
 }
 

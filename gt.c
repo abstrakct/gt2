@@ -469,7 +469,6 @@ int main(int argc, char *argv[])
                                                 plx = ri((world->curlevel->xsize/2)-(world->curlevel->xsize/5), (world->curlevel->xsize/2)+(world->curlevel->xsize/5));
                                         }
 
-
                                         ppy = ply - (game->maph / 2);
                                         ppx = plx - (game->mapw / 2);
                                         

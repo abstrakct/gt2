@@ -32,30 +32,31 @@
 #define DUNGEON_SIZE 200
 
 typedef struct {
-        int x1, y1, x2, y2;     // start/end coordinates
         char name[50];
-        int alignment;          // not sure what this is for.... good/evil alignment??
-        int houses;
+        short x1, y1, x2, y2;     // start/end coordinates
+        short alignment;          // not sure what this is for.... good/evil alignment??
+        short houses;
 } city_t;
 
 typedef struct {
-        int x1, y1, x2, y2;
         char name[50];
-        int flags;              // not sure yet what this is for...
+        short x1, y1, x2, y2;
+        short flags;              // not sure yet what this is for...
 } forest_t;
 
 typedef struct {
         char type;
         int flags;
-        int color;
-        short visible;
+        short desty, destx;       // for stairs and portals; destination y,x
+        short color;
+        bool visible;
         monster_t *monster;
         obj_t     *inventory;
 } cell_t;
 
 struct levelstruct {
         cell_t **c;
-        int xsize, ysize;
+        short xsize, ysize;
         monster_t *monsters;      // point to head of linked lists of monsters on this level
 };
 
@@ -66,16 +67,20 @@ typedef struct {
         level_t *out;               // shall point to dng[0]
         level_t *dng;
         level_t *curlevel;          // needed?
-        int villages, cvillage;     // num of villages, current village
-        int cities, ccity;
-        int forests, cforest;
-        int dungeons;
+        short villages, cvillage;     // num of villages, current village
+        short cities, ccity;
+        short forests, cforest;
+        short dungeons;
         city_t *city;
         city_t *village;
         forest_t *forest;
         cell_t **cmap;
 } world_t;
 
+// CELLFLAGS
+
+#define CF_HAS_STAIRS_DOWN (1<<0)
+#define CF_HAS_STAIRS_UP   (1<<1)
 
 void generate_world();
 void floodfill(int x, int y);

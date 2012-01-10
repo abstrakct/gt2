@@ -64,17 +64,17 @@ typedef struct levelstruct level_t;
 typedef cell_t** map_ptr;
 
 typedef struct {
-        level_t *out;               // shall point to dng[0]
-        level_t *dng;
-        level_t *curlevel;          // needed?
+        level_t  *out;               // shall point to dng[0]
+        level_t  *dng;
+        level_t  *curlevel;          // needed?
+        city_t   *city;
+        city_t   *village;
+        forest_t *forest;
+        cell_t   **cmap;
         short villages, cvillage;     // num of villages, current village
         short cities, ccity;
         short forests, cforest;
         short dungeons;
-        city_t *city;
-        city_t *village;
-        forest_t *forest;
-        cell_t **cmap;
 } world_t;
 
 // CELLFLAGS

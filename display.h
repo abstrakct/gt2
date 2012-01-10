@@ -25,11 +25,14 @@
 void init_display();
 void shutdown_display();
 void draw_world(level_t *level);
+void draw_wstat();
+
 void gtmapaddch(int y, int x, int color, char c);
 void update_screen();
 void update_player();
 void initial_update_screen();
 int  gtgetch();
+
 void domess();
 void scrollmessages();
 void mess(char *message);

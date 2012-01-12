@@ -24,6 +24,74 @@
 #include "saveload.h"
 #include "gt.h"
 
+/*
+ * write one object
+ */
+
+void save_object(obj_t *o, FILE *f)
+{
+        fwrite("OBJECT", sizeof(char), 6, f);
+}
+/*
+ * write one list of objects
+ */
+void save_inventory(obj_t *i, FILE *f)
+{
+        fwrite("INVENTORY", sizeof(char), 9, f);
+}
+
+/* 
+ * write one monster
+ */
+void save_monster(monster_t *m, FILE *f)
+{
+        fwrite("MONSTER", sizeof(char),  7, f);     // is this necessary?
+        fwrite(&m->id,    sizeof(short), 1, f);     // write the monsterdef ID, then any vars which might have changed
+        fwrite(&m->y,     sizeof(short), 1, f);
+        fwrite(&m->x,     sizeof(short), 1, f);
+        fwrite(&m->hp,    sizeof(int),   1, f);
+        fwrite(&m->goalx, sizeof(short), 1, f);
+        fwrite(&m->goaly, sizeof(short), 1, f);
+
+        // add saving inventory etc here later when implemented
+}
+
+/*
+ * Write one cell_t  to file f, at current file position
+ */
+void save_cell(FILE *f, cell_t *c)
+{
+        bool hasmonster;
+
+        fwrite(&c->type, sizeof(char), 1, f);
+        fwrite(&c->flags, sizeof(int), 1, f);
+        fwrite(&c->desty, sizeof(short), 1, f);
+        fwrite(&c->destx, sizeof(short), 1, f);
+        fwrite(&c->color, sizeof(short), 1, f);
+        fwrite(&c->visible, sizeof(bool), 1, f);
+
+        hasmonster = c->monster ? true : false;
+        fwrite(&hasmonster, sizeof(bool), 1, f);
+        if(hasmonster)
+                save_monster(c->monster, f);
+        if(c->inventory)
+                save_inventory(c->inventory, f);
+}
+
+/*
+ * Write one level_t to file f, at current file position
+ */
+void save_level(FILE *f, level_t *l)
+{
+        int y, x;
+
+fprintf(stderr, "DEBUG: %s:%d - writing level of size %d,%d\n", __FILE__, __LINE__, l->xsize, l->ysize);
+        fwrite(&l->xsize, sizeof(short), 1, f);
+        fwrite(&l->ysize, sizeof(short), 1, f);
+        for(y = 0; y < l->ysize; y++)
+                for(x = 0; x < l->xsize; x++)
+                        save_cell(f, &l->c[y][x]);
+}
 
 /*
  * Structure of the save file:
@@ -42,7 +110,7 @@ bool save_game()
         char cmd[260];
         FILE *f;
         struct savefile_header header;
-        int i;
+        //int i;
         monster_t *m;
         obj_t *o;
 
@@ -60,27 +128,26 @@ bool save_game()
         fwrite(&game, sizeof(game_t), 1, f);
 
         m = monsterdefs->head;
-        for(i=0; i < game->monsterdefs; i++) {
-                while(m) {
-                        fwrite(m, sizeof(monster_t), 1, f);
-                        m = m->next;
-                }
+        while(m) { // maybe a function specifically for writing a monsterdef? and objdef
+                fwrite(m, sizeof(monster_t), 1, f);
+                m = m->next;
         }
 
         o = objdefs->head;
-        for(i=0; i < game->objdefs; i++) {
-                while(o) {
-                        fwrite(o, sizeof(obj_t), 1, f);
-                        o = o->next;
-                }
+        while(o) {
+                fwrite(o, sizeof(obj_t), 1, f);
+                o = o->next;
         }
 
         /* then, lets save world and levels */
-        
+        save_level(f, world->dng);
 
         fclose(f);
-        sprintf(cmd, "xz %s", filename);
-        system(cmd);
+
+        if(gtconfig.compress_savefile) {
+                sprintf(cmd, "xz %s", filename);
+                system(cmd);
+        }
 
         return true;
 }

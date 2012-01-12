@@ -15,6 +15,7 @@
 #include <signal.h>
 #include <libconfig.h>
 #include <stdbool.h>
+#include <getopt.h>
 
 #ifdef GT_USE_NCURSES
 #include <curses.h>
@@ -74,6 +75,11 @@ WINDOW *winfo;
 WINDOW *wmap;
 #endif
 
+struct option gt_options[] = {
+        { "seed",    1,   0, 's' },
+        { "version", 0,   0, 'v' },
+        { NULL,      0, NULL, 0  }
+};
 
 void init_variables()
 {
@@ -101,8 +107,8 @@ void init_variables()
         game->dead = 0;
         game->seed = time(0);
         srand(game->seed);
+
         game->wizardmode = false;
-fprintf(stderr, "DEBUG: %s:%d - Random seed is %d\n", __FILE__, __LINE__, game->seed);
         
         player = (actor_t *) gtmalloc(sizeof(actor_t));
 }
@@ -141,6 +147,27 @@ void shutdown_gt()
         free(world->forest);
 
         fclose(messagefile);
+}
+
+/*
+ * The following (parse_commandline) is muchly stolen
+ * from getopt's wikipedia page
+ */
+void parse_commandline(int argc, char **argv)
+{
+        int option_index = 0;
+        int c;
+
+        while((c = getopt_long(argc, argv, "s:v", gt_options, &option_index)) != -1) {
+                switch(c) {
+                        case 's': game->seed = atoi(optarg);
+                                  srand(game->seed);
+                                  fprintf(stderr, "DEBUG: %s:%d - set random seed to %d (parse_commandline)\n", __FILE__, __LINE__, game->seed);
+                                  break;
+                        case 'v': printf("Gullible's Travails v%s\n", get_version_string()); die(""); break;
+                        default:  printf("Unknown command line option 0%o -- ignoring!\n", c);
+                }
+        }
 }
 
 /*********************************************
@@ -432,6 +459,7 @@ int main(int argc, char *argv[])
         printf("Gullible's Travails v%s\n", get_version_string());
 
         init_variables();
+        parse_commandline(argc, argv);
 
         printf("Reading data files...\n");
         if(parse_data_files())

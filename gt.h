@@ -18,18 +18,19 @@ typedef struct {                    // config
         int minv, maxv;
         int mind, maxd;
         int dxsize, dysize;
+        int compress_savefile;      // compress the savefile?
 } gt_config_t;
 
-typedef struct {                     // game_t
-        int width, height;           // width, height of screen
-        int mapw, maph;              // width, height of map window
-        bool dead;                   // is the game/player dead?
-        int context;                 // which context are we in? see CONTEXT_ defines
-        int turn;                    // count turns
-        unsigned int seed;           // random seed
-        int monsterdefs;             // number of monster definitions
-        int objdefs;                 // number of object definitions
-        bool wizardmode;             // yay!
+typedef struct {                              // game_t
+        short        width, height;           // width, height of screen
+        short        mapw, maph;              // width, height of map window
+        bool         dead;                    // is the game/player dead?
+        short        context;                 // which context are we in? see CONTEXT_ defines
+        int          turn;                    // count turns
+        unsigned int seed;                    // random seed
+        short        monsterdefs;             // number of monster definitions
+        short        objdefs;                 // number of object definitions
+        bool         wizardmode;              // yay!
 } game_t;
 
 typedef struct {       // message_t

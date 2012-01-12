@@ -212,6 +212,8 @@ int parse_configfile()
         config_lookup_int(cf, sname, &gtconfig.dxsize);
         sprintf(sname, "config.[0].dysize");
         config_lookup_int(cf, sname, &gtconfig.dysize);
+        sprintf(sname, "config.[0].compress_savefile");
+        config_lookup_bool(cf, sname, &gtconfig.compress_savefile);
 
         printf(" OK\n");
         

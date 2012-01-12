@@ -166,7 +166,7 @@ void FOV()
         float x, y;
         int i;
 
-        clear_map_to_invisible();
+        //clear_map_to_invisible();
         for(i = 0; i < 360; i++) {
                 x = cos((float) i * 0.01745f);
                 y = sin((float) i * 0.01745f);

@@ -32,32 +32,32 @@
 #define DUNGEON_SIZE 200
 
 typedef struct {
-        char name[50];
+        char  name[50];
         short x1, y1, x2, y2;     // start/end coordinates
         short alignment;          // not sure what this is for.... good/evil alignment??
         short houses;
 } city_t;
 
 typedef struct {
-        char name[50];
+        char  name[50];
         short x1, y1, x2, y2;
         short flags;              // not sure yet what this is for...
 } forest_t;
 
 typedef struct {
-        char type;
-        int flags;
-        short desty, destx;       // for stairs and portals; destination y,x
-        short color;
-        bool visible;
+        char       type;
+        int        flags;
+        short      desty, destx;       // for stairs and portals; destination y,x
+        short      color;
+        bool       visible;
         monster_t *monster;
         obj_t     *inventory;
 } cell_t;
 
 struct levelstruct {
-        cell_t **c;
-        short xsize, ysize;
-        monster_t *monsters;      // point to head of linked lists of monsters on this level
+        short      xsize, ysize;
+        cell_t     **c;
+        monster_t  *monsters;      // point to head of linked lists of monsters on this level
 };
 
 typedef struct levelstruct level_t;
@@ -71,10 +71,10 @@ typedef struct {
         city_t   *village;
         forest_t *forest;
         cell_t   **cmap;
-        short villages, cvillage;     // num of villages, current village
-        short cities, ccity;
-        short forests, cforest;
-        short dungeons;
+        short    villages, cvillage;     // num of villages, current village
+        short    cities, ccity;
+        short    forests, cforest;
+        short    dungeons;
 } world_t;
 
 // CELLFLAGS

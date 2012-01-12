@@ -38,9 +38,9 @@ typedef struct { // wear_t
 } wear_t;
 
 typedef struct actorstruct {     // actor_t
-        int id;                  // e.g. for saving and loading etc.
-        int x, y, oldx, oldy, px, py;
-        int viewradius;
+        short id;                  // e.g. for saving and loading etc.
+        short x, y, oldx, oldy, px, py;
+        short viewradius;
         char name[50];
         int hp, maxhp;
         int xp;
@@ -61,7 +61,7 @@ typedef struct actorstruct {     // actor_t
         float skill[10];
         /* monster specific stuff */
         void (*ai)(struct actorstruct *);      // artificial intelligence handler!!
-        int goalx, goaly;                      // for simple outdoor pathfinder ai
+        short goalx, goaly;                      // for simple outdoor pathfinder ai
         struct actorstruct *prev;
         struct actorstruct *next;
         struct actorstruct *attacker;

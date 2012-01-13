@@ -38,7 +38,8 @@ typedef struct { // wear_t
 } wear_t;
 
 typedef struct actorstruct {     // actor_t
-        short id;                  // e.g. for saving and loading etc.
+        short id;                          // id = monsterdef id
+        unsigned int mid;                  // mid = unique id for this monster; in monsterdefs mid = index into aitable! (that should work right?)
         short x, y, oldx, oldy, px, py;
         short viewradius;
         char name[50];

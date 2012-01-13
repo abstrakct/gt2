@@ -20,6 +20,8 @@
 #include "display.h"
 #include "gt.h"
 
+unsigned int mid_counter;
+
 aifunction aitable[] = {
         simpleai,
         advancedai
@@ -145,6 +147,8 @@ void spawn_monster(int n, monster_t *head)
         head->next->prev = head;
         head->next->head = head;
         gtprintf("spawned monster %s\n", head->next->name);
+        mid_counter++;
+        head->next->mid = mid_counter;
 }
 
 void unspawn_monster(monster_t *m)

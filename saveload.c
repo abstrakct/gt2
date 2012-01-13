@@ -24,14 +24,47 @@
 #include "saveload.h"
 #include "gt.h"
 
+/* this one must match monster_t when it comes to variable types etc.! */
+struct monsterdef_save_struct {
+        short   id;
+        char    name[50];
+        uattr_t attr;
+        char    c;
+        int     level;
+        int     hp;                 // == maxhp
+        float   speed;
+        int     thac0;
+        long    flags;
+        int     aitableindex;       // == the field mid
+        // what about AC?
+};
+
+/* This one must match obj_t when it comes to variable types etc.! */
+struct objdef_save_struct {
+       int          id;
+       short        type;
+       long         flags;
+       char         unique;
+       signed short modifier;
+       char         basename[50];
+       char         unidname[100];
+       char         fullname[100];   // we might want to not include these here...??
+       char         c;
+       char         minlevel;
+       short        quantity;
+       char         material;
+       int          ddice, dsides;
+       char         skill;
+};
+
 /*
  * write one object
  */
-
 void save_object(obj_t *o, FILE *f)
 {
         fwrite("OBJECT", sizeof(char), 6, f);
 }
+
 /*
  * write one list of objects
  */
@@ -47,6 +80,7 @@ void save_monster(monster_t *m, FILE *f)
 {
         fwrite("MONSTER", sizeof(char),  7, f);     // is this necessary?
         fwrite(&m->id,    sizeof(short), 1, f);     // write the monsterdef ID, then any vars which might have changed
+        fwrite(&m->mid,   sizeof(int),   1, f);
         fwrite(&m->y,     sizeof(short), 1, f);
         fwrite(&m->x,     sizeof(short), 1, f);
         fwrite(&m->hp,    sizeof(int),   1, f);
@@ -54,12 +88,13 @@ void save_monster(monster_t *m, FILE *f)
         fwrite(&m->goaly, sizeof(short), 1, f);
 
         // add saving inventory etc here later when implemented
+        // add saving attacker, wear_t, etc.
 }
 
 /*
  * Write one cell_t  to file f, at current file position
  */
-void save_cell(FILE *f, cell_t *c)
+void save_cell(cell_t *c, FILE *f)
 {
         bool hasmonster;
 
@@ -81,7 +116,7 @@ void save_cell(FILE *f, cell_t *c)
 /*
  * Write one level_t to file f, at current file position
  */
-void save_level(FILE *f, level_t *l)
+void save_level(level_t *l, FILE *f)
 {
         int y, x;
 
@@ -90,7 +125,51 @@ fprintf(stderr, "DEBUG: %s:%d - writing level of size %d,%d\n", __FILE__, __LINE
         fwrite(&l->ysize, sizeof(short), 1, f);
         for(y = 0; y < l->ysize; y++)
                 for(x = 0; x < l->xsize; x++)
-                        save_cell(f, &l->c[y][x]);
+                        save_cell(&l->c[y][x], f);
+}
+
+/*
+ * Write one monsterdef
+ */
+void save_monsterdef(monster_t *m, FILE *f)
+{
+        struct monsterdef_save_struct s;
+
+        s.id = m->id;
+        strcpy(s.name, m->name);
+        s.attr = m->attr;
+        s.c = m->c;
+        s.level = m->level;
+        s.hp = m->hp;
+        s.speed = m->speed;
+        s.thac0 = m->thac0;
+        s.flags = m->flags;
+        s.aitableindex = m->mid;
+
+        fwrite(&s, sizeof(struct monsterdef_save_struct), 1, f);
+}
+
+void save_objdef(obj_t *o, FILE *f)
+{
+        struct objdef_save_struct s;
+
+        s.id = o->id;
+        s.type = o->type;
+        s.flags = o->flags;
+        s.unique = o->unique;
+        s.modifier = o->modifier;
+        strcpy(s.basename, o->basename);
+        strcpy(s.unidname, o->unidname);
+        strcpy(s.fullname, o->fullname);
+        s.c = o->c;
+        s.minlevel = o->minlevel;
+        s.quantity = o->quantity;
+        s.material = o->material;
+        s.ddice = o->ddice;
+        s.dsides = o->dsides;
+        s.skill = o->skill;
+
+        fwrite(&s, sizeof(struct objdef_save_struct), 1, f);
 }
 
 /*
@@ -128,19 +207,19 @@ bool save_game()
         fwrite(&game, sizeof(game_t), 1, f);
 
         m = monsterdefs->head;
-        while(m) { // maybe a function specifically for writing a monsterdef? and objdef
-                fwrite(m, sizeof(monster_t), 1, f);
+        while(m) { 
+                save_monsterdef(m, f);
                 m = m->next;
         }
 
         o = objdefs->head;
         while(o) {
-                fwrite(o, sizeof(obj_t), 1, f);
+                save_objdef(o, f);
                 o = o->next;
         }
 
         /* then, lets save world and levels */
-        save_level(f, world->dng);
+        save_level(world->dng, f);
 
         fclose(f);
 
@@ -151,6 +230,11 @@ bool save_game()
 
         return true;
 }
+
+
+/*
+ * And now... loading!
+ */
 
 bool load_game()
 {

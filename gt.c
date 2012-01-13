@@ -85,6 +85,7 @@ void init_variables()
 {
         monsterdefs = (monster_t *) gtmalloc(sizeof(monster_t));
         monsterdefs->head = monsterdefs;
+        mid_counter = 1000;
 
         objdefs = (obj_t *) gtmalloc(sizeof(obj_t));
         objdefs->head = objdefs;

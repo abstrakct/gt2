@@ -12,6 +12,7 @@
 typedef actor_t monster_t;
 typedef void (*aifunction)(monster_t *);
 
+extern unsigned int mid_counter;
 extern aifunction aitable[];
 
 #define MF_ISHOSTILE         0x00000001

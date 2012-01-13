@@ -89,7 +89,6 @@ void save_level(level_t *l, FILE *f)
 {
         int y, x;
 
-fprintf(stderr, "DEBUG: %s:%d - writing level of size %d,%d\n", __FILE__, __LINE__, l->xsize, l->ysize);
         fwrite("LEVEL", sizeof(char), 5, f);
         fwrite(&l->xsize, sizeof(short), 1, f);
         fwrite(&l->ysize, sizeof(short), 1, f);
@@ -242,6 +241,25 @@ bool save_game(char *filename)
         return true;
 }
 
+/*
+ * Load one monsterdef (into *m)
+ */
+void load_monsterdef(monster_t *m, FILE *f)
+{
+        struct monsterdef_save_struct s;
+
+        fread(&s, sizeof(struct monsterdef_save_struct), 1, f);
+        m->id = s.id;
+        strcpy(m->name, s.name);
+        m->attr = s.attr;
+        m->c = s.c;
+        m->level = s.level;
+        m->hp = s.hp;
+        m->speed = s.speed;
+        m->thac0 = s.thac0;
+        m->flags = s.flags;
+        m->ai = aitable[s.aitableindex];
+}
 
 /*
  * And now... loading!
@@ -251,6 +269,8 @@ bool load_game(char *filename)
 {
         FILE *f;
         struct savefile_header header;
+        monster_t *m;
+        int i;
 
         gtprintf("Loading game from %s", filename);
         f = fopen(filename, "r");
@@ -267,6 +287,16 @@ bool load_game(char *filename)
         fread(&game, sizeof(game_t), 1, f);
 
         /* now, loading monsterdefs, linked lists, all that.. might be tricky! */
+        for(i=0; i < game->monsterdefs; i++) {
+                m = gtmalloc(sizeof(monster_t));
+                load_monsterdef(m, f);
+                
+                m->head = monsterdefs->head;
+                monsterdefs->next = m;
+                m->next = NULL;
+                m->prev = monsterdefs;
+                monsterdefs = m;
+        }
 
         fclose(f);
         return true;

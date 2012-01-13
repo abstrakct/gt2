@@ -24,39 +24,6 @@
 #include "saveload.h"
 #include "gt.h"
 
-/* this one must match monster_t when it comes to variable types etc.! */
-struct monsterdef_save_struct {
-        short   id;
-        char    name[50];
-        uattr_t attr;
-        char    c;
-        int     level;
-        int     hp;                 // == maxhp
-        float   speed;
-        int     thac0;
-        long    flags;
-        int     aitableindex;       // == the field mid
-        // what about AC?
-};
-
-/* This one must match obj_t when it comes to variable types etc.! */
-struct objdef_save_struct {
-       int          id;
-       short        type;
-       long         flags;
-       char         unique;
-       signed short modifier;
-       char         basename[50];
-       char         unidname[100];
-       char         fullname[100];   // we might want to not include these here...??
-       char         c;
-       char         minlevel;
-       short        quantity;
-       char         material;
-       int          ddice, dsides;
-       char         skill;
-};
-
 /*
  * write one object
  */
@@ -109,6 +76,8 @@ void save_cell(cell_t *c, FILE *f)
         fwrite(&hasmonster, sizeof(bool), 1, f);
         if(hasmonster)
                 save_monster(c->monster, f);
+        hasmonster = c->inventory ? true : false;
+        fwrite(&hasmonster, sizeof(bool), 1, f);
         if(c->inventory)
                 save_inventory(c->inventory, f);
 }
@@ -121,6 +90,7 @@ void save_level(level_t *l, FILE *f)
         int y, x;
 
 fprintf(stderr, "DEBUG: %s:%d - writing level of size %d,%d\n", __FILE__, __LINE__, l->xsize, l->ysize);
+        fwrite("LEVEL", sizeof(char), 5, f);
         fwrite(&l->xsize, sizeof(short), 1, f);
         fwrite(&l->ysize, sizeof(short), 1, f);
         for(y = 0; y < l->ysize; y++)
@@ -172,20 +142,59 @@ void save_objdef(obj_t *o, FILE *f)
         fwrite(&s, sizeof(struct objdef_save_struct), 1, f);
 }
 
+void save_player(actor_t *p, FILE *f)
+{
+        struct player_save_struct s;
+        int i;
+
+        s.x = p->x;
+        s.y = p->x;
+        s.oldx = p->oldx;
+        s.oldy = p->oldy;
+        s.px = p->px;
+        s.py = p->py;
+        s.viewradius = p->viewradius;
+        strcpy(s.name, p->name);
+        s.hp = p->hp;
+        s.maxhp = p->maxhp;
+        s.xp = p->xp;
+        s.ac = p->ac;
+        s.attr = p->attr;
+        s.level = p->level;
+        s.race = p->race;
+        s.cla = p->cla;
+        s.flags = p->flags;
+        s.speed = p->speed;
+        s.movement = p->movement;
+        for(i = 0; i < MAX_SKILLS; i++)
+                s.skill[i] = p->skill[i];
+
+        /* TODO: ADD INVENTORY ETC */
+
+        fwrite("PLAYER", sizeof(char), 6, f);
+        fwrite(&s, sizeof(struct player_save_struct), 1, f);
+}
+
+void generate_savefilename(char *filename)
+{
+        sprintf(filename, "%s/%d.gtsave", SAVE_DIRECTORY, game->seed);
+}
+
 /*
  * Structure of the save file:
  *
  * - header struct
  * - gtconfig struct
  * - game struct
- * - the monsterdefs (it also saves all pointers! this must (if possible) be fixed when loading!!
- * - the objectdefs  (same)
- *
+ * - the monsterdefs
+ * - the objectdefs
+ * - the player
+ * - the levels
  */
 
-bool save_game()
+bool save_game(char *filename)
 {
-        char filename[255];
+//        char filename[255];
         char cmd[260];
         FILE *f;
         struct savefile_header header;
@@ -193,11 +202,10 @@ bool save_game()
         monster_t *m;
         obj_t *o;
 
-        sprintf(filename, "%s/%d.gtsave", SAVE_DIRECTORY, game->seed);
         gtprintf("Saving game to file %s", filename);
         f = fopen(filename, "w");
 
-        header.magic = 0xDEAD71FE;
+        header.magic = GT_SAVEFILE_MAGIC;
         header.version.major = GT_VERSION_MAJ;
         header.version.minor = GT_VERSION_MIN;
         header.version.revision = GT_VERSION_REV;
@@ -218,7 +226,10 @@ bool save_game()
                 o = o->next;
         }
 
-        /* then, lets save world and levels */
+        /* then, let's save the player */
+        save_player(player, f);
+
+        /* then, let's save world and levels */
         save_level(world->dng, f);
 
         fclose(f);
@@ -236,8 +247,27 @@ bool save_game()
  * And now... loading!
  */
 
-bool load_game()
+bool load_game(char *filename)
 {
+        FILE *f;
+        struct savefile_header header;
 
+        gtprintf("Loading game from %s", filename);
+        f = fopen(filename, "r");
+
+        fread(&header, sizeof(struct savefile_header), 1, f);
+        if(header.magic != GT_SAVEFILE_MAGIC) {
+                gtprintf("This doesn't look like a GT savefile to me!");
+                return false;
+        }
+        if(header.version.major != GT_VERSION_MAJ || header.version.minor != GT_VERSION_MIN || header.version.revision != GT_VERSION_REV)
+                gtprintf("Warning: Save file doesn't match current version number. This may or may not work...!");
+
+        fread(&gtconfig, sizeof(gt_config_t), 1, f);
+        fread(&game, sizeof(game_t), 1, f);
+
+        /* now, loading monsterdefs, linked lists, all that.. might be tricky! */
+
+        fclose(f);
         return true;
 }

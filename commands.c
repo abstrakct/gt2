@@ -54,6 +54,7 @@ cmd_t outsidecommands[] = {
         { 'L', CMD_LONGRIGHT, "" },
         { 'v', CMD_TOGGLEFOV, "Toggle FOV" },
         { KEY_F(5), CMD_SAVE, "Save" },
+        { KEY_F(6), CMD_LOAD, "Load" },
         //{ , CMD_LOAD, "Load" },
         //{ , CMD_SKILLSCREEN, "Show skills" },
         { 'd', CMD_ENTERDUNGEON, "Enter dungeon" },

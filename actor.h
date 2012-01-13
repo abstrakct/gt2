@@ -8,6 +8,8 @@
 #ifndef _ACTOR_H
 #define _ACTOR_H
 
+#define MAX_SKILLS 10
+
 typedef struct { // sattr_t
         signed char str;
         signed char phys;
@@ -59,7 +61,7 @@ typedef struct actorstruct {     // actor_t
         double speed;
         double movement;
         int thac0;
-        float skill[10];
+        float skill[MAX_SKILLS];
         /* monster specific stuff */
         void (*ai)(struct actorstruct *);      // artificial intelligence handler!!
         short goalx, goaly;                      // for simple outdoor pathfinder ai

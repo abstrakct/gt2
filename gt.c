@@ -108,6 +108,7 @@ void init_variables()
         game->dead = 0;
         game->seed = time(0);
         srand(game->seed);
+        generate_savefilename(game->savefile);
 
         game->wizardmode = false;
         
@@ -573,7 +574,11 @@ int main(int argc, char *argv[])
                         case CMD_WIZARDMODE:
                                 game->wizardmode = (game->wizardmode ? false : true); queue(ACTION_NOTHING); break;
                         case CMD_SAVE:
-                                save_game();
+                                save_game(game->savefile);
+                                queue(ACTION_NOTHING);
+                                break;
+                        case CMD_LOAD:
+                                load_game(game->savefile);
                                 queue(ACTION_NOTHING);
                                 break;
                         //case 'a': dump_action_queue();

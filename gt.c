@@ -62,6 +62,7 @@ FILE *messagefile;
 int mapcx, mapcy;
 bool mapchanged;
 int tempxsize, tempysize;
+bool loadgame;
 
 // Messages
 message_t messages[500];
@@ -77,6 +78,7 @@ WINDOW *wmap;
 
 struct option gt_options[] = {
         { "seed",    1,   0, 's' },
+        { "load",    1,   0, 'l' },
         { "version", 0,   0, 'v' },
         { NULL,      0, NULL, 0  }
 };
@@ -109,6 +111,7 @@ void init_variables()
         game->seed = time(0);
         srand(game->seed);
         generate_savefilename(game->savefile);
+        loadgame = false;
 
         game->wizardmode = false;
         
@@ -167,6 +170,9 @@ void parse_commandline(int argc, char **argv)
                                   fprintf(stderr, "DEBUG: %s:%d - set random seed to %d (parse_commandline)\n", __FILE__, __LINE__, game->seed);
                                   break;
                         case 'v': printf("Gullible's Travails v%s\n", get_version_string()); die(""); break;
+                        case 'l': strcpy(game->savefile, optarg);
+                                  loadgame = true;
+                                  break;
                         default:  printf("Unknown command line option 0%o -- ignoring!\n", c);
                 }
         }
@@ -467,19 +473,28 @@ int main(int argc, char *argv[])
         if(parse_data_files())
                 die("Couldn't parse data files.");
 
-        world->dng[1].xsize = gtconfig.dxsize;
-        world->dng[1].ysize = gtconfig.dysize;
-        init_level(&world->dng[1]);
 
-        generate_world();
-        world->cmap = world->out->c;
+        if(loadgame) {
+                init_display();
+                init_player();
+                load_game(game->savefile);
+                // these next should be loaded by load_game
+                world->cmap = world->out->c;
+                world->curlevel = world->out;
+        } else {
+                generate_world();
+                world->dng[1].xsize = gtconfig.dxsize;
+                world->dng[1].ysize = gtconfig.dysize;
+                init_level(&world->dng[1]);
+                world->cmap = world->out->c;
 
-        init_display();
-        init_player();
+                init_display();
+                init_player();
+
+                world->curlevel = world->out;
+                game->context = CONTEXT_OUTSIDE;
+        }
         init_commands();
-
-        world->curlevel = world->out;
-        game->context = CONTEXT_OUTSIDE;
         draw_world(world->curlevel);
         draw_wstat();
         initial_update_screen();
@@ -578,7 +593,10 @@ int main(int argc, char *argv[])
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_LOAD:
-                                load_game(game->savefile);
+                                if(!load_game(game->savefile))
+                                        gtprintf("Loading failed!");
+                                else
+                                        gtprintf("Loading successful!");
                                 queue(ACTION_NOTHING);
                                 break;
                         //case 'a': dump_action_queue();

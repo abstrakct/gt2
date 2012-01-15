@@ -116,6 +116,7 @@ void save_monsterdef(monster_t *m, FILE *f)
         s.aitableindex = m->mid;
 
         fwrite(&s, sizeof(struct monsterdef_save_struct), 1, f);
+        //gtprintf("saved monsterdef %s", s.name);
 }
 
 void save_objdef(obj_t *o, FILE *f)
@@ -139,6 +140,7 @@ void save_objdef(obj_t *o, FILE *f)
         s.skill = o->skill;
 
         fwrite(&s, sizeof(struct objdef_save_struct), 1, f);
+        //gtprintf("saved objdef %s", s.basename);
 }
 
 void save_player(actor_t *p, FILE *f)
@@ -242,6 +244,63 @@ bool save_game(char *filename)
 }
 
 /*
+ * And now... loading!
+ */
+
+void load_object(obj_t *o, FILE *f)
+{
+
+}
+
+void load_inventory(obj_t *i, FILE *f)
+{
+
+}
+
+void load_monster(monster_t *m, FILE *f)
+{
+
+}
+
+void load_cell(cell_t *c, FILE *f)
+{
+        bool hasmonster;
+
+        c = gtmalloc(sizeof(cell_t));
+        fread(&c->type, sizeof(char), 1, f);
+        fread(&c->flags, sizeof(int), 1, f);
+        fread(&c->desty, sizeof(short), 1, f);
+        fread(&c->destx, sizeof(short), 1, f);
+        fread(&c->color, sizeof(short), 1, f);
+        fread(&c->visible, sizeof(bool), 1, f);
+
+        fread(&hasmonster, sizeof(bool), 1, f);
+        if(hasmonster)
+                load_monster(c->monster, f);
+
+        fread(&hasmonster, sizeof(bool), 1, f);
+        if(c->inventory)
+                load_inventory(c->inventory, f);
+}
+
+void load_level(level_t *l, FILE *f)
+{
+        int y, x;
+        char str[5];
+
+        fread(str, sizeof(char), 5, f);
+        if(strcmp(str, "LEVEL")) {
+                gtprintf("LEVEL header not were it's supposed to be!");
+                return;
+        }
+        fread(&l->xsize, sizeof(short), 1, f);
+        fread(&l->ysize, sizeof(short), 1, f);
+        for(y = 0; y < l->ysize; y++)
+                for(x = 0; x < l->xsize; x++)
+                        load_cell(&l->c[y][x], f);
+}
+
+/*
  * Load one monsterdef (into *m)
  */
 void load_monsterdef(monster_t *m, FILE *f)
@@ -259,21 +318,86 @@ void load_monsterdef(monster_t *m, FILE *f)
         m->thac0 = s.thac0;
         m->flags = s.flags;
         m->ai = aitable[s.aitableindex];
+        //gtprintf("loaded monsterdef %s", m->name);
 }
 
-/*
- * And now... loading!
- */
+void load_objdef(obj_t *o, FILE *f)
+{
+        struct objdef_save_struct s;
+
+        fread(&s, sizeof(struct objdef_save_struct), 1, f);
+        o->id = s.id;
+        o->type = s.type;
+        o->flags = s.flags;
+        o->unique = s.unique;
+        o->modifier = s.modifier;
+        strcpy(o->basename, s.basename);
+        strcpy(o->unidname, s.unidname);
+        strcpy(o->fullname, s.fullname);
+        o->c = s.c;
+        o->minlevel = s.minlevel;
+        o->quantity = s.quantity;
+        o->material = s.material;
+        o->ddice = s.ddice;
+        o->dsides = s.dsides;
+        o->skill = s.skill;
+        //gtprintf("loaded objdef %s", o->basename);
+}
+
+void load_player(actor_t *p, FILE *f)
+{
+        struct player_save_struct s;
+        int i;
+        char str[10];
+
+        fread(str, sizeof(char), 6, f);
+        if(strcmp(str, "PLAYER")) {
+                fprintf(stderr, "DEBUG: %s:%d - str != PLAYER in load_player!\n", __FILE__, __LINE__);
+                gtprintf("read %s instead of PLAYER?!", str);
+                return;
+                die("Player data not where it should be in savefile! Corrupt savefile?");
+        }
+        fread(&s, sizeof(struct player_save_struct), 1, f);
+        p->x = s.x;
+        p->x = s.y;
+        p->oldx = s.oldx;
+        p->oldy = s.oldy;
+        p->px = s.px;
+        p->py = s.py;
+        p->viewradius = s.viewradius;
+        strcpy(p->name, s.name);
+        p->hp = s.hp;
+        p->maxhp = s.maxhp;
+        p->xp = s.xp;
+        p->ac = s.ac;
+        p->attr = s.attr;
+        p->level = s.level;
+        p->race = s.race;
+        p->cla = s.cla;
+        p->flags = s.flags;
+        p->speed = s.speed;
+        p->movement = s.movement;
+        for(i = 0; i < MAX_SKILLS; i++)
+                p->skill[i] = s.skill[i];
+
+        /* TODO: ADD INVENTORY ETC */
+
+}
 
 bool load_game(char *filename)
 {
         FILE *f;
         struct savefile_header header;
         monster_t *m;
+        obj_t *o;
         int i;
 
         gtprintf("Loading game from %s", filename);
         f = fopen(filename, "r");
+        if(!f) {
+                gtprintf("Couldn't open file %s", filename);
+                return false;
+        }
 
         fread(&header, sizeof(struct savefile_header), 1, f);
         if(header.magic != GT_SAVEFILE_MAGIC) {
@@ -287,7 +411,7 @@ bool load_game(char *filename)
         fread(&game, sizeof(game_t), 1, f);
 
         /* now, loading monsterdefs, linked lists, all that.. might be tricky! */
-        for(i=0; i < game->monsterdefs; i++) {
+        for(i=0; i <= game->monsterdefs; i++) {
                 m = gtmalloc(sizeof(monster_t));
                 load_monsterdef(m, f);
                 
@@ -297,6 +421,24 @@ bool load_game(char *filename)
                 m->prev = monsterdefs;
                 monsterdefs = m;
         }
+
+        /* objdefs */
+        for(i=0; i <= game->objdefs; i++) {
+                o = gtmalloc(sizeof(obj_t));
+                load_objdef(o, f);
+                
+                o->head = objdefs->head;
+                objdefs->next = o;
+                o->next = NULL;
+                o->prev = objdefs;
+                objdefs = o;
+        }
+
+        /* player */
+        load_player(player, f);
+
+        /* world */
+        load_level(world->dng, f);
 
         fclose(f);
         return true;

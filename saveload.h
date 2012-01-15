@@ -67,6 +67,6 @@ struct player_save_struct {
 
 void generate_savefilename(char *filename);
 bool save_game(char *filename);
-bool load_game(char *filename);
+bool load_game(char *filename, int ingame);
 
 #endif

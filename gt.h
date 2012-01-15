@@ -103,5 +103,6 @@ extern WINDOW *wmap;*/
 /* function prototypes */
 
 void queue(int action);
+void shutdown_gt();
 
 #endif

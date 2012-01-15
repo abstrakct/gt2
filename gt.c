@@ -104,7 +104,6 @@ void init_variables()
         world->out = world->dng;                      // i.e. it points to world->dng[0]
         world->out->xsize = XSIZE;
         world->out->ysize = YSIZE;
-        init_level(world->out);
 
         game = (game_t *) gtmalloc(sizeof(game_t));
         game->dead = 0;
@@ -477,15 +476,19 @@ int main(int argc, char *argv[])
         if(loadgame) {
                 init_display();
                 init_player();
-                load_game(game->savefile);
+                if(!load_game(game->savefile, 0))
+                        die("Couldn't open file %s", game->savefile);
                 // these next should be loaded by load_game
                 world->cmap = world->out->c;
                 world->curlevel = world->out;
         } else {
+                init_level(world->out);
                 generate_world();
+
                 world->dng[1].xsize = gtconfig.dxsize;
                 world->dng[1].ysize = gtconfig.dysize;
                 init_level(&world->dng[1]);
+                
                 world->cmap = world->out->c;
 
                 init_display();
@@ -494,6 +497,7 @@ int main(int argc, char *argv[])
                 world->curlevel = world->out;
                 game->context = CONTEXT_OUTSIDE;
         }
+
         init_commands();
         draw_world(world->curlevel);
         draw_wstat();
@@ -593,7 +597,7 @@ int main(int argc, char *argv[])
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_LOAD:
-                                if(!load_game(game->savefile))
+                                if(!load_game(game->savefile, 1))
                                         gtprintf("Loading failed!");
                                 else
                                         gtprintf("Loading successful!");

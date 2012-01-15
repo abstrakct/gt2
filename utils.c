@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
@@ -16,6 +17,7 @@
 #include "objects.h"
 #include "utils.h"
 #include "world.h"
+#include "display.h"
 #include "gt.h"
 
 int ri(int a, int b) 
@@ -36,9 +38,23 @@ char *get_version_string()
         return s;
 }
 
-void die(char *m)
+void die(char *m, ...)
 {
-        fprintf(stderr, "FATAL ERROR: %s\n", m);
+        va_list argp;
+        char s[1000];
+        char s2[1020];
+
+        sprintf(s2, "FATAL ERROR: ");
+
+        va_start(argp, m);
+        vsprintf(s, m, argp);
+        va_end(argp);
+
+        strcat(s2, s);
+        fprintf(stderr, "%s", s2);
+
+        shutdown_display();
+        shutdown_gt();
         exit(1);
 }
 
@@ -70,11 +86,8 @@ void *gtmalloc(size_t size)
         void *p;
 
         p = malloc(size);
-        if(!p) {
-                char m[100];
-                sprintf(m, "Memory allocation in gtmalloc for size %d failed! Exiting.\n", (int) size);
-                die(m);
-        }
+        if(!p)
+                die("Memory allocation in gtmalloc for size %d failed! Exiting.\n", (int) size);
 
         memset(p, 0, size);
 
@@ -86,11 +99,8 @@ void *gtcalloc(size_t num, size_t size)
         void *p;
 
         p = calloc(num, size);
-        if(!p) {
-                char m[200];
-                sprintf(m, "calloc %d * %d (total %d) in gtcalloc failed! Exiting.\n", (int) num, (int) size, (int) (num*size));
-                die(m);
-        }
+        if(!p)
+                die("calloc %d * %d (total %d) in gtcalloc failed! Exiting.\n", (int) num, (int) size, (int) (num*size));
 
         return p;
 }

@@ -469,10 +469,11 @@ int main(int argc, char *argv[])
         init_variables();
         parse_commandline(argc, argv);
 
-        printf("Reading data files...\n");
-        if(parse_data_files())
-                die("Couldn't parse data files.");
-
+        if(!loadgame) {
+                printf("Reading data files...\n");
+                if(parse_data_files())
+                        die("Couldn't parse data files.");
+        }
 
         if(loadgame) {
                 init_display();

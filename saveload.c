@@ -204,6 +204,7 @@ bool save_game(char *filename)
 {
 //        char filename[255];
         char cmd[260];
+        int i;
         FILE *f;
         struct savefile_header header;
         //int i;
@@ -226,14 +227,16 @@ bool save_game(char *filename)
         save_player(player, f);
 
         m = monsterdefs->head;
-        while(m) { 
-                save_monsterdef(m, f);
+        for(i=0; i <= game->monsterdefs; i++) {
+                if(m)
+                        save_monsterdef(m, f);
                 m = m->next;
         }
 
         o = objdefs->head;
-        while(o) {
-                save_objdef(o, f);
+        for(i=0; i <= game->objdefs; i++) {
+                if(o)
+                        save_objdef(o, f);
                 o = o->next;
         }
 
@@ -517,12 +520,13 @@ bool load_game(char *filename, int ingame)
                         return false;
                 }
                 
-                m->head = monsterdefs->head;
-                monsterdefs->next = m;
-                m->next = NULL;
+                m->next = monsterdefs->next;
+                m->head = monsterdefs;
                 m->prev = monsterdefs;
-                monsterdefs = m;
-        }
+                if(monsterdefs->next)
+                        monsterdefs->next->prev = m;
+                monsterdefs->next = m;
+}
 
         /* objdefs */
         for(i=0; i <= game->objdefs; i++) {
@@ -534,12 +538,13 @@ bool load_game(char *filename, int ingame)
                         fprintf(stderr, "DEBUG: %s:%d - loading failed in load_objdef %d\n", __FILE__, __LINE__, i);
                         return false;
                 }
-                
-                o->head = objdefs->head;
-                objdefs->next = o;
-                o->next = NULL;
+
+                o->next = objdefs->next;
+                o->head = objdefs;
                 o->prev = objdefs;
-                objdefs = o;
+                if(objdefs->next)
+                        objdefs->next->prev = o;
+                objdefs->next = o;
         }
 
         /* world */

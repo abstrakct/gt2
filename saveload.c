@@ -269,7 +269,23 @@ void load_monster(monster_t *m, FILE *f)
         char str[7];
 
         fread(str, sizeof(char), 6, f);
+        if(strcmp(str, "MONSTER")) {
+                gtprintf("NO THIS IS NOT A MONSTER");
+        return;
+        }
         gtprintf("load_monster! STR=%s", str);
+        // TODO GET STUFF FROM MONSTEDEF-id
+        // but will it help?
+        fread(&m->id,    sizeof(short), 1, f);
+        fread(&m->mid,   sizeof(int),   1, f);
+        fread(&m->y,     sizeof(short), 1, f);
+        fread(&m->x,     sizeof(short), 1, f);
+        fread(&m->hp,    sizeof(int),   1, f);
+        fread(&m->goalx, sizeof(short), 1, f);
+        fread(&m->goaly, sizeof(short), 1, f);
+
+        // add saving inventory etc here later when implemented
+        // add saving attacker, wear_t, etc.
 }
 
 void load_cell(cell_t *c, FILE *f)

@@ -45,14 +45,15 @@ void save_inventory(obj_t *i, FILE *f)
  */
 void save_monster(monster_t *m, FILE *f)
 {
-        fwrite("MONSTER", sizeof(char),  7, f);     // is this necessary?
-        fwrite(&m->id,    sizeof(short), 1, f);     // write the monsterdef ID, then any vars which might have changed
-        fwrite(&m->mid,   sizeof(int),   1, f);
-        fwrite(&m->y,     sizeof(short), 1, f);
-        fwrite(&m->x,     sizeof(short), 1, f);
-        fwrite(&m->hp,    sizeof(int),   1, f);
-        fwrite(&m->goalx, sizeof(short), 1, f);
-        fwrite(&m->goaly, sizeof(short), 1, f);
+        fwrite("MONSTER",    sizeof(char),  7, f);     // is this necessary?
+        fwrite(&m->id,       sizeof(short), 1, f);     // write the monsterdef ID, then any vars which might have changed
+        fwrite(&m->mid,      sizeof(int),   1, f);
+        fwrite(&m->y,        sizeof(short), 1, f);
+        fwrite(&m->x,        sizeof(short), 1, f);
+        fwrite(&m->hp,       sizeof(int),   1, f);
+        fwrite(&m->goalx,    sizeof(short), 1, f);
+        fwrite(&m->goaly,    sizeof(short), 1, f);
+        fwrite(&m->movement, sizeof(float), 1, f);
 
         // add saving inventory etc here later when implemented
         // add saving attacker, wear_t, etc.
@@ -63,7 +64,7 @@ void save_monster(monster_t *m, FILE *f)
  */
 void save_cell(cell_t *c, FILE *f)
 {
-        bool hasmonster;
+        bool flag;
 
         fwrite(&c->type, sizeof(char), 1, f);
         fwrite(&c->flags, sizeof(int), 1, f);
@@ -72,13 +73,14 @@ void save_cell(cell_t *c, FILE *f)
         fwrite(&c->color, sizeof(short), 1, f);
         fwrite(&c->visible, sizeof(bool), 1, f);
 
-        hasmonster = c->monster ? true : false;
-        fwrite(&hasmonster, sizeof(bool), 1, f);
-        if(hasmonster)
+        flag = c->monster ? true : false;
+        fwrite(&flag, sizeof(bool), 1, f);
+        if(flag)
                 save_monster(c->monster, f);
-        hasmonster = c->inventory ? true : false;
-        fwrite(&hasmonster, sizeof(bool), 1, f);
-        if(c->inventory)
+
+        flag = c->inventory ? true : false;
+        fwrite(&flag, sizeof(bool), 1, f);
+        if(flag)
                 save_inventory(c->inventory, f);
 
 }
@@ -105,6 +107,7 @@ void save_monsterdef(monster_t *m, FILE *f)
 {
         struct monsterdef_save_struct s;
 
+        memset(&s, 0, sizeof(struct monsterdef_save_struct));
         s.id = m->id;
         strcpy(s.name, m->name);
         s.attr = m->attr;
@@ -116,14 +119,16 @@ void save_monsterdef(monster_t *m, FILE *f)
         s.flags = m->flags;
         s.aitableindex = m->mid;
 
+        fwrite("MONSTERDEF", sizeof(char), 10, f);
         fwrite(&s, sizeof(struct monsterdef_save_struct), 1, f);
-        gtprintf("saved monsterdef %s", s.name);
+        //gtprintf("saved monsterdef %s", s.name);
 }
 
 void save_objdef(obj_t *o, FILE *f)
 {
         struct objdef_save_struct s;
 
+        memset(&s, 0, sizeof(struct objdef_save_struct));
         s.id = o->id;
         s.type = o->type;
         s.flags = o->flags;
@@ -140,8 +145,9 @@ void save_objdef(obj_t *o, FILE *f)
         s.dsides = o->dsides;
         s.skill = o->skill;
 
+        fwrite("OBJDEF", sizeof(char), 6, f);
         fwrite(&s, sizeof(struct objdef_save_struct), 1, f);
-        gtprintf("saved objdef %s", s.basename);
+        //gtprintf("saved objdef %s", s.basename);
 }
 
 void save_player(actor_t *p, FILE *f)
@@ -264,31 +270,65 @@ void load_inventory(obj_t *i, FILE *f)
         gtprintf("load_inventory! str=%s", str);
 }
 
-void load_monster(monster_t *m, FILE *f)
+bool load_monster(monster_t *m, level_t *l, FILE *f)
 {
         char str[7];
+        monster_t mdef;
 
-        fread(str, sizeof(char), 6, f);
+        fread(str, sizeof(char), 7, f);
         if(strcmp(str, "MONSTER")) {
                 gtprintf("NO THIS IS NOT A MONSTER");
-        return;
+                gtprintf("load_monster! STR=%s", str);
+                return false;
         }
         gtprintf("load_monster! STR=%s", str);
-        // TODO GET STUFF FROM MONSTEDEF-id
-        // but will it help?
-        fread(&m->id,    sizeof(short), 1, f);
-        fread(&m->mid,   sizeof(int),   1, f);
-        fread(&m->y,     sizeof(short), 1, f);
-        fread(&m->x,     sizeof(short), 1, f);
-        fread(&m->hp,    sizeof(int),   1, f);
-        fread(&m->goalx, sizeof(short), 1, f);
-        fread(&m->goaly, sizeof(short), 1, f);
 
-        // add saving inventory etc here later when implemented
-        // add saving attacker, wear_t, etc.
+        if(!m)
+                m = gtmalloc(sizeof(monster_t));
+
+        fread(&m->id,       sizeof(short), 1, f);
+        fread(&m->mid,      sizeof(int),   1, f);
+        fread(&m->y,        sizeof(short), 1, f);
+        fread(&m->x,        sizeof(short), 1, f);
+        fread(&m->hp,       sizeof(int),   1, f);
+        fread(&m->goalx,    sizeof(short), 1, f);
+        fread(&m->goaly,    sizeof(short), 1, f);
+        fread(&m->movement, sizeof(float), 1, f);
+
+        mdef = get_monsterdef(m->id);
+        m->oldx = mdef.oldx;
+        m->oldy = mdef.oldy;
+        m->viewradius = mdef.viewradius;
+        strcpy(m->name, mdef.name);
+        m->maxhp = mdef.maxhp;
+        m->xp = mdef.xp;
+        m->attr = mdef.attr;
+        m->level = mdef.level;
+        m->race = mdef.race;
+        m->cla = mdef.cla;
+        m->w = mdef.w;
+        m->flags = mdef.flags;
+        m->c = mdef.c;
+        m->speed = mdef.speed;
+        m->thac0 = mdef.thac0;
+        m->ai = mdef.ai;
+
+        l->c[m->y][m->x].monster = m;
+
+        m->prev = l->monsters;
+        m->head = l->monsters;
+        m->next = l->monsters->next;
+        l->monsters->next = m;
+        if(m->next)
+                m->next->prev = m;
+
+
+        // add loading inventory etc here later when implemented
+        // add loading attacker, wear_t, etc.
+        return true;
 }
 
-void load_cell(cell_t *c, FILE *f)
+void load_cell(cell_t *c, level_t *l, FILE *f)
 {
         bool flag;
 
@@ -301,23 +341,26 @@ void load_cell(cell_t *c, FILE *f)
 
         /* cell has monster? */
         fread(&flag, sizeof(bool), 1, f);
-        if(flag)
-                load_monster(c->monster, f);
+        if(flag) {
+                c->monster = gtmalloc(sizeof(monster_t));
+                load_monster(c->monster, l, f);
+        }
+
         /* cell has inventory? */
         fread(&flag, sizeof(bool), 1, f);
         if(flag)
                 load_inventory(c->inventory, f);
 }
 
-void load_level(level_t *l, FILE *f)
+bool load_level(level_t *l, FILE *f)
 {
         int y, x;
         char str[5];
 
         fread(str, sizeof(char), 5, f);
         if(strcmp(str, "LEVEL")) {
-                gtprintf("LEVEL header not were it's supposed to be!");
-                return;
+                fprintf(stderr, "LEVEL header not were it's supposed to be!");
+                return false;
         }
         fread(&l->xsize, sizeof(short), 1, f);
         fread(&l->ysize, sizeof(short), 1, f);
@@ -326,18 +369,25 @@ void load_level(level_t *l, FILE *f)
 
         for(y = 0; y < l->ysize; y++)
                 for(x = 0; x < l->xsize; x++)
-                        load_cell(&l->c[y][x], f);
+                        load_cell(&l->c[y][x], l, f);
 
         gtprintf("loaded level!");
+        return true;
 }
 
 /*
  * Load one monsterdef (into *m)
  */
-void load_monsterdef(monster_t *m, FILE *f)
+bool load_monsterdef(monster_t *m, FILE *f)
 {
         struct monsterdef_save_struct s;
+        char str[10];
 
+        fread(str, sizeof(char), 10, f);
+        if(strncmp(str, "MONSTERDEF", 10)) {
+                fprintf(stderr, "MONSTERDEF not where it should be! This won't end well! str=%s\n", str);
+                return false;
+        }
         fread(&s, sizeof(struct monsterdef_save_struct), 1, f);
         m->id = s.id;
         strcpy(m->name, s.name);
@@ -349,12 +399,20 @@ void load_monsterdef(monster_t *m, FILE *f)
         m->thac0 = s.thac0;
         m->flags = s.flags;
         m->ai = aitable[s.aitableindex];
-        gtprintf("loaded monsterdef %s", m->name);
+//        gtprintf("loaded monsterdef %s", m->name);
+        return true;
 }
 
-void load_objdef(obj_t *o, FILE *f)
+bool load_objdef(obj_t *o, FILE *f)
 {
         struct objdef_save_struct s;
+        char str[6];
+
+        fread(str, sizeof(char), 6, f);
+        if(strcmp(str, "OBJDEF")) {
+                fprintf(stderr, "OBJDEF not where it should be! This won't end well! str=%s\n", str);
+                return false;
+        }
 
         fread(&s, sizeof(struct objdef_save_struct), 1, f);
         o->id = s.id;
@@ -372,10 +430,11 @@ void load_objdef(obj_t *o, FILE *f)
         o->ddice = s.ddice;
         o->dsides = s.dsides;
         o->skill = s.skill;
-        gtprintf("loaded objdef %s", o->basename);
+        //gtprintf("loaded objdef %s", o->basename);
+        return true;
 }
 
-void load_player(actor_t *p, FILE *f)
+bool load_player(actor_t *p, FILE *f)
 {
         struct player_save_struct s;
         int i;
@@ -384,9 +443,8 @@ void load_player(actor_t *p, FILE *f)
         fread(str, sizeof(char), 6, f);
         if(strcmp(str, "PLAYER")) {
                 fprintf(stderr, "DEBUG: %s:%d - str != PLAYER in load_player!\n", __FILE__, __LINE__);
-                gtprintf("read %s instead of PLAYER?!", str);
-                return;
-                die("Player data not where it should be in savefile! Corrupt savefile?");
+                fprintf(stderr, "read %s instead of PLAYER?!\n", str);
+                return false;
         }
         fread(&s, sizeof(struct player_save_struct), 1, f);
         p->x = s.x;
@@ -413,6 +471,7 @@ void load_player(actor_t *p, FILE *f)
 
         /* TODO: ADD INVENTORY ETC */
 
+        return true;
 }
 
 bool load_game(char *filename, int ingame)
@@ -442,7 +501,10 @@ bool load_game(char *filename, int ingame)
         fread(game, sizeof(game_t), 1, f);
 
         /* player */
-        load_player(player, f);
+        if(!load_player(player, f)) {
+                fprintf(stderr, "DEBUG: %s:%d - loading failed in load_player\n", __FILE__, __LINE__);
+                return false;
+        }
 
         /* now, loading monsterdefs, linked lists, all that.. might be tricky! */
         for(i=0; i <= game->monsterdefs; i++) {
@@ -450,7 +512,10 @@ bool load_game(char *filename, int ingame)
                         m = gtmalloc(sizeof(monster_t));
                 else
                         m = monsterdefs;
-                load_monsterdef(m, f);
+                if(!load_monsterdef(m, f)) {
+                        fprintf(stderr, "DEBUG: %s:%d - loading failed in load_monsterdef\n", __FILE__, __LINE__);
+                        return false;
+                }
                 
                 m->head = monsterdefs->head;
                 monsterdefs->next = m;
@@ -465,7 +530,10 @@ bool load_game(char *filename, int ingame)
                         o = gtmalloc(sizeof(obj_t));
                 else
                         o = objdefs;
-                load_objdef(o, f);
+                if(!load_objdef(o, f)) {
+                        fprintf(stderr, "DEBUG: %s:%d - loading failed in load_objdef %d\n", __FILE__, __LINE__, i);
+                        return false;
+                }
                 
                 o->head = objdefs->head;
                 objdefs->next = o;
@@ -475,7 +543,10 @@ bool load_game(char *filename, int ingame)
         }
 
         /* world */
-        load_level(world->dng, f);
+        if(!load_level(world->dng, f)) {
+                fprintf(stderr, "DEBUG: %s:%d - loading failed in load_level\n", __FILE__, __LINE__);
+                return false;
+        }
 
         fclose(f);
         return true;

@@ -22,6 +22,7 @@ struct monsterdef_save_struct {
         int     level;
         int     hp;                 // == maxhp
         float   speed;
+        float   movement;
         int     thac0;
         long    flags;
         int     aitableindex;       // == the field mid

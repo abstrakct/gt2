@@ -166,6 +166,7 @@ void parse_commandline(int argc, char **argv)
                 switch(c) {
                         case 's': game->seed = atoi(optarg);
                                   srand(game->seed);
+                                  generate_savefilename(game->savefile);
                                   fprintf(stderr, "DEBUG: %s:%d - set random seed to %d (parse_commandline)\n", __FILE__, __LINE__, game->seed);
                                   break;
                         case 'v': printf("Gullible's Travails v%s\n", get_version_string()); die(""); break;

@@ -442,6 +442,8 @@ bool monster_passable(int y, int x)
 {
         if(ct(y,x) == AREA_VILLAGE || ct(y,x) == AREA_CITY)
                 return false;
+        else if(cm(y,x))
+                return false;
         else
                 return passable(y, x);
 }

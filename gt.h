@@ -71,11 +71,6 @@ struct actionqueue {
 #define ppy player->py
 #define pyxt world->cmap[player->y][player->x].type
 
-#define ct(a,b) world->cmap[a][b].type
-#define cv(a,b) world->cmap[a][b].visible
-#define cc(a,b) world->cmap[a][b].color
-#define cm(a,b) world->cmap[a][b].monster
-#define ci(a,b) world->cmap[a][b].inventory
 
 
 // global variables

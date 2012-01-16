@@ -31,6 +31,12 @@
 #define XSIZE 800
 #define DUNGEON_SIZE 200
 
+#define ct(a,b) world->cmap[a][b].type
+#define cv(a,b) world->cmap[a][b].visible
+#define cc(a,b) world->cmap[a][b].color
+#define cm(a,b) world->cmap[a][b].monster
+#define ci(a,b) world->cmap[a][b].inventory
+
 typedef struct {
         char  name[50];
         short x1, y1, x2, y2;     // start/end coordinates

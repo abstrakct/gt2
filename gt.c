@@ -59,7 +59,6 @@ struct actionqueue *aq;
 gt_config_t gtconfig;
 long actionnum;
 FILE *messagefile;
-int mapcx, mapcy;
 bool mapchanged;
 int tempxsize, tempysize;
 bool loadgame;
@@ -129,8 +128,8 @@ void init_player()
         ply = game->maph / 2;
         ppx = plx - game->mapw / 2;
         ppy = ply - game->maph / 2;
-        mapcx = game->mapw + 2;
-        mapcy = game->maph + 2;
+        game->mapcx = game->mapw + 2;
+        game->mapcy = game->maph + 2;
         player->viewradius = 50;
 }
 
@@ -192,13 +191,13 @@ void do_action(int action)
                                 ply++;
          //               if(ply >= world->curlevel->ysize)
          //                       ply = world->curlevel->ysize-1;
-                        if(ply >= (ppy + (mapcy/6*5))) {
+                        if(ply >= (ppy + (game->mapcy/6*5))) {
                                 mapchanged = true;
                                 ppy++;
                         }
-                        if(ppy >= world->curlevel->ysize-mapcy) {
+                        if(ppy >= world->curlevel->ysize-game->mapcy) {
                                 mapchanged = true;
-                                ppy = world->curlevel->ysize - mapcy - 1;
+                                ppy = world->curlevel->ysize - game->mapcy - 1;
                         }
                         if(ppy < 0)
                                 ppy = 0;
@@ -208,7 +207,7 @@ void do_action(int action)
                                 ply--;
                         if(ply < 0)
                                 ply = 0;
-                        if(ply <= (ppy + (mapcy/6))) {
+                        if(ply <= (ppy + (game->mapcy/6))) {
                                 mapchanged = true;
                                 ppy--;
                         }
@@ -220,7 +219,7 @@ void do_action(int action)
                                 plx--;
                         if(plx < 0)
                                 plx = 0;
-                        if(plx <= (ppx+(mapcx/6))) {
+                        if(plx <= (ppx+(game->mapcx/6))) {
                                 mapchanged = true;
                                 ppx--;
                         }
@@ -232,13 +231,13 @@ void do_action(int action)
                                 plx++;
         //                if(plx >= world->curlevel->xsize)
         //                        plx = world->curlevel->xsize-1;
-                        if(plx >= (ppx+(mapcx/6*5))) {
+                        if(plx >= (ppx+(game->mapcx/6*5))) {
                                 mapchanged = true;
                                 ppx++;
                         }
-                        if(ppx >= world->curlevel->xsize-mapcx) {
+                        if(ppx >= world->curlevel->xsize-game->mapcx) {
                                 mapchanged = true;
-                                ppx = world->curlevel->xsize-mapcx-1;
+                                ppx = world->curlevel->xsize-game->mapcx-1;
                         }
                         if(ppx < 0)
                                 ppx = 0;
@@ -250,7 +249,7 @@ void do_action(int action)
                         }
                         if(ply < 0)
                                 ply = 0;
-                        if(ply <= (ppy + (mapcy/6))) {
+                        if(ply <= (ppy + (game->mapcy/6))) {
                                 mapchanged = true;
                                 ppy--;
                         }
@@ -259,7 +258,7 @@ void do_action(int action)
 
                         if(plx < 0)
                                 plx = 0;
-                        if(plx <= (ppx + (mapcx/6))) {
+                        if(plx <= (ppx + (game->mapcx/6))) {
                                 mapchanged = true;
                                 ppx--;
                         }
@@ -273,20 +272,20 @@ void do_action(int action)
                         
                         if(plx >= world->curlevel->xsize)
                                 plx = world->curlevel->xsize-1;
-                        if(plx >= (ppx+(mapcx/6*5))) {
+                        if(plx >= (ppx+(game->mapcx/6*5))) {
                                 mapchanged = true;
                                 ppx++;
                         }
-                        if(ppx >= world->curlevel->xsize-mapcx) {
+                        if(ppx >= world->curlevel->xsize-game->mapcx) {
                                 mapchanged = true;
-                                ppx = world->curlevel->xsize-mapcx-1;
+                                ppx = world->curlevel->xsize-game->mapcx-1;
                         }
                         if(ppx < 0)
                                 ppx = 0;
 
                         if(ply < 0)
                                 ply = 0;
-                        if(ply <= (ppy+(mapcy/6))) {
+                        if(ply <= (ppy+(game->mapcy/6))) {
                                 mapchanged = true;
                                 ppy--;
                         }
@@ -300,20 +299,20 @@ void do_action(int action)
 
                         if(ply >= world->curlevel->ysize)
                                 ply = world->curlevel->ysize-1;
-                        if(ply >= (ppy+(mapcy/6*5))) {
+                        if(ply >= (ppy+(game->mapcy/6*5))) {
                                 mapchanged = true;
                                 ppy++;
                         }
-                        if(ppy >= world->curlevel->ysize-mapcy) {
+                        if(ppy >= world->curlevel->ysize-game->mapcy) {
                                 mapchanged = true;
-                                ppy = world->curlevel->ysize-mapcy-1;
+                                ppy = world->curlevel->ysize-game->mapcy-1;
                         }
                         if(ppy < 0)
                                 ppy = 0;
 
                         //if(plx < 0)
                         //        plx = 0;
-                        if(plx <= (ppx+(mapcx/6))) {
+                        if(plx <= (ppx+(game->mapcx/6))) {
                                 mapchanged = true;
                                 ppx--;
                         }
@@ -326,26 +325,26 @@ void do_action(int action)
                         }
                         if(ply >= world->curlevel->ysize)
                                 ply = world->curlevel->ysize-1;
-                        if(ply >= (ppy+(mapcy/6*5))) {
+                        if(ply >= (ppy+(game->mapcy/6*5))) {
                                 mapchanged = true;
                                 ppy++;
                         }
-                        if(ppy >= world->curlevel->ysize - mapcy) {
+                        if(ppy >= world->curlevel->ysize - game->mapcy) {
                                 mapchanged = true;
-                                ppy = world->curlevel->ysize - mapcy - 1;
+                                ppy = world->curlevel->ysize - game->mapcy - 1;
                         }
                         if(ppy < 0)
                                 ppy = 0;
 
                         if(plx >= world->curlevel->xsize)
                                 plx = world->curlevel->xsize - 1;
-                        if(plx >= (ppx+(mapcx/6*5))) {
+                        if(plx >= (ppx+(game->mapcx/6*5))) {
                                 mapchanged = true;
                                 ppx++;
                         }
-                        if(ppx >= world->curlevel->xsize - mapcx) {
+                        if(ppx >= world->curlevel->xsize - game->mapcx) {
                                 mapchanged = true;
-                                ppx = world->curlevel->xsize - mapcx-1;
+                                ppx = world->curlevel->xsize - game->mapcx-1;
                         }
                         if(ppx < 0)
                                 ppx = 0;

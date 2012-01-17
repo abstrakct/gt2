@@ -24,6 +24,7 @@ typedef struct {                    // config
 typedef struct {                              // game_t
         short        width, height;           // width, height of screen
         short        mapw, maph;              // width, height of map window
+        int          mapcx, mapcy;
         bool         dead;                    // is the game/player dead?
         short        context;                 // which context are we in? see CONTEXT_ defines
         short        currentlevel;            // what's the current level?

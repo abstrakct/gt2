@@ -489,8 +489,9 @@ void generate_world()
         world->village = gtcalloc((size_t)world->villages, sizeof(city_t));
         generate_village(world->villages);
 
-        fprintf(stderr, "DEBUG: %s:%d - Generating dungoen!!\n", __FILE__, __LINE__);
+        fprintf(stderr, "DEBUG: %s:%d - Generating dungeon!!\n", __FILE__, __LINE__);
         generate_dungeon_labyrinthine(1);
+        game->createddungeons++;
         paint_room(&world->dng[1], 10, 10, 10, 10, 0);
 
         // create the edge of the world

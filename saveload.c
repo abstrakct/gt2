@@ -243,6 +243,9 @@ bool save_game(char *filename)
         /* then, let's save world and levels */
         save_level(world->dng, f);
 
+        for(i=1; i<=game->createddungeons; i++)
+                save_level(&world->dng[i], f);
+
         fclose(f);
 
         if(gtconfig.compress_savefile) {
@@ -551,6 +554,12 @@ bool load_game(char *filename, int ingame)
         if(!load_level(world->dng, f)) {
                 fprintf(stderr, "DEBUG: %s:%d - loading failed in load_level\n", __FILE__, __LINE__);
                 return false;
+        }
+        for(i=1; i<=game->createddungeons; i++) {
+                if(!load_level(&world->dng[i], f)) {
+                        fprintf(stderr, "DEBUG: %s:%d - loading failed in load_level (level %d)\n", __FILE__, __LINE__, i);
+                        return false;
+                }
         }
 
         fclose(f);

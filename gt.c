@@ -109,6 +109,7 @@ void init_variables()
         game->dead = 0;
         game->seed = time(0);
         srand(game->seed);
+        game->createddungeons = 0;
         generate_savefilename(game->savefile);
         loadgame = false;
 
@@ -476,21 +477,20 @@ int main(int argc, char *argv[])
         }
 
         if(loadgame) {
-                init_display();
                 init_player();
                 if(!load_game(game->savefile, 0))
                         die("Couldn't open file %s", game->savefile);
+                init_display();
                 // these next should be loaded by load_game
-                world->cmap = world->out->c;
-                world->curlevel = world->out;
+                world->cmap = world->dng[game->currentlevel].c;
+                world->curlevel = &world->dng[game->currentlevel];
         } else {
-                init_level(world->out);
-                generate_world();
-
                 world->dng[1].xsize = gtconfig.dxsize;
                 world->dng[1].ysize = gtconfig.dysize;
                 init_level(&world->dng[1]);
-                
+                init_level(world->out);
+                generate_world();
+
                 world->cmap = world->out->c;
 
                 init_display();
@@ -524,8 +524,9 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_ENTERDUNGEON:
                                 if(world->cmap == world->out->c) {
-                                        world->cmap = world->dng[1].c;
-                                        world->curlevel = &(world->dng[1]);
+                                        game->currentlevel++;
+                                        world->cmap = world->dng[game->currentlevel].c;
+                                        world->curlevel = &(world->dng[game->currentlevel]);
                                         game->context = CONTEXT_DUNGEON;
 
                                         ply = ri((world->curlevel->ysize/2)-(world->curlevel->ysize/5), (world->curlevel->ysize/2)+(world->curlevel->ysize/5));
@@ -545,6 +546,7 @@ int main(int argc, char *argv[])
                                         
                                         player->viewradius = 5;
                                 } else {
+                                        game->currentlevel--;
                                         world->cmap = world->out->c;
                                         world->curlevel = world->out;
                                         game->context = CONTEXT_OUTSIDE;
@@ -586,14 +588,17 @@ int main(int argc, char *argv[])
                                 do_all = true;
                                 break;
                         case CMD_TOGGLEFOV:
+                                gtprintf("Setting all cells to visible.");
                                 set_all_visible(); queue(ACTION_NOTHING); break;
                         case CMD_SPAWNMONSTER:
                                 spawn_monster_at(ply+5, plx+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel);
-                                dump_monsters(world->curlevel->monsters);
+                                //dump_monsters(world->curlevel->monsters);
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_WIZARDMODE:
-                                game->wizardmode = (game->wizardmode ? false : true); queue(ACTION_NOTHING); break;
+                                game->wizardmode = (game->wizardmode ? false : true); queue(ACTION_NOTHING);
+                                gtprintf("Wizard mode %s!", game->wizardmode ? "on" : "off");
+                                break;
                         case CMD_SAVE:
                                 save_game(game->savefile);
                                 queue(ACTION_NOTHING);

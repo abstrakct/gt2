@@ -26,10 +26,12 @@ typedef struct {                              // game_t
         short        mapw, maph;              // width, height of map window
         bool         dead;                    // is the game/player dead?
         short        context;                 // which context are we in? see CONTEXT_ defines
+        short        currentlevel;            // what's the current level?
         int          turn;                    // count turns
         unsigned int seed;                    // random seed
         short        monsterdefs;             // number of monster definitions
         short        objdefs;                 // number of object definitions
+        short        createddungeons;         // number of dungeons which have been created
         bool         wizardmode;              // yay!
         char         savefile[255];           // filename of the save file for this game
 } game_t;

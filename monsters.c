@@ -157,7 +157,7 @@ void unspawn_monster(monster_t *m)
                 m->prev->next = m->next;
                 if(m->next)
                         m->next->prev = m->prev;
-                free(m);
+                gtfree(m);
         }
 }
 

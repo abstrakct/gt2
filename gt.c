@@ -84,6 +84,8 @@ struct option gt_options[] = {
 
 void init_variables()
 {
+        garbageindex = 0;
+
         monsterdefs = (monster_t *) gtmalloc(sizeof(monster_t));
         monsterdefs->head = monsterdefs;
         mid_counter = 1000;
@@ -135,21 +137,16 @@ void init_player()
 
 void shutdown_gt()
 {
-        monster_t *n, *m;
+        int i;
 
-        n = monsterdefs->head->next;
-        while(n) {
-                m = n->next;
-                if(n)
-                        free(n);
-                n = m;
+        printf("Shutting down...\n");
+        i = garbageindex;
+        while(i >= 0) {
+               i--;
+               if(garbage[i])
+                       free((void *)garbage[i]);
         }
         
-        //free(monsterdefs->head);
-        free(world->village);
-        free(world->city);
-        free(world->forest);
-
         fclose(messagefile);
 }
 
@@ -161,6 +158,7 @@ void parse_commandline(int argc, char **argv)
 {
         int option_index = 0;
         int c;
+        char s[15];
 
         while((c = getopt_long(argc, argv, "s:v", gt_options, &option_index)) != -1) {
                 switch(c) {
@@ -169,7 +167,7 @@ void parse_commandline(int argc, char **argv)
                                   generate_savefilename(game->savefile);
                                   fprintf(stderr, "DEBUG: %s:%d - set random seed to %d (parse_commandline)\n", __FILE__, __LINE__, game->seed);
                                   break;
-                        case 'v': printf("Gullible's Travails v%s\n", get_version_string()); die(""); break;
+                        case 'v': get_version_string(s); printf("Gullible's Travails v%s\n", s); exit(0); break;
                         case 'l': strcpy(game->savefile, optarg);
                                   loadgame = true;
                                   break;
@@ -429,7 +427,7 @@ void do_next_thing_in_queue() // needs a better name..
         if(tmp) {
                 do_action(tmp->action);
                 aq->next = tmp->next;
-                free(tmp);
+                gtfree(tmp);
         }
         game->turn++;
 }
@@ -459,12 +457,14 @@ void do_turn(int do_all)
 int main(int argc, char *argv[])
 {
         int c, x;
+        char s[15];
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
 
         messagefile = fopen("messages.txt", "w");
-        printf("Gullible's Travails v%s\n", get_version_string());
+        get_version_string(s);
+        printf("Gullible's Travails v%s\n", s);
 
         init_variables();
         parse_commandline(argc, argv);

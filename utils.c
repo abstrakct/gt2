@@ -20,6 +20,11 @@
 #include "display.h"
 #include "gt.h"
 
+#define MAX_GARBAGE 10000
+
+void *garbage[MAX_GARBAGE];
+int garbageindex;
+
 int ri(int a, int b) 
 {
         int result;
@@ -28,14 +33,9 @@ int ri(int a, int b)
         return result;
 }
 
-char *get_version_string()
+void get_version_string(char *s)
 {
-        char *s;
-
-        s = gtmalloc((sizeof(int))*10);
         sprintf(s, "%d.%d.%d", GT_VERSION_MAJ, GT_VERSION_MIN, GT_VERSION_REV);
-
-        return s;
 }
 
 void die(char *m, ...)
@@ -90,6 +90,8 @@ void *gtmalloc(size_t size)
                 die("Memory allocation in gtmalloc for size %d failed! Exiting.\n", (int) size);
 
         memset(p, 0, size);
+        garbage[garbageindex] = p;
+        garbageindex++;
 
         return p;
 }
@@ -102,7 +104,23 @@ void *gtcalloc(size_t num, size_t size)
         if(!p)
                 die("calloc %d * %d (total %d) in gtcalloc failed! Exiting.\n", (int) num, (int) size, (int) (num*size));
 
+        memset(p, 0, num*size);
+        garbage[garbageindex] = p;
+        garbageindex++;
+
         return p;
+}
+
+void gtfree(void *ptr)
+{
+        int i;
+
+        for(i=0;i<MAX_GARBAGE;i++)
+                if(garbage[i] == ptr)
+                        break;
+
+        garbage[i] = NULL;
+        free(ptr);
 }
 
 int isarmor(obj_t *o)

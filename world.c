@@ -57,9 +57,9 @@ void init_level(level_t *level)
         if(!level->c) {
                 level->c = gtmalloc(level->ysize * (sizeof(cell_t)));
         } else {
-                free(level->c);
+                gtfree(level->c);
                 for(i = 0; i<level->xsize; i++)
-                        free(level->c[i]);
+                        gtfree(level->c[i]);
                 level->c = gtmalloc(level->ysize * (sizeof(cell_t)));
         }
 

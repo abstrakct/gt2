@@ -33,7 +33,6 @@ struct objdef_save_struct {
        int          id;
        short        type;
        long         flags;
-       char         unique;
        signed short modifier;
        char         basename[50];
        char         unidname[100];
@@ -42,7 +41,7 @@ struct objdef_save_struct {
        char         minlevel;
        short        quantity;
        char         material;
-       int          ddice, dsides;
+       short        dice, sides;
        char         skill;
 };
 

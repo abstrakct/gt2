@@ -123,14 +123,3 @@ void gtfree(void *ptr)
         free(ptr);
 }
 
-int isarmor(obj_t *o)
-{
-        int retval = 0;
-
-        if(o->type == OT_ARMOR)
-                retval = 1;
-        if(o->type == OT_BODYARMOR)
-                retval = 1;
-
-        return retval;
-}

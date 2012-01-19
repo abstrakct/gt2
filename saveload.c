@@ -132,7 +132,6 @@ void save_objdef(obj_t *o, FILE *f)
         s.id = o->id;
         s.type = o->type;
         s.flags = o->flags;
-        s.unique = o->unique;
         s.modifier = o->modifier;
         strcpy(s.basename, o->basename);
         strcpy(s.unidname, o->unidname);
@@ -141,8 +140,8 @@ void save_objdef(obj_t *o, FILE *f)
         s.minlevel = o->minlevel;
         s.quantity = o->quantity;
         s.material = o->material;
-        s.ddice = o->ddice;
-        s.dsides = o->dsides;
+        s.dice = o->dice;
+        s.sides = o->sides;
         s.skill = o->skill;
 
         fwrite("OBJDEF", sizeof(char), 6, f);
@@ -424,7 +423,6 @@ bool load_objdef(obj_t *o, FILE *f)
         o->id = s.id;
         o->type = s.type;
         o->flags = s.flags;
-        o->unique = s.unique;
         o->modifier = s.modifier;
         strcpy(o->basename, s.basename);
         strcpy(o->unidname, s.unidname);
@@ -433,8 +431,8 @@ bool load_objdef(obj_t *o, FILE *f)
         o->minlevel = s.minlevel;
         o->quantity = s.quantity;
         o->material = s.material;
-        o->ddice = s.ddice;
-        o->dsides = s.dsides;
+        o->dice = s.dice;
+        o->sides = s.sides;
         o->skill = s.skill;
         //gtprintf("loaded objdef %s", o->basename);
         return true;

@@ -27,10 +27,10 @@ void dump_monsterdefs()
         n = monsterdefs->head;
         for(i=0;i<monsterdefs->head->x;i++) {
                 m = n->next;
-                printf("%s\t%c\nstr\t%d\tphys\t%d\tintl\t%d\tknow\t%d\tdex\t%d\tcha\t%d\n", m->name, m->c, m->attr.str, m->attr.phys, m->attr.intl, m->attr.know, m->attr.dex, m->attr.cha);
-                printf("hp\t%d\tthac0\t%d\tlevel\t%d\tspeed\t%.1f\n", m->hp, m->thac0, m->level, m->speed);
-                printf("Can use weapon: %s\tCan use armor: %s\tCan have gold: %s\n", m->flags & MF_CANUSEWEAPON ? "Yes" : "No", m->flags & MF_CANUSEARMOR ? "Yes" : "No", m->flags & MF_CANHAVEGOLD ? "Yes" : "No");
-                printf("\n");
+                gtprintf("%s\t%c\nstr\t%d\tphys\t%d\tintl\t%d\tknow\t%d\tdex\t%d\tcha\t%d\n", m->name, m->c, m->attr.str, m->attr.phys, m->attr.intl, m->attr.know, m->attr.dex, m->attr.cha);
+                gtprintf("hp\t%d\tthac0\t%d\tlevel\t%d\tspeed\t%.1f\n", m->hp, m->thac0, m->level, m->speed);
+                gtprintf("Can use weapon: %s\tCan use armor: %s\tCan have gold: %s\n", m->flags & MF_CANUSEWEAPON ? "Yes" : "No", m->flags & MF_CANUSEARMOR ? "Yes" : "No", m->flags & MF_CANHAVEGOLD ? "Yes" : "No");
+                gtprintf("\n");
                 n = m;
         }
 }
@@ -52,13 +52,18 @@ void dump_objects()
         int i;
 
         n = objdefs->head;
-        for(i=0; i<objdefs->head->ddice; i++) {
+        for(i=0; i < game->objdefs; i++) {
                 o = n->next;
-                printf("Basename: %s\n", o->basename);
-                printf("Type:     %s\n", otypestrings[o->type]);
-                if(isarmor(o))
-                        printf("AC:       %d\n", o->ac);
-                printf("\n");
+                gtprintf("Basename: %s\n", o->basename);
+                gtprintf("Type:     %s\n", otypestrings[o->type]);
+                if(is_armor(o->type))
+                        gtprintf("AC:       %d\n", o->ac);
+                gtprintf("Modifier:%s%d\n", (o->modifier >= 0 ? " +" : " "), o->modifier);
+                gtprintf("Unique:   %s\n", is_unique(o->flags) ? "yes" : "no");
+                if(is_weapon(o->type))
+                        gtprintf("Damage:   %dd%d\n", o->dice, o->sides);
+                
+                gtprintf("\n");
                 n = o;
         }
 }

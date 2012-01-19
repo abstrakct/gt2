@@ -45,8 +45,7 @@ char *otypestrings[50] = {
         "",
         "",
         "",
-        "",
-        "Body armor"
+        ""
 };
 
 // Important global variables
@@ -609,6 +608,11 @@ int main(int argc, char *argv[])
                                         gtprintf("Loading successful!");
                                 queue(ACTION_NOTHING);
                                 break;
+                        case CMD_DUMPOBJECTS:
+                                dump_objects();
+                                queue(ACTION_NOTHING);
+                                break;
+                                
                         //case 'a': dump_action_queue();
                         default: queue(ACTION_NOTHING); break;
                 }

@@ -21,7 +21,6 @@ void *gtmalloc(size_t size);
 void *gtcalloc(size_t num, size_t size);
 void gtfree(void *ptr);
 
-int isarmor(obj_t *o);
 int dice(int num, int sides, signed int modifier);
 int perc(int i);
 int ri(int a, int b);

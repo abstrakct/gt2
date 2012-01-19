@@ -32,7 +32,7 @@ int parse_monsters()
         cfg_monsters = config_lookup(cf, "monsters");
         i = config_setting_length(cfg_monsters);
         game->monsterdefs = i;
-        printf("Parsing monster file...\n  We have %d monsters", i);
+        printf("Parsing monster file... We have %d monsters", i);
 
         /* 
          * main monster parsing loop 
@@ -134,9 +134,10 @@ int parse_armor()
 
         cfg = config_lookup(cf, "armor");
         i = config_setting_length(cfg);
-        printf("Parsing armor file...\n  We have %d armors", i);
+        printf("Parsing armor file... We have %d armors", i);
         for(j=0;j<i;j++) {
                 obj_t *o;
+                int x;
 
                 o = (obj_t *) gtmalloc(sizeof(obj_t));
 
@@ -147,10 +148,20 @@ int parse_armor()
                 sprintf(sname, "armor.[%d].type", j);
                 config_lookup_string(cf, sname, &value);
                 if(!strcmp(value, "bodyarmor"))
-                        o->type = OT_BODYARMOR;
+                        o->flags |= OF_BODYARMOR;
+                if(!strcmp(value, "headarmor"))
+                        o->flags |= OF_HEADARMOR;
+                if(!strcmp(value, "shield"))
+                        o->flags |= OF_SHIELD;
+                if(!strcmp(value, "gloves"))
+                        o->flags |= OF_GLOVES;
+                if(!strcmp(value, "footarmor"))
+                        o->flags |= OF_FOOTARMOR;
 
+                o->type   = OT_ARMOR;
                 sprintf(sname, "armor.[%d].ac", j);
-                config_lookup_int(cf, sname, &(o->ac)); 
+                config_lookup_int(cf, sname, &x);
+                o->ac = x;
 
                 o->id = objid; objid++;
 
@@ -164,8 +175,79 @@ int parse_armor()
         }
 
         printf(" OK\n");
-        objdefs->head->ddice = i;
+        objdefs->head->dice = i;
         game->objdefs = i;
+
+        return 0;
+}
+
+int parse_weapons()
+{
+        config_setting_t *cfg;
+        int i, j;
+        char sname[100];
+        const char *value;
+
+        cfg = config_lookup(cf, "weapon");
+        i = config_setting_length(cfg);
+        printf("Parsing weapon file... We have %d weapons", i);
+        for(j=0;j<i;j++) {
+                obj_t *o;
+                int x;
+
+                o = (obj_t *) gtmalloc(sizeof(obj_t));
+
+                sprintf(sname, "weapon.[%d].name", j);
+                config_lookup_string(cf, sname, &value);
+                strcpy(o->basename, value);
+
+                sprintf(sname, "weapon.[%d].type", j);
+                config_lookup_string(cf, sname, &value);
+                if(!strcmp(value, "sword"))
+                        o->flags |= OF_SWORD;
+                if(!strcmp(value, "axe"))
+                        o->flags |= OF_AXE;
+                if(!strcmp(value, "knife"))
+                        o->flags |= OF_KNIFE;
+                if(!strcmp(value, "stick"))
+                        o->flags |= OF_STICK;
+                if(!strcmp(value, "mace"))
+                        o->flags |= OF_MACE;
+                if(!strcmp(value, "hammer"))
+                        o->flags |= OF_HAMMER;
+
+                o->type   = OT_WEAPON;
+
+                sprintf(sname, "weapon.[%d].dice", j);
+                config_lookup_int(cf, sname, &x);
+                o->dice = x;
+                sprintf(sname, "weapon.[%d].sides", j);
+                config_lookup_int(cf, sname, &x);
+                o->sides = x;
+
+                sprintf(sname, "weapon.[%d].unique", j);
+                config_lookup_bool(cf, sname, &x);
+                if(x)
+                        o->flags |= OF_UNIQUE;
+
+                x = 0;
+                sprintf(sname, "weapon.[%d].mod", j);
+                config_lookup_int(cf, sname, &x);
+                o->modifier = x;
+
+                o->id = objid; objid++;
+
+                o->head = objdefs->head;
+                objdefs->next = o;
+                o->next = NULL;
+                o->prev = objdefs;
+                objdefs = o;
+
+                game->objdefs++;
+                printf(".");
+        }
+
+        printf(" OK\n");
 
         return 0;
 }
@@ -175,6 +257,7 @@ int parse_objects()
         int ret;
 
         ret = parse_armor();
+        ret = parse_weapons();
 
         return ret;
 }

@@ -18,8 +18,7 @@ struct object {
         int  id;                // objdef-id
         int oid;                // unique id
         short type;             // see OT_defines below
-        long flags;             // 4 bytes = 32 bits/flags, see OF_defines below
-        char unique;            // is this an unique object in the world?
+        long flags;             // 4 bytes = 32 bits/flags, see OF_defines below - CONSIDER CHANGE TO LONG LONG
         signed short modifier;  // +/-, for armor: acmodifier
         char basename[50];      // the basic name of the item
         char unidname[100];     // unidentified name
@@ -28,7 +27,7 @@ struct object {
         char minlevel;
         short quantity;
         char material;
-        int ddice, dsides;
+        short dice, sides;      // sides is used for AC for armor!
         char skill;             // a particular skill needed to use this weapon?
 };
 
@@ -36,7 +35,6 @@ typedef struct object obj_t;
 
 #define OT_WEAPON     0
 #define OT_ARMOR      1
-#define OT_BODYARMOR  11
 #define OT_RING       2
 #define OT_CARD       3
 #define OT_WAND       4
@@ -53,13 +51,26 @@ extern char *otypestrings[];
 #define OF_BAD        0x00000010
 #define OF_GOOD       0x00000020
 #define OF_INUSE      0x00000040
+#define OF_UNIQUE     0x00000080
+
+// Armor flags
 #define OF_HEADARMOR  0x00000100
 #define OF_BODYARMOR  0x00000200
 #define OF_GLOVES     0x00000400
 #define OF_FOOTARMOR  0x00000800
 #define OF_SHIELD     0x00001000
-#define OF_DONOTUSE   0x20000000
-#define OF_HOLYFUCK   0x40000000
+
+// Weapon flags
+#define OF_SWORD      0x00010000
+#define OF_AXE        0x00020000
+#define OF_KNIFE      0x00040000
+#define OF_STICK      0x00080000   /// ???
+#define OF_MACE       0x00100000
+#define OF_HAMMER     0x00200000
+#define OF_TWOHANDED  0x00800000
+
+// Special flags!
+#define OF_HOLYFUCK   0x80000000
 
 #define MAT_GOLD 1
 #define MAT_SILVER 2
@@ -78,8 +89,36 @@ extern char *otypestrings[];
 #define MATERIALS 14
 
 // defines so that we can easily use fields in obj_t for various stuff
-#define ac dsides
+#define ac sides
 
+// and some nice macros
+#define identified(a)   (a & OF_IDENTIFIED)
+#define do_identify(a)   a |= OF_IDENTIFIED
+#define is_armor(a)     (a == OT_ARMOR)
+#define is_weapon(a)    (a == OT_WEAPON)
+#define is_magic(a)     (a & OF_MAGIC)
+#define is_eatable(a)   (a & OF_EATABLE)
+#define is_drinkable(a) (a & OF_DRINKABLE)
+#define is_holyfuck(a)  (a & OF_HOLYFUCK)
+#define is_unique(a)    (a & OF_UNIQUE)
+#define is_headwear(a)  (a & OF_HEADARMOR)
+#define is_footwear(a)  (a & OF_FOOTARMOR)
+#define is_bodywear(a)  (a & OF_BODYARMOR)
+#define is_gloves(a)    (a & OF_GLOVES)
+#define is_shield(a)    (a & OF_SHIELD)
+
+
+//void init_objects();
+//void init_materials();
+//char *get_def_name(obj_t object);
+//char *a_an(char *s);
+//void uppercase(char *s);
+//void moveobject(obj_t *src, obj_t *dest);
+//int wieldable(obj_t *obj);
+//int wearable(obj_t *obj);
+
+#endif
+/*
 struct obj_list {
         obj_t *object;
         struct obj_list *next;
@@ -108,27 +147,4 @@ typedef struct obj_list obj_l;
 #define THING(flags, base, unid) OBJ(OT_THING, flags, 0, base, unid, 0, 0, 0, 0)
 
 #define END_OBJECTS };
-
-
-#define is_magic(a)     (a & OF_MAGIC)
-#define is_eatable(a)   (a & OF_EATABLE)
-#define is_drinkable(a) (a & OF_DRINKABLE)
-#define identified(a)   (a & OF_IDENTIFIED)
-#define is_holyfuck(a)  (a & OF_HOLYFUCK)
-#define do_identify(a)   a |= OF_IDENTIFIED
-#define is_headwear(a)  (a & OF_HEADARMOR)
-#define is_footwear(a)  (a & OF_FOOTARMOR)
-#define is_bodywear(a)  (a & OF_BODYARMOR)
-#define is_gloves(a)    (a & OF_GLOVES)
-#define is_shield(a)    (a & OF_SHIELD)
-
-//void init_objects();
-//void init_materials();
-//char *get_def_name(obj_t object);
-//char *a_an(char *s);
-//void uppercase(char *s);
-//void moveobject(obj_t *src, obj_t *dest);
-//int wieldable(obj_t *obj);
-//int wearable(obj_t *obj);
-
-#endif
+*/

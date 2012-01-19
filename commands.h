@@ -42,6 +42,7 @@ typedef struct {
 #define CMD_FLOODFILL     1001
 #define CMD_SPAWNMONSTER  1002
 #define CMD_WIZARDMODE    1003
+#define CMD_DUMPOBJECTS   1004
 
 // prototypes
 

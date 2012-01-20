@@ -151,7 +151,7 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
         // the edges
         for(ty=0;ty<ysize;ty++) {
                 world->dng[d].c[ty][1].type = DNG_WALL;
-                world->dng[d].c[ty][xsize-1].type = DNG_WALL;
+                world->dng[d].c[ty][xsize-5].type = DNG_WALL;
         }
 
         for(tx=0;tx<xsize;tx++) {

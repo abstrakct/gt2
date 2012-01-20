@@ -47,9 +47,8 @@ void init_display()
 	init_pair(COLOR_PLAIN,   COLOR_WHITE, COLOR_BLACK);
 	init_pair(COLOR_FOREST,  COLOR_GREEN, COLOR_BLACK);
 	init_pair(COLOR_CITY,    COLOR_YELLOW, COLOR_BLACK);
-	init_pair(COLOR_PLAYER,  COLOR_RED, COLOR_BLACK);
-        init_pair(COLOR_INFO,    COLOR_BLUE, COLOR_BLACK);
         init_pair(COLOR_WARNING, COLOR_RED, COLOR_BLACK);
+	init_pair(COLOR_PLAYER,  COLOR_BLUE, COLOR_BLACK);
         init_pair(COLOR_LAKE,    COLOR_BLUE, COLOR_BLACK);
         init_pair(COLOR_INVISIBLE, COLOR_BLACK, COLOR_BLACK);
 
@@ -96,24 +95,10 @@ void shutdown_display()
 
 bool blocks_light(int type)
 {
-        /*if(type != AREA_PLAIN && type != DNG_WALL && type != AREA_CITY_NOHOUSE && type != AREA_FOREST_NOTREE && type != AREA_CITY && type != AREA_FOREST && type != AREA_VILLAGE && type != AREA_WALL)
+        if(type == AREA_NOTHING || type == AREA_MOUNTAIN || type == AREA_CITY || type == AREA_FOREST || type == AREA_VILLAGE || type == AREA_WALL || type == DNG_WALL)
                 return true;
-        
-        return false;*/
-
-        if(game->context == CONTEXT_OUTSIDE) {
-                if(type == AREA_NOTHING || type == AREA_MOUNTAIN || type == AREA_CITY || type == AREA_FOREST || type == AREA_VILLAGE || type == AREA_WALL)
-                        return true;
-                else
-                        return false;
-        }
-
-        if(game->context == CONTEXT_DUNGEON) {
-                if(type == DNG_WALL)
-                        return true;
-                else
-                        return false;
-        }
+        else
+                return false;
 
         // shouldn't be reached...
         return false;
@@ -216,9 +201,9 @@ void draw_world(level_t *level)
 void draw_wstat()
 {
         mvwprintw(wstat, 1, 1, "Name:");
-        mvwprintw(wstat, 2, 1, "Turn: %d", game->turn);
-        mvwprintw(wstat, 3, 1, "(y,x) = (%d,%d)", ply, plx);
-        mvwprintw(wstat, 4, 1, "(py,px) = (%d,%d)", ppy, ppx);
+        mvwprintw(wstat, 2, 1, "Turn:   %d", game->turn);
+        mvwprintw(wstat, 3, 1, "(y,x)   (%d,%d)     ", ply, plx);
+        mvwprintw(wstat, 4, 1, "(py,px) (%d,%d)     ", ppy, ppx);
 }
 
 void update_player()

@@ -525,6 +525,11 @@ int main(int argc, char *argv[])
                                 game->dead = 1;
                                 break;
                         case CMD_ENTERDUNGEON:
+                                queue(ACTION_PLAYER_MOVE_NW);
+                                queue(ACTION_PLAYER_MOVE_NE);
+                                queue(ACTION_PLAYER_MOVE_SW);
+                                queue(ACTION_PLAYER_MOVE_SE);
+                                do_all = true;
                                 if(world->cmap == world->out->c) {
                                         game->currentlevel++;
                                         world->cmap = world->dng[game->currentlevel].c;

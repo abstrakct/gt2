@@ -38,6 +38,7 @@ void scrollmessages();
 void mess(char *message);
 void messc(int color, char *message);
 
+bool blocks_light(int type);
 
 
 #endif

@@ -4,9 +4,9 @@ CFLAGS = -Wall -g -ggdb3 -I. -DGT_USE_NCURSES # -O2
 LIBS = -lm -lconfig -lncursesw
 LDFLAGS = -Wl $(LIBS)  # ,-rpath=lib 
 
-SOURCES = gt.c utils.c monsters.c datafiles.c you.c world.c display.c debug.c saveload.c commands.c
-HEADERS = gt.h utils.h monsters.h datafiles.h you.h world.h display.h debug.h saveload.h commands.h
-OBJS    = gt.o utils.o monsters.o datafiles.o you.o world.o display.o debug.o saveload.o commands.o
+SOURCES = gt.c utils.c monsters.c datafiles.c you.c world.c display.c debug.c saveload.c commands.c actor.c
+HEADERS = gt.h utils.h monsters.h datafiles.h you.h world.h display.h debug.h saveload.h commands.h actor.h
+OBJS    = gt.o utils.o monsters.o datafiles.o you.o world.o display.o debug.o saveload.o commands.o actor.o
 
 #MKOBJS = objects.o makeobjdefs.o
 #MKSRCS = objects.c makeobjdefs.c

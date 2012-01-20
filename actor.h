@@ -72,4 +72,6 @@ typedef struct actorstruct {     // actor_t
         // infinite recursion inclusion fuck shit level_t *l;                            // pointer to the level where it's at
 } actor_t;
 
+bool actor_in_lineofsight(actor_t *src, actor_t *dest);
+
 #endif

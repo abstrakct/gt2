@@ -88,6 +88,9 @@ void simpleai(monster_t *m)
 
 void advancedai(monster_t *m)
 {
+        if(actor_in_lineofsight(m, player))
+                gtprintf("%d - %s - I can see you!", game->turn, m->name);
+
         simpleai(m);
 }
 

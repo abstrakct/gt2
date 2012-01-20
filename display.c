@@ -109,7 +109,7 @@ bool blocks_light(int type)
         }
 
         if(game->context == CONTEXT_DUNGEON) {
-                if(type != DNG_WALL)
+                if(type == DNG_WALL)
                         return true;
                 else
                         return false;
@@ -147,7 +147,7 @@ void dofov(float x, float y)
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < world->curlevel->ysize && (int)ox < world->curlevel->xsize) {
                         cv((int)oy, (int)ox) = 1;
                         if(game->context == CONTEXT_DUNGEON)
-                                if(!blocks_light(ct((int)oy, (int)ox)))
+                                if(blocks_light(ct((int)oy, (int)ox)))
                                         return;
 
                         if(game->context == CONTEXT_OUTSIDE) {

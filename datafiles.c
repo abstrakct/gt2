@@ -107,6 +107,8 @@ int parse_monsters()
                 m->mid = tmp;
                 m->id = id;
 
+                m->viewradius = 5; // temporary solution?!
+
                 /*
                  * the following was written in one go, it's beautiful and seems totally bugfree!!
                  */

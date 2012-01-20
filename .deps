@@ -1,3 +1,5 @@
+actor.o: actor.c objects.h actor.h monsters.h utils.h datafiles.h world.h \
+ you.h display.h gt.h
 commands.o: commands.c objects.h actor.h monsters.h utils.h datafiles.h \
  world.h you.h display.h debug.h saveload.h commands.h gt.h
 datafiles.o: datafiles.c actor.h monsters.h objects.h utils.h datafiles.h \

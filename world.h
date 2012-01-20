@@ -24,6 +24,7 @@
 #define DNG_FLOOR           12
 #define DNG_WALL            13
 #define DNG_FILL            DNG_WALL
+#define DNG_NOTHING         AREA_NOTHING
 
 #define AREA_WALL           100
 

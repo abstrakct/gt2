@@ -152,11 +152,19 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
         for(ty=0;ty<ysize;ty++) {
                 world->dng[d].c[ty][1].type = DNG_WALL;
                 world->dng[d].c[ty][xsize-5].type = DNG_WALL;
+                world->dng[d].c[ty][xsize-4].type = DNG_NOTHING;
+                world->dng[d].c[ty][xsize-3].type = DNG_NOTHING;
+                world->dng[d].c[ty][xsize-2].type = DNG_NOTHING;
+                world->dng[d].c[ty][xsize-1].type = DNG_NOTHING;
         }
 
-        for(tx=0;tx<xsize;tx++) {
+        for(tx=0;tx<xsize-4;tx++) {
                 world->dng[d].c[1][tx].type = DNG_WALL;
                 world->dng[d].c[ysize-5][tx].type = DNG_WALL;
+                world->dng[d].c[ysize-4][tx].type = DNG_NOTHING;
+                world->dng[d].c[ysize-3][tx].type = DNG_NOTHING;
+                world->dng[d].c[ysize-2][tx].type = DNG_NOTHING;
+                world->dng[d].c[ysize-1][tx].type = DNG_NOTHING;
         }
 }
 

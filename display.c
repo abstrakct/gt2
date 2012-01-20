@@ -132,15 +132,12 @@ void dofov(actor_t *actor, level_t *l, float x, float y)
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
                         l->c[(int)oy][(int)ox].visible = 1;
                         if(blocks_light(l->c[(int)oy][(int)ox].type)) {
-                                /*if(actor == player && game->context == CONTEXT_OUTSIDE) {                // then maybe it doesn't block light after all. Random for now, change this with stats etc later on.
-                                        if(perc(35)) {
-                                                return;
-                                        }
-                                } else if(actor == player && game->context != CONTEXT_OUTSIDE) {
-                                        return;
-                                }*/
                                 return;
+                        } else {
+                                if(perc(50))
+                                        return;
                         }
+
 
                         ox += x;
                         oy += y;
@@ -152,6 +149,12 @@ void FOV(actor_t *a, level_t *l)
 {
         float x, y;
         int i;
+
+        l->c[a->y][a->x].visible = 1;
+        l->c[a->y+1][a->x].visible = 1;
+        l->c[a->y-1][a->x].visible = 1;
+        l->c[a->y][a->x+1].visible = 1;
+        l->c[a->y][a->x-1].visible = 1;
 
         //clear_map_to_invisible();
         for(i = 0; i < 360; i++) {

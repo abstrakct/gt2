@@ -12,13 +12,13 @@
 
 #define MAIN_DATA_FILE "data/data.cfg"
 
-typedef struct {                    // config
+typedef struct {                              // gt_config_t
         int minf, maxf;
         int minc, maxc;
         int minv, maxv;
         int mind, maxd;
         int dxsize, dysize;
-        int compress_savefile;      // compress the savefile?
+        int compress_savefile;                // compress the savefile?
 } gt_config_t;
 
 typedef struct {                              // game_t
@@ -37,12 +37,12 @@ typedef struct {                              // game_t
         char         savefile[255];           // filename of the save file for this game
 } game_t;
 
-typedef struct {       // message_t
+typedef struct {                              // message_t
         int color;
         char text[250];
 } message_t;
 
-struct actionqueue {
+struct actionqueue {                          // struct actionqueue
         struct actionqueue *head;
         struct actionqueue *next;
         int action;

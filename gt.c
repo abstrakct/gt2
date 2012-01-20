@@ -182,6 +182,8 @@ void parse_commandline(int argc, char **argv)
 * *******************************************/
 void do_action(int action)
 {
+        int updatescreen = true;
+
         switch(action) {
                 case ACTION_PLAYER_MOVE_DOWN:
                         if(passable(ply+1, plx))
@@ -347,10 +349,18 @@ void do_action(int action)
                                 ppx = 0;
                         break;
                 case ACTION_NOTHING:
+                        updatescreen = false;
                         break;
                 default:
                         fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attemted!\n", __FILE__, __LINE__, action);
+                        updatescreen = false;
                         break;
+        }
+
+        if(updatescreen) {
+                draw_world(world->curlevel);
+                draw_wstat();
+                update_screen();
         }
 }
 
@@ -430,9 +440,6 @@ void do_next_thing_in_queue() // needs a better name..
         }
         game->turn++;
 
-        draw_world(world->curlevel);
-        draw_wstat();
-        update_screen();
 }
 
 void do_all_things_in_queue() // needs a better name..
@@ -459,7 +466,7 @@ void do_turn(int do_all)
 
 int main(int argc, char *argv[])
 {
-        int c, x;
+        int c, x, updatescreen;
         char s[15];
 
         if(!setlocale(LC_ALL, ""))
@@ -509,10 +516,13 @@ int main(int argc, char *argv[])
         draw_wstat();
         initial_update_screen();
 
+        updatescreen = true;
         do {
-                draw_world(world->curlevel);
-                draw_wstat();
-                update_screen();
+                if(updatescreen) {
+                        draw_world(world->curlevel);
+                        draw_wstat();
+                        update_screen();
+                }
 
                 c = get_command();
 
@@ -520,6 +530,8 @@ int main(int argc, char *argv[])
                 bool do_all = false;
                 player->oldx = plx;
                 player->oldy = ply;
+                updatescreen = true;
+
 
                 switch(c) {
                         case CMD_QUIT:
@@ -597,7 +609,9 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_TOGGLEFOV:
                                 gtprintf("Setting all cells to visible.");
-                                set_all_visible(); queue(ACTION_NOTHING); break;
+                                set_all_visible();
+                                queue(ACTION_NOTHING);
+                                break;
                         case CMD_SPAWNMONSTER:
                                 spawn_monster_at(ply+5, plx+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel);
                                 //dump_monsters(world->curlevel->monsters);
@@ -609,6 +623,7 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_SAVE:
                                 save_game(game->savefile);
+                                updatescreen = true;
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_LOAD:
@@ -624,7 +639,11 @@ int main(int argc, char *argv[])
                                 break;
                                 
                         //case 'a': dump_action_queue();
-                        default: queue(ACTION_NOTHING); break;
+                        default:
+                                queue(ACTION_NOTHING);
+                                updatescreen = false;
+                                game->turn--;
+                                break;
                 }
 
                 do_turn(do_all);

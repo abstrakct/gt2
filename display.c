@@ -41,15 +41,12 @@ void init_display()
         }
         start_color();
 
-	init_pair(COLOR_FOREST, COLOR_GREEN, COLOR_BLACK);
-	// TODO: ncurses w/ 256 colors!
-	//init_color(50, 200, 200, 200); // a grey color
-	init_pair(COLOR_PLAIN,   COLOR_WHITE, COLOR_BLACK);
-	init_pair(COLOR_FOREST,  COLOR_GREEN, COLOR_BLACK);
+	init_pair(COLOR_PLAIN,   COLOR_WHITE,  COLOR_BLACK);
+	init_pair(COLOR_FOREST,  COLOR_GREEN,  COLOR_BLACK);
 	init_pair(COLOR_CITY,    COLOR_YELLOW, COLOR_BLACK);
-        init_pair(COLOR_WARNING, COLOR_RED, COLOR_BLACK);
-	init_pair(COLOR_PLAYER,  COLOR_BLUE, COLOR_BLACK);
-        init_pair(COLOR_LAKE,    COLOR_BLUE, COLOR_BLACK);
+        init_pair(COLOR_WARNING, COLOR_RED,    COLOR_BLACK);
+	init_pair(COLOR_PLAYER,  COLOR_BLUE,   COLOR_BLACK);
+
         init_pair(COLOR_INVISIBLE, COLOR_BLACK, COLOR_BLACK);
 
         game->width = COLS;
@@ -93,12 +90,22 @@ void shutdown_display()
         endwin();
 }
 
-bool blocks_light(int type)
+bool blocks_light(int y, int x)
 {
-        if(type == AREA_NOTHING || type == AREA_MOUNTAIN || type == AREA_CITY || type == AREA_FOREST || type == AREA_VILLAGE || type == AREA_WALL || type == DNG_WALL)
-                return true;
-        else
-                return false;
+        level_t *l = world->curlevel;
+
+        switch(l->c[y][x].type) {
+                case AREA_NOTHING:
+                case AREA_MOUNTAIN:
+                case AREA_CITY:
+                case AREA_FOREST:
+                case AREA_VILLAGE:
+                case AREA_WALL:
+                case DNG_WALL:
+                       return true;
+                default:       
+                       return false;
+        }
 
         // shouldn't be reached...
         return false;
@@ -128,13 +135,16 @@ void dofov(actor_t *actor, level_t *l, float x, float y)
         ox = (float) actor->x + 0.5f;
         oy = (float) actor->y + 0.5f;
 
+        //if(l->c[(int)y][(int)x].visible)           // must be redone?! if
+        //        return;
+
         for(i = 0; i < actor->viewradius; i++) {
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
                         l->c[(int)oy][(int)ox].visible = 1;
-                        if(blocks_light(l->c[(int)oy][(int)ox].type)) {
+                        if(blocks_light((int) oy, (int) ox)) {
                                 return;
                         } else {
-                                if(perc(50))
+                                if(perc((100-actor->viewradius)/3))
                                         return;
                         }
 
@@ -149,12 +159,24 @@ void FOV(actor_t *a, level_t *l)
 {
         float x, y;
         int i;
+        signed int tmpx,tmpy;
 
-        l->c[a->y][a->x].visible = 1;
-        l->c[a->y+1][a->x].visible = 1;
-        l->c[a->y-1][a->x].visible = 1;
-        l->c[a->y][a->x+1].visible = 1;
-        l->c[a->y][a->x-1].visible = 1;
+        l->c[a->y+1][a->x].visible   = 1;
+        l->c[a->y-1][a->x].visible   = 1;
+        l->c[a->y][a->x+1].visible   = 1;
+        l->c[a->y][a->x-1].visible   = 1;
+        l->c[a->y+1][a->x+1].visible = 1;
+        l->c[a->y-1][a->x-1].visible = 1;
+        l->c[a->y+1][a->x-1].visible = 1;
+        l->c[a->y-1][a->x+1].visible = 1;
+
+        //test - set random cell nearby to visible
+        if(a->y > 3 && a->x > 3) {
+                tmpx = ri(-3,3);
+                tmpy = ri(-3,3);
+                l->c[a->y+tmpy][a->x+tmpx].visible = true;
+        }
+
 
         //clear_map_to_invisible();
         for(i = 0; i < 360; i++) {
@@ -185,14 +207,12 @@ void draw_world(level_t *level)
                                                 gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
                                 }
 
-                                if(ct(j,i) == AREA_WALL) {
+                                if(level->c[j][i].type == AREA_WALL) {
                                         gtmapaddch(dy, dx, COLOR_PLAIN, mapchars[DNG_WALL]);
                                 }
-                        }
-
-                        
                         if(j == ply && i == plx)
                                 gtmapaddch(dy, dx, COLOR_PLAYER, '@');
+                        }
                 }
         }
 

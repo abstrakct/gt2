@@ -13,14 +13,15 @@
 #define COLOR_DUNGEON  2
 #define COLOR_MOUNTAIN 3
 #define COLOR_LAKE     4
-#define COLOR_PLAYER   5
+#define COLOR_PLAYER   4
 
 #define COLOR_WARNING 10
 #define COLOR_BAD     COLOR_WARNING
 #define COLOR_GOOD    1               // Green
 #define COLOR_NORMAL  COLOR_PLAIN     // White
+#define COLOR_VISIBLE COLOR_CITY
 
-#define COLOR_INVISIBLE 15            // ???
+#define COLOR_INVISIBLE 63            // ???
 
 void init_display();
 void shutdown_display();
@@ -38,7 +39,7 @@ void scrollmessages();
 void mess(char *message);
 void messc(int color, char *message);
 
-bool blocks_light(int type);
+bool blocks_light(int y, int x);
 
 
 #endif

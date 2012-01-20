@@ -77,7 +77,7 @@ bool actor_in_lineofsight(actor_t *src, actor_t *dest)
                         if(x == dest->x && y == dest->y) {
                                 return true;
                         }
-                } while(!blocks_light(ct(src->y, src->x)));
+                } while(!blocks_light(src->y, src->x));
 
                 return false;
         } else {
@@ -93,7 +93,7 @@ bool actor_in_lineofsight(actor_t *src, actor_t *dest)
                         if(x == dest->x && y == dest->y) {
                                 return true;
                         }
-                } while(!blocks_light(ct(src->y, src->x)));
+                } while(!blocks_light(src->y, src->x));
 
                 return false;
         }

@@ -102,7 +102,7 @@ bool blocks_light(int type)
         return false;*/
 
         if(game->context == CONTEXT_OUTSIDE) {
-                if(type == AREA_NOTHING || type == AREA_MOUNTAIN)
+                if(type == AREA_NOTHING || type == AREA_MOUNTAIN || type == AREA_CITY || type == AREA_FOREST || type == AREA_VILLAGE || type == AREA_WALL)
                         return true;
                 else
                         return false;
@@ -135,19 +135,27 @@ void clear_map_to_invisible()
  * Stolen/adapted from http://roguebasin.roguelikedevelopment.org/index.php/Eligloscode
  */
 
-void dofov(float x, float y)
+void dofov(actor_t *actor, level_t *l, float x, float y)
 {
         int i;
         float ox, oy;
 
-        ox = (float) plx + 0.5f;
-        oy = (float) ply + 0.5f;
+        ox = (float) actor->x + 0.5f;
+        oy = (float) actor->y + 0.5f;
 
-        for(i = 0; i < player->viewradius; i++) {
-                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < world->curlevel->ysize && (int)ox < world->curlevel->xsize) {
-                        cv((int)oy, (int)ox) = 1;
-                        if(blocks_light(ct((int)oy, (int)ox)))
+        for(i = 0; i < actor->viewradius; i++) {
+                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
+                        l->c[(int)oy][(int)ox].visible = 1;
+                        if(blocks_light(l->c[(int)oy][(int)ox].type)) {
+                                /*if(actor == player && game->context == CONTEXT_OUTSIDE) {                // then maybe it doesn't block light after all. Random for now, change this with stats etc later on.
+                                        if(perc(35)) {
+                                                return;
+                                        }
+                                } else if(actor == player && game->context != CONTEXT_OUTSIDE) {
+                                        return;
+                                }*/
                                 return;
+                        }
 
                         ox += x;
                         oy += y;
@@ -155,7 +163,7 @@ void dofov(float x, float y)
         }
 }
 
-void FOV()
+void FOV(actor_t *a, level_t *l)
 {
         float x, y;
         int i;
@@ -164,7 +172,7 @@ void FOV()
         for(i = 0; i < 360; i++) {
                 x = cos((float) i * 0.01745f);
                 y = sin((float) i * 0.01745f);
-                dofov(x, y);
+                dofov(a, l, x, y);
         }
 }
 
@@ -174,7 +182,7 @@ void draw_world(level_t *level)
         int dx, dy;  // coordinates on screen!
 
         werase(wmap);
-        FOV();
+        FOV(player, level);
         for(i = ppx, dx = 0; i <= (ppx + level->xsize); i++, dx++) {
                 for(j = ppy, dy = 0; j <= (ppy + level->ysize); j++, dy++) {
                         /*
@@ -210,6 +218,7 @@ void draw_wstat()
         mvwprintw(wstat, 1, 1, "Name:");
         mvwprintw(wstat, 2, 1, "Turn: %d", game->turn);
         mvwprintw(wstat, 3, 1, "(y,x) = (%d,%d)", ply, plx);
+        mvwprintw(wstat, 4, 1, "(py,px) = (%d,%d)", ppy, ppx);
 }
 
 void update_player()

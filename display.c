@@ -146,14 +146,8 @@ void dofov(float x, float y)
         for(i = 0; i < player->viewradius; i++) {
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < world->curlevel->ysize && (int)ox < world->curlevel->xsize) {
                         cv((int)oy, (int)ox) = 1;
-                        if(game->context == CONTEXT_DUNGEON)
-                                if(blocks_light(ct((int)oy, (int)ox)))
-                                        return;
-
-                        if(game->context == CONTEXT_OUTSIDE) {
-                                if(blocks_light(ct((int)oy, (int)ox)))
-                                        return;
-                        }
+                        if(blocks_light(ct((int)oy, (int)ox)))
+                                return;
 
                         ox += x;
                         oy += y;

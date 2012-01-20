@@ -429,6 +429,10 @@ void do_next_thing_in_queue() // needs a better name..
                 gtfree(tmp);
         }
         game->turn++;
+
+        draw_world(world->curlevel);
+        draw_wstat();
+        update_screen();
 }
 
 void do_all_things_in_queue() // needs a better name..
@@ -527,11 +531,10 @@ int main(int argc, char *argv[])
                                         world->curlevel = &(world->dng[game->currentlevel]);
                                         game->context = CONTEXT_DUNGEON;
 
-                                        ply = ri((world->curlevel->ysize/2)-(world->curlevel->ysize/5), (world->curlevel->ysize/2)+(world->curlevel->ysize/5));
-                                        plx = ri((world->curlevel->xsize/2)-(world->curlevel->xsize/5), (world->curlevel->xsize/2)+(world->curlevel->xsize/5));
+                                        ply = 0; plx = 0;
                                         while(!passable(ply, plx)) {
-                                                ply = ri((world->curlevel->ysize/2)-(world->curlevel->ysize/5), (world->curlevel->ysize/2)+(world->curlevel->ysize/5));
-                                                plx = ri((world->curlevel->xsize/2)-(world->curlevel->xsize/5), (world->curlevel->xsize/2)+(world->curlevel->xsize/5));
+                                                ply = ri(0, world->curlevel->ysize-5);
+                                                plx = ri(0, world->curlevel->xsize-5);
                                         }
 
                                         ppy = ply - (game->maph / 2);
@@ -542,7 +545,7 @@ int main(int argc, char *argv[])
                                         if(ppx <= 0)
                                                 ppx = 0;
                                         
-                                        player->viewradius = 5;
+                                        player->viewradius = 7;
                                 } else {
                                         game->currentlevel--;
                                         world->cmap = world->out->c;

@@ -252,6 +252,7 @@ bool save_game(char *filename)
                 system(cmd);
         }
 
+        gtprintf("Saving successful!");
         return true;
 }
 
@@ -485,11 +486,19 @@ bool load_game(char *filename, int ingame)
         monster_t *m;
         obj_t *o;
         int i;
+        char cmd[100];
 
         gtprintf("Loading game from %s", filename);
+        
+        if(filename[strlen(filename)-1] == 'z' && filename[strlen(filename)-2] == 'x') {               // it's pretty likely to be compressed with xz!
+                sprintf(cmd, "xz -d %s", filename);
+                system(cmd);
+                filename[strlen(filename)-3] = '\0';  // strip off .xz
+        }
+
         f = fopen(filename, "r");
         if(!f) {
-                gtprintf("Couldn't open file %s", filename);
+                printf("Couldn't open file %s", filename);
                 return false;
         }
 
@@ -561,5 +570,6 @@ bool load_game(char *filename, int ingame)
         }
 
         fclose(f);
+        gtprintf("Loading successful!");
         return true;
 }

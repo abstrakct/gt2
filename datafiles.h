@@ -8,6 +8,8 @@
 
 #define MAIN_DATA_FILE "data/data.cfg"
 
-int parse_data_files();
+#define ONLY_CONFIG 1
+
+int parse_data_files(int option);
 
 #endif

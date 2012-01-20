@@ -306,7 +306,7 @@ int parse_configfile()
         return 0;
 }
 
-int parse_data_files()
+int parse_data_files(int option)
 {
         int ret;
 
@@ -324,6 +324,12 @@ int parse_data_files()
 
         objid = 1;
         printf("Reading %s\n", MAIN_DATA_FILE);
+
+        if(option == ONLY_CONFIG) {
+                ret = parse_configfile();
+                config_destroy(cf);
+                return ret;
+        }
 
         /* TODO:
          * This return value stuff makes no sense!!

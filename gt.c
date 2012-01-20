@@ -481,20 +481,20 @@ int main(int argc, char *argv[])
 
         if(!loadgame) {
                 printf("Reading data files...\n");
-                if(parse_data_files())
+                if(parse_data_files(0))
                         die("Couldn't parse data files.");
         }
 
         if(loadgame) {
                 init_player();
+                parse_data_files(ONLY_CONFIG);
                 if(!load_game(game->savefile, 0))
-                        die("Couldn't open file %s", game->savefile);
+                        die("Couldn't open file %s\n", game->savefile);
                 init_display();
                 // these next should be loaded by load_game
                 world->cmap = world->dng[game->currentlevel].c;
                 world->curlevel = &world->dng[game->currentlevel];
         } else {
-
                 world->dng[1].xsize = (ri(100, gtconfig.dxsize));
                 world->dng[1].ysize = (ri(100, gtconfig.dysize));
                 init_level(&world->dng[1]);

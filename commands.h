@@ -43,6 +43,8 @@ typedef struct {
 #define CMD_SPAWNMONSTER  1002
 #define CMD_WIZARDMODE    1003
 #define CMD_DUMPOBJECTS   1004
+#define CMD_INCFOV        1005
+#define CMD_DECFOV        1006
 
 // prototypes
 

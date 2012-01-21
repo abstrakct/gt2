@@ -53,6 +53,8 @@ cmd_t outsidecommands[] = {
         { KEY_F(4),  CMD_DUMPOBJECTS, "Dump objects" },
         { KEY_F(5),  CMD_SAVE,        "Save" },
         { KEY_F(6),  CMD_LOAD,        "Load" },
+        { '+',       CMD_INCFOV,      "Increase FOV" },
+        { '-',       CMD_DECFOV,      "Decrease FOV" },
         { 'd',       CMD_ENTERDUNGEON,"Enter dungeon" },
         { 'f',       CMD_FLOODFILL,   "Floodfill (debug)" },
         { 's',       CMD_SPAWNMONSTER,"Spawn monster" },

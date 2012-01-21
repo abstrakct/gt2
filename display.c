@@ -111,13 +111,13 @@ bool blocks_light(int y, int x)
         return false;
 }
 
-void clear_map_to_invisible()
+void clear_map_to_invisible(level_t *l)
 {
         int x, y;
 
-        for(y = 0; y < game->height; y++) {
-                for(x = 0; x < game->width; x++) {
-                        cv(y,x) = 0;
+        for(y = 0; y < l->ysize; y++) {
+                for(x = 0; x < l->xsize; x++) {
+                        l->c[y][x].visible = 0;
                 }
         }
 }
@@ -143,10 +143,10 @@ void dofov(actor_t *actor, level_t *l, float x, float y)
                         l->c[(int)oy][(int)ox].visible = 1;
                         if(blocks_light((int) oy, (int) ox)) {
                                 return;
-                        } else {
+                        }/* else {
                                 if(perc((100-actor->viewradius)/3))
                                         return;
-                        }
+                        }*/
 
 
                         ox += x;
@@ -161,21 +161,23 @@ void FOV(actor_t *a, level_t *l)
         int i;
         signed int tmpx,tmpy;
 
-        l->c[a->y+1][a->x].visible   = 1;
+        //clear_map_to_invisible(l);
+
+        /*l->c[a->y+1][a->x].visible   = 1;
         l->c[a->y-1][a->x].visible   = 1;
         l->c[a->y][a->x+1].visible   = 1;
         l->c[a->y][a->x-1].visible   = 1;
         l->c[a->y+1][a->x+1].visible = 1;
         l->c[a->y-1][a->x-1].visible = 1;
         l->c[a->y+1][a->x-1].visible = 1;
-        l->c[a->y-1][a->x+1].visible = 1;
+        l->c[a->y-1][a->x+1].visible = 1;*/
 
         //test - set random cell nearby to visible
-        if(a->y > 3 && a->x > 3) {
+        /*if(a->y > 3 && a->x > 3) {
                 tmpx = ri(-3,3);
                 tmpy = ri(-3,3);
                 l->c[a->y+tmpy][a->x+tmpx].visible = true;
-        }
+        }*/
 
 
         //clear_map_to_invisible();
@@ -203,7 +205,7 @@ void draw_world(level_t *level)
                         if(j < level->ysize && i < level->xsize) {
                                 if(level->c[j][i].visible) {
                                         gtmapaddch(dy, dx, cc(j,i), mapchars[(int) level->c[j][i].type]);
-                                        if(level->c[j][i].monster)
+                                        if(level->c[j][i].monster && actor_in_lineofsight(player, level->c[j][i].monster))
                                                 gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
                                 }
 
@@ -227,6 +229,7 @@ void draw_wstat()
         mvwprintw(wstat, 2, 1, "Turn:   %d", game->turn);
         mvwprintw(wstat, 3, 1, "(y,x)   (%d,%d)     ", ply, plx);
         mvwprintw(wstat, 4, 1, "(py,px) (%d,%d)     ", ppy, ppx);
+        mvwprintw(wstat, 5, 1, "viewradius: %d      ", player->viewradius);
 }
 
 void update_player()

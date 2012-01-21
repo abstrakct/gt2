@@ -168,6 +168,152 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
         }
 }
 
+void zero_level(level_t *l)
+{
+        int x, y;
+
+        for(y = 0; y < l->ysize; y++) {
+                for(x = 0; x < l->xsize; x++) {
+                        l->c[y][x].type  = DNG_WALL;
+                        l->c[y][x].color = COLOR_NORMAL;
+                }
+        }
+}
+
+struct room {
+        int y1, x1, y2, x2, sx, sy;
+};
+
+void generate_dungeon_normal(int d)
+{
+        struct room *r;        
+        int numrooms, nrx, nry, i, j;
+        int x1, y1, sy, sx, x2, y2, rindex;
+        level_t *l;
+                
+        l = &world->dng[d];
+        nrx = l->xsize / 60;
+        nry = l->ysize / 60;
+        numrooms = nrx * nry;
+        r = gtcalloc(numrooms+1, sizeof(struct room));
+        rindex = 0;
+
+        printf("Generating %d x %d = %d rooms (levelsize = %d x %d)\n", nrx, nry, numrooms, l->xsize, l->ysize);
+        
+        for(i = 1; i <= nrx; i++) {
+                for(j = 1; j <= nry; j++) {
+                        y1 = ri(5, (l->ysize/(nry+1)*j)) + ri(2,10);
+                        x1 = ri(5, (l->xsize/(nrx+1)*i)) + ri(2,10);
+                        sy = ri(5,15);
+                        sx = ri(15,25);
+                        y2 = y1 + sy;
+                        x2 = x1 + sx;
+                        printf("painting room %d from %d,%d to %d,%d\n", rindex, y1,x1,y2,x2);
+                        paint_room(l, y1, x1, sy, sx, 1);
+                        r[rindex].y1 = y1;
+                        r[rindex].x1 = x1;
+                        r[rindex].y2 = y2;
+                        r[rindex].x2 = x2;
+                        rindex++;
+                }
+        }
+
+        for(i = 0; i < numrooms; i++) {
+                if(i == (numrooms - 1))
+                        break;
+
+
+
+                //paint_corridor(l, r[i].y1, r[i].x1, r[i+1].y2, r[i+1].x2);
+        }
+        
+
+
+        gtfree(r);
+
+        /*paint_room(&world->dng[1], 10, 10, 10, 10, 0);
+        paint_room(&world->dng[1], 30, 30, 10, 10, 0);
+        paint_corridor(&world->dng[1], 15, 20, 35, 30);*/
+}
+
+void generate_dungeon_normal2(int d)
+{
+        struct room **r;        
+        int numrooms, maxroomsizex, maxroomsizey, nrx, nry, i, j;
+        int x1, y1, sy, sx, x2, y2;
+        level_t *l;
+                
+        l = &world->dng[d];
+        nrx = l->xsize / 60;
+        nry = l->ysize / 60;
+        numrooms = nrx * nry;
+        maxroomsizex = l->xsize / nrx / 2;
+        maxroomsizey = l->ysize / nry / 2;
+
+        r = gtmalloc(sizeof(struct room) * (nry+1));
+        for(i=0;i<nry+1;i++)
+                r[i] = gtmalloc(sizeof(struct room) * (nrx+1));
+
+        printf("Generating %d x %d = %d rooms (levelsize = %d x %d)\n", nrx, nry, numrooms, l->xsize, l->ysize);
+        
+        for(i = 1; i <= nrx; i++) {
+                for(j = 1; j <= nry; j++) {
+                        //y1 = ri(5, (l->ysize/(nry+1)*j)) + ri(2,10);
+                        //x1 = ri(5, (l->xsize/(nrx+1)*i)) + ri(2,10);
+
+                        y1 = (j * maxroomsizey) + ri(0,5);
+                        x1 = (i * maxroomsizex) + ri(0,5);
+                        sy = ri(5,  maxroomsizey - 5);
+                        sx = ri(15, maxroomsizex - 5);
+                        y2 = y1 + sy;
+                        x2 = x1 + sx;
+                        printf("painting room [%d][%d] from %d,%d to %d,%d\n", j, i, y1,x1,y2,x2);
+                        paint_room(l, y1, x1, sy, sx, 0);
+                        r[j][i].y1 = y1;
+                        r[j][i].x1 = x1;
+                        r[j][i].sx = sx;
+                        r[j][i].sy = sy;
+                        r[j][i].y2 = y2;
+                        r[j][i].x2 = x2;
+                }
+        }
+
+        for(i = 1; i < nrx; i++) {
+                for(j = 1; j < nry; j++) {
+                        int starty, startx, endy, endx;
+
+                        starty = r[j][i].y1 + ri(2, r[j][i].sy-1);
+                        endx   = r[j][i+1].x1 + ri(2, r[j][i+1].sx-1);
+
+                        //printf("1corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
+                        paint_corridor_horizontal(l, starty, r[j][i].x2, endx);
+                        if(starty < r[j][i+1].y1) {
+                                //printf("2corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
+                                paint_corridor_vertical(l, starty, r[j][i+1].y1, endx);
+                        }
+                        if(starty > r[j][i+1].y2) {
+                                //printf("3corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
+                                paint_corridor_vertical(l, starty, r[j][i+1].y2, endx);
+                        }
+
+                        startx = r[j][i].x1 + ri(2, r[j][i].sx-1);
+                        endy   = r[j+1][i].y1 + ri(2, r[j+1][i].sy-1);
+
+                        //printf("4corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
+                        paint_corridor_vertical(l, r[j][i].y2, endy, startx);
+                        if(startx < r[j+1][i].x1) {
+                                //printf("5corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
+                                paint_corridor_horizontal(l, startx, r[j+1][i].x1, endy);
+                        }
+                        if(startx > r[j+1][i].x2) {
+                                //printf("6corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
+                                paint_corridor_horizontal(l, startx, r[j+1][i].x2, endy);
+                        }
+                }
+
+        }
+}
+
 /*********************************************
 * Description - Generate an area
 * i = index into array
@@ -359,20 +505,20 @@ void generate_village(int num)
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-void floodfill(int y, int x)
+void floodfill(level_t *l, int y, int x)
 {
 //fprintf(stderr, "DEBUG: %s:%d - entering floodfill! x,y = %d,%d\n", __FILE__, __LINE__, x, y);
-        if(world->cmap[y][x].type == DNG_FLOOR) {
-                world->cmap[y][x].type = DNG_FILL;
-                world->cmap[y][x].color = COLOR_LAKE;
-                floodfill(x-1, y);
-                floodfill(x+1, y);
-                floodfill(x, y-1);
-                floodfill(x, y+1);
-                floodfill(x+1, y+1);
-                floodfill(x+1, y-1);
-                floodfill(x-1, y+1);
-                floodfill(x-1, y-1);
+        if(l->c[y][x].type == DNG_FLOOR) {
+                l->c[y][x].type = DNG_FILL;
+                l->c[y][x].color = COLOR_LAKE;
+                floodfill(l, y-1, x);
+                floodfill(l, y+1, x);
+                floodfill(l, y,   x-1);
+                floodfill(l, y,   x+1);
+                floodfill(l, y+1, x+1);
+                floodfill(l, y+1, x-1);
+                floodfill(l, y-1, x+1);
+                floodfill(l, y-1, x-1);
         }
 }
 
@@ -387,6 +533,15 @@ void set_all_visible()
         }
 }
 
+void set_floor(level_t *l, float y, float x)
+{
+        if(y >= l->ysize || x >= l->xsize || y < 0 || x < 0)
+                return;
+
+        l->c[(int)y][(int)x].type = DNG_FLOOR;
+        l->c[(int)y][(int)x].color = COLOR_NORMAL;
+}
+
 /*********************************************
 * Description - Paint a room in a dungeon
 * Author - RK
@@ -395,7 +550,6 @@ void set_all_visible()
 void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping)
 {
         int i, j;
-        int door;
 
         if(((x+sx) >= l->xsize) || ((y+sy) >= l->ysize))
                 return;
@@ -416,10 +570,68 @@ void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping)
                                 l->c[j][i].type = DNG_FLOOR;
                                 l->c[j][i].color = COLOR_NORMAL;
                         }
-                        door = ri(1,100);
+                        /*door = ri(1,100);
                         if(door >= 99)
-                                l->c[j][i].type = DNG_FLOOR;
+                                l->c[j][i].type = DNG_FLOOR;*/
                 }
+        }
+}
+
+void paint_corridor_horizontal(level_t *l, int y, int x1, int x2)
+{
+        int i;
+
+        printf("horizontal corridor from %d,%d to %d,%d\n", y, x1, y, x2);
+        if(x1 < x2) {
+                for(i = x1; i < x2; i++)
+                        set_floor(l, y, i);
+        }
+
+        if(x1 > x2) {
+                for(i = x1; i >= x2; i--)
+                        set_floor(l, y, i);
+        }
+}
+
+void paint_corridor_vertical(level_t *l, int y1, int y2, int x)
+{
+        int i;
+
+        printf("vertical corridor from %d,%d to %d,%d\n", y1, x, y2, x);
+        if(y1 < y2) {
+                for(i = y1; i < y2; i++)
+                        set_floor(l, i, x);
+        }
+
+        if(y1 > y2) {
+                for(i = y1; i >= y2; i--)
+                        set_floor(l, i, x);
+        }
+}
+
+void paint_corridor(level_t *l, int y1, int x1, int y2, int x2)
+{
+        float x, y, xinc, yinc, dx, dy;
+        int k, step;
+
+        dx = x2 - x1;
+        dy = y2 - y1;
+        if(abs(dx) > abs(dy))
+                step = abs(dx);
+        else
+                step = abs(dy);
+
+        xinc = dx / step;
+        yinc = dy / step;
+
+        x = (float) x1;
+        y = (float) y1;
+
+        set_floor(l, y, x);
+        for(k = 1; k <= step; k++) {
+                x += xinc;
+                y += yinc;
+                set_floor(l, y, x);
         }
 }
 
@@ -427,13 +639,18 @@ bool passable(int y, int x)
 {
         int type;
 
-        if(game->wizardmode)   // if we are in wizard mode, ignore this! dangerous, but useful
-                return true;
+        if(y < 0)
+                return false;
+        if(x < 0)
+                return false;
 
         if(x >= world->curlevel->xsize)
                 return false;
         if(y >= world->curlevel->ysize)
                 return false;
+
+        if(game->wizardmode)   // if we are in wizard mode, anything goes!
+                return true;
 
         type = world->curlevel->c[y][x].type;
         if(type == DNG_WALL)
@@ -441,6 +658,8 @@ bool passable(int y, int x)
         if(type == AREA_LAKE)
                 return false;
         if(type == AREA_WALL)
+                return false;
+        if(type == AREA_NOTHING)
                 return false;
 
         return true;
@@ -498,9 +717,11 @@ void generate_world()
         generate_village(world->villages);
 
         fprintf(stderr, "DEBUG: %s:%d - Generating dungeon!!\n", __FILE__, __LINE__);
-        generate_dungeon_labyrinthine(1);
+        //generate_dungeon_labyrinthine(1);
+        
+        zero_level(&world->dng[1]);
+        generate_dungeon_normal2(1);
         game->createddungeons++;
-        paint_room(&world->dng[1], 10, 10, 10, 10, 0);
 
         // create the edge of the world
         for(x=0; x<world->out->xsize; x++) {

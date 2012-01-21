@@ -2,8 +2,8 @@ let SessionLoad = 1
 if &cp | set nocp | endif
 let s:cpo_save=&cpo
 set cpo&vim
-imap <F3> =strftime("%Y-%m-%d %H:%M")
 imap <F4> mz:execute FunctionHeading()`zjA
+imap <F3> =strftime("%Y-%m-%d %H:%M")
 map! <S-Insert> <MiddleMouse>
 map  h
 map <NL> j
@@ -15,25 +15,25 @@ nmap <silent> ,l :nohlsearch
 map 0 $
 map N Nzz
 xmap S <Plug>VSurround
-map \ $
-nnoremap <silent> \b :CommandTBuffer
-nmap <silent> \wi <Plug>VimwikiDiaryIndex
 map <silent> \w\t <Plug>VimwikiTabMakeDiaryNote
 map <silent> \w\w <Plug>VimwikiMakeDiaryNote
+nmap <silent> \wi <Plug>VimwikiDiaryIndex
 map <silent> \ws <Plug>VimwikiUISelect
 map <silent> \wt <Plug>VimwikiTabIndex
 map <silent> \ww <Plug>VimwikiIndex
+nnoremap <silent> \b :CommandTBuffer
 nmap <silent> \t :CommandT
 map \c :echo g:colors_name
 map \p :CP
 map \n :CN
+map \ $
 nmap <silent> \sv :so $MYVIMRC
 nmap <silent> \ev :e $MYVIMRC
 nmap _if ofprintf(0stderr, "DEBUG: %s:%d - \n", __FILE__, __LINE__);F\i
 nmap cs <Plug>Csurround
 nmap ds <Plug>Dsurround
-nmap gx <Plug>NetrwBrowseX
 xmap gS <Plug>VgSurround
+nmap gx <Plug>NetrwBrowseX
 map g> :%s/>/->/g
 map gr gT
 map n nzz
@@ -43,8 +43,6 @@ nmap ySs <Plug>YSsurround
 nmap yss <Plug>Yssurround
 nmap yS <Plug>YSurround
 nmap ys <Plug>Ysurround
-nmap <F3> o=strftime("%Y-%m-%d %H:%M")
-nmap <F7> g
 omap <F3> A ->j
 vmap <F3> A ->j
 map <F6> :!gt
@@ -58,6 +56,8 @@ map <Down> :bprevious
 map <Right> :tabnext
 map <Left> :tabprevious
 omap <F5> :make
+nmap <F7> g
+nmap <F3> o=strftime("%Y-%m-%d %H:%M")
 map <F2> :tabe %:p:s,.h$,.X123X,:s,.c$,.h,:s,.X123X$,.c,
 map <S-Insert> <MiddleMouse>
 imap S <Plug>ISurround
@@ -79,6 +79,8 @@ set copyindent
 set directory=~/.vim/tmp
 set expandtab
 set fileencodings=ucs-bom,utf-8,default,latin1
+set guicursor=n:block-lCursor,i:ver25-Cursor,r:hor25-Cursor,v:block-vCursor,ve:ver35-vCursor,o:hor50-oCursor-blinkwait75-blinkoff50-blinkon75,c:block-cCursor,ci:ver20-cCursor,cr:hor20-cCursor,sm:block-Cursor-blinkwait175-blinkoff150-blinkon175
+set guifont=Terminus\ 8
 set helplang=en
 set hidden
 set history=1000
@@ -97,6 +99,7 @@ set statusline=%-3.3n\ %f\ %h%m%r%w[%{strlen(&ft)?&ft:'none'}]%=%-14(%l,%c%V%)%<
 set suffixes=.bak,~,.swp,.o,.info,.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
 set termencoding=utf-8
 set title
+set visualbell
 set wildmenu
 set wildmode=list:longest,full
 set window=29
@@ -115,7 +118,7 @@ badd +1 datafiles.h
 badd +16 gt.h
 badd +11 utils.h
 badd +27 monsters.h
-badd +50 objects.h
+badd +33 objects.h
 badd +31 world.h
 badd +77 you.c
 badd +1 you.h
@@ -135,7 +138,8 @@ badd +70 commands.c
 badd +1 ../oldgt/gt/cmd.c
 badd +1 vimsession.gt2.vim
 badd +71 data/weapon.cfg
-badd +0 actor.c
+badd +1 actor.c
+badd +0 ~/.vimrc
 args datafiles.c gt.c utils.c
 edit vimsession.gt2.vim
 set splitbelow splitright
@@ -263,7 +267,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 61 - ((58 * winheight(0) + 30) / 61)
+let s:l = 61 - ((29 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -400,144 +404,6 @@ normal zo
 normal zo
 237
 normal zo
-359
-normal zo
-359
-normal zo
-359
-normal zo
-366
-normal zo
-373
-normal zo
-373
-normal zo
-379
-normal zo
-379
-normal zo
-379
-normal zo
-373
-normal zo
-373
-normal zo
-393
-normal zo
-397
-normal zo
-397
-normal zo
-397
-normal zo
-404
-normal zo
-409
-normal zo
-409
-normal zo
-417
-normal zo
-417
-normal zo
-417
-normal zo
-409
-normal zo
-409
-normal zo
-424
-normal zo
-430
-normal zo
-430
-normal zo
-435
-normal zo
-435
-normal zo
-435
-normal zo
-430
-normal zo
-430
-normal zo
-445
-normal zo
-445
-normal zo
-450
-normal zo
-450
-normal zo
-450
-normal zo
-445
-normal zo
-445
-normal zo
-457
-normal zo
-457
-normal zo
-457
-normal zo
-467
-normal zo
-467
-normal zo
-481
-normal zo
-481
-normal zo
-481
-normal zo
-487
-normal zo
-487
-normal zo
-487
-normal zo
-518
-normal zo
-518
-normal zo
-530
-normal zo
-530
-normal zo
-541
-normal zo
-541
-normal zo
-548
-normal zo
-548
-normal zo
-548
-normal zo
-541
-normal zo
-541
-normal zo
-573
-normal zo
-573
-normal zo
-573
-normal zo
-530
-normal zo
-530
-normal zo
-518
-normal zo
-518
-normal zo
-467
-normal zo
-467
-normal zo
 187
 normal zo
 360
@@ -606,7 +472,7 @@ normal zo
 normal zo
 468
 normal zo
-let s:l = 484 - ((18 * winheight(0) + 30) / 61)
+let s:l = 484 - ((9 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -731,7 +597,7 @@ normal zo
 normal zo
 45
 normal zo
-let s:l = 45 - ((44 * winheight(0) + 30) / 61)
+let s:l = 45 - ((22 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -860,17 +726,7 @@ normal zo
 normal zo
 86
 normal zo
-33
-normal zo
-70
-normal zo
-77
-normal zo
-70
-normal zo
-86
-normal zo
-let s:l = 56 - ((24 * winheight(0) + 30) / 61)
+let s:l = 56 - ((12 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -989,7 +845,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 45 - ((44 * winheight(0) + 30) / 61)
+let s:l = 45 - ((22 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1109,7 +965,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 331 - ((36 * winheight(0) + 30) / 61)
+let s:l = 331 - ((18 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1229,7 +1085,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 10 - ((9 * winheight(0) + 30) / 61)
+let s:l = 10 - ((4 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1358,14 +1214,6 @@ normal zo
 normal zo
 55
 normal zo
-85
-normal zo
-85
-normal zo
-85
-normal zo
-55
-normal zo
 50
 normal zo
 73
@@ -1374,7 +1222,7 @@ normal zo
 normal zo
 73
 normal zo
-let s:l = 65 - ((55 * winheight(0) + 30) / 61)
+let s:l = 65 - ((27 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1493,7 +1341,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 30) / 61)
+let s:l = 1 - ((0 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -1620,114 +1468,6 @@ normal zo
 normal zo
 97
 normal zo
-115
-normal zo
-118
-normal zo
-119
-normal zo
-118
-normal zo
-115
-normal zo
-125
-normal zo
-131
-normal zo
-141
-normal zo
-142
-normal zo
-144
-normal zo
-142
-normal zo
-141
-normal zo
-131
-normal zo
-159
-normal zo
-176
-normal zo
-159
-normal zo
-184
-normal zo
-190
-normal zo
-191
-normal zo
-192
-normal zo
-197
-normal zo
-198
-normal zo
-204
-normal zo
-197
-normal zo
-191
-normal zo
-190
-normal zo
-184
-normal zo
-221
-normal zo
-229
-normal zo
-235
-normal zo
-242
-normal zo
-248
-normal zo
-256
-normal zo
-263
-normal zo
-271
-normal zo
-263
-normal zo
-283
-normal zo
-286
-normal zo
-288
-normal zo
-286
-normal zo
-283
-normal zo
-296
-normal zo
-306
-normal zo
-322
-normal zo
-327
-normal zo
-332
-normal zo
-337
-normal zo
-342
-normal zo
-347
-normal zo
-352
-normal zo
-357
-normal zo
-362
-normal zo
-367
-normal zo
-372
-normal zo
 94
 normal zo
 115
@@ -1762,86 +1502,6 @@ normal zo
 normal zo
 182
 normal zo
-174
-normal zo
-182
-normal zo
-190
-normal zo
-196
-normal zo
-197
-normal zo
-198
-normal zo
-203
-normal zo
-204
-normal zo
-210
-normal zo
-203
-normal zo
-197
-normal zo
-196
-normal zo
-190
-normal zo
-227
-normal zo
-235
-normal zo
-241
-normal zo
-248
-normal zo
-254
-normal zo
-262
-normal zo
-269
-normal zo
-277
-normal zo
-269
-normal zo
-289
-normal zo
-292
-normal zo
-294
-normal zo
-292
-normal zo
-289
-normal zo
-302
-normal zo
-312
-normal zo
-328
-normal zo
-333
-normal zo
-338
-normal zo
-343
-normal zo
-348
-normal zo
-353
-normal zo
-358
-normal zo
-363
-normal zo
-368
-normal zo
-373
-normal zo
-378
-normal zo
 159
 normal zo
 190
@@ -1864,60 +1524,6 @@ normal zo
 normal zo
 196
 normal zo
-225
-normal zo
-233
-normal zo
-239
-normal zo
-246
-normal zo
-252
-normal zo
-260
-normal zo
-267
-normal zo
-275
-normal zo
-267
-normal zo
-287
-normal zo
-290
-normal zo
-292
-normal zo
-290
-normal zo
-287
-normal zo
-300
-normal zo
-310
-normal zo
-326
-normal zo
-331
-normal zo
-336
-normal zo
-341
-normal zo
-346
-normal zo
-351
-normal zo
-356
-normal zo
-361
-normal zo
-366
-normal zo
-371
-normal zo
-376
-normal zo
 190
 normal zo
 225
@@ -1974,7 +1580,7 @@ normal zo
 normal zo
 376
 normal zo
-let s:l = 139 - ((26 * winheight(0) + 30) / 61)
+let s:l = 139 - ((13 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -2093,7 +1699,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 22 - ((21 * winheight(0) + 30) / 61)
+let s:l = 22 - ((10 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -2252,7 +1858,7 @@ normal zo
 normal zo
 171
 normal zo
-let s:l = 170 - ((44 * winheight(0) + 30) / 61)
+let s:l = 170 - ((22 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -2371,133 +1977,11 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 31) / 63)
+let s:l = 1 - ((0 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 1
-normal! 0
-tabedit objects.h
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winheight=1 winwidth=1
-argglobal
-setlocal keymap=
-setlocal noarabic
-setlocal autoindent
-setlocal balloonexpr=
-setlocal nobinary
-setlocal bufhidden=
-setlocal buflisted
-setlocal buftype=
-setlocal cindent
-setlocal cinkeys=0{,0},0),:,0#,!^F,o,O,e
-setlocal cinoptions=
-setlocal cinwords=if,else,while,do,for,switch
-setlocal colorcolumn=
-setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
-setlocal commentstring=/*%s*/
-setlocal complete=.,w,b,u,t,i
-setlocal concealcursor=
-setlocal conceallevel=0
-setlocal completefunc=
-setlocal copyindent
-setlocal cryptmethod=
-setlocal nocursorbind
-setlocal nocursorcolumn
-set cursorline
-setlocal nocursorline
-setlocal define=
-setlocal dictionary=
-setlocal nodiff
-setlocal equalprg=
-setlocal errorformat=
-setlocal expandtab
-if &filetype != 'cpp'
-setlocal filetype=cpp
-endif
-setlocal foldcolumn=0
-setlocal foldenable
-setlocal foldexpr=0
-setlocal foldignore=#
-setlocal foldlevel=0
-setlocal foldmarker={{{,}}}
-set foldmethod=syntax
-setlocal foldmethod=syntax
-setlocal foldminlines=1
-setlocal foldnestmax=20
-setlocal foldtext=foldtext()
-setlocal formatexpr=
-setlocal formatoptions=croql
-setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
-setlocal grepprg=
-setlocal iminsert=0
-setlocal imsearch=2
-setlocal include=
-setlocal includeexpr=
-setlocal indentexpr=
-setlocal indentkeys=0{,0},:,0#,!^F,o,O,e
-setlocal noinfercase
-setlocal iskeyword=@,48-57,_,192-255
-setlocal keywordprg=
-set linebreak
-setlocal linebreak
-setlocal nolisp
-setlocal nolist
-setlocal makeprg=
-setlocal matchpairs=(:),{:},[:]
-setlocal modeline
-setlocal modifiable
-setlocal nrformats=octal,hex
-set number
-setlocal number
-setlocal numberwidth=4
-setlocal omnifunc=ccomplete#Complete
-setlocal path=
-setlocal nopreserveindent
-setlocal nopreviewwindow
-setlocal quoteescape=\\
-setlocal noreadonly
-setlocal norelativenumber
-setlocal norightleft
-setlocal rightleftcmd=search
-setlocal noscrollbind
-setlocal shiftwidth=8
-setlocal noshortname
-setlocal nosmartindent
-setlocal softtabstop=0
-setlocal nospell
-setlocal spellcapcheck=[.?!]\\_[\\])'\"\	\ ]\\+
-setlocal spellfile=
-setlocal spelllang=en
-setlocal statusline=
-setlocal suffixesadd=
-setlocal swapfile
-setlocal synmaxcol=3000
-if &syntax != 'cpp'
-setlocal syntax=cpp
-endif
-setlocal tabstop=8
-setlocal tags=
-setlocal textwidth=0
-setlocal thesaurus=
-setlocal noundofile
-setlocal nowinfixheight
-setlocal nowinfixwidth
-set nowrap
-setlocal nowrap
-setlocal wrapmargin=0
-14
-normal zo
-121
-normal zc
-let s:l = 33 - ((32 * winheight(0) + 30) / 61)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-33
 normal! 0
 tabedit saveload.c
 set splitbelow splitright
@@ -2509,8 +1993,8 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe 'vert 1resize ' . ((&columns * 118 + 118) / 237)
-exe 'vert 2resize ' . ((&columns * 118 + 118) / 237)
+exe 'vert 1resize ' . ((&columns * 82 + 82) / 164)
+exe 'vert 2resize ' . ((&columns * 81 + 82) / 164)
 argglobal
 edit saveload.c
 setlocal keymap=
@@ -2618,98 +2102,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-128
-normal zo
-203
-normal zo
-236
-normal zo
-250
-normal zo
-203
-normal zo
-259
-normal zo
-264
-normal zo
-272
-normal zo
-280
-normal zo
-285
-normal zo
-280
-normal zo
-338
-normal zo
-350
-normal zo
-338
-normal zo
-362
-normal zo
-367
-normal zo
-362
-normal zo
-384
-normal zo
-388
-normal zo
-393
-normal zo
-388
-normal zo
-413
-normal zo
-418
-normal zo
-413
-normal zo
-443
-normal zo
-449
-normal zo
-443
-normal zo
-483
-normal zo
-493
-normal zo
-500
-normal zo
-506
-normal zo
-517
-normal zc
-523
-normal zo
-528
-normal zo
-523
-normal zo
-542
-normal zo
-547
-normal zo
-542
-normal zo
-561
-normal zo
-565
-normal zo
-566
-normal zo
-565
-normal zo
-483
-normal zo
-let s:l = 513 - ((60 * winheight(0) + 30) / 61)
+let s:l = 388 - ((203 * winheight(0) + 19) / 38)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-513
-normal! 015l
+388
+normal! 0
 wincmd w
 argglobal
 edit saveload.c
@@ -2818,111 +2216,15 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-1
-normal zo
-27
-normal zo
-43
-normal zo
-47
-normal zo
-107
-normal zo
-128
-normal zo
-190
-normal zo
-203
-normal zo
-236
-normal zo
-203
-normal zo
-259
-normal zo
-264
-normal zo
-272
-normal zo
-280
-normal zo
-285
-normal zo
-280
-normal zo
-338
-normal zo
-350
-normal zo
-338
-normal zo
-362
-normal zo
-367
-normal zo
-362
-normal zo
-384
-normal zo
-388
-normal zo
-393
-normal zo
-388
-normal zo
-413
-normal zo
-418
-normal zo
-413
-normal zo
-443
-normal zo
-449
-normal zo
-443
-normal zo
-483
-normal zo
-493
-normal zo
-500
-normal zo
-506
-normal zo
-517
-normal zo
-523
-normal zo
-528
-normal zo
-523
-normal zo
-542
-normal zo
-547
-normal zo
-542
-normal zo
-561
-normal zo
-565
-normal zo
-566
-normal zo
-565
-normal zo
-483
-normal zo
-let s:l = 16 - ((15 * winheight(0) + 30) / 61)
+let s:l = 16 - ((8 * winheight(0) + 19) / 38)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 16
 normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 118 + 118) / 237)
-exe 'vert 2resize ' . ((&columns * 118 + 118) / 237)
+exe 'vert 1resize ' . ((&columns * 82 + 82) / 164)
+exe 'vert 2resize ' . ((&columns * 81 + 82) / 164)
 tabedit saveload.h
 set splitbelow splitright
 set nosplitbelow
@@ -3038,7 +2340,7 @@ setlocal nowrap
 setlocal wrapmargin=0
 32
 normal zo
-let s:l = 36 - ((35 * winheight(0) + 30) / 61)
+let s:l = 36 - ((19 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -3161,7 +2463,7 @@ setlocal wrapmargin=0
 normal zc
 74
 normal zo
-let s:l = 42 - ((26 * winheight(0) + 30) / 61)
+let s:l = 42 - ((13 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -3281,7 +2583,7 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 24 - ((23 * winheight(0) + 30) / 61)
+let s:l = 24 - ((11 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -3421,7 +2723,7 @@ normal zo
 normal zo
 171
 normal zo
-let s:l = 161 - ((80 * winheight(0) + 30) / 61)
+let s:l = 161 - ((39 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -3544,7 +2846,7 @@ setlocal wrapmargin=0
 normal zo
 73
 normal zo
-let s:l = 64 - ((63 * winheight(0) + 30) / 61)
+let s:l = 64 - ((31 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -3663,7 +2965,7 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 30) / 61)
+let s:l = 1 - ((0 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -3810,7 +3112,7 @@ normal zo
 normal zo
 36
 normal zo
-let s:l = 65 - ((47 * winheight(0) + 30) / 61)
+let s:l = 65 - ((23 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -3932,13 +3234,13 @@ setlocal nowrap
 setlocal wrapmargin=0
 42
 normal zo
-let s:l = 75 - ((74 * winheight(0) + 30) / 61)
+let s:l = 75 - ((29 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 75
 normal! 026l
-tabnext 15
+tabnext 14
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif

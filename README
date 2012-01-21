@@ -8,4 +8,7 @@ The first version of GT was almost playable, but the code was a mess and too muc
 hard-coded.
 
 In this new version, I have switched to using data files, which makes things a lot nicer.
-So far, there's not much more to the program than parsing the data file which defines the monsters.
+
+The game isn't really playable yet, but it generates a world and a dungeon, and you can walk
+around. You can spawn monsters, but they don't do anything but walk around randomly. You can save and load.
+See commands.c for keys.

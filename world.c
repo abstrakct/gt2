@@ -672,7 +672,7 @@ void paint_corridor_horizontal(level_t *l, int y, int x1, int x2)
 {
         int i;
 
-        printf("horizontal corridor from %d,%d to %d,%d\n", y, x1, y, x2);
+        //printf("horizontal corridor from %d,%d to %d,%d\n", y, x1, y, x2);
         if(x1 < x2) {
                 for(i = x1; i < x2; i++)
                         set_floor(l, y, i);
@@ -688,7 +688,7 @@ void paint_corridor_vertical(level_t *l, int y1, int y2, int x)
 {
         int i;
 
-        printf("vertical corridor from %d,%d to %d,%d\n", y1, x, y2, x);
+        //printf("vertical corridor from %d,%d to %d,%d\n", y1, x, y2, x);
         if(y1 < y2) {
                 for(i = y1; i < y2; i++)
                         set_floor(l, i, x);

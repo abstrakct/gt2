@@ -495,8 +495,8 @@ int main(int argc, char *argv[])
                 world->cmap = world->dng[game->currentlevel].c;
                 world->curlevel = &world->dng[game->currentlevel];
         } else {
-                world->dng[1].xsize = (ri(100, gtconfig.dxsize));
-                world->dng[1].ysize = (ri(100, gtconfig.dysize));
+                world->dng[1].xsize = (ri(100, 180));  // let's start withing reasonable sizes!
+                world->dng[1].ysize = (ri(100, 180));
                 init_level(&world->dng[1]);
                 init_level(world->out);
                 generate_world();

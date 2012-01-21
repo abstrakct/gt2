@@ -559,7 +559,7 @@ int main(int argc, char *argv[])
                                         if(ppx <= 0)
                                                 ppx = 0;
                                         
-                                        player->viewradius = 5;
+                                        player->viewradius = 10;
                                 } else {
                                         game->currentlevel--;
                                         world->cmap = world->out->c;

@@ -299,32 +299,32 @@ void generate_dungeon_normal2(int d)
                         starty = r[j][i].y1 + ri(2, r[j][i].sy-1);
                         endx   = r[j][i+1].x1 + ri(2, r[j][i+1].sx-1);
 
-                        printf("1corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
+                        //printf("1corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
                         paint_corridor_horizontal(l, starty, r[j][i].x2, endx);
 
 
                         if(starty < r[j][i+1].y1) {
-                                printf("2corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
+                                //printf("2corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
                                 paint_corridor_vertical(l, starty, r[j][i+1].y1, endx);
                         }
 
                         if(starty > r[j][i+1].y2) {
-                                printf("3corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
+                                //printf("3corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
                                 paint_corridor_vertical(l, starty, r[j][i+1].y2, endx);
                         }
 
                         startx = r[j][i].x1 + ri(2, r[j][i].sx-1);
                         endy   = r[j+1][i].y1 + ri(2, r[j+1][i].sy-1);
 
-                        printf("4corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
+                        //printf("4corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
                         paint_corridor_vertical(l, r[j][i].y2, endy, startx);
 
                         if(startx < r[j+1][i].x1) {
-                                printf("5corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
+                                //printf("5corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
                                 paint_corridor_horizontal(l, endy, startx, r[j+1][i].x1);
                         }
                         if(startx > r[j+1][i].x2) {
-                                printf("6corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
+                                //printf("6corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
                                 paint_corridor_horizontal(l, endy, startx, r[j+1][i].x2);
                         }
                 }

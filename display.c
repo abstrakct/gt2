@@ -142,6 +142,10 @@ void dofov(actor_t *actor, level_t *l, float x, float y)
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
                         l->c[(int)oy][(int)ox].visible = 1;
                         if(blocks_light((int) oy, (int) ox)) {
+                                //if(l->c[(int)oy][(int)ox].type == DNG_WALL)
+                                        //l->c[(int)oy][(int)ox].color = COLOR_CITY;
+                                //if(oy + actor->y > actor->y + actor->viewradius)
+                                        //l->c[(int)oy][(int)ox].color = COLOR_NORMAL;
                                 return;
                         }/* else {
                                 if(perc((100-actor->viewradius)/3))
@@ -192,6 +196,8 @@ void draw_world(level_t *level)
 {
         int i,j;
         int dx, dy;  // coordinates on screen!
+        int color;
+        int lr;      // = light radius, we might want to recalculate this based on if the player carries a torch or soemthinger.
 
         werase(wmap);
         FOV(player, level);
@@ -204,7 +210,15 @@ void draw_world(level_t *level)
                          */
                         if(j < level->ysize && i < level->xsize) {
                                 if(level->c[j][i].visible) {
-                                        gtmapaddch(dy, dx, cc(j,i), mapchars[(int) level->c[j][i].type]);
+                                        lr = player->viewradius / 2;
+                                        if(level->c[j][i].type == DNG_WALL && j < (ply+lr) && j > (ply-lr) && i < (plx+lr) && i > (plx-lr)) {
+                                                //gtprintf("yess inside radius");
+                                                color = COLOR_CITY;
+                                        } else {
+                                                color = cc(j,i);
+                                        }
+
+                                        gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
                                         if(level->c[j][i].monster && actor_in_lineofsight(player, level->c[j][i].monster))
                                                 gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
                                 }

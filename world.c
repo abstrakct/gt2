@@ -240,33 +240,48 @@ void generate_dungeon_normal2(int d)
 {
         struct room **r;        
         int numrooms, maxroomsizex, maxroomsizey, nrx, nry, i, j;
-        int x1, y1, sy, sx, x2, y2;
+        int x1, y1, sy, sx, x2, y2, ty, tx;
+        int starty, startx, endy, endx;
         level_t *l;
                 
         l = &world->dng[d];
-        nrx = l->xsize / 60;
-        nry = l->ysize / 60;
+
+        maxroomsizey = 15;
+        maxroomsizex = 25;
+//        nrx = l->xsize / 60;
+//        nry = l->ysize / 60;
+//        numrooms = nrx * nry;
+//        maxroomsizex = l->xsize / nrx / 2;
+//        maxroomsizey = l->ysize / nry / 3;  // was 2, was good
+
+        nrx = l->xsize / maxroomsizex;
+        nry = l->ysize / maxroomsizey;
         numrooms = nrx * nry;
-        maxroomsizex = l->xsize / nrx / 2;
-        maxroomsizey = l->ysize / nry / 2;
+
 
         r = gtmalloc(sizeof(struct room) * (nry+1));
         for(i=0;i<nry+1;i++)
                 r[i] = gtmalloc(sizeof(struct room) * (nrx+1));
 
-        printf("Generating %d x %d = %d rooms (levelsize = %d x %d)\n", nrx, nry, numrooms, l->xsize, l->ysize);
+        printf("Generating %d x %d = %d rooms (levelsize = %d x %d)\n", nry, nrx, numrooms, l->ysize, l->xsize);
         
         for(i = 1; i <= nrx; i++) {
                 for(j = 1; j <= nry; j++) {
-                        //y1 = ri(5, (l->ysize/(nry+1)*j)) + ri(2,10);
-                        //x1 = ri(5, (l->xsize/(nrx+1)*i)) + ri(2,10);
+                        maxroomsizey = 15;
+                        maxroomsizex = 25;
+                        do {
+                                y1 = ((j-1) * maxroomsizey) + ri(0,5);
+                                x1 = ((i-1) * maxroomsizex) + ri(0,5);
+                                sy = ri(5,  maxroomsizey - 5);
+                                sx = ri(15, maxroomsizex - 5);
+                                y2 = y1 + sy;
+                                x2 = x1 + sx;
+                                if(y2 >= l->ysize)
+                                        maxroomsizey--;
+                                if(x2 >= l->xsize)
+                                        maxroomsizex--;
+                        } while(y2 >= l->ysize || x2 >= l->xsize);
 
-                        y1 = (j * maxroomsizey) + ri(0,5);
-                        x1 = (i * maxroomsizex) + ri(0,5);
-                        sy = ri(5,  maxroomsizey - 5);
-                        sx = ri(15, maxroomsizex - 5);
-                        y2 = y1 + sy;
-                        x2 = x1 + sx;
                         printf("painting room [%d][%d] from %d,%d to %d,%d\n", j, i, y1,x1,y2,x2);
                         paint_room(l, y1, x1, sy, sx, 0);
                         r[j][i].y1 = y1;
@@ -280,37 +295,113 @@ void generate_dungeon_normal2(int d)
 
         for(i = 1; i < nrx; i++) {
                 for(j = 1; j < nry; j++) {
-                        int starty, startx, endy, endx;
 
                         starty = r[j][i].y1 + ri(2, r[j][i].sy-1);
                         endx   = r[j][i+1].x1 + ri(2, r[j][i+1].sx-1);
 
-                        //printf("1corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
+                        printf("1corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
                         paint_corridor_horizontal(l, starty, r[j][i].x2, endx);
+
+
                         if(starty < r[j][i+1].y1) {
-                                //printf("2corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
+                                printf("2corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
                                 paint_corridor_vertical(l, starty, r[j][i+1].y1, endx);
                         }
+
                         if(starty > r[j][i+1].y2) {
-                                //printf("3corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
+                                printf("3corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
                                 paint_corridor_vertical(l, starty, r[j][i+1].y2, endx);
                         }
 
                         startx = r[j][i].x1 + ri(2, r[j][i].sx-1);
                         endy   = r[j+1][i].y1 + ri(2, r[j+1][i].sy-1);
 
-                        //printf("4corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
+                        printf("4corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
                         paint_corridor_vertical(l, r[j][i].y2, endy, startx);
+
                         if(startx < r[j+1][i].x1) {
-                                //printf("5corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
-                                paint_corridor_horizontal(l, startx, r[j+1][i].x1, endy);
+                                printf("5corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
+                                paint_corridor_horizontal(l, endy, startx, r[j+1][i].x1);
                         }
                         if(startx > r[j+1][i].x2) {
-                                //printf("6corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
-                                paint_corridor_horizontal(l, startx, r[j+1][i].x2, endy);
+                                printf("6corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
+                                paint_corridor_horizontal(l, endy, startx, r[j+1][i].x2);
                         }
                 }
 
+        }
+
+        printf("PASS2 connecting last row\n");
+
+        for(i = nrx; i > 2; i--) {
+                starty = r[nry][i].y1 + ri(2, r[nry][i].sy-1);
+                endx   = r[nry][i-1].x1 - ri(2, r[nry][i-1].sx-1);
+
+                printf("1corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
+                paint_corridor_horizontal(l, starty, r[nry][i].x1, endx);
+
+
+                if(starty < r[nry][i-1].y1) {
+                        printf("2corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
+                        paint_corridor_vertical(l, starty, r[nry][i-1].y2, endx);
+                }
+
+                if(starty > r[nry][i-1].y2) {
+                        printf("3corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
+                        paint_corridor_vertical(l, starty, r[nry][i-1].y1, endx);
+                }
+
+                /*startx = r[nry][i].x1 + ri(2, r[nry][i].sx-1);
+                endy   = r[nry-1][i].y2 - ri(2, r[nry-1][i].sy-1);
+
+                printf("4corridor from room %d,%d to %d,%d\n", nry,i,nry-1,i);
+                paint_corridor_vertical(l, r[nry][i].y1, endy, startx);
+
+                if(startx < r[nry-1][i].x1) {
+                        printf("5corridor from room %d,%d to %d,%d\n", nry,i,nry-1,i);
+                        paint_corridor_horizontal(l, startx, r[nry-1][i].x2, endy);
+                }
+                if(startx > r[nry-1][i].x2) {
+                        printf("6corridor from room %d,%d to %d,%d\n", nry,i,nry-1,i);
+                        paint_corridor_horizontal(l, startx, r[nry-1][i].x1, endy);
+                }*/
+
+        }
+
+        for(j = nry; j > 2; j--) {
+                startx = r[j][nrx].x1 + ri(2, r[j][nrx].sx-1);
+                endy   = r[j-1][nrx].y2 - ri(2, r[j-1][nrx].sy-1);
+
+                printf("4corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
+                paint_corridor_vertical(l, r[j][nrx].y1, endy, startx);
+
+                if(startx < r[j-1][nrx].x1) {
+                        printf("5corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
+                        paint_corridor_horizontal(l, endy, startx, r[j-1][nrx].x2);
+                }
+                if(startx > r[j-1][nrx].x2) {
+                        printf("6corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
+                        paint_corridor_horizontal(l, endy, startx, r[j-1][nrx].x1);
+                }
+
+        }
+        // the edges
+        for(ty=0;ty<l->ysize;ty++) {
+                world->dng[d].c[ty][1].type = DNG_WALL;
+                world->dng[d].c[ty][l->xsize-5].type = DNG_WALL;
+                world->dng[d].c[ty][l->xsize-4].type = DNG_NOTHING;
+                world->dng[d].c[ty][l->xsize-3].type = DNG_NOTHING;
+                world->dng[d].c[ty][l->xsize-2].type = DNG_NOTHING;
+                world->dng[d].c[ty][l->xsize-1].type = DNG_NOTHING;
+        }
+
+        for(tx=0;tx<l->xsize-4;tx++) {
+                world->dng[d].c[1][tx].type = DNG_WALL;
+                world->dng[d].c[l->ysize-5][tx].type = DNG_WALL;
+                world->dng[d].c[l->ysize-4][tx].type = DNG_NOTHING;
+                world->dng[d].c[l->ysize-3][tx].type = DNG_NOTHING;
+                world->dng[d].c[l->ysize-2][tx].type = DNG_NOTHING;
+                world->dng[d].c[l->ysize-1][tx].type = DNG_NOTHING;
         }
 }
 
@@ -535,7 +626,7 @@ void set_all_visible()
 
 void set_floor(level_t *l, float y, float x)
 {
-        if(y >= l->ysize || x >= l->xsize || y < 0 || x < 0)
+        if((int)y >= l->ysize || (int)x >= l->xsize || (int)y < 0 || (int)x < 0)
                 return;
 
         l->c[(int)y][(int)x].type = DNG_FLOOR;

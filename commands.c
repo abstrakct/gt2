@@ -45,6 +45,8 @@ cmd_t outsidecommands[] = {
         { 'b',       CMD_SW,          "Move down-left" },
         { 'n',       CMD_SE,          "Move down-right" },
         { 'q',       CMD_QUIT,        "Quit" },
+        { KEY_NPAGE, CMD_LONGDOWN,    "" },
+        { KEY_PPAGE, CMD_LONGUP,      "" },
         { 'K',       CMD_LONGUP,      "" },
         { 'J',       CMD_LONGDOWN,    "" },
         { 'H',       CMD_LONGLEFT,    "" },

@@ -51,7 +51,7 @@ typedef struct {
         short flags;              // not sure yet what this is for...
 } forest_t;
 
-typedef struct {
+typedef struct {                 // cell_t
         char       type;
         int        flags;
         short      desty, destx;       // for stairs and portals; destination y,x
@@ -88,6 +88,7 @@ typedef struct {
 
 #define CF_HAS_STAIRS_DOWN (1<<0)
 #define CF_HAS_STAIRS_UP   (1<<1)
+#define CF_LIT             (1<<2)
 
 void generate_world();
 void floodfill(level_t *l, int y, int x);

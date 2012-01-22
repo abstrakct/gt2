@@ -122,6 +122,18 @@ void clear_map_to_invisible(level_t *l)
         }
 }
 
+void clear_map_to_unlit(level_t *l)
+{
+        int x, y;
+
+        // TODO: can we restrict this to only the visible map? yes?!
+        for(y = 0; y < l->ysize; y++) {
+                for(x = 0; x < l->xsize; x++) {
+                        l->c[y][x].flags &= ~(CF_LIT);   // TODO: make setbit/clearbit macros!
+                }
+        }
+}
+
 /*
  * The next two functions are about FOV.
  * Stolen/adapted from http://roguebasin.roguelikedevelopment.org/index.php/Eligloscode
@@ -163,7 +175,7 @@ void FOV(actor_t *a, level_t *l)
 {
         float x, y;
         int i;
-        signed int tmpx,tmpy;
+        //signed int tmpx,tmpy;
 
         //clear_map_to_invisible(l);
 
@@ -192,15 +204,52 @@ void FOV(actor_t *a, level_t *l)
         }
 }
 
+void dofovlight(actor_t *actor, level_t *l, float x, float y)
+{
+        int i;
+        float ox, oy;
+
+        ox = (float) actor->x + 0.5f;
+        oy = (float) actor->y + 0.5f;
+
+
+        for(i = 0; i < (actor->viewradius/2); i++) {       // TODO: add a lightradius in actor_t, calculate it based on stuff
+                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
+                        if(l->c[(int)oy][(int)ox].type == DNG_WALL)
+                                l->c[(int)oy][(int)ox].flags |= CF_LIT;
+                        if(blocks_light((int) oy, (int) ox))
+                                return;
+
+                        ox += x;
+                        oy += y;
+                }
+        }
+}
+
+void FOVlight(actor_t *a, level_t *l)
+{
+        float x, y;
+        int i;
+
+        clear_map_to_unlit(l);
+        for(i = 0; i < 360; i++) {
+                x = cos((float) i * 0.01745f);
+                y = sin((float) i * 0.01745f);
+                dofovlight(a, l, x, y);
+        }
+}
+
 void draw_world(level_t *level)
 {
         int i,j;
         int dx, dy;  // coordinates on screen!
         int color;
-        int lr;      // = light radius, we might want to recalculate this based on if the player carries a torch or soemthinger.
 
         werase(wmap);
         FOV(player, level);
+        if(game->context == CONTEXT_DUNGEON)
+                FOVlight(player, level);     // only necessary in dungeon
+
         for(i = ppx, dx = 0; i <= (ppx + level->xsize); i++, dx++) {
                 for(j = ppy, dy = 0; j <= (ppy + level->ysize); j++, dy++) {
                         /*
@@ -210,13 +259,17 @@ void draw_world(level_t *level)
                          */
                         if(j < level->ysize && i < level->xsize) {
                                 if(level->c[j][i].visible) {
-                                        lr = player->viewradius / 2;
+                                        /*lr = player->viewradius / 2;
                                         if(level->c[j][i].type == DNG_WALL && j < (ply+lr) && j > (ply-lr) && i < (plx+lr) && i > (plx-lr)) {
                                                 //gtprintf("yess inside radius");
                                                 color = COLOR_CITY;
                                         } else {
                                                 color = cc(j,i);
-                                        }
+                                        }*/
+                                        if(level->c[j][i].flags & CF_LIT)
+                                                color = COLOR_CITY;
+                                        else
+                                                color = cc(j,i);
 
                                         gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
                                         if(level->c[j][i].monster && actor_in_lineofsight(player, level->c[j][i].monster))

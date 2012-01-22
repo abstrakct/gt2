@@ -89,6 +89,7 @@ typedef struct {
 #define CF_HAS_STAIRS_DOWN (1<<0)
 #define CF_HAS_STAIRS_UP   (1<<1)
 #define CF_LIT             (1<<2)
+#define CF_VISITED         (1<<3)
 
 void generate_world();
 void floodfill(level_t *l, int y, int x);
@@ -97,6 +98,7 @@ bool monster_passable(int y, int x);
 void init_level(level_t *level);
 void set_all_visible();
 void set_floor(level_t *l, float y, float x);
+void addwall(level_t *l, int y, int x);
 void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping);
 void paint_corridor(level_t *l, int y1, int x1, int y2, int x2);
 void paint_corridor_vertical(level_t *l, int y1, int y2, int x);

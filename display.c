@@ -32,6 +32,21 @@ extern WINDOW *winfo;
 extern WINDOW *wmap;
 extern int maxmess;
 
+// Stolen from DCSS!
+void setup_color_pairs()
+{
+        short i, j;
+
+        
+        for (i = 0; i < 8; i++)
+                for (j = 0; j < 8; j++) {
+                        if ((i > 0) || (j > 0))
+                                init_pair(i * 8 + j, j, i);
+                }
+
+        init_pair(63, COLOR_BLACK, COLOR_BLACK);
+}
+
 void init_display()
 {
         initscr();
@@ -41,14 +56,17 @@ void init_display()
         }
         start_color();
 
-	init_pair(COLOR_PLAIN,   COLOR_WHITE,  COLOR_BLACK);
+	/*init_pair(COLOR_PLAIN,   COLOR_WHITE,  COLOR_BLACK);
 	init_pair(COLOR_FOREST,  COLOR_GREEN,  COLOR_BLACK);
 	init_pair(COLOR_CITY,    COLOR_YELLOW, COLOR_BLACK);
         init_pair(COLOR_WARNING, COLOR_RED,    COLOR_BLACK);
 	init_pair(COLOR_PLAYER,  COLOR_BLUE,   COLOR_BLACK);
 	init_pair(COLOR_LIGHT,   COLOR_YELLOW, COLOR_BLACK);
+	init_pair(COLOR_SHADE,   COLOR_WHITE, COLOR_BLACK);
 
-        init_pair(COLOR_INVISIBLE, COLOR_BLACK, COLOR_BLACK);
+        init_pair(COLOR_INVISIBLE, COLOR_BLACK, COLOR_BLACK);*/
+
+        setup_color_pairs();
 
         game->width = COLS;
         game->height = LINES;
@@ -76,8 +94,6 @@ void init_display()
         meta(wall, TRUE);
         intrflush(wmap, FALSE);
 
-        //mvwprintw(winfo, 1, 1, "*** Welcome to Gullible's Travails v.%s ***", get_version_string());
-        //mvwprintw(winfo, 2, 1, "Press q to exit.");
         mess("*** Welcome to Gullible's Travails ***");
         mess("Press q to exit.");
 
@@ -154,6 +170,7 @@ void dofov(actor_t *actor, level_t *l, float x, float y)
         for(i = 0; i < actor->viewradius; i++) {
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
                         l->c[(int)oy][(int)ox].visible = 1;
+                        l->c[(int)oy][(int)ox].flags  |= CF_VISITED;
                         if(blocks_light((int) oy, (int) ox)) {
                                 //if(l->c[(int)oy][(int)ox].type == DNG_WALL)
                                         //l->c[(int)oy][(int)ox].color = COLOR_CITY;
@@ -179,7 +196,7 @@ void FOV(actor_t *a, level_t *l)
         //signed int tmpx,tmpy;
 
         // if dark dungeon
-        // clear_map_to_invisible(l);
+        clear_map_to_invisible(l);
 
         for(i = 0; i < 360; i++) {
                 x = cos((float) i * 0.01745f);
@@ -223,6 +240,8 @@ void FOVlight(actor_t *a, level_t *l)
         }
 }
 
+// The actual drawing on screen
+
 void draw_world(level_t *level)
 {
         int i,j;
@@ -234,27 +253,29 @@ void draw_world(level_t *level)
         if(game->context == CONTEXT_DUNGEON)
                 FOVlight(player, level);     // only necessary in dungeon
 
+        /*
+         * in this function, (j,i) are the coordinates on the map,
+         * dx,dy = coordinates on screen.
+         * so, player->py/px describes the upper left corner of the map
+         */
         for(i = ppx, dx = 0; i <= (ppx + level->xsize); i++, dx++) {
                 for(j = ppy, dy = 0; j <= (ppy + level->ysize); j++, dy++) {
-                        /*
-                         * in this function, (j,i) are the coordinates on the map,
-                         * dx,dy = coordinates on screen.
-                         * so, player->py/px describes the upper left corner of the map
-                         */
                         if(j < level->ysize && i < level->xsize) {
-                                if(level->c[j][i].visible) {
-                                        if(level->c[j][i].flags & CF_LIT) {
+                                if(level->c[j][i].flags & CF_VISITED) {
+                                        color = cc(j,i);
+                                        if(game->context == CONTEXT_DUNGEON)
                                                 wattron(wmap, A_BOLD);
+
+                                        if(level->c[j][i].flags & CF_LIT) {
+                                                wattroff(wmap, A_BOLD);
                                                 color = COLOR_CITY;
-                                        } else {
-                                                wattron(wmap, A_NORMAL);
-                                                color = cc(j,i);
                                         }
 
                                         gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
-                                        if(level->c[j][i].monster && actor_in_lineofsight(player, level->c[j][i].monster))
-                                                gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
                                 }
+
+                                if(level->c[j][i].visible && level->c[j][i].monster /*&& actor_in_lineofsight(player, level->c[j][i].monster)*/)
+                                        gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
 
                                 if(level->c[j][i].type == AREA_WALL) {
                                         gtmapaddch(dy, dx, COLOR_PLAIN, mapchars[DNG_WALL]);
@@ -305,6 +326,8 @@ void initial_update_screen()
         wnoutrefresh(wstat);
         doupdate();
 }
+
+// Input and messages
 
 int gtgetch()
 {

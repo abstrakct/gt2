@@ -559,7 +559,7 @@ int main(int argc, char *argv[])
                                         if(ppx <= 0)
                                                 ppx = 0;
                                         
-                                        player->viewradius = 14;
+                                        player->viewradius = 20;
                                 } else {
                                         game->currentlevel--;
                                         world->cmap = world->out->c;
@@ -643,6 +643,13 @@ int main(int argc, char *argv[])
                                 player->viewradius--;
                                 queue(ACTION_NOTHING);
                                 break;
+                        case CMD_DUMPCOLORS:
+                                for(x = 0;  x < 64; x++) {
+                                        gtprintfc(x, "This is color %d", x);
+                                }
+                                queue(ACTION_NOTHING);
+                                break;
+
                                 
                         //case 'a': dump_action_queue();
                         default:

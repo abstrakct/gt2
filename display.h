@@ -7,13 +7,13 @@
 #define _DISPALY_H
 
 #define COLOR_PLAIN    0
-#define COLOR_FOREST   1
-#define COLOR_CITY     2
-#define COLOR_VILLAGE  2
-#define COLOR_DUNGEON  2
+#define COLOR_FOREST   2
+#define COLOR_CITY     3
+#define COLOR_VILLAGE  COLOR_CITY
+#define COLOR_DUNGEON  COLOR_CITY
 #define COLOR_MOUNTAIN 3
 #define COLOR_LAKE     4
-#define COLOR_PLAYER   4
+#define COLOR_PLAYER   56
 
 #define COLOR_WARNING 10
 #define COLOR_BAD     COLOR_WARNING
@@ -21,9 +21,10 @@
 #define COLOR_NORMAL  COLOR_PLAIN     // White
 #define COLOR_VISIBLE COLOR_CITY
 
+#define COLOR_SHADE   63
 #define COLOR_LIGHT   62
 
-#define COLOR_INVISIBLE 63            // ???
+#define COLOR_INVISIBLE 63
 
 void init_display();
 void shutdown_display();

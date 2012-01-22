@@ -45,6 +45,7 @@ typedef struct {
 #define CMD_DUMPOBJECTS   1004
 #define CMD_INCFOV        1005
 #define CMD_DECFOV        1006
+#define CMD_DUMPCOLORS    1007
 
 // prototypes
 

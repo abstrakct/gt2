@@ -83,8 +83,10 @@ void generate_dungeon_labyrinthine(int d)
         int csx, cex, csy, cey;
         float outerlinesx, outerlinesy;
         int edgex, edgey;
+        level_t *l;
         //int color;
 
+        l = &world->dng[d];
         tx = 0; //ri(0, 10);  // starting X
         ty = 0; //ri(0, 10);  // starting y
         xsize = world->dng[d].xsize - tx;  // total size X
@@ -113,8 +115,7 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
 
         for(fy = ty; fy < ysize; fy++) {
                 for(fx = tx; fx < xsize; fx++) {
-                        world->dng[d].c[fy][fx].type = DNG_WALL;
-                        world->dng[d].c[fy][fx].color = COLOR_NORMAL;
+                        addwall(&world->dng[d], fy, fx);
                         world->dng[d].c[fy][fx].visible = 0;
                 }
         }
@@ -148,23 +149,22 @@ fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, 
                 }
         }
 
-        // the edges
-        for(ty=0;ty<ysize;ty++) {
-                world->dng[d].c[ty][1].type = DNG_WALL;
-                world->dng[d].c[ty][xsize-5].type = DNG_WALL;
-                world->dng[d].c[ty][xsize-4].type = DNG_NOTHING;
-                world->dng[d].c[ty][xsize-3].type = DNG_NOTHING;
-                world->dng[d].c[ty][xsize-2].type = DNG_NOTHING;
-                world->dng[d].c[ty][xsize-1].type = DNG_NOTHING;
+        for(ty=0;ty<l->ysize;ty++) {
+                addwall(&world->dng[d], ty, 1);
+                addwall(&world->dng[d], ty, l->xsize-1);
+                addwall(&world->dng[d], ty, l->xsize-2);
+                addwall(&world->dng[d], ty, l->xsize-3);
+                addwall(&world->dng[d], ty, l->xsize-4);
+                addwall(&world->dng[d], ty, l->xsize-5);
         }
 
-        for(tx=0;tx<xsize-4;tx++) {
-                world->dng[d].c[1][tx].type = DNG_WALL;
-                world->dng[d].c[ysize-5][tx].type = DNG_WALL;
-                world->dng[d].c[ysize-4][tx].type = DNG_NOTHING;
-                world->dng[d].c[ysize-3][tx].type = DNG_NOTHING;
-                world->dng[d].c[ysize-2][tx].type = DNG_NOTHING;
-                world->dng[d].c[ysize-1][tx].type = DNG_NOTHING;
+        for(tx=0;tx<l->xsize-4;tx++) {
+                addwall(&world->dng[d], 1, tx);
+                addwall(&world->dng[d], l->ysize-1, tx);
+                addwall(&world->dng[d], l->ysize-2, tx);
+                addwall(&world->dng[d], l->ysize-3, tx);
+                addwall(&world->dng[d], l->ysize-4, tx);
+                addwall(&world->dng[d], l->ysize-5, tx);
         }
 }
 
@@ -174,8 +174,7 @@ void zero_level(level_t *l)
 
         for(y = 0; y < l->ysize; y++) {
                 for(x = 0; x < l->xsize; x++) {
-                        l->c[y][x].type  = DNG_WALL;
-                        l->c[y][x].color = COLOR_NORMAL;
+                        addwall(l, y, x);
                 }
         }
 }
@@ -331,7 +330,7 @@ void generate_dungeon_normal2(int d)
 
         }
 
-        printf("PASS2 connecting last row\n");
+        //printf("PASS2 connecting last row\n");
 
         for(i = nrx; i > 2; i--) {
                 starty = r[nry][i].y1 + ri(2, r[nry][i].sy-1);
@@ -341,15 +340,16 @@ void generate_dungeon_normal2(int d)
                 paint_corridor_horizontal(l, starty, r[nry][i].x1, endx);
 
 
+                /*
                 if(starty < r[nry][i-1].y1) {
-                        printf("2corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
-                        //paint_corridor_vertical(l, starty, r[nry][i-1].y2, endx);
+                        //printf("2corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
+                        paint_corridor_vertical(l, starty, r[nry][i-1].y2, endx);       // not sure if I intended to comment out these, but it seems to work fine!?!
                 }
 
                 if(starty > r[nry][i-1].y2) {
-                        printf("3corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
-                        //paint_corridor_vertical(l, starty, r[nry][i-1].y1, endx);
-                }
+                        //printf("3corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
+                        paint_corridor_vertical(l, starty, r[nry][i-1].y1, endx);
+                }*/
 
                 /*startx = r[nry][i].x1 + ri(2, r[nry][i].sx-1);
                 endy   = r[nry-1][i].y2 - ri(2, r[nry-1][i].sy-1);
@@ -372,36 +372,36 @@ void generate_dungeon_normal2(int d)
                 startx = r[j][nrx].x1 + ri(2, r[j][nrx].sx-1);
                 endy   = r[j-1][nrx].y2 - ri(2, r[j-1][nrx].sy-1);
 
-                printf("4corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
+                //printf("4corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
                 paint_corridor_vertical(l, r[j][nrx].y1, endy, startx);
 
                 if(startx < r[j-1][nrx].x1) {
-                        printf("5corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
+                        //printf("5corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
                         paint_corridor_horizontal(l, endy, startx, r[j-1][nrx].x2);
                 }
                 if(startx > r[j-1][nrx].x2) {
-                        printf("6corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
+                        //printf("6corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
                         paint_corridor_horizontal(l, endy, startx, r[j-1][nrx].x1);
                 }
 
         }
         // the edges
         for(ty=0;ty<l->ysize;ty++) {
-                world->dng[d].c[ty][1].type = DNG_WALL;
-                world->dng[d].c[ty][l->xsize-5].type = DNG_WALL;
-                world->dng[d].c[ty][l->xsize-4].type = DNG_NOTHING;
-                world->dng[d].c[ty][l->xsize-3].type = DNG_NOTHING;
-                world->dng[d].c[ty][l->xsize-2].type = DNG_NOTHING;
-                world->dng[d].c[ty][l->xsize-1].type = DNG_NOTHING;
+                addwall(&world->dng[d], ty, 1);
+                addwall(&world->dng[d], ty, l->xsize-1);
+                addwall(&world->dng[d], ty, l->xsize-2);
+                addwall(&world->dng[d], ty, l->xsize-3);
+                addwall(&world->dng[d], ty, l->xsize-4);
+                addwall(&world->dng[d], ty, l->xsize-5);
         }
 
         for(tx=0;tx<l->xsize-4;tx++) {
-                world->dng[d].c[1][tx].type = DNG_WALL;
-                world->dng[d].c[l->ysize-5][tx].type = DNG_WALL;
-                world->dng[d].c[l->ysize-4][tx].type = DNG_NOTHING;
-                world->dng[d].c[l->ysize-3][tx].type = DNG_NOTHING;
-                world->dng[d].c[l->ysize-2][tx].type = DNG_NOTHING;
-                world->dng[d].c[l->ysize-1][tx].type = DNG_NOTHING;
+                addwall(&world->dng[d], 1, tx);
+                addwall(&world->dng[d], l->ysize-1, tx);
+                addwall(&world->dng[d], l->ysize-2, tx);
+                addwall(&world->dng[d], l->ysize-3, tx);
+                addwall(&world->dng[d], l->ysize-4, tx);
+                addwall(&world->dng[d], l->ysize-5, tx);
         }
 }
 
@@ -630,7 +630,13 @@ void set_floor(level_t *l, float y, float x)
                 return;
 
         l->c[(int)y][(int)x].type = DNG_FLOOR;
-        l->c[(int)y][(int)x].color = COLOR_NORMAL;
+        l->c[(int)y][(int)x].color = COLOR_SHADE;
+}
+
+void addwall(level_t *l, int y, int x)
+{
+        l->c[y][x].type  = DNG_WALL;
+        l->c[y][x].color = COLOR_SHADE;
 }
 
 /*********************************************
@@ -650,20 +656,14 @@ void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping)
                         if((j == y) || (j == y+sy) || (i == x) || (i == x+sx)) {
                                 if(join_overlapping) {
                                         if(l->c[j][i].type != DNG_FLOOR) {
-                                                l->c[j][i].type = DNG_WALL;
-                                                l->c[j][i].color = COLOR_NORMAL;
+                                                addwall(l, j, i);
                                         }
                                 } else {
-                                        l->c[j][i].type = DNG_WALL;
-                                        l->c[j][i].color = COLOR_NORMAL;
+                                        addwall(l, j, i);
                                 }
                         } else {
-                                l->c[j][i].type = DNG_FLOOR;
-                                l->c[j][i].color = COLOR_NORMAL;
+                                set_floor(l, j, i);
                         }
-                        /*door = ri(1,100);
-                        if(door >= 99)
-                                l->c[j][i].type = DNG_FLOOR;*/
                 }
         }
 }

@@ -93,8 +93,8 @@ typedef struct {
 
 void generate_world();
 void floodfill(level_t *l, int y, int x);
-bool passable(int y, int x);
-bool monster_passable(int y, int x);
+bool passable(level_t *l, int y, int x);
+bool monster_passable(level_t *l, int y, int x);
 void init_level(level_t *level);
 void set_all_visible();
 void set_floor(level_t *l, float y, float x);

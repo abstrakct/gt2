@@ -726,7 +726,7 @@ void paint_corridor(level_t *l, int y1, int x1, int y2, int x2)
         }
 }
 
-bool passable(int y, int x)
+bool passable(level_t *l, int y, int x)
 {
         int type;
 
@@ -735,15 +735,15 @@ bool passable(int y, int x)
         if(x < 0)
                 return false;
 
-        if(x >= world->curlevel->xsize)
+        if(x >= l->xsize)
                 return false;
-        if(y >= world->curlevel->ysize)
+        if(y >= l->ysize)
                 return false;
 
         if(game->wizardmode)   // if we are in wizard mode, anything goes!
                 return true;
 
-        type = world->curlevel->c[y][x].type;
+        type = l->c[y][x].type;
         if(type == DNG_WALL)
                 return false;
         if(type == AREA_LAKE)
@@ -756,14 +756,24 @@ bool passable(int y, int x)
         return true;
 }
 
-bool monster_passable(int y, int x)
+bool monster_passable(level_t *l, int y, int x)
 {
-        if(ct(y,x) == AREA_VILLAGE || ct(y,x) == AREA_CITY)
+        if(y < 0)
                 return false;
-        else if(cm(y,x))
+        if(x < 0)
+                return false;
+
+        if(x >= l->xsize)
+                return false;
+        if(y >= l->ysize)
+                return false;
+
+        if(l->c[y][x].type == AREA_VILLAGE || l->c[y][x].type == AREA_CITY)
+                return false;
+        else if(l->c[y][x].monster)
                 return false;
         else
-                return passable(y, x);
+                return passable(l, y, x);
 }
 
 /*********************************************
@@ -807,11 +817,14 @@ void generate_world()
         world->village = gtcalloc((size_t)world->villages, sizeof(city_t));
         generate_village(world->villages);
 
+        spawn_monsters(100, world->out, 100); 
+
         fprintf(stderr, "DEBUG: %s:%d - Generating dungeon!!\n", __FILE__, __LINE__);
         //generate_dungeon_labyrinthine(1);
         
         zero_level(&world->dng[1]);
         generate_dungeon_normal2(1);
+        spawn_monsters(20, &world->dng[1], 100);
         game->createddungeons++;
 
         // create the edge of the world

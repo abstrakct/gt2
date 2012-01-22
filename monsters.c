@@ -67,7 +67,7 @@ void simpleai(monster_t *m)
                         break;
         }
 
-        if(!monster_passable(m->y, m->x)) {
+        if(!monster_passable(world->curlevel, m->y, m->x)) {
                 m->x = ox; m->y = oy;
                 return;
         }
@@ -127,12 +127,12 @@ monster_t get_monsterdef(int n)
 /*
  * place a spawned monster at (y,x)
  */
-bool place_monster_at(int y, int x, monster_t *monster, level_t *level)
+bool place_monster_at(int y, int x, monster_t *monster, level_t *l)
 {
         monster->x = x;
         monster->y = y;
-        if(monster_passable(y, x) && level->c[monster->y][monster->x].monster == NULL) {
-                level->c[monster->y][monster->x].monster = monster;
+        if(monster_passable(l, y, x) && l->c[monster->y][monster->x].monster == NULL) {
+                l->c[monster->y][monster->x].monster = monster;
                 return true;
         } else {
                 return false;
@@ -149,7 +149,7 @@ void spawn_monster(int n, monster_t *head)
         head->next->next = tmp;
         head->next->prev = head;
         head->next->head = head;
-        gtprintf("spawned monster %s\n", head->next->name);
+        //gtprintf("spawned monster %s\n", head->next->name);
         mid_counter++;
         head->next->mid = mid_counter;
 }
@@ -179,12 +179,24 @@ bool spawn_monster_at(int y, int x, int n, monster_t *head, void *level)
         return true;
 }
 
-void spawn_monsters(int num, level_t *l, int max_level)
+/*
+ * Spawn num monsters of maximum level max_level, on level l
+ * (yeah, level is used for two things, and confusing... i should change the terminology!
+ */
+void spawn_monsters(int num, void *p, int max_level)
 {
-        int i;
+        int i, x, y, m;
+        level_t *l;
 
         i = 0;
+        l = (level_t *) p;
         while(i < num) {
+                x = 1; y = 1; m = ri(1, game->monsterdefs);
+                while(!spawn_monster_at(y, x, m, l->monsters, l)) { 
+                        x = ri(1, l->xsize-1);
+                        y = ri(1, l->ysize-1);
+                        m = ri(1, game->monsterdefs);
+                }
 
                 i++;
         }

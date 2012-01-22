@@ -186,7 +186,7 @@ void do_action(int action)
 
         switch(action) {
                 case ACTION_PLAYER_MOVE_DOWN:
-                        if(passable(ply+1, plx))
+                        if(passable(world->curlevel, ply+1, plx))
                                 ply++;
          //               if(ply >= world->curlevel->ysize)
          //                       ply = world->curlevel->ysize-1;
@@ -202,7 +202,7 @@ void do_action(int action)
                                 ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_UP:
-                        if(passable(ply-1,plx))
+                        if(passable(world->curlevel, ply-1,plx))
                                 ply--;
                         if(ply < 0)
                                 ply = 0;
@@ -214,7 +214,7 @@ void do_action(int action)
                                 ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
-                        if(passable(ply, plx-1))
+                        if(passable(world->curlevel, ply, plx-1))
                                 plx--;
                         if(plx < 0)
                                 plx = 0;
@@ -226,7 +226,7 @@ void do_action(int action)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
-                        if(passable(ply,plx+1))
+                        if(passable(world->curlevel, ply,plx+1))
                                 plx++;
         //                if(plx >= world->curlevel->xsize)
         //                        plx = world->curlevel->xsize-1;
@@ -242,7 +242,7 @@ void do_action(int action)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_NW:
-                        if(passable(ply-1,plx-1)) {
+                        if(passable(world->curlevel, ply-1,plx-1)) {
                                 ply--;
                                 plx--;
                         }
@@ -265,7 +265,7 @@ void do_action(int action)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_NE:
-                        if(passable(ply-1,plx+1)) {
+                        if(passable(world->curlevel, ply-1,plx+1)) {
                                 ply--; plx++;
                         }
                         
@@ -292,7 +292,7 @@ void do_action(int action)
                                 ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_SW:
-                        if(passable(ply+1, plx-1)) {
+                        if(passable(world->curlevel, ply+1, plx-1)) {
                                 ply++; plx--;
                         }
 
@@ -319,7 +319,7 @@ void do_action(int action)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_SE:
-                        if(passable(ply+1, plx+1)) {
+                        if(passable(world->curlevel, ply+1, plx+1)) {
                                 ply++; plx++;
                         }
                         if(ply >= world->curlevel->ysize)
@@ -461,6 +461,7 @@ void do_turn(int do_all)
         else
                 do_all_things_in_queue();
 
+        // TODO: make move_monsters act on a specific level!?!?!?
         move_monsters();
 }
 
@@ -546,7 +547,7 @@ int main(int argc, char *argv[])
                                         game->context = CONTEXT_DUNGEON;
 
                                         ply = 0; plx = 0;
-                                        while(!passable(ply, plx)) {
+                                        while(!passable(world->curlevel, ply, plx)) {
                                                 ply = ri(0, world->curlevel->ysize-5);
                                                 plx = ri(0, world->curlevel->xsize-5);
                                         }

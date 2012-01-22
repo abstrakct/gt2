@@ -178,3 +178,14 @@ bool spawn_monster_at(int y, int x, int n, monster_t *head, void *level)
 
         return true;
 }
+
+void spawn_monsters(int num, level_t *l, int max_level)
+{
+        int i;
+
+        i = 0;
+        while(i < num) {
+
+                i++;
+        }
+}

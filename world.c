@@ -282,7 +282,7 @@ void generate_dungeon_normal2(int d)
                                         maxroomsizex--;
                         } while(y2 >= l->ysize || x2 >= l->xsize);
 
-                        printf("painting room [%d][%d] from %d,%d to %d,%d\n", j, i, y1,x1,y2,x2);
+                        //printf("painting room [%d][%d] from %d,%d to %d,%d\n", j, i, y1,x1,y2,x2);
                         paint_room(l, y1, x1, sy, sx, 0);
                         r[j][i].y1 = y1;
                         r[j][i].x1 = x1;
@@ -337,18 +337,18 @@ void generate_dungeon_normal2(int d)
                 starty = r[nry][i].y1 + ri(2, r[nry][i].sy-1);
                 endx   = r[nry][i-1].x1 - ri(2, r[nry][i-1].sx-1);
 
-                printf("1corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
+                //printf("1corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
                 paint_corridor_horizontal(l, starty, r[nry][i].x1, endx);
 
 
                 if(starty < r[nry][i-1].y1) {
                         printf("2corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
-                        paint_corridor_vertical(l, starty, r[nry][i-1].y2, endx);
+                        //paint_corridor_vertical(l, starty, r[nry][i-1].y2, endx);
                 }
 
                 if(starty > r[nry][i-1].y2) {
                         printf("3corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
-                        paint_corridor_vertical(l, starty, r[nry][i-1].y1, endx);
+                        //paint_corridor_vertical(l, starty, r[nry][i-1].y1, endx);
                 }
 
                 /*startx = r[nry][i].x1 + ri(2, r[nry][i].sx-1);

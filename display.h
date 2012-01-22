@@ -21,6 +21,8 @@
 #define COLOR_NORMAL  COLOR_PLAIN     // White
 #define COLOR_VISIBLE COLOR_CITY
 
+#define COLOR_LIGHT   62
+
 #define COLOR_INVISIBLE 63            // ???
 
 void init_display();

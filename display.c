@@ -46,6 +46,7 @@ void init_display()
 	init_pair(COLOR_CITY,    COLOR_YELLOW, COLOR_BLACK);
         init_pair(COLOR_WARNING, COLOR_RED,    COLOR_BLACK);
 	init_pair(COLOR_PLAYER,  COLOR_BLUE,   COLOR_BLACK);
+	init_pair(COLOR_LIGHT,   COLOR_YELLOW, COLOR_BLACK);
 
         init_pair(COLOR_INVISIBLE, COLOR_BLACK, COLOR_BLACK);
 
@@ -177,26 +178,9 @@ void FOV(actor_t *a, level_t *l)
         int i;
         //signed int tmpx,tmpy;
 
-        //clear_map_to_invisible(l);
+        // if dark dungeon
+        // clear_map_to_invisible(l);
 
-        /*l->c[a->y+1][a->x].visible   = 1;
-        l->c[a->y-1][a->x].visible   = 1;
-        l->c[a->y][a->x+1].visible   = 1;
-        l->c[a->y][a->x-1].visible   = 1;
-        l->c[a->y+1][a->x+1].visible = 1;
-        l->c[a->y-1][a->x-1].visible = 1;
-        l->c[a->y+1][a->x-1].visible = 1;
-        l->c[a->y-1][a->x+1].visible = 1;*/
-
-        //test - set random cell nearby to visible
-        /*if(a->y > 3 && a->x > 3) {
-                tmpx = ri(-3,3);
-                tmpy = ri(-3,3);
-                l->c[a->y+tmpy][a->x+tmpx].visible = true;
-        }*/
-
-
-        //clear_map_to_invisible();
         for(i = 0; i < 360; i++) {
                 x = cos((float) i * 0.01745f);
                 y = sin((float) i * 0.01745f);
@@ -259,17 +243,13 @@ void draw_world(level_t *level)
                          */
                         if(j < level->ysize && i < level->xsize) {
                                 if(level->c[j][i].visible) {
-                                        /*lr = player->viewradius / 2;
-                                        if(level->c[j][i].type == DNG_WALL && j < (ply+lr) && j > (ply-lr) && i < (plx+lr) && i > (plx-lr)) {
-                                                //gtprintf("yess inside radius");
+                                        if(level->c[j][i].flags & CF_LIT) {
+                                                wattron(wmap, A_BOLD);
                                                 color = COLOR_CITY;
                                         } else {
+                                                wattron(wmap, A_NORMAL);
                                                 color = cc(j,i);
-                                        }*/
-                                        if(level->c[j][i].flags & CF_LIT)
-                                                color = COLOR_CITY;
-                                        else
-                                                color = cc(j,i);
+                                        }
 
                                         gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
                                         if(level->c[j][i].monster && actor_in_lineofsight(player, level->c[j][i].monster))

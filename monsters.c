@@ -116,8 +116,8 @@ monster_t get_monsterdef(int n)
         int i;
         monster_t *tmp;
 
-        tmp = monsterdefs->head;
-        for(i=0; i<n; i++) {
+        tmp = monsterdefs->head->next;
+        while(tmp->id != n) {
                 tmp = tmp->next;
         }
 

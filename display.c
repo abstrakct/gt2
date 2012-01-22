@@ -132,8 +132,8 @@ void clear_map_to_invisible(level_t *l)
 {
         int x, y;
 
-        for(y = 0; y < l->ysize; y++) {
-                for(x = 0; x < l->xsize; x++) {
+        for(y = ppy; y < game->maph; y++) {
+                for(x = ppx; x < game->mapw; x++) {
                         l->c[y][x].visible = 0;
                 }
         }
@@ -143,7 +143,6 @@ void clear_map_to_unlit(level_t *l)
 {
         int x, y;
 
-        // TODO: can we restrict this to only the visible map? yes?!
         for(y = 0; y < l->ysize; y++) {
                 for(x = 0; x < l->xsize; x++) {
                         l->c[y][x].flags &= ~(CF_LIT);   // TODO: make setbit/clearbit macros!
@@ -258,8 +257,8 @@ void draw_world(level_t *level)
          * dx,dy = coordinates on screen.
          * so, player->py/px describes the upper left corner of the map
          */
-        for(i = ppx, dx = 0; i <= (ppx + level->xsize); i++, dx++) {
-                for(j = ppy, dy = 0; j <= (ppy + level->ysize); j++, dy++) {
+        for(i = ppx, dx = 0; i <= (ppx + game->mapw); i++, dx++) {
+                for(j = ppy, dy = 0; j <= (ppy + game->maph); j++, dy++) {
                         if(j < level->ysize && i < level->xsize) {
                                 if(level->c[j][i].flags & CF_VISITED) {
                                         color = cc(j,i);

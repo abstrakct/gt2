@@ -132,8 +132,8 @@ void clear_map_to_invisible(level_t *l)
 {
         int x, y;
 
-        for(y = ppy; y < game->maph; y++) {
-                for(x = ppx; x < game->mapw; x++) {
+        for(y = ppy; y < (ppy+game->maph); y++) {
+                for(x = ppx; x < (ppx+game->mapw); x++) {
                         l->c[y][x].visible = 0;
                 }
         }

@@ -121,7 +121,7 @@ void save_monsterdef(monster_t *m, FILE *f)
 
         fwrite("MONSTERDEF", sizeof(char), 10, f);
         fwrite(&s, sizeof(struct monsterdef_save_struct), 1, f);
-        gtprintf("saved monsterdef %s id=%d", s.name, s.id);
+        //gtprintf("saved monsterdef %s id=%d", s.name, s.id);
 }
 
 void save_objdef(obj_t *o, FILE *f)
@@ -405,7 +405,7 @@ bool load_monsterdef(monster_t *m, FILE *f)
         m->thac0 = s.thac0;
         m->flags = s.flags;
         m->ai = aitable[s.aitableindex];
-        printf("loaded monsterdef %s id=%d\n", m->name, m->id);
+        //printf("loaded monsterdef %s id=%d\n", m->name, m->id);
         return true;
 }
 

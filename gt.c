@@ -186,10 +186,13 @@ void do_action(int action)
 
         switch(action) {
                 case ACTION_PLAYER_MOVE_DOWN:
-                        if(passable(world->curlevel, ply+1, plx))
-                                ply++;
-         //               if(ply >= world->curlevel->ysize)
-         //                       ply = world->curlevel->ysize-1;
+                        if(passable(world->curlevel, ply+1, plx)) {
+                                if(world->curlevel->c[ply+1][plx].monster)
+                                        gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx].monster->name);
+                                else
+                                        ply++;
+                        }
+
                         if(ply >= (ppy + (game->mapcy/6*5))) {
                                 mapchanged = true;
                                 ppy++;
@@ -228,8 +231,6 @@ void do_action(int action)
                 case ACTION_PLAYER_MOVE_RIGHT:
                         if(passable(world->curlevel, ply,plx+1))
                                 plx++;
-        //                if(plx >= world->curlevel->xsize)
-        //                        plx = world->curlevel->xsize-1;
                         if(plx >= (ppx+(game->mapcx/6*5))) {
                                 mapchanged = true;
                                 ppx++;
@@ -309,8 +310,6 @@ void do_action(int action)
                         if(ppy < 0)
                                 ppy = 0;
 
-                        //if(plx < 0)
-                        //        plx = 0;
                         if(plx <= (ppx+(game->mapcx/6))) {
                                 mapchanged = true;
                                 ppx--;

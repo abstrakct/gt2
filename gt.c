@@ -205,8 +205,12 @@ void do_action(int action)
                                 ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_UP:
-                        if(passable(world->curlevel, ply-1,plx))
-                                ply--;
+                        if(passable(world->curlevel, ply-1,plx)) {
+                                if(world->curlevel->c[ply-1][plx].monster)
+                                        gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx].monster->name);
+                                else
+                                        ply--;
+                        }
                         if(ply < 0)
                                 ply = 0;
                         if(ply <= (ppy + (game->mapcy/6))) {
@@ -217,8 +221,12 @@ void do_action(int action)
                                 ppy = 0;
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
-                        if(passable(world->curlevel, ply, plx-1))
-                                plx--;
+                        if(passable(world->curlevel, ply, plx-1)) {
+                                if(world->curlevel->c[ply][plx-1].monster)
+                                        gtprintf("You attack the %s!", world->curlevel->c[ply][plx-1].monster->name);
+                                else
+                                        plx--;
+                        }
                         if(plx < 0)
                                 plx = 0;
                         if(plx <= (ppx+(game->mapcx/6))) {
@@ -229,8 +237,12 @@ void do_action(int action)
                                 ppx = 0;
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
-                        if(passable(world->curlevel, ply,plx+1))
-                                plx++;
+                        if(passable(world->curlevel, ply,plx+1)) {
+                                if(world->curlevel->c[ply][plx+1].monster)
+                                        gtprintf("You attack the %s!", world->curlevel->c[ply][plx+1].monster->name);
+                                else
+                                        plx++;
+                        }
                         if(plx >= (ppx+(game->mapcx/6*5))) {
                                 mapchanged = true;
                                 ppx++;
@@ -244,8 +256,12 @@ void do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_NW:
                         if(passable(world->curlevel, ply-1,plx-1)) {
-                                ply--;
-                                plx--;
+                                if(world->curlevel->c[ply-1][plx-1].monster)
+                                        gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx-1].monster->name);
+                                else {
+                                        ply--;
+                                        plx--;
+                                }
                         }
                         if(ply < 0)
                                 ply = 0;
@@ -267,7 +283,11 @@ void do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_NE:
                         if(passable(world->curlevel, ply-1,plx+1)) {
-                                ply--; plx++;
+                                if(world->curlevel->c[ply-1][plx+1].monster)
+                                        gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx+1].monster->name);
+                                else {
+                                        ply--; plx++;
+                                }
                         }
                         
                         if(plx >= world->curlevel->xsize)
@@ -294,7 +314,11 @@ void do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_SW:
                         if(passable(world->curlevel, ply+1, plx-1)) {
-                                ply++; plx--;
+                                if(world->curlevel->c[ply+1][plx-1].monster)
+                                        gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx-1].monster->name);
+                                else {
+                                        ply++; plx--;
+                                }
                         }
 
                         if(ply >= world->curlevel->ysize)
@@ -319,7 +343,11 @@ void do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_SE:
                         if(passable(world->curlevel, ply+1, plx+1)) {
-                                ply++; plx++;
+                                if(world->curlevel->c[ply+1][plx+1].monster)
+                                        gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx+1].monster->name);
+                                else {
+                                        ply++; plx++;
+                                }
                         }
                         if(ply >= world->curlevel->ysize)
                                 ply = world->curlevel->ysize-1;
@@ -607,7 +635,7 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_TOGGLEFOV:
                                 gtprintf("Setting all cells to visible.");
-                                set_all_visible();
+                                set_level_visited(world->curlevel);
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_SPAWNMONSTER:

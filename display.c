@@ -134,7 +134,8 @@ void clear_map_to_invisible(level_t *l)
 
         for(y = ppy; y < (ppy+game->maph); y++) {
                 for(x = ppx; x < (ppx+game->mapw); x++) {
-                        l->c[y][x].visible = 0;
+                        if(x >= 0 && y >= 0 && x < l->xsize && y < l->ysize)
+                                l->c[y][x].visible = 0;
                 }
         }
 }
@@ -163,20 +164,13 @@ void dofov(actor_t *actor, level_t *l, float x, float y)
         ox = (float) actor->x + 0.5f;
         oy = (float) actor->y + 0.5f;
 
-        //if(l->c[(int)y][(int)x].visible)           // must be redone?! if
-        //        return;
-
         for(i = 0; i < actor->viewradius; i++) {
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
                         l->c[(int)oy][(int)ox].visible = 1;
                         l->c[(int)oy][(int)ox].flags  |= CF_VISITED;
                         if(blocks_light((int) oy, (int) ox)) {
-                                //if(l->c[(int)oy][(int)ox].type == DNG_WALL)
-                                        //l->c[(int)oy][(int)ox].color = COLOR_CITY;
-                                //if(oy + actor->y > actor->y + actor->viewradius)
-                                        //l->c[(int)oy][(int)ox].color = COLOR_NORMAL;
                                 return;
-                        }/* else {
+                        }/* else {  //SCARY MODE! 
                                 if(perc((100-actor->viewradius)/3))
                                         return;
                         }*/

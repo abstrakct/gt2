@@ -613,18 +613,18 @@ void floodfill(level_t *l, int y, int x)
         }
 }
 
-void set_all_visible()
+void set_level_visited(level_t *l)
 {
         int x,y;
 
-        for(y=0;y<world->curlevel->ysize;y++) {
-                for(x=0;x<world->curlevel->xsize;x++) {
-                        world->curlevel->c[y][x].visible = true;
+        for(y=0;y<l->ysize;y++) {
+                for(x=0;x<l->xsize;x++) {
+                        l->c[y][x].flags |= CF_VISITED;
                 }
         }
 }
 
-void set_floor(level_t *l, float y, float x)
+void addfloor(level_t *l, float y, float x)
 {
         if((int)y >= l->ysize || (int)x >= l->xsize || (int)y < 0 || (int)x < 0)
                 return;
@@ -662,7 +662,7 @@ void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping)
                                         addwall(l, j, i);
                                 }
                         } else {
-                                set_floor(l, j, i);
+                                addfloor(l, j, i);
                         }
                 }
         }
@@ -675,12 +675,12 @@ void paint_corridor_horizontal(level_t *l, int y, int x1, int x2)
         //printf("horizontal corridor from %d,%d to %d,%d\n", y, x1, y, x2);
         if(x1 < x2) {
                 for(i = x1; i < x2; i++)
-                        set_floor(l, y, i);
+                        addfloor(l, y, i);
         }
 
         if(x1 > x2) {
                 for(i = x1; i >= x2; i--)
-                        set_floor(l, y, i);
+                        addfloor(l, y, i);
         }
 }
 
@@ -691,12 +691,12 @@ void paint_corridor_vertical(level_t *l, int y1, int y2, int x)
         //printf("vertical corridor from %d,%d to %d,%d\n", y1, x, y2, x);
         if(y1 < y2) {
                 for(i = y1; i < y2; i++)
-                        set_floor(l, i, x);
+                        addfloor(l, i, x);
         }
 
         if(y1 > y2) {
                 for(i = y1; i >= y2; i--)
-                        set_floor(l, i, x);
+                        addfloor(l, i, x);
         }
 }
 
@@ -718,11 +718,11 @@ void paint_corridor(level_t *l, int y1, int x1, int y2, int x2)
         x = (float) x1;
         y = (float) y1;
 
-        set_floor(l, y, x);
+        addfloor(l, y, x);
         for(k = 1; k <= step; k++) {
                 x += xinc;
                 y += yinc;
-                set_floor(l, y, x);
+                addfloor(l, y, x);
         }
 }
 
@@ -772,6 +772,8 @@ bool monster_passable(level_t *l, int y, int x)
                 return false;
         else if(l->c[y][x].monster)
                 return false;
+        else if(y == ply && x == plx)
+                return false;               // replace with attack code or something later
         else
                 return passable(l, y, x);
 }

@@ -78,11 +78,6 @@ void simpleai(monster_t *m)
         if(m->y < 0)
                 m->y = 0;
 
-        /*if(m->x >= XSIZE-1)
-                m->x = XSIZE-2;
-        if(m->y >= YSIZE-1)
-                m->y = YSIZE-2;*/
-
         world->cmap[m->y][m->x].monster = m;
 }
 
@@ -113,7 +108,6 @@ void move_monsters()
 
 monster_t get_monsterdef(int n)
 {
-        int i;
         monster_t *tmp;
 
         tmp = monsterdefs->head->next;

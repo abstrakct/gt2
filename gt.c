@@ -182,7 +182,7 @@ void parse_commandline(int argc, char **argv)
 * *******************************************/
 void do_action(int action)
 {
-        int updatescreen = true;
+        //int updatescreen = true;
 
         switch(action) {
                 case ACTION_PLAYER_MOVE_DOWN:
@@ -379,16 +379,22 @@ void do_action(int action)
                         //updatescreen = false;
                         break;
                 default:
-                        fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attemted!\n", __FILE__, __LINE__, action);
-                        updatescreen = false;
+                        fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, action);
+                        //updatescreen = false;
                         break;
         }
 
-        if(updatescreen) {
+        if(cf(ply, plx) & CF_HAS_DOOR_CLOSED) {
+                clearbit(cf(ply, plx), CF_HAS_DOOR_CLOSED);
+                setbit(cf(ply, plx), CF_HAS_DOOR_OPEN);
+                you("open the door!");
+        }
+
+        /*if(updatescreen) {
                 draw_world(world->curlevel);
                 draw_wstat();
                 update_screen();
-        }
+        }*/
 }
 
 /*********************************************
@@ -430,7 +436,8 @@ void queuex(int num, int action)
 }
 
 /*
- * Queue up many actions. Argument list must
+ * Queue up many actions. Argument list must{
+
  * end with ENDOFLIST
  */
 void queuemany(int first, ...)
@@ -546,11 +553,11 @@ int main(int argc, char *argv[])
 
         updatescreen = true;
         do {
-                /*if(updatescreen) {
+                if(updatescreen) {
                         draw_world(world->curlevel);
                         draw_wstat();
                         update_screen();
-                }*/
+                }
 
                 c = get_command();
 
@@ -600,7 +607,6 @@ int main(int argc, char *argv[])
                                 do_all = true;
                                 break;
                         case CMD_FLOODFILL:
-                                // this should ensure floodfill working every time!
                                 x = ri(11,111);
                                 while(world->dng[1].c[x][x].type != DNG_FLOOR) {
                                         x = ri(11,111);

@@ -6,6 +6,10 @@
 #ifndef _GT_UTILS_H
 #define _GT_UTILS_H
 
+#define clearbit(a, b) (a &= ~(b))
+#define setbit(a, b)   (a |= b)
+#define hasbit(a, b)   (a & b)
+
 // d(a, b)
 // "throw" a b-sided dices without any modifiers
 #define d(a,b) dice(a,b,0)

@@ -247,11 +247,6 @@ void generate_dungeon_normal2(int d)
 
         maxroomsizey = 15;
         maxroomsizex = 25;
-//        nrx = l->xsize / 60;
-//        nry = l->ysize / 60;
-//        numrooms = nrx * nry;
-//        maxroomsizex = l->xsize / nrx / 2;
-//        maxroomsizey = l->ysize / nry / 3;  // was 2, was good
 
         nrx = l->xsize / maxroomsizex;
         nry = l->ysize / maxroomsizey;
@@ -300,7 +295,8 @@ void generate_dungeon_normal2(int d)
 
                         //printf("1corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
                         paint_corridor_horizontal(l, starty, r[j][i].x2, endx);
-
+                        if(perc(25))
+                                adddoor(l, starty, r[j][i].x2, false);
 
                         if(starty < r[j][i+1].y1) {
                                 //printf("2corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
@@ -317,6 +313,8 @@ void generate_dungeon_normal2(int d)
 
                         //printf("4corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
                         paint_corridor_vertical(l, r[j][i].y2, endy, startx);
+                        if(perc(25))
+                                adddoor(l, r[j][i].y2, startx, false);
 
                         if(startx < r[j+1][i].x1) {
                                 //printf("5corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
@@ -639,6 +637,14 @@ void addwall(level_t *l, int y, int x)
         l->c[y][x].color = COLOR_SHADE;
 }
 
+void adddoor(level_t *l, int y, int x, bool secret)
+{
+        if(secret)
+                l->c[y][x].flags |= CF_HAS_DOOR_SECRET;
+        else
+                l->c[y][x].flags |= CF_HAS_DOOR_CLOSED;
+}
+
 /*********************************************
 * Description - Paint a room in a dungeon
 * Author - RK
@@ -667,6 +673,11 @@ void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping)
                 }
         }
 }
+
+#define paint_corridor_left(a, b, c, d) paint_corridor_horizontal(a, b, c, d)
+#define paint_corridor_right(a, b, c, d) paint_corridor_horizontal(a, b, c, d)
+#define paint_corridor_up(a, b, c, d) paint_corridor_vertical(a, b, c, d)
+#define paint_corridor_down(a, b, c, d) paint_corridor_vertical(a, b, c, d)
 
 void paint_corridor_horizontal(level_t *l, int y, int x1, int x2)
 {
@@ -774,6 +785,8 @@ bool monster_passable(level_t *l, int y, int x)
                 return false;
         else if(y == ply && x == plx)
                 return false;               // replace with attack code or something later
+        else if(l->c[y][x].flags & CF_HAS_DOOR_CLOSED)
+                return false;
         else
                 return passable(l, y, x);
 }
@@ -818,11 +831,10 @@ void generate_world()
         fprintf(stderr, "DEBUG: %s:%d - Generating %d villages\n", __FILE__, __LINE__, world->villages);
         world->village = gtcalloc((size_t)world->villages, sizeof(city_t));
         generate_village(world->villages);
-
         spawn_monsters(100, world->out, 100); 
         spawn_objects(ri(world->out->xsize/8, world->out->ysize/4), world->out);
 
-        fprintf(stderr, "DEBUG: %s:%d - Generating dungeon!!\n", __FILE__, __LINE__);
+        //fprintf(stderr, "DEBUG: %s:%d - Generating dungeon!!\n", __FILE__, __LINE__);
         //generate_dungeon_labyrinthine(1);
         
         zero_level(&world->dng[1]);
@@ -835,8 +847,8 @@ void generate_world()
         for(x=0; x<world->out->xsize; x++) {
                 world->out->c[1][x].type = AREA_WALL;
                 world->out->c[2][x].type = AREA_WALL;
-                world->out->c[792][x].type = AREA_WALL;
-                world->out->c[793][x].type = AREA_WALL;
+                world->out->c[794][x].type = AREA_WALL;
+                world->out->c[795][x].type = AREA_WALL;
         }
         for(y=0; y<world->out->ysize; y++) {
                 world->out->c[y][1].type = AREA_WALL;

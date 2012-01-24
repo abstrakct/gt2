@@ -111,6 +111,9 @@ bool blocks_light(int y, int x)
 {
         level_t *l = world->curlevel;
 
+        if(l->c[y][x].flags & CF_HAS_DOOR_CLOSED)
+                return true;
+
         switch(l->c[y][x].type) {
                 case AREA_NOTHING:
                 case AREA_MOUNTAIN:
@@ -264,7 +267,12 @@ void draw_world(level_t *level)
                                                 color = COLOR_CITY;
                                         }
 
-                                        gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
+                                        if(level->c[j][i].flags & CF_HAS_DOOR_CLOSED)
+                                                gtmapaddch(dy, dx, color, '+');
+                                        else if(level->c[j][i].flags & CF_HAS_DOOR_OPEN)
+                                                gtmapaddch(dy, dx, color, '\'');
+                                        else
+                                                gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
 
                                         if(level->c[j][i].visible && level->c[j][i].inventory) {
                                                 if(level->c[j][i].inventory->quantity > 0) {

@@ -32,11 +32,12 @@
 #define XSIZE 800
 #define DUNGEON_SIZE 200
 
-#define ct(a,b) world->cmap[a][b].type
-#define cv(a,b) world->cmap[a][b].visible
-#define cc(a,b) world->cmap[a][b].color
-#define cm(a,b) world->cmap[a][b].monster
-#define ci(a,b) world->cmap[a][b].inventory
+#define cc(a,b) world->curlevel->c[a][b].color
+#define cf(a,b) world->curlevel->c[a][b].flags
+#define ci(a,b) world->curlevel->c[a][b].inventory
+#define cm(a,b) world->curlevel->c[a][b].monster
+#define ct(a,b) world->curlevel->c[a][b].type
+#define cv(a,b) world->curlevel->c[a][b].visible
 
 typedef struct {
         char  name[50];
@@ -91,6 +92,10 @@ typedef struct {
 #define CF_HAS_STAIRS_UP   (1<<1)
 #define CF_LIT             (1<<2)
 #define CF_VISITED         (1<<3)
+#define CF_HAS_DOOR_OPEN   (1<<4)
+#define CF_HAS_DOOR_CLOSED (1<<5)
+#define CF_HAS_DOOR_SECRET (1<<6)
+
 
 void generate_world();
 void floodfill(level_t *l, int y, int x);
@@ -98,8 +103,11 @@ bool passable(level_t *l, int y, int x);
 bool monster_passable(level_t *l, int y, int x);
 void init_level(level_t *level);
 void set_level_visited(level_t *l);
+
 void addfloor(level_t *l, float y, float x);
 void addwall(level_t *l, int y, int x);
+void adddoor(level_t *l, int y, int x, bool secret);
+
 void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping);
 void paint_corridor(level_t *l, int y1, int x1, int y2, int x2);
 void paint_corridor_vertical(level_t *l, int y1, int y2, int x);

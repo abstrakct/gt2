@@ -45,16 +45,41 @@ obj_t get_objdef(int n)
         return *tmp;
 }
 
-bool add_to_inventory(obj_t *o, obj_t *i)
+void unspawn_object(obj_t *m)
 {
+        if(m) {
+                m->prev->next = m->next;
+                if(m->next)
+                        m->next->prev = m->prev;
+                gtfree(m);
+        }
+}
+
+/*
+ * Move object *o from level->objects to inventory *i
+ */
+bool move_to_inventory(obj_t *o, obj_t *i, void *p)
+{
+        level_t *l;
+
+        l = (level_t *) p;
+
         if(o->type == OT_GOLD) {
                 i->quantity += o->quantity;
+                unspawn_object(o);
                 return true;
         } else {
-                o->next = i->next;
+                /*o->next = i->next;
                 o->prev = i;
-                i->next = o;
+                i->next = l->objects->next;
+                i->prev = l->objects;
+                i->head = l->objects;
+                o->head = i;*/
+
                 o->head = i->head;
+                o->next = i->next;
+                i->next = o;
+
                 return true;
         }
 
@@ -74,7 +99,7 @@ bool place_object_at(int y, int x, obj_t *obj, void *p)
                 if(!l->c[y][x].inventory)
                         l->c[y][x].inventory = gtmalloc(sizeof(obj_t));
 
-                if(add_to_inventory(obj, l->c[y][x].inventory))
+                if(move_to_inventory(obj, l->c[y][x].inventory, p))
                         return true;
         } else
                 return false;
@@ -95,18 +120,9 @@ void spawn_object(int n, obj_t *head)
         oid_counter++;
         head->next->oid = oid_counter;
 
-        //fprintf(stderr, "spawned obj %s\n", head->next->basename);
+        //fprintf(stderr, "spawned obj %s (oid %d)\n", head->next->basename, head->next->oid);
 }
 
-void unspawn_object(obj_t *m)
-{
-        if(m) {
-                m->prev->next = m->next;
-                if(m->next)
-                        m->next->prev = m->prev;
-                gtfree(m);
-        }
-}
 
 /*
  * spawn an object (objdef n) and place it at (y,x) on level
@@ -118,7 +134,7 @@ bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
 
         spawn_object(n, i);
         if(!place_object_at(y, x, i->next, (level_t *) level)) {
-                gtprintf("place_obj failed! why?!??");
+                //gtprintf("place_obj failed! why?!??");
                 unspawn_object(i->next);
                 return false;
         }

@@ -46,14 +46,19 @@ void dump_monsters(monster_t *list)
         }
 }
 
-void dump_objects()
+void dump_objects(obj_t *i)
 {
         obj_t *o, *n;
-        int i;
 
-        n = objdefs->head;
-        for(i=0; i < game->objdefs; i++) {
-                o = n->next;
+        if(!i) {
+                gtprintf("No objects here!");
+                return;
+        }
+
+        n = i;
+        while(n) {
+                o = n;
+                gtprintf("OID:      %d\n", o->oid);
                 gtprintf("Basename: %s\n", o->basename);
                 gtprintf("Type:     %s\n", otypestrings[o->type]);
                 if(is_armor(o->type))
@@ -64,11 +69,10 @@ void dump_objects()
                         gtprintf("Damage:   %dd%d\n", o->dice, o->sides);
                 
                 gtprintf("\n");
-                n = o;
+                n = n->next;
         }
 }
 
-/* mainly a debugging function */
 void dump_action_queue()
 {
         int i;

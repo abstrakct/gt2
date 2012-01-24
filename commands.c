@@ -61,7 +61,7 @@ cmd_t outsidecommands[] = {
         { 'f',       CMD_FLOODFILL,   "Floodfill (debug)" },
         { 's',       CMD_SPAWNMONSTER,"Spawn monster" },
         { 'w',       CMD_WIZARDMODE,  "Toggle wizard mode" },
-        { 'c',       CMD_DUMPCOLORS,  "Dump colors" },
+        { 'o',       CMD_DUMPOBJECTS, "" },
         //{ , CMD_WIELD, "Wield/wear" },
         //{ , CMD_IDENTIFYALL, "Identify everything" },
         //{ , CMD_PICKUP, "Pick up something" },

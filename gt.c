@@ -660,7 +660,7 @@ int main(int argc, char *argv[])
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_DUMPOBJECTS:
-                                dump_objects();
+                                dump_objects(world->curlevel->c[ply][plx].inventory);
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_INCFOV:

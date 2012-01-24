@@ -194,4 +194,5 @@ void spawn_monsters(int num, void *p, int max_level)
 
                 i++;
         }
+        //fprintf(stderr, "DEBUG: %s:%d - spawn_monsters spawned %d monsters (should spawn %d)\n", __FILE__, __LINE__, i, num);
 }

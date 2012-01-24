@@ -265,7 +265,22 @@ void draw_world(level_t *level)
                                         }
 
                                         gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
+
+                                        if(level->c[j][i].visible && level->c[j][i].inventory) {
+                                                if(level->c[j][i].inventory->quantity > 0) {
+                                                        wattron(wmap, A_BOLD);
+                                                        gtmapaddch(dy, dx, COLOR_PLAIN, objchars[OT_GOLD]);
+                                                        wattroff(wmap, A_BOLD);
+                                                } else {                                                         // TODO ADD OBJECT COLORS!!!
+                                                        if(level->c[j][i].inventory->next) {
+                                                                gtmapaddch(dy, dx, COLOR_BLUE, objchars[level->c[j][i].inventory->next->type]);
+                                                                if(j == ply && i == plx)
+                                                                        yousee("here a %s", level->c[j][i].inventory->next->basename);
+                                                        }
+                                                }
+                                        }
                                 }
+
 
                                 if(level->c[j][i].visible && level->c[j][i].monster /*&& actor_in_lineofsight(player, level->c[j][i].monster)*/)
                                         gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
@@ -344,7 +359,7 @@ void domess()
                 wattroff(winfo, COLOR_PAIR(messages[i].color));
         }
 
-        fprintf(messagefile, "%d %s\n", messages[currmess-1].color, messages[currmess-1].text);
+        fprintf(messagefile, "%d\t%d\t%s\n", currmess-1, messages[currmess-1].color, messages[currmess-1].text);
         wnoutrefresh(winfo);
 //        doupdate();
 }

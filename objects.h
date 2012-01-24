@@ -1,15 +1,13 @@
-#ifndef _OBJECTS_H
-#define _OBJECTS_H
-
 /*
  * Gullible's Travails - 2011 Rewrite!
+ *
+ * dealing with objects
  *
  * Copyright 2011 Rolf Klausen
  */
 
-/*
- * dealing with objects
- */
+#ifndef _OBJECTS_H
+#define _OBJECTS_H
 
 struct object {
         struct object *prev;
@@ -72,28 +70,28 @@ extern char *otypestrings[];
 // Special flags!
 #define OF_HOLYFUCK   0x80000000
 
-#define MAT_GOLD 1
-#define MAT_SILVER 2
-#define MAT_BRONZE 3
-#define MAT_WOOD 4
-#define MAT_IRON 5
-#define MAT_COPPER 6
-#define MAT_MARBLE 7
-#define MAT_GLASS 8
-#define MAT_BONE 9
-#define MAT_PLATINUM 10
-#define MAT_STEEL 11
+#define MAT_GOLD       1
+#define MAT_SILVER     2
+#define MAT_BRONZE     3
+#define MAT_WOOD       4
+#define MAT_IRON       5
+#define MAT_COPPER     6
+#define MAT_MARBLE     7
+#define MAT_GLASS      8
+#define MAT_BONE       9
+#define MAT_PLATINUM  10
+#define MAT_STEEL     11
 #define MAT_BLACKWOOD 12
-#define MAT_BRASS 13
-#define MAT_EBONY 14
-#define MATERIALS 14
+#define MAT_BRASS     13
+#define MAT_EBONY     14
+#define MATERIALS     14
 
 // defines so that we can easily use fields in obj_t for various stuff
 #define ac sides
 
 // and some nice macros
 #define identified(a)   (a & OF_IDENTIFIED)
-#define do_identify(a)   a |= OF_IDENTIFIED
+#define do_identify(a)   a|= OF_IDENTIFIED
 #define is_armor(a)     (a == OT_ARMOR)
 #define is_weapon(a)    (a == OT_WEAPON)
 #define is_magic(a)     (a & OF_MAGIC)
@@ -106,6 +104,16 @@ extern char *otypestrings[];
 #define is_bodywear(a)  (a & OF_BODYARMOR)
 #define is_gloves(a)    (a & OF_GLOVES)
 #define is_shield(a)    (a & OF_SHIELD)
+
+// Prototypes
+//
+
+void spawn_objects(int num, void *p);
+bool spawn_object_at(int y, int x, int n, obj_t *head, void *level);
+void unspawn_object(obj_t *m);
+void spawn_object(int n, obj_t *head);
+bool place_object_at(int y, int x, obj_t *obj, void *l);
+obj_t get_objdef(int n);
 
 
 //void init_objects();

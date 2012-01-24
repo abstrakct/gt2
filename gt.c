@@ -376,7 +376,7 @@ void do_action(int action)
                                 ppx = 0;
                         break;
                 case ACTION_NOTHING:
-                        updatescreen = false;
+                        //updatescreen = false;
                         break;
                 default:
                         fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attemted!\n", __FILE__, __LINE__, action);
@@ -546,11 +546,11 @@ int main(int argc, char *argv[])
 
         updatescreen = true;
         do {
-                if(updatescreen) {
+                /*if(updatescreen) {
                         draw_world(world->curlevel);
                         draw_wstat();
                         update_screen();
-                }
+                }*/
 
                 c = get_command();
 
@@ -688,9 +688,6 @@ int main(int argc, char *argv[])
                 }
 
                 do_turn(do_all);
-
-
-//                move_monsters();
         } while(!game->dead);
 
         shutdown_display();

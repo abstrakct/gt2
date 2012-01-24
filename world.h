@@ -65,6 +65,7 @@ struct levelstruct {
         short      xsize, ysize;
         cell_t     **c;
         monster_t  *monsters;      // point to head of linked lists of monsters on this level
+        obj_t      *objects;
 };
 
 typedef struct levelstruct level_t;

@@ -820,6 +820,7 @@ void generate_world()
         generate_village(world->villages);
 
         spawn_monsters(100, world->out, 100); 
+        spawn_objects(ri(world->out->xsize/8, world->out->ysize/4), world->out);
 
         fprintf(stderr, "DEBUG: %s:%d - Generating dungeon!!\n", __FILE__, __LINE__);
         //generate_dungeon_labyrinthine(1);
@@ -827,6 +828,7 @@ void generate_world()
         zero_level(&world->dng[1]);
         generate_dungeon_normal2(1);
         spawn_monsters(20, &world->dng[1], 100);
+        spawn_objects(ri(world->dng[1].xsize/10, world->dng[1].xsize/5), &world->dng[1]);
         game->createddungeons++;
 
         // create the edge of the world

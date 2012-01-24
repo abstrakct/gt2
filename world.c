@@ -295,17 +295,22 @@ void generate_dungeon_normal2(int d)
 
                         //printf("1corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
                         paint_corridor_horizontal(l, starty, r[j][i].x2, endx);
-                        if(perc(25))
+                        if(perc(30))
                                 adddoor(l, starty, r[j][i].x2, false);
 
                         if(starty < r[j][i+1].y1) {
                                 //printf("2corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
                                 paint_corridor_vertical(l, starty, r[j][i+1].y1, endx);
+                                if(perc(30))
+                                                adddoor(l, r[j][i+1].y1, endx, false);
+
                         }
 
                         if(starty > r[j][i+1].y2) {
                                 //printf("3corridor from room %d,%d to %d,%d\n", j,i,j,i+1);
                                 paint_corridor_vertical(l, starty, r[j][i+1].y2, endx);
+                                if(perc(30))
+                                                adddoor(l, r[j][i+1].y2, endx, false);
                         }
 
                         startx = r[j][i].x1 + ri(2, r[j][i].sx-1);
@@ -313,7 +318,7 @@ void generate_dungeon_normal2(int d)
 
                         //printf("4corridor from room %d,%d to %d,%d\n", j,i,j+1,i);
                         paint_corridor_vertical(l, r[j][i].y2, endy, startx);
-                        if(perc(25))
+                        if(perc(30))
                                 adddoor(l, r[j][i].y2, startx, false);
 
                         if(startx < r[j+1][i].x1) {

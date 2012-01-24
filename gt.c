@@ -182,7 +182,10 @@ void parse_commandline(int argc, char **argv)
 * *******************************************/
 void do_action(int action)
 {
+        int oldy, oldx;
         //int updatescreen = true;
+
+        oldy = ply; oldx = plx;
 
         switch(action) {
                 case ACTION_PLAYER_MOVE_DOWN:
@@ -388,6 +391,7 @@ void do_action(int action)
                 clearbit(cf(ply, plx), CF_HAS_DOOR_CLOSED);
                 setbit(cf(ply, plx), CF_HAS_DOOR_OPEN);
                 you("open the door!");
+                ply = oldy; plx = oldx;
         }
 
         /*if(updatescreen) {

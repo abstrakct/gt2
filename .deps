@@ -12,6 +12,8 @@ gt.o: gt.c objects.h actor.h monsters.h utils.h datafiles.h world.h you.h \
  display.h debug.h saveload.h commands.h gt.h
 monsters.o: monsters.c objects.h actor.h monsters.h utils.h datafiles.h \
  world.h you.h display.h gt.h
+objects.o: objects.c objects.h actor.h monsters.h utils.h datafiles.h \
+ world.h you.h display.h gt.h
 saveload.o: saveload.c objects.h actor.h monsters.h utils.h datafiles.h \
  world.h you.h display.h debug.h saveload.h gt.h
 utils.o: utils.c actor.h monsters.h objects.h utils.h world.h display.h \

@@ -837,6 +837,7 @@ void generate_world()
         world->village = gtcalloc((size_t)world->villages, sizeof(city_t));
         generate_village(world->villages);
         spawn_monsters(100, world->out, 100); 
+        spawn_golds(100, 100, world->out);
         spawn_objects(ri(world->out->xsize/8, world->out->ysize/4), world->out);
 
         //fprintf(stderr, "DEBUG: %s:%d - Generating dungeon!!\n", __FILE__, __LINE__);
@@ -846,6 +847,7 @@ void generate_world()
         generate_dungeon_normal2(1);
         spawn_monsters(20, &world->dng[1], 100);
         spawn_objects(ri(world->dng[1].xsize/10, world->dng[1].xsize/5), &world->dng[1]);
+        spawn_golds((int) ri(10, world->dng[1].xsize / 10), (player->level+1) * 35, &world->dng[1]);
         game->createddungeons++;
 
         // create the edge of the world

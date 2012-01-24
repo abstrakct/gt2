@@ -67,8 +67,6 @@ imap  <Plug>Isurround
 inoremap ( ()<Left>
 map æ @
 map ø :
-inoremap { {
-inoremap { {}O
 let &cpo=s:cpo_save
 unlet s:cpo_save
 set autoindent
@@ -140,7 +138,7 @@ badd +71 data/weapon.cfg
 badd +1 actor.c
 badd +1 ~/.vimrc
 badd +13 data/config.cfg
-badd +0 objects.c
+badd +68 objects.c
 args datafiles.c gt.c utils.c
 edit vimsession.gt2.vim
 set splitbelow splitright
@@ -322,7 +320,7 @@ setlocal foldcolumn=0
 setlocal foldenable
 setlocal foldexpr=0
 setlocal foldignore=#
-setlocal foldlevel=0
+setlocal foldlevel=6
 setlocal foldmarker={{{,}}}
 set foldmethod=syntax
 setlocal foldmethod=syntax
@@ -389,12 +387,154 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 379 - ((195 * winheight(0) + 38) / 77)
+184
+normal zo
+190
+normal zo
+190
+normal zo
+390
+normal zo
+398
+normal zo
+390
+normal zo
+397
+normal zo
+411
+normal zo
+417
+normal zo
+411
+normal zo
+431
+normal zo
+435
+normal zo
+442
+normal zo
+447
+normal zo
+455
+normal zo
+447
+normal zo
+462
+normal zo
+468
+normal zo
+473
+normal zo
+468
+normal zo
+483
+normal zo
+488
+normal zo
+483
+normal zo
+495
+normal zo
+506
+normal zo
+520
+normal zo
+526
+normal zo
+558
+normal zo
+559
+normal zo
+574
+normal zo
+580
+normal zo
+587
+normal zo
+580
+normal zo
+615
+normal zo
+685
+normal zo
+574
+normal zo
+558
+normal zo
+506
+normal zo
+184
+normal zo
+404
+normal zo
+411
+normal zo
+417
+normal zo
+411
+normal zo
+431
+normal zo
+435
+normal zo
+442
+normal zo
+448
+normal zo
+456
+normal zo
+448
+normal zo
+463
+normal zo
+469
+normal zo
+474
+normal zo
+469
+normal zo
+484
+normal zo
+489
+normal zo
+484
+normal zo
+496
+normal zo
+507
+normal zo
+521
+normal zo
+527
+normal zo
+559
+normal zo
+560
+normal zo
+575
+normal zo
+581
+normal zo
+588
+normal zo
+581
+normal zo
+615
+normal zo
+685
+normal zo
+575
+normal zo
+559
+normal zo
+507
+normal zo
+let s:l = 394 - ((45 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-379
-normal! 025l
+394
+normal! 038l
 tabedit gt.h
 set splitbelow splitright
 set nosplitbelow
@@ -514,7 +654,7 @@ normal zo
 normal zo
 45
 normal zo
-let s:l = 45 - ((44 * winheight(0) + 38) / 77)
+let s:l = 45 - ((32 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -658,7 +798,7 @@ if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 64
-normal! 053l
+normal! 011l
 tabedit commands.h
 set splitbelow splitright
 set nosplitbelow
@@ -892,12 +1032,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 331 - ((38 * winheight(0) + 31) / 63)
+let s:l = 77 - ((7 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-331
-normal! 026l
+77
+normal! 0
 tabedit datafiles.h
 set splitbelow splitright
 set nosplitbelow
@@ -1139,22 +1279,28 @@ normal zo
 normal zo
 50
 normal zo
-55
+53
+normal zo
+59
+normal zo
+53
+normal zo
+59
 normal zo
 50
 normal zo
-73
+78
 normal zo
-79
+84
 normal zo
-73
+78
 normal zo
-let s:l = 65 - ((57 * winheight(0) + 31) / 63)
+let s:l = 61 - ((60 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-65
-normal! 015l
+61
+normal! 027l
 tabedit debug.h
 set splitbelow splitright
 set nosplitbelow
@@ -1268,12 +1414,12 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1 - ((0 * winheight(0) + 38) / 77)
+let s:l = 13 - ((12 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
-normal! 0
+13
+normal! 025l
 tabedit display.c
 set splitbelow splitright
 set nosplitbelow
@@ -1387,154 +1533,158 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-239
+111
 normal zo
-254
+111
 normal zo
-255
-normal zo
-256
+242
 normal zo
 257
 normal zo
-269
+258
 normal zo
-270
+259
 normal zo
-275
+260
 normal zo
-270
+277
 normal zo
-269
+278
 normal zo
-288
+283
+normal zo
+278
+normal zo
+277
+normal zo
+296
+normal zo
+260
+normal zo
+296
+normal zo
+259
+normal zo
+258
 normal zo
 257
 normal zo
-288
+311
 normal zo
-256
+320
 normal zo
-255
+326
 normal zo
-254
+333
 normal zo
-303
+339
 normal zo
-312
-normal zo
-318
-normal zo
-325
-normal zo
-331
-normal zo
-341
-normal zo
-348
+349
 normal zo
 356
 normal zo
-348
-normal zo
-368
-normal zo
-371
-normal zo
-373
-normal zo
-371
-normal zo
-368
-normal zo
-381
-normal zo
-391
-normal zo
-407
-normal zo
-412
-normal zo
-417
-normal zo
-422
-normal zo
-427
-normal zo
-432
-normal zo
-437
-normal zo
-442
-normal zo
-447
-normal zo
-452
-normal zo
-457
-normal zo
-239
-normal zo
-303
-normal zo
-312
-normal zo
-318
-normal zo
-325
-normal zo
-331
-normal zo
-341
-normal zo
-348
+364
 normal zo
 356
 normal zo
-348
+376
 normal zo
-368
-normal zo
-371
-normal zo
-373
-normal zo
-371
-normal zo
-368
+379
 normal zo
 381
 normal zo
-391
+379
 normal zo
-407
+376
 normal zo
-412
+389
 normal zo
-417
+399
 normal zo
-422
+415
 normal zo
-427
+420
 normal zo
-432
+425
 normal zo
-437
+430
 normal zo
-442
+435
 normal zo
-447
+440
 normal zo
-452
+445
 normal zo
-457
+450
 normal zo
-let s:l = 298 - ((70 * winheight(0) + 38) / 77)
+455
+normal zo
+460
+normal zo
+465
+normal zo
+242
+normal zo
+311
+normal zo
+320
+normal zo
+326
+normal zo
+333
+normal zo
+339
+normal zo
+349
+normal zo
+356
+normal zo
+364
+normal zo
+356
+normal zo
+376
+normal zo
+379
+normal zo
+381
+normal zo
+379
+normal zo
+376
+normal zo
+389
+normal zo
+399
+normal zo
+415
+normal zo
+420
+normal zo
+425
+normal zo
+430
+normal zo
+435
+normal zo
+440
+normal zo
+445
+normal zo
+450
+normal zo
+455
+normal zo
+460
+normal zo
+465
+normal zo
+let s:l = 370 - ((76 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-298
-normal! 039l
+370
+normal! 075l
 tabedit display.h
 set splitbelow splitright
 set nosplitbelow
@@ -1827,12 +1977,12 @@ normal zo
 normal zo
 181
 normal zo
-let s:l = 197 - ((53 * winheight(0) + 38) / 77)
+let s:l = 118 - ((110 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-197
-normal! 053l
+118
+normal! 09l
 tabedit monsters.h
 set splitbelow splitright
 set nosplitbelow
@@ -2081,76 +2231,82 @@ normal zo
 normal zo
 49
 normal zo
-64
+59
 normal zo
 68
+normal zo
+72
 normal zo
 73
 normal zo
-86
+96
 normal zo
-102
+101
 normal zo
-103
+96
 normal zo
-102
+114
 normal zo
-111
+130
 normal zo
-115
-normal zo
-120
-normal zo
-115
-normal zo
-129
-normal zo
-133
+134
 normal zo
 139
 normal zo
-141
+134
 normal zo
-139
+148
 normal zo
-133
+152
 normal zo
-68
+158
 normal zo
-86
+162
 normal zo
-102
+158
 normal zo
-103
+152
 normal zo
-102
+73
 normal zo
-111
+72
 normal zo
-115
+92
 normal zo
-120
+96
 normal zo
-115
+101
 normal zo
-129
+96
 normal zo
-133
+114
 normal zo
-139
+131
 normal zo
-141
+135
 normal zo
-139
+140
 normal zo
-133
+135
 normal zo
-let s:l = 82 - ((42 * winheight(0) + 38) / 77)
+149
+normal zo
+153
+normal zo
+159
+normal zo
+163
+normal zo
+159
+normal zo
+153
+normal zo
+let s:l = 78 - ((32 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-82
-normal! 020l
+78
+normal! 034l
 tabedit objects.h
 set splitbelow splitright
 set nosplitbelow
@@ -2268,12 +2424,12 @@ setlocal wrapmargin=0
 normal zo
 12
 normal zo
-let s:l = 34 - ((33 * winheight(0) + 38) / 77)
+let s:l = 70 - ((66 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-34
-normal! 023l
+70
+normal! 08l
 tabedit saveload.c
 set splitbelow splitright
 set nosplitbelow
@@ -2631,12 +2787,12 @@ setlocal wrapmargin=0
 normal zc
 74
 normal zo
-let s:l = 42 - ((32 * winheight(0) + 38) / 77)
+let s:l = 26 - ((16 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-42
-normal! 0
+26
+normal! 016l
 tabedit utils.h
 set splitbelow splitright
 set nosplitbelow
@@ -2751,12 +2907,12 @@ set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
 silent! normal! zE
-let s:l = 24 - ((23 * winheight(0) + 38) / 77)
+let s:l = 11 - ((10 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-24
-normal! 0
+11
+normal! 029l
 tabedit world.c
 set splitbelow splitright
 wincmd _ | wincmd |
@@ -2875,30 +3031,42 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-617
+239
 normal zo
-620
+290
 normal zo
-621
+291
 normal zo
-620
+301
 normal zo
-617
+309
+normal zo
+291
+normal zo
+290
+normal zo
+239
+normal zo
+806
+normal zo
+812
+normal zo
+813
 normal zc
-730
+812
+normal zc
+852
 normal zo
-760
+858
 normal zo
-788
+806
 normal zo
-788
-normal zo
-let s:l = 823 - ((74 * winheight(0) + 38) / 77)
+let s:l = 304 - ((132 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-823
-normal! 022l
+304
+normal! 043l
 wincmd w
 argglobal
 edit world.c
@@ -3017,543 +3185,467 @@ normal zo
 normal zc
 239
 normal zo
-267
+262
 normal zo
-268
+263
 normal zo
-271
+266
 normal zo
-268
+263
 normal zo
-295
+290
 normal zo
-296
+291
+normal zo
+300
 normal zo
 305
 normal zo
-310
+316
 normal zo
-321
+320
 normal zo
-325
+291
 normal zo
-296
+290
 normal zo
-295
+330
 normal zo
-335
+338
 normal zo
 343
 normal zo
 348
 normal zo
-353
+330
 normal zo
-335
+366
 normal zo
-371
+375
 normal zo
-380
+262
 normal zo
-267
+290
 normal zo
-295
+291
 normal zo
-296
+301
 normal zo
-305
+309
 normal zo
-310
+324
 normal zo
-321
+328
 normal zo
-325
+291
 normal zo
-296
+290
 normal zo
-295
+338
 normal zo
-335
+346
 normal zo
-343
+357
 normal zo
-354
+374
 normal zo
-371
+381
 normal zo
-378
+385
 normal zo
-382
+374
 normal zo
-371
+392
 normal zo
-389
+401
 normal zo
-398
+410
 normal zo
-407
+438
 normal zo
-435
+439
 normal zo
-436
+440
 normal zo
-437
+456
 normal zo
-453
+466
 normal zo
-463
+440
 normal zo
-437
+439
 normal zo
-436
+438
 normal zo
-435
+475
 normal zo
-472
-normal zo
-473
-normal zo
-489
+476
 normal zo
 492
 normal zo
-489
+495
 normal zo
-499
+492
 normal zo
-501
+502
 normal zo
-510
+504
 normal zo
-499
+513
 normal zo
-473
+502
 normal zo
-472
+476
 normal zo
-407
+475
 normal zo
-538
+410
 normal zo
-544
+541
 normal zo
-551
+547
 normal zo
-557
+554
 normal zo
-564
+560
 normal zo
-570
+567
 normal zo
-577
+573
 normal zo
-583
+580
 normal zo
-585
+586
 normal zo
-583
+588
 normal zo
-600
-normal zo
-603
-normal zo
-604
+586
 normal zo
 603
 normal zo
-600
+606
 normal zo
-611
+607
 normal zo
-619
+606
 normal zo
-625
+603
 normal zo
-631
+614
 normal zo
-632
+622
 normal zo
-633
+628
 normal zo
 634
 normal zo
 635
 normal zo
+636
+normal zo
+637
+normal zo
+638
+normal zo
+637
+normal zo
+636
+normal zo
+650
+normal zo
+635
+normal zo
 634
 normal zo
-633
+628
 normal zo
-647
+658
 normal zo
-632
+662
 normal zo
-631
+667
 normal zo
-625
+658
 normal zo
-655
+674
 normal zo
-659
+678
 normal zo
-664
+683
 normal zo
-655
+674
 normal zo
-671
+690
 normal zo
-675
+708
 normal zo
-680
+690
 normal zo
-671
+716
 normal zo
-687
+746
 normal zo
-705
-normal zo
-687
-normal zo
-713
-normal zo
-743
-normal zo
-752
-normal zo
-759
+755
 normal zo
 762
 normal zo
 765
 normal zo
-766
+768
 normal zo
-765
+769
 normal zo
-801
+768
 normal zo
-807
+804
 normal zo
-759
+810
 normal zo
-335
+762
 normal zo
-371
+338
 normal zo
-378
+374
 normal zo
-382
+381
 normal zo
-371
+385
 normal zo
-389
+374
 normal zo
-398
+392
 normal zo
-408
+401
 normal zo
-418
+411
 normal zo
-452
+421
 normal zo
-453
+455
 normal zo
-454
+456
 normal zo
-470
+457
 normal zo
-480
+473
 normal zo
-454
+483
 normal zo
-453
+457
 normal zo
-452
+456
 normal zo
-489
+455
 normal zo
-490
+492
 normal zo
-506
+493
 normal zo
 509
 normal zo
-506
+512
 normal zo
-516
+509
 normal zo
-518
+519
 normal zo
-527
+521
 normal zo
-516
+530
 normal zo
-490
+519
 normal zo
-489
+493
 normal zo
-418
+492
 normal zo
-555
+421
 normal zo
-561
+558
 normal zo
-568
+564
 normal zo
-574
+571
 normal zo
-581
+577
 normal zo
-587
+584
 normal zo
-594
+590
 normal zo
-600
+597
 normal zo
-602
+603
 normal zo
-600
+605
 normal zo
-617
-normal zo
-620
-normal zo
-621
+603
 normal zo
 620
 normal zo
-617
+623
 normal zo
-628
+624
 normal zo
-636
+623
 normal zo
-642
+620
 normal zo
-648
+631
 normal zo
-649
+639
 normal zo
-650
+645
 normal zo
 651
 normal zo
 652
 normal zo
+653
+normal zo
+654
+normal zo
+655
+normal zo
+654
+normal zo
+653
+normal zo
+667
+normal zo
+652
+normal zo
 651
 normal zo
-650
+645
 normal zo
-664
+675
 normal zo
-649
+679
 normal zo
-648
+684
 normal zo
-642
+675
 normal zo
-672
+691
 normal zo
-676
+695
 normal zo
-681
+700
 normal zo
-672
+691
 normal zo
-688
+707
 normal zo
-692
+725
 normal zo
-697
+707
 normal zo
-688
+733
 normal zo
-704
+763
 normal zo
-722
-normal zo
-704
-normal zo
-730
-normal zo
-760
-normal zo
-769
-normal zo
-776
+772
 normal zo
 779
 normal zo
 782
 normal zo
-783
+785
 normal zo
-782
-normal zo
-818
-normal zo
-824
-normal zo
-776
-normal zo
-239
-normal zo
-408
-normal zo
-418
-normal zo
-452
-normal zo
-453
-normal zo
-454
-normal zo
-470
-normal zo
-480
-normal zo
-454
-normal zo
-453
-normal zo
-452
-normal zo
-489
-normal zo
-490
-normal zo
-506
-normal zo
-509
-normal zo
-506
-normal zo
-516
-normal zo
-518
-normal zo
-527
-normal zo
-516
-normal zo
-490
-normal zo
-489
-normal zo
-418
-normal zo
-555
-normal zo
-561
-normal zo
-568
-normal zo
-574
-normal zo
-581
-normal zo
-587
-normal zo
-594
-normal zo
-600
-normal zo
-602
-normal zo
-600
-normal zo
-617
-normal zo
-620
-normal zo
-621
-normal zo
-620
-normal zo
-617
-normal zo
-628
-normal zo
-637
-normal zo
-641
-normal zo
-647
-normal zo
-653
-normal zo
-654
-normal zo
-655
-normal zo
-656
-normal zo
-657
-normal zo
-656
-normal zo
-655
-normal zo
-670
-normal zo
-654
-normal zo
-653
-normal zo
-647
-normal zo
-678
-normal zo
-682
-normal zo
-687
-normal zo
-678
-normal zo
-694
-normal zo
-698
-normal zo
-703
-normal zo
-694
-normal zo
-710
-normal zo
-728
-normal zo
-710
-normal zo
-736
-normal zo
-766
-normal zo
-775
-normal zo
-782
+786
 normal zo
 785
 normal zo
-788
+821
 normal zo
-789
+827
 normal zo
-788
+779
 normal zo
-824
+239
 normal zo
-830
+411
 normal zo
-782
+421
 normal zo
-637
+455
 normal zo
-642
+456
 normal zo
-648
+457
 normal zo
-654
+473
 normal zo
-655
+483
+normal zo
+457
+normal zo
+456
+normal zo
+455
+normal zo
+492
+normal zo
+493
+normal zo
+509
+normal zo
+512
+normal zo
+509
+normal zo
+519
+normal zo
+521
+normal zo
+530
+normal zo
+519
+normal zo
+493
+normal zo
+492
+normal zo
+421
+normal zo
+558
+normal zo
+564
+normal zo
+571
+normal zo
+577
+normal zo
+584
+normal zo
+590
+normal zo
+597
+normal zo
+603
+normal zo
+605
+normal zo
+603
+normal zo
+620
+normal zo
+623
+normal zo
+624
+normal zo
+623
+normal zo
+620
+normal zo
+631
+normal zo
+640
+normal zo
+644
+normal zo
+650
 normal zo
 656
 normal zo
@@ -3561,23 +3653,163 @@ normal zo
 normal zo
 658
 normal zo
+659
+normal zo
+660
+normal zo
+659
+normal zo
+658
+normal zo
+673
+normal zo
 657
 normal zo
 656
 normal zo
-655
-normal zo
-654
-normal zo
-648
-normal zo
-672
-normal zo
-676
+650
 normal zo
 681
 normal zo
-672
+685
+normal zo
+690
+normal zo
+681
+normal zo
+697
+normal zo
+701
+normal zo
+706
+normal zo
+697
+normal zo
+713
+normal zo
+731
+normal zo
+713
+normal zo
+739
+normal zo
+769
+normal zo
+778
+normal zo
+785
+normal zo
+788
+normal zo
+791
+normal zo
+792
+normal zo
+791
+normal zo
+827
+normal zo
+833
+normal zo
+785
+normal zo
+640
+normal zo
+646
+normal zo
+653
+normal zo
+659
+normal zo
+665
+normal zo
+666
+normal zo
+667
+normal zo
+668
+normal zo
+669
+normal zo
+668
+normal zo
+667
+normal zo
+666
+normal zo
+665
+normal zo
+659
+normal zo
+683
+normal zo
+687
+normal zo
+692
+normal zo
+683
+normal zo
+699
+normal zo
+703
+normal zo
+708
+normal zo
+699
+normal zo
+715
+normal zo
+733
+normal zo
+715
+normal zo
+741
+normal zo
+771
+normal zo
+792
+normal zo
+799
+normal zo
+802
+normal zo
+805
+normal zo
+806
+normal zo
+805
+normal zo
+845
+normal zo
+851
+normal zo
+799
+normal zo
+646
+normal zo
+653
+normal zo
+659
+normal zo
+665
+normal zo
+666
+normal zo
+667
+normal zo
+668
+normal zo
+669
+normal zo
+668
+normal zo
+667
+normal zo
+666
+normal zo
+665
+normal zo
+659
 normal zo
 688
 normal zo
@@ -3589,37 +3821,65 @@ normal zo
 normal zo
 704
 normal zo
-722
+708
+normal zo
+713
 normal zo
 704
 normal zo
-730
+720
 normal zo
-760
+738
 normal zo
-781
+720
 normal zo
-788
+746
 normal zo
-791
+776
 normal zo
-794
+799
 normal zo
-795
+806
 normal zo
-794
+809
 normal zo
-835
+812
 normal zo
-841
+813
 normal zo
-788
+812
 normal zo
-let s:l = 671 - ((76 * winheight(0) + 38) / 77)
+852
+normal zo
+858
+normal zo
+806
+normal zo
+776
+normal zo
+799
+normal zo
+806
+normal zo
+809
+normal zo
+812
+normal zo
+813
+normal zo
+812
+normal zo
+852
+normal zo
+858
+normal zo
+806
+normal zo
+let s:l = 687 - ((89 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-671
+687
 normal! 09l
 wincmd w
 exe 'vert 1resize ' . ((&columns * 158 + 158) / 316)
@@ -3738,18 +3998,18 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-54
+55
 normal zo
-64
+65
 normal zo
-74
+75
 normal zo
-let s:l = 68 - ((67 * winheight(0) + 38) / 77)
+let s:l = 35 - ((22 * winheight(0) + 38) / 77)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-68
-normal! 027l
+35
+normal! 0
 tabedit you.c
 set splitbelow splitright
 set nosplitbelow

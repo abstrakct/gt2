@@ -115,6 +115,7 @@ void spawn_object(int n, obj_t *head);
 bool place_object_at(int y, int x, obj_t *obj, void *l);
 obj_t get_objdef(int n);
 
+void spawn_golds(int num, int max, void *p);
 
 //void init_objects();
 //void init_materials();

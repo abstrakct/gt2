@@ -126,7 +126,18 @@ void spawn_object(int n, obj_t *head)
         //fprintf(stderr, "spawned obj %s (oid %d)\n", head->next->basename, head->next->oid);
 }
 
+void spawn_gold(int n, obj_t *head)
+{
+        obj_t *tmp;
 
+        tmp = head->next;
+        head->next = gtmalloc(sizeof(obj_t));
+        head->type = OT_GOLD;
+        head->next->next = tmp;
+        head->next->prev = head;
+        head->next->head = head;
+        head->next->quantity = n;
+}
 
 /*
  * spawn an object (objdef n) and place it at (y,x) on level
@@ -144,6 +155,41 @@ bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
         }
 
         return true;
+}
+
+bool spawn_gold_at(int y, int x, int n, obj_t *i, void *level)
+{
+        level_t *l;
+
+        if(!i)
+                i = init_inventory();
+
+        l = (level_t *) level;
+
+        i->quantity = n;
+        l->c[y][x].inventory = i;
+
+        return true;
+}
+        
+void spawn_golds(int num, int max, void *p)
+{
+        int i, x, y, n;
+        level_t *l;
+
+        i = 0;
+        l = (level_t *) p;
+        while(i < num) {
+                x = ri(1, l->xsize-1);
+                y = ri(1, l->ysize-1);
+                n = ri(1, max);
+                if (spawn_gold_at(y, x, n, l->objects, l)) {
+                        i++;
+                        //fprintf(stderr, "DEBUG: %s:%d - spawned %d gold at %d,%d\n", __FILE__, __LINE__, n, y, x);
+                }
+        }
+        //fprintf(stderr, "DEBUG: %s:%d - spawn_golds spawned %d golds (should spawn %d)\n", __FILE__, __LINE__, i, num);
+
 }
 
 /*

@@ -282,8 +282,6 @@ void draw_world(level_t *level)
                                                 } else {                                                         // TODO ADD OBJECT COLORS!!!
                                                         if(level->c[j][i].inventory->next) {
                                                                 gtmapaddch(dy, dx, COLOR_BLUE, objchars[level->c[j][i].inventory->next->type]);
-                                                                if(j == ply && i == plx)
-                                                                        yousee("here a %s", level->c[j][i].inventory->next->basename);
                                                         }
                                                 }
                                         }

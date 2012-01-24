@@ -114,7 +114,6 @@ void init_variables()
         loadgame = false;
 
         game->wizardmode = false;
-        
         player = (actor_t *) gtmalloc(sizeof(actor_t));
 }
 
@@ -132,6 +131,7 @@ void init_player()
         game->mapcx = game->mapw + 2;
         game->mapcy = game->maph + 2;
         player->viewradius = 50;
+        player->level = 1;
 }
 
 void shutdown_gt()
@@ -180,12 +180,14 @@ void parse_commandline(int argc, char **argv)
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-void do_action(int action)
+bool do_action(int action)
 {
         int oldy, oldx;
+        bool fullturn;
         //int updatescreen = true;
 
         oldy = ply; oldx = plx;
+        fullturn = true;
 
         switch(action) {
                 case ACTION_PLAYER_MOVE_DOWN:
@@ -194,6 +196,9 @@ void do_action(int action)
                                         gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx].monster->name);
                                 else
                                         ply++;
+                        } else {
+                                fullturn = false;
+                                break;
                         }
 
                         if(ply >= (ppy + (game->mapcy/6*5))) {
@@ -213,7 +218,11 @@ void do_action(int action)
                                         gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx].monster->name);
                                 else
                                         ply--;
+                        } else {
+                                fullturn = false;
+                                break;
                         }
+
                         if(ply < 0)
                                 ply = 0;
                         if(ply <= (ppy + (game->mapcy/6))) {
@@ -229,7 +238,11 @@ void do_action(int action)
                                         gtprintf("You attack the %s!", world->curlevel->c[ply][plx-1].monster->name);
                                 else
                                         plx--;
+                        } else {
+                                fullturn = false;
+                                break;
                         }
+
                         if(plx < 0)
                                 plx = 0;
                         if(plx <= (ppx+(game->mapcx/6))) {
@@ -245,7 +258,11 @@ void do_action(int action)
                                         gtprintf("You attack the %s!", world->curlevel->c[ply][plx+1].monster->name);
                                 else
                                         plx++;
+                        } else {
+                                fullturn = false;
+                                break;
                         }
+
                         if(plx >= (ppx+(game->mapcx/6*5))) {
                                 mapchanged = true;
                                 ppx++;
@@ -265,7 +282,11 @@ void do_action(int action)
                                         ply--;
                                         plx--;
                                 }
+                        } else {
+                                fullturn = false;
+                                break;
                         }
+
                         if(ply < 0)
                                 ply = 0;
                         if(ply <= (ppy + (game->mapcy/6))) {
@@ -291,7 +312,11 @@ void do_action(int action)
                                 else {
                                         ply--; plx++;
                                 }
+                        } else {
+                                fullturn = false;
+                                break;
                         }
+
                         
                         if(plx >= world->curlevel->xsize)
                                 plx = world->curlevel->xsize-1;
@@ -322,7 +347,11 @@ void do_action(int action)
                                 else {
                                         ply++; plx--;
                                 }
+                        } else {
+                                fullturn = false;
+                                break;
                         }
+
 
                         if(ply >= world->curlevel->ysize)
                                 ply = world->curlevel->ysize-1;
@@ -351,7 +380,11 @@ void do_action(int action)
                                 else {
                                         ply++; plx++;
                                 }
+                        } else {
+                                fullturn = false;
+                                break;
                         }
+
                         if(ply >= world->curlevel->ysize)
                                 ply = world->curlevel->ysize-1;
                         if(ply >= (ppy+(game->mapcy/6*5))) {
@@ -383,22 +416,31 @@ void do_action(int action)
                         break;
                 default:
                         fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, action);
+                        fullturn = false;
                         //updatescreen = false;
                         break;
         }
 
         if(cf(ply, plx) & CF_HAS_DOOR_CLOSED) {
-                clearbit(cf(ply, plx), CF_HAS_DOOR_CLOSED);
+                clearbit(cf(ply, plx), CF_HAS_DOOR_CLOSED);       // move to its own funtcion?!"¤&¤%"%
                 setbit(cf(ply, plx), CF_HAS_DOOR_OPEN);
                 you("open the door!");
                 ply = oldy; plx = oldx;
         }
 
-        /*if(updatescreen) {
-                draw_world(world->curlevel);
-                draw_wstat();
-                update_screen();
-        }*/
+        if(cf(ply, plx) & CF_HAS_STAIRS_DOWN)
+                gtprintf("There's a staircase of stone leading down here.");
+
+        if(cf(ply, plx) & CF_HAS_STAIRS_UP)
+                gtprintf("There's a staircase of stone leading up here.");
+
+        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0)
+                gtprintf("There is %d gold pieces here!", ci(ply, plx)->quantity);
+        if(ci(ply, plx) && ci(ply, plx)->next) {
+                gtprintf("There is a %s here.", ci(ply, plx)->next->basename);
+        }
+
+        return fullturn;
 }
 
 /*********************************************
@@ -465,42 +507,54 @@ void queuemany(int first, ...)
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-void do_next_thing_in_queue() // needs a better name..
+bool do_next_thing_in_queue() // needs a better name..
 {
+        bool ret;
         struct actionqueue *tmp;
 
         tmp = aq->next;
 
         if(tmp) {
-                do_action(tmp->action);
+                ret = do_action(tmp->action);
                 aq->next = tmp->next;
                 gtfree(tmp);
         }
-        game->turn++;
 
+        if(ret)
+                game->turn++;
+
+        return ret;
 }
 
-void do_all_things_in_queue() // needs a better name..
+bool do_all_things_in_queue() // needs a better name..
 {
         struct actionqueue *tmp;
+        bool ret;
 
         tmp = aq->next;
 
         while(tmp) {
-                do_next_thing_in_queue();
+                ret = do_next_thing_in_queue();
+                if(ret)
+                        move_monsters();
                 tmp = tmp->next;
         }
+
+        return ret;
 }
 
 void do_turn(int do_all)
 {
+        bool fullturn;
+
         if(!do_all)
-                do_next_thing_in_queue();
+                fullturn = do_next_thing_in_queue();
         else
-                do_all_things_in_queue();
+                fullturn = do_all_things_in_queue();
 
         // TODO: make move_monsters act on a specific level!?!?!?
-        move_monsters();
+        if(fullturn)
+                move_monsters();
 }
 
 int main(int argc, char *argv[])

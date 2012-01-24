@@ -55,30 +55,33 @@ void unspawn_object(obj_t *m)
         }
 }
 
+obj_t *init_inventory()
+{
+        obj_t *i;
+
+        i = gtmalloc(sizeof(obj_t));
+        i->type = OT_GOLD;
+
+        return i;
+}
+
 /*
  * Move object *o from level->objects to inventory *i
  */
-bool move_to_inventory(obj_t *o, obj_t *i, void *p)
+bool move_to_inventory(obj_t *o, obj_t *i)
 {
-        level_t *l;
-
-        l = (level_t *) p;
-
         if(o->type == OT_GOLD) {
                 i->quantity += o->quantity;
                 unspawn_object(o);
                 return true;
         } else {
-                /*o->next = i->next;
-                o->prev = i;
-                i->next = l->objects->next;
-                i->prev = l->objects;
-                i->head = l->objects;
-                o->head = i;*/
+                // TODO: ->prev !!!
 
                 o->head = i->head;
                 o->next = i->next;
                 i->next = o;
+                i->sides++;        // use 'sides' in head as counter of how many items are in here.
+                i->type = OT_GOLD; // a strange place to set this, but for now...
 
                 return true;
         }
@@ -99,7 +102,7 @@ bool place_object_at(int y, int x, obj_t *obj, void *p)
                 if(!l->c[y][x].inventory)
                         l->c[y][x].inventory = gtmalloc(sizeof(obj_t));
 
-                if(move_to_inventory(obj, l->c[y][x].inventory, p))
+                if(move_to_inventory(obj, l->c[y][x].inventory))
                         return true;
         } else
                 return false;
@@ -124,13 +127,14 @@ void spawn_object(int n, obj_t *head)
 }
 
 
+
 /*
  * spawn an object (objdef n) and place it at (y,x) on level
  */
 bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
 {
         if(!i)
-                i = gtmalloc(sizeof(obj_t));
+                i = init_inventory();
 
         spawn_object(n, i);
         if(!place_object_at(y, x, i->next, (level_t *) level)) {

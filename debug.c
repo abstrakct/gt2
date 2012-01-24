@@ -58,6 +58,7 @@ void dump_objects(obj_t *i)
         n = i;
         while(n) {
                 o = n;
+                gtprintf("\n");
                 gtprintf("OID:      %d\n", o->oid);
                 gtprintf("Basename: %s\n", o->basename);
                 gtprintf("Type:     %s\n", otypestrings[o->type]);

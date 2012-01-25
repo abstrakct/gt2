@@ -98,3 +98,25 @@ bool actor_in_lineofsight(actor_t *src, actor_t *dest)
                 return false;
         }
 }
+
+void attack(actor_t *attacker, actor_t *victim)
+{
+        int damage;
+
+        damage = dice(1, 10, 0);
+        victim->hp -= damage;
+
+        if(attacker == player)
+                you("hit the %s for %d damage!", victim->name, damage);
+        else
+                gtprintf("The %s hits you for %d damage", attacker->name, damage);
+
+        if(victim->hp <= 0) {
+                if(victim == player)
+                        you("die!!!");
+                else {
+                        you("kill the %s!", victim->name);
+                        kill_monster(victim);
+                }
+        }
+}

@@ -62,6 +62,8 @@ void dump_objects(obj_t *i)
                 gtprintf("OID:      %d\n", o->oid);
                 gtprintf("Basename: %s\n", o->basename);
                 gtprintf("Type:     %s\n", otypestrings[o->type]);
+                if(o->type == OT_GOLD)
+                        gtprintf("Amount:   %d\n", o->quantity);
                 if(is_armor(o->type))
                         gtprintf("AC:       %d\n", o->ac);
                 gtprintf("Modifier:%s%d\n", (o->modifier >= 0 ? " +" : " "), o->modifier);
@@ -70,7 +72,7 @@ void dump_objects(obj_t *i)
                         gtprintf("Damage:   %dd%d\n", o->dice, o->sides);
                 
                 gtprintf("\n");
-                n = n->next;
+                n = o->next;
         }
 }
 

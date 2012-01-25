@@ -277,7 +277,7 @@ void draw_world(level_t *level)
                                         if(level->c[j][i].visible && level->c[j][i].inventory) {
                                                 if(level->c[j][i].inventory->quantity > 0) {
                                                         wattron(wmap, A_BOLD);
-                                                        gtmapaddch(dy, dx, COLOR_PLAIN, objchars[OT_GOLD]);
+                                                        gtmapaddch(dy, dx, COLOR_YELLOW, objchars[OT_GOLD]);
                                                         wattroff(wmap, A_BOLD);
                                                 } else {                                                         // TODO ADD OBJECT COLORS!!!
                                                         if(level->c[j][i].inventory->next) {
@@ -312,6 +312,8 @@ void draw_wstat()
         mvwprintw(wstat, 3, 1, "(y,x)   (%d,%d)     ", ply, plx);
         mvwprintw(wstat, 4, 1, "(py,px) (%d,%d)     ", ppy, ppx);
         mvwprintw(wstat, 5, 1, "viewradius: %d      ", player->viewradius);
+        mvwprintw(wstat, 6, 1, "HP: %d              ", player->hp);
+        mvwprintw(wstat, 7, 1, "Gold: %d            ", player->inventory->quantity);
 }
 
 void update_player()

@@ -67,6 +67,11 @@ void simpleai(monster_t *m)
                         break;
         }
 
+        if(m->x == plx && m->y == ply) {
+                m->x = ox; m->y = oy;
+                attack(m, player);
+        }
+                
         if(!monster_passable(world->curlevel, m->y, m->x)) {
                 m->x = ox; m->y = oy;
                 return;
@@ -146,6 +151,17 @@ void spawn_monster(int n, monster_t *head)
         //gtprintf("spawned monster %s\n", head->next->name);
         mid_counter++;
         head->next->mid = mid_counter;
+}
+
+void kill_monster(monster_t *m)
+{
+        // sanity check, can't possibly fail, can it?
+        if(world->curlevel->c[m->y][m->x].monster == m) {
+                world->curlevel->c[m->y][m->x].monster = NULL;
+                gtfree(m);
+        } else {
+                gtprintf("monster's x&y doesn't correspond to cell?");
+        }
 }
 
 void unspawn_monster(monster_t *m)

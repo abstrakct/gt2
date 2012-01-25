@@ -124,6 +124,7 @@ void init_variables()
 * *******************************************/
 void init_player()
 {
+        // TODO: Character generation!!
         plx = game->mapw / 2;
         ply = game->maph / 2;
         ppx = plx - game->mapw / 2;
@@ -132,6 +133,8 @@ void init_player()
         game->mapcy = game->maph + 2;
         player->viewradius = 50;
         player->level = 1;
+        player->hp = 10;
+        player->inventory = init_inventory();
 }
 
 void shutdown_gt()
@@ -192,9 +195,10 @@ bool do_action(int action)
         switch(action) {
                 case ACTION_PLAYER_MOVE_DOWN:
                         if(passable(world->curlevel, ply+1, plx)) {
-                                if(world->curlevel->c[ply+1][plx].monster)
+                                if(world->curlevel->c[ply+1][plx].monster) {
                                         gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx].monster->name);
-                                else
+                                        attack(player, world->curlevel->c[ply+1][plx].monster);
+                                } else
                                         ply++;
                         } else {
                                 fullturn = false;
@@ -214,9 +218,10 @@ bool do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_UP:
                         if(passable(world->curlevel, ply-1,plx)) {
-                                if(world->curlevel->c[ply-1][plx].monster)
+                                if(world->curlevel->c[ply-1][plx].monster) {
                                         gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx].monster->name);
-                                else
+                                        attack(player, world->curlevel->c[ply-1][plx].monster);
+                                } else
                                         ply--;
                         } else {
                                 fullturn = false;
@@ -234,9 +239,10 @@ bool do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
                         if(passable(world->curlevel, ply, plx-1)) {
-                                if(world->curlevel->c[ply][plx-1].monster)
+                                if(world->curlevel->c[ply][plx-1].monster) {
                                         gtprintf("You attack the %s!", world->curlevel->c[ply][plx-1].monster->name);
-                                else
+                                        attack(player, world->curlevel->c[ply][plx-1].monster);
+                                } else
                                         plx--;
                         } else {
                                 fullturn = false;
@@ -254,9 +260,10 @@ bool do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
                         if(passable(world->curlevel, ply,plx+1)) {
-                                if(world->curlevel->c[ply][plx+1].monster)
+                                if(world->curlevel->c[ply][plx+1].monster) {
                                         gtprintf("You attack the %s!", world->curlevel->c[ply][plx+1].monster->name);
-                                else
+                                        attack(player, world->curlevel->c[ply][plx+1].monster);
+                                } else
                                         plx++;
                         } else {
                                 fullturn = false;
@@ -276,9 +283,10 @@ bool do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_NW:
                         if(passable(world->curlevel, ply-1,plx-1)) {
-                                if(world->curlevel->c[ply-1][plx-1].monster)
+                                if(world->curlevel->c[ply-1][plx-1].monster) {
                                         gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx-1].monster->name);
-                                else {
+                                        attack(player, world->curlevel->c[ply-1][plx-1].monster);
+                                } else {
                                         ply--;
                                         plx--;
                                 }
@@ -307,9 +315,10 @@ bool do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_NE:
                         if(passable(world->curlevel, ply-1,plx+1)) {
-                                if(world->curlevel->c[ply-1][plx+1].monster)
+                                if(world->curlevel->c[ply-1][plx+1].monster) {
                                         gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx+1].monster->name);
-                                else {
+                                        attack(player, world->curlevel->c[ply-1][plx+1].monster);
+                                } else {
                                         ply--; plx++;
                                 }
                         } else {
@@ -342,9 +351,10 @@ bool do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_SW:
                         if(passable(world->curlevel, ply+1, plx-1)) {
-                                if(world->curlevel->c[ply+1][plx-1].monster)
+                                if(world->curlevel->c[ply+1][plx-1].monster) {
                                         gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx-1].monster->name);
-                                else {
+                                        attack(player, world->curlevel->c[ply+1][plx-1].monster);
+                                } else {
                                         ply++; plx--;
                                 }
                         } else {
@@ -375,9 +385,10 @@ bool do_action(int action)
                         break;
                 case ACTION_PLAYER_MOVE_SE:
                         if(passable(world->curlevel, ply+1, plx+1)) {
-                                if(world->curlevel->c[ply+1][plx+1].monster)
+                                if(world->curlevel->c[ply+1][plx+1].monster) {
                                         gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx+1].monster->name);
-                                else {
+                                        attack(player, world->curlevel->c[ply+1][plx+1].monster);
+                                } else {
                                         ply++; plx++;
                                 }
                         } else {
@@ -434,10 +445,17 @@ bool do_action(int action)
         if(cf(ply, plx) & CF_HAS_STAIRS_UP)
                 gtprintf("There's a staircase of stone leading up here.");
 
-        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0)
+        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0) {
                 gtprintf("There is %d gold pieces here!", ci(ply, plx)->quantity);
+                player->inventory->quantity += ci(ply, plx)->quantity;
+                ci(ply, plx)->quantity -= ci(ply, plx)->quantity;
+        }
+
+
         if(ci(ply, plx) && ci(ply, plx)->next) {
                 gtprintf("There is a %s here.", ci(ply, plx)->next->basename);
+                //move_to_inventory(ci(ply, plx)->next, player->inventory);
+                pick_up(ci(ply, plx)->next, player);
         }
 
         return fullturn;
@@ -741,8 +759,10 @@ int main(int argc, char *argv[])
                                 }
                                 queue(ACTION_NOTHING);
                                 break;
-
-                                
+                        case CMD_INVENTORY:
+                                queue(ACTION_NOTHING);
+                                dump_objects(player->inventory);
+                                break;
                         //case 'a': dump_action_queue();
                         default:
                                 queue(ACTION_NOTHING);

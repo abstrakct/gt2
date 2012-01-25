@@ -773,7 +773,7 @@ bool passable(level_t *l, int y, int x)
 }
 
 bool monster_passable(level_t *l, int y, int x)
-{
+{ 
         if(y < 0)
                 return false;
         if(x < 0)
@@ -788,8 +788,6 @@ bool monster_passable(level_t *l, int y, int x)
                 return false;
         else if(l->c[y][x].monster)
                 return false;
-        else if(y == ply && x == plx)
-                return false;               // replace with attack code or something later
         else if(l->c[y][x].flags & CF_HAS_DOOR_CLOSED)
                 return false;
         else

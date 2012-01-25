@@ -12,9 +12,9 @@
 #include <math.h>
 #include <stdbool.h>
 
+#include "objects.h"
 #include "actor.h"
 #include "monsters.h"
-#include "objects.h"
 #include "utils.h"
 #include "world.h"
 #include "display.h"

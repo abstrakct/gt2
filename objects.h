@@ -114,7 +114,10 @@ void unspawn_object(obj_t *m);
 void spawn_object(int n, obj_t *head);
 bool place_object_at(int y, int x, obj_t *obj, void *l);
 obj_t get_objdef(int n);
+bool move_to_inventory(obj_t *o, obj_t *i);
+void pick_up(obj_t *o, void *a);
 
+obj_t *init_inventory();
 void spawn_golds(int num, int max, void *p);
 
 //void init_objects();

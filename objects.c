@@ -65,8 +65,26 @@ obj_t *init_inventory()
         return i;
 }
 
+void pick_up(obj_t *o, void *p)
+{
+        actor_t *a;
+
+        a = (actor_t *) p;
+
+        if(!a->inventory)
+                die("inventory not initialized!");
+
+        o->prev = a->inventory;
+        o->next = a->inventory->next;
+        a->inventory->next = o;
+        o->head = a->inventory;
+
+        // TODO: tackle cells with multiple items!
+        world->curlevel->c[a->y][a->x].inventory->next = NULL;
+}
+
 /*
- * Move object *o from level->objects to inventory *i
+ * Move object *o to inventory *i
  */
 bool move_to_inventory(obj_t *o, obj_t *i)
 {
@@ -79,9 +97,11 @@ bool move_to_inventory(obj_t *o, obj_t *i)
 
                 o->head = i->head;
                 o->next = i->next;
+                if(i->next)
+                        i->next->prev = o;
                 i->next = o;
                 i->sides++;        // use 'sides' in head as counter of how many items are in here.
-                i->type = OT_GOLD; // a strange place to set this, but for now...
+                //i->type = OT_GOLD; // a strange place to set this, but for now...
 
                 return true;
         }
@@ -161,15 +181,18 @@ bool spawn_gold_at(int y, int x, int n, obj_t *i, void *level)
 {
         level_t *l;
 
-        if(!i)
-                i = init_inventory();
-
         l = (level_t *) level;
+        if(l->c[y][x].type == AREA_PLAIN || l->c[y][x].type == DNG_FLOOR) {
+                if(!i)
+                        i = init_inventory();
 
-        i->quantity = n;
-        l->c[y][x].inventory = i;
+                i->quantity += n;
+                l->c[y][x].inventory = i;
 
-        return true;
+                return true;
+        }
+
+        return false;
 }
         
 void spawn_golds(int num, int max, void *p)

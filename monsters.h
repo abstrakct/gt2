@@ -27,6 +27,8 @@ void spawn_monster(int n, monster_t *head);
 bool spawn_monster_at(int y, int x, int n, monster_t *head, void *level);
 void move_monsters();
 void spawn_monsters(int num, void *p, int max_level);
+void unspawn_monster(monster_t *m);
+void kill_monster(monster_t *m);
 
 // AI
 void simpleai(monster_t *m);

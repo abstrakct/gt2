@@ -53,8 +53,8 @@ typedef struct actorstruct {     // actor_t
         short race, cla;
         //char wvfactor;
         //short worldview;
-        //struct object *inventory;
         //struct object *weapon;
+        obj_t *inventory;
         wear_t w;
         long flags;
         int c;             // character, for monsters.
@@ -73,5 +73,6 @@ typedef struct actorstruct {     // actor_t
 } actor_t;
 
 bool actor_in_lineofsight(actor_t *src, actor_t *dest);
+void attack(actor_t *attacker, actor_t *victim);
 
 #endif

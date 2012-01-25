@@ -307,13 +307,25 @@ void draw_world(level_t *level)
 
 void draw_wstat()
 {
+        obj_t *o;
+        int i;
+
         mvwprintw(wstat, 1, 1, "Name:");
         mvwprintw(wstat, 2, 1, "Turn:   %d", game->turn);
         mvwprintw(wstat, 3, 1, "(y,x)   (%d,%d)     ", ply, plx);
         mvwprintw(wstat, 4, 1, "(py,px) (%d,%d)     ", ppy, ppx);
         mvwprintw(wstat, 5, 1, "viewradius: %d      ", player->viewradius);
         mvwprintw(wstat, 6, 1, "HP: %d              ", player->hp);
-        mvwprintw(wstat, 7, 1, "Gold: %d            ", player->inventory->quantity);
+        mvwprintw(wstat, 7, 1, "--------------------");
+        mvwprintw(wstat, 8, 1, "Inventory:");
+        mvwprintw(wstat, 9, 1, "Gold: %d            ", player->inventory->quantity);
+        o = player->inventory->next;
+        i = 10;
+        while(o) {
+                mvwprintw(wstat, i, 1, "- %s                                        ", o->basename);
+                i++;
+                o = o->next;
+        }
 }
 
 void update_player()

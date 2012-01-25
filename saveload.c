@@ -29,7 +29,8 @@
  */
 void save_object(obj_t *o, FILE *f)
 {
-        fwrite("OBJECT", sizeof(char), 7, f);
+        fwrite("OBJECT", sizeof(char), 6, f);
+        fwrite(o, sizeof(obj_t), 1, f);
 }
 
 /*
@@ -37,7 +38,24 @@ void save_object(obj_t *o, FILE *f)
  */
 void save_inventory(obj_t *i, FILE *f)
 {
+        obj_t *o;
+        int num;
+
+        num = 0;
         fwrite("INVENTORY", sizeof(char), 9, f);
+
+        o = i;
+        while(o) {
+                num++;
+                o = o->next;
+        }
+
+        fwrite(&num, sizeof(int), 1, f);
+        o = i;
+        while(o) {
+                save_object(o, f);
+                o = o->next;
+        }
 }
 
 /* 
@@ -66,11 +84,11 @@ void save_cell(cell_t *c, FILE *f)
 {
         bool flag;
 
-        fwrite(&c->type, sizeof(char), 1, f);
-        fwrite(&c->flags, sizeof(int), 1, f);
-        fwrite(&c->desty, sizeof(short), 1, f);
-        fwrite(&c->destx, sizeof(short), 1, f);
-        fwrite(&c->color, sizeof(short), 1, f);
+        fwrite(&c->type,    sizeof(char), 1, f);
+        fwrite(&c->flags,   sizeof(int), 1, f);
+        fwrite(&c->desty,   sizeof(short), 1, f);
+        fwrite(&c->destx,   sizeof(short), 1, f);
+        fwrite(&c->color,   sizeof(short), 1, f);
         fwrite(&c->visible, sizeof(bool), 1, f);
 
         flag = c->monster ? true : false;
@@ -153,6 +171,7 @@ void save_player(actor_t *p, FILE *f)
 {
         struct player_save_struct s;
         int i;
+        bool inv;
 
         s.x = p->x;
         s.y = p->y;
@@ -176,10 +195,16 @@ void save_player(actor_t *p, FILE *f)
         for(i = 0; i < MAX_SKILLS; i++)
                 s.skill[i] = p->skill[i];
 
-        /* TODO: ADD INVENTORY ETC */
-
         fwrite("PLAYER", sizeof(char), 6, f);
         fwrite(&s, sizeof(struct player_save_struct), 1, f);
+        if(p->inventory) {
+                inv = true;
+                fwrite(&inv, sizeof(bool), 1, f);
+                save_inventory(player->inventory, f);
+        } else {
+                inv = false;
+                fwrite(&inv, sizeof(bool), 1, f);
+        }
 }
 
 void generate_savefilename(char *filename)
@@ -260,20 +285,58 @@ bool save_game(char *filename)
  * And now... loading!
  */
 
-void load_object(obj_t *o, FILE *f)
+bool load_object(obj_t *o, FILE *f)
 {
         char str[6];
+
+        if(!o)
+                o = gtmalloc(sizeof(obj_t));
 
         fread(str, sizeof(char), 6, f);
-        gtprintf("load_object! str=%s", str);
+        if(strncmp(str, "OBJECT", 6)) {
+                printf("Object not where expected!");
+                return false;
+        }
+        fread(o, sizeof(obj_t), 1, f);
+        return true;
 }
 
-void load_inventory(obj_t *i, FILE *f)
+bool load_inventory(obj_t *i, FILE *f)
 {
-        char str[6];
+        char str[9];
+        obj_t *tmp, *head;
+        int c, j;
 
         fread(str, sizeof(char), 9, f);
-        gtprintf("load_inventory! str=%s", str);
+        if(strncmp(str, "INVENTORY", 9)) {
+                gtprintf("Inventory not where expected! This won't end well!");
+                return false;
+        }
+
+        if(!i)
+                i = init_inventory();
+
+        fread(&c, sizeof(int), 1, f);
+
+        tmp = gtmalloc(sizeof(obj_t));
+        head = i;
+
+        for(j = 0; j < c; j++) {
+                if(!load_object(i->next, f)) {
+                        printf("load_object failed!");
+                        return false;
+                }
+
+                if(i->next) {
+                        i->next->next = gtmalloc(sizeof(obj_t));
+                        i->next = i->next->next;
+                        printf("loaded object %s (quantity: %d)\n", (i->next->type == OT_GOLD ? "gold" : i->next->basename), i->next->quantity);
+                }
+        }
+
+        //i = head;
+
+        return true;
 }
 
 bool load_monster(monster_t *m, level_t *l, FILE *f)
@@ -282,12 +345,11 @@ bool load_monster(monster_t *m, level_t *l, FILE *f)
         monster_t mdef;
 
         fread(str, sizeof(char), 7, f);
-        if(strcmp(str, "MONSTER")) {
+        if(strncmp(str, "MONSTER", 7)) {
                 gtprintf("NO THIS IS NOT A MONSTER");
                 gtprintf("load_monster! STR=%s", str);
                 return false;
         }
-        gtprintf("load_monster! STR=%s", str);
 
         if(!m)
                 m = gtmalloc(sizeof(monster_t));
@@ -334,7 +396,7 @@ bool load_monster(monster_t *m, level_t *l, FILE *f)
         return true;
 }
 
-void load_cell(cell_t *c, level_t *l, FILE *f)
+bool load_cell(cell_t *c, level_t *l, FILE *f)
 {
         bool flag;
 
@@ -355,7 +417,12 @@ void load_cell(cell_t *c, level_t *l, FILE *f)
         /* cell has inventory? */
         fread(&flag, sizeof(bool), 1, f);
         if(flag)
-                load_inventory(c->inventory, f);
+                if(!load_inventory(c->inventory, f)) {
+                        printf("load_inventory failed!");
+                        return false;
+                }
+
+        return true;
 }
 
 bool load_level(level_t *l, FILE *f)
@@ -375,7 +442,10 @@ bool load_level(level_t *l, FILE *f)
 
         for(y = 0; y < l->ysize; y++)
                 for(x = 0; x < l->xsize; x++)
-                        load_cell(&l->c[y][x], l, f);
+                        if(!load_cell(&l->c[y][x], l, f)) {
+                                printf("load_cell failed!");
+                                return false;
+                        }
 
         gtprintf("loaded level!");
         return true;
@@ -443,6 +513,7 @@ bool load_player(actor_t *p, FILE *f)
 {
         struct player_save_struct s;
         int i;
+        bool inventory;
         char str[6];
 
         fread(str, sizeof(char), 6, f);
@@ -474,8 +545,12 @@ bool load_player(actor_t *p, FILE *f)
         for(i = 0; i < MAX_SKILLS; i++)
                 p->skill[i] = s.skill[i];
 
-        /* TODO: ADD INVENTORY ETC */
-
+        fread(&inventory, sizeof(bool), 1, f);
+        if(inventory)
+                if(!load_inventory(p->inventory, f)) {
+                        printf("load_inventory in player failed!");
+                        return false;
+                }
         return true;
 }
 

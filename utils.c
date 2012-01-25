@@ -20,7 +20,6 @@
 #include "display.h"
 #include "gt.h"
 
-#define MAX_GARBAGE 10000
 
 void *garbage[MAX_GARBAGE];
 int garbageindex;

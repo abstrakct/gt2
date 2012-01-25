@@ -10,6 +10,7 @@
 #define setbit(a, b)   (a |= b)
 #define hasbit(a, b)   (a & b)
 
+#define MAX_GARBAGE 100000
 // d(a, b)
 // "throw" a b-sided dices without any modifiers
 #define d(a,b) dice(a,b,0)
@@ -30,5 +31,5 @@ int perc(int i);
 int ri(int a, int b);
 
 extern int garbageindex;
-extern void *garbage[10000];
+extern void *garbage[MAX_GARBAGE];
 #endif

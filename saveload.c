@@ -298,7 +298,7 @@ obj_t *load_object(FILE *f)
 obj_t *load_inventory(FILE *f)
 {
         char str[9];
-        obj_t *head, *i, *tmp;
+        obj_t *head, *i;
         int c, j;
 
         fread(str, sizeof(char), 9, f);
@@ -310,21 +310,20 @@ obj_t *load_inventory(FILE *f)
 
         i = init_inventory();
 
-        head = i;
         fread(&c, sizeof(int), 1, f);
+        i = load_object(f);
+        head = i;
 
-        //tmp = gtmalloc(sizeof(obj_t));
-        for(j = 0; j < c; j++) {
-                i = load_object(f);
-                if(!i) {
+        for(j = 1; j < c; j++) {
+                i->head = head;
+                i->next = i->prev = NULL;
+                i->next = load_object(f);
+                if(!i->next) {
                         printf("load_object failed!\n");
                         return false;
                 }
-                printf("loaded object %s (oid %d)\n", i->basename, i->oid);
-                tmp = head->next;
-                head->next = i;
-                head->next->next = tmp;
-                //i = i->next;
+                i = i->next;
+                //printf("loaded object %s (oid %d)\n", i->basename, i->oid);
         }
 
         i = head;

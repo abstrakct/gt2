@@ -445,18 +445,11 @@ bool do_action(int action)
         if(cf(ply, plx) & CF_HAS_STAIRS_UP)
                 gtprintf("There's a staircase of stone leading up here.");
 
-        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0) {
+        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0)
                 gtprintf("There is %d gold pieces here!", ci(ply, plx)->quantity);
-                player->inventory->quantity += ci(ply, plx)->quantity;
-                ci(ply, plx)->quantity -= ci(ply, plx)->quantity;
-        }
 
-
-        if(ci(ply, plx) && ci(ply, plx)->next) {
+        if(ci(ply, plx) && ci(ply, plx)->next)
                 gtprintf("There is a %s here.", ci(ply, plx)->next->basename);
-                //move_to_inventory(ci(ply, plx)->next, player->inventory);
-                pick_up(ci(ply, plx)->next, player);
-        }
 
         return fullturn;
 }
@@ -538,8 +531,12 @@ bool do_next_thing_in_queue() // needs a better name..
                 gtfree(tmp);
         }
 
-        if(ret)
+        if(ret) {
                 game->turn++;
+                draw_world(world->curlevel);
+                draw_wstat();
+                update_screen();
+        }
 
         return ret;
 }
@@ -630,12 +627,6 @@ int main(int argc, char *argv[])
 
         updatescreen = true;
         do {
-                if(updatescreen) {
-                        draw_world(world->curlevel);
-                        draw_wstat();
-                        update_screen();
-                }
-
                 c = get_command();
 
                 mapchanged = false;
@@ -764,6 +755,15 @@ int main(int argc, char *argv[])
                                 queue(ACTION_NOTHING);
                                 dump_objects(player->inventory);
                                 break;
+                        case CMD_PICKUP:
+                                if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0) {
+                                        player->inventory->quantity += ci(ply, plx)->quantity;
+                                        ci(ply, plx)->quantity -= ci(ply, plx)->quantity;
+                                }
+
+                                if(ci(ply, plx) && ci(ply, plx)->next) {
+                                        pick_up(ci(ply, plx)->next, player);
+                                }
                         //case 'a': dump_action_queue();
                         default:
                                 queue(ACTION_NOTHING);

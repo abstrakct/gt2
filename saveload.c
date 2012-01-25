@@ -171,7 +171,6 @@ void save_player(actor_t *p, FILE *f)
 {
         struct player_save_struct s;
         int i;
-        bool inv;
 
         s.x = p->x;
         s.y = p->y;
@@ -197,14 +196,8 @@ void save_player(actor_t *p, FILE *f)
 
         fwrite("PLAYER", sizeof(char), 6, f);
         fwrite(&s, sizeof(struct player_save_struct), 1, f);
-        if(p->inventory) {
-                inv = true;
-                fwrite(&inv, sizeof(bool), 1, f);
-                save_inventory(player->inventory, f);
-        } else {
-                inv = false;
-                fwrite(&inv, sizeof(bool), 1, f);
-        }
+
+        save_inventory(player->inventory, f);
 }
 
 void generate_savefilename(char *filename)
@@ -285,26 +278,27 @@ bool save_game(char *filename)
  * And now... loading!
  */
 
-bool load_object(obj_t *o, FILE *f)
+obj_t *load_object(FILE *f)
 {
         char str[6];
-
-        if(!o)
-                o = gtmalloc(sizeof(obj_t));
+        obj_t *o;
 
         fread(str, sizeof(char), 6, f);
         if(strncmp(str, "OBJECT", 6)) {
                 printf("Object not where expected!");
                 return false;
         }
+
+        o = gtmalloc(sizeof(obj_t));
         fread(o, sizeof(obj_t), 1, f);
-        return true;
+
+        return o;
 }
 
-bool load_inventory(obj_t *i, FILE *f)
+obj_t *load_inventory(FILE *f)
 {
         char str[9];
-        obj_t *tmp, *head;
+        obj_t *head, *i, *tmp;
         int c, j;
 
         fread(str, sizeof(char), 9, f);
@@ -313,30 +307,29 @@ bool load_inventory(obj_t *i, FILE *f)
                 return false;
         }
 
-        if(!i)
-                i = init_inventory();
 
+        i = init_inventory();
+
+        head = i;
         fread(&c, sizeof(int), 1, f);
 
-        tmp = gtmalloc(sizeof(obj_t));
-        head = i;
-
+        //tmp = gtmalloc(sizeof(obj_t));
         for(j = 0; j < c; j++) {
-                if(!load_object(i->next, f)) {
-                        printf("load_object failed!");
+                i = load_object(f);
+                if(!i) {
+                        printf("load_object failed!\n");
                         return false;
                 }
-
-                if(i->next) {
-                        i->next->next = gtmalloc(sizeof(obj_t));
-                        i->next = i->next->next;
-                        printf("loaded object %s (quantity: %d)\n", (i->next->type == OT_GOLD ? "gold" : i->next->basename), i->next->quantity);
-                }
+                printf("loaded object %s (oid %d)\n", i->basename, i->oid);
+                tmp = head->next;
+                head->next = i;
+                head->next->next = tmp;
+                //i = i->next;
         }
 
-        //i = head;
+        i = head;
 
-        return true;
+        return i;
 }
 
 bool load_monster(monster_t *m, level_t *l, FILE *f)
@@ -416,11 +409,13 @@ bool load_cell(cell_t *c, level_t *l, FILE *f)
 
         /* cell has inventory? */
         fread(&flag, sizeof(bool), 1, f);
-        if(flag)
-                if(!load_inventory(c->inventory, f)) {
+        if(flag) {
+                c->inventory = load_inventory(f);
+                if(!c->inventory) {
                         printf("load_inventory failed!");
                         return false;
                 }
+        }
 
         return true;
 }
@@ -513,7 +508,6 @@ bool load_player(actor_t *p, FILE *f)
 {
         struct player_save_struct s;
         int i;
-        bool inventory;
         char str[6];
 
         fread(str, sizeof(char), 6, f);
@@ -522,6 +516,8 @@ bool load_player(actor_t *p, FILE *f)
                 fprintf(stderr, "read %s instead of PLAYER?!\n", str);
                 return false;
         }
+
+        printf("loadplayerstart\n");
         fread(&s, sizeof(struct player_save_struct), 1, f);
         p->x = s.x;
         p->y = s.y;
@@ -545,12 +541,13 @@ bool load_player(actor_t *p, FILE *f)
         for(i = 0; i < MAX_SKILLS; i++)
                 p->skill[i] = s.skill[i];
 
-        fread(&inventory, sizeof(bool), 1, f);
-        if(inventory)
-                if(!load_inventory(p->inventory, f)) {
-                        printf("load_inventory in player failed!");
-                        return false;
-                }
+        p->inventory = load_inventory(f);
+
+        if(!p->inventory) {
+                printf("load_inventory in player failed!");
+                return false;
+        }
+        printf("loadplayerend\n");
         return true;
 }
 

@@ -59,9 +59,7 @@ void dump_objects(obj_t *i)
         while(n) {
                 o = n;
                 gtprintf("\n");
-                gtprintf("OID:      %d\n", o->oid);
-                gtprintf("Basename: %s\n", o->basename);
-                gtprintf("Type:     %s\n", otypestrings[o->type]);
+                gtprintf("OID:      %d\tBasename: %s\tType:     %s", o->oid, o->basename, otypestrings[o->type]);
                 if(o->type == OT_GOLD)
                         gtprintf("Amount:   %d\n", o->quantity);
                 if(is_armor(o->type))
@@ -74,6 +72,7 @@ void dump_objects(obj_t *i)
                 gtprintf("\n");
                 n = o->next;
         }
+
 }
 
 void dump_action_queue()

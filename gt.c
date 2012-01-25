@@ -134,7 +134,7 @@ void init_player()
         player->viewradius = 50;
         player->level = 1;
         player->hp = 10;
-        player->inventory = init_inventory();
+        //player->inventory = init_inventory();
 }
 
 void shutdown_gt()
@@ -616,6 +616,7 @@ int main(int argc, char *argv[])
 
                 init_display();
                 init_player();
+                player->inventory = init_inventory();
 
                 world->curlevel = world->out;
                 game->context = CONTEXT_OUTSIDE;

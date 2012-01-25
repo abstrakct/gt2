@@ -307,7 +307,6 @@ obj_t *load_inventory(FILE *f)
                 return false;
         }
 
-
         i = init_inventory();
 
         fread(&c, sizeof(int), 1, f);

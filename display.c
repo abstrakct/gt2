@@ -317,12 +317,12 @@ void draw_wstat()
         mvwprintw(wstat, 5, 1, "viewradius: %d      ", player->viewradius);
         mvwprintw(wstat, 6, 1, "HP: %d              ", player->hp);
         mvwprintw(wstat, 7, 1, "--------------------");
-        mvwprintw(wstat, 8, 1, "Inventory:");
-        mvwprintw(wstat, 9, 1, "Gold: %d            ", player->inventory->quantity);
+        mvwprintw(wstat, 8, 1, "Gold: %d            ", player->inventory->quantity);
+        mvwprintw(wstat, 9, 1, "Inventory:");
         o = player->inventory->next;
         i = 10;
         while(o) {
-                mvwprintw(wstat, i, 1, "- %s        ", o->basename);
+                mvwprintw(wstat, i, 1, "  * %s        ", o->basename);
                 i++;
                 o = o->next;
         }

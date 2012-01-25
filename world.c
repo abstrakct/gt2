@@ -183,58 +183,6 @@ struct room {
         int y1, x1, y2, x2, sx, sy;
 };
 
-void generate_dungeon_normal(int d)
-{
-        struct room *r;        
-        int numrooms, nrx, nry, i, j;
-        int x1, y1, sy, sx, x2, y2, rindex;
-        level_t *l;
-                
-        l = &world->dng[d];
-        nrx = l->xsize / 60;
-        nry = l->ysize / 60;
-        numrooms = nrx * nry;
-        r = gtcalloc(numrooms+1, sizeof(struct room));
-        rindex = 0;
-
-        printf("Generating %d x %d = %d rooms (levelsize = %d x %d)\n", nrx, nry, numrooms, l->xsize, l->ysize);
-        
-        for(i = 1; i <= nrx; i++) {
-                for(j = 1; j <= nry; j++) {
-                        y1 = ri(5, (l->ysize/(nry+1)*j)) + ri(2,10);
-                        x1 = ri(5, (l->xsize/(nrx+1)*i)) + ri(2,10);
-                        sy = ri(5,15);
-                        sx = ri(15,25);
-                        y2 = y1 + sy;
-                        x2 = x1 + sx;
-                        printf("painting room %d from %d,%d to %d,%d\n", rindex, y1,x1,y2,x2);
-                        paint_room(l, y1, x1, sy, sx, 1);
-                        r[rindex].y1 = y1;
-                        r[rindex].x1 = x1;
-                        r[rindex].y2 = y2;
-                        r[rindex].x2 = x2;
-                        rindex++;
-                }
-        }
-
-        for(i = 0; i < numrooms; i++) {
-                if(i == (numrooms - 1))
-                        break;
-
-
-
-                //paint_corridor(l, r[i].y1, r[i].x1, r[i+1].y2, r[i+1].x2);
-        }
-        
-
-
-        gtfree(r);
-
-        /*paint_room(&world->dng[1], 10, 10, 10, 10, 0);
-        paint_room(&world->dng[1], 30, 30, 10, 10, 0);
-        paint_corridor(&world->dng[1], 15, 20, 35, 30);*/
-}
-
 void generate_dungeon_normal2(int d)
 {
         struct room **r;        

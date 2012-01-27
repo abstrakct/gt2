@@ -27,6 +27,70 @@ aifunction aitable[] = {
         advancedai
 };
 
+void simpleoutdoorpathfinder(actor_t *creature, actor_t *player)
+{
+        int choice;
+
+        if(!creature->goalx || !creature->goaly || creature->x == creature->goalx || creature->y == creature->goaly) {
+                // basically, if we have no goal, or have reached the goal, set a new goal.
+                creature->goalx = ri(1, world->curlevel->xsize - 1);
+                creature->goaly = ri(1, world->curlevel->ysize - 1);
+        }
+
+        // now, let's try to avoid the stupid diagonal only walk.
+
+        choice = ri(1,100);
+        if(choice <= 45) {
+                if(creature->x > creature->goalx)
+                        creature->x--;
+                if(creature->x < creature->goalx)
+                        creature->x++;
+        } else if(choice > 45 && choice <= 90) {
+                if(creature->y > creature->goaly)
+                        creature->y--;
+                if(creature->y < creature->goaly)
+                        creature->y++;
+        } else if(choice > 90) {
+                // maybe not extremely useful, but adds randomness to the movements,
+                // as if the creature's attention was briefly caught by something else..
+
+                switch(choice) {
+                        case 91:
+                                creature->x--;
+                                creature->y++;
+                                break;
+                        case 92: 
+                                creature->y++;
+                                break;
+                        case 93:
+                                creature->y++;
+                                creature->x++;
+                                break;
+                        case 94:
+                                creature->x--;
+                                break;
+                        case 95: 
+                                break;
+                        case 96:
+                                creature->x++;
+                                break;
+                        case 97:
+                                creature->x--;
+                                creature->y--;
+                                break;
+                        case 98:
+                                creature->y--;
+                                break;
+                        case 99:
+                                creature->x++;
+                                creature->y--;
+                                break;
+                        case 100:
+                                break;
+                }
+        }
+}
+
 void simpleai(monster_t *m)
 {
         int dir, ox, oy;
@@ -71,7 +135,7 @@ void simpleai(monster_t *m)
                 m->x = ox; m->y = oy;
                 attack(m, player);
         }
-                
+
         if(!monster_passable(world->curlevel, m->y, m->x)) {
                 m->x = ox; m->y = oy;
                 return;
@@ -88,10 +152,50 @@ void simpleai(monster_t *m)
 
 void advancedai(monster_t *m)
 {
-        if(actor_in_lineofsight(m, player))
-                gtprintf("%d - %s - I can see you!", game->turn, m->name);
+        //if(actor_in_lineofsight(m, player))
+          //      gtprintf("%d - %s - I can see you!", game->turn, m->name);
 
         simpleai(m);
+}
+
+void hostile_ai(actor_t *creature, actor_t *player)
+{
+        if(player->x >= (creature->x-10) && player->x <= creature->x+10 && player->y >= creature->y-10 && player->y <= creature->y+10) {
+                creature->goalx = player->x;
+                creature->goaly = player->y;
+
+                if(creature->x > creature->goalx) {
+                        creature->x--;
+                        if(creature->y == player->y && creature->x == player->x)
+                                creature->x++;
+                }
+
+                if(creature->x < creature->goalx) {
+                        creature->x++;
+                        if(creature->y == player->y && creature->x == player->x)
+                                creature->x--;
+                }
+
+                if(creature->y > creature->goaly) {
+                        creature->y--;
+                        if(creature->y == player->y && creature->x == player->x)
+                                creature->y++;
+                }
+
+                if(creature->y < creature->goaly) {
+                        creature->y++;
+                        if(creature->y == player->y && creature->x == player->x)
+                                creature->y--;
+                }
+
+                /*if(next_to(creature, player)) {
+                        creature->attacker = player;
+                        player->attacker = creature;
+                }*/
+        } else {
+                creature->attacker = NULL;
+                simpleoutdoorpathfinder(creature, player);
+        }
 }
 
 void move_monsters()
@@ -99,15 +203,45 @@ void move_monsters()
         monster_t *m;
 
         m = world->curlevel->monsters;
-        if(m)
-                m = m->next;
-        else
+        if(!m)
                 return;
 
         while(m) {
-                if(m->ai)
-                        m->ai(m);
                 m = m->next;
+                if(m)
+                        while(hasbit(m->flags, MF_ISDEAD))
+                                m = m->next;
+
+                if(m) {
+                        if(m->attacker) {
+                                if(next_to(m, m->attacker)) {
+                                        attack(m, m->attacker);
+                                } else {
+                                        m->movement += m->speed;
+                                        while(m->movement >= 1.0) {
+                                                world->curlevel->c[m->y][m->x].monster = NULL;
+                                                hostile_ai(m, m->attacker);
+                                                world->curlevel->c[m->y][m->x].monster = m;
+                                                m->movement -= 1.0;
+                                                draw_world(world->curlevel);
+                                                draw_wstat();
+                                                update_screen();
+                                                if(next_to(m, m->attacker)) {
+                                                        attack(m, m->attacker);
+                                                        return;
+                                                }
+                                        }
+                                }
+                        } else {
+                                m->movement += m->speed;
+                                while(m->movement >= 1.0) {
+                                        if(m->ai)
+                                                m->ai(m);
+                                        m->movement -= 1.0;
+                                }
+                        }
+                }
+
         }
 }
 
@@ -157,8 +291,13 @@ void kill_monster(monster_t *m)
 {
         // sanity check, can't possibly fail, can it?
         if(world->curlevel->c[m->y][m->x].monster == m) {
+                // we probably should free/remove dead monsters, but something keeps going wrong, there cheap cop-out:
+                setbit(world->curlevel->c[m->y][m->x].monster->flags, MF_ISDEAD);
                 world->curlevel->c[m->y][m->x].monster = NULL;
-                gtfree(m);
+
+                /*world->curlevel->c[m->y][m->x].monster->prev->next = world->curlevel->c[m->y][m->x].monster->next;
+                world->curlevel->c[m->y][m->x].monster->next->prev = world->curlevel->c[m->y][m->x].monster->prev;
+                gtfree(m);*/
         } else {
                 gtprintf("monster's x&y doesn't correspond to cell?");
         }

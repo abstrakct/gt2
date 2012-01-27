@@ -62,6 +62,8 @@ bool mapchanged;
 int tempxsize, tempysize;
 bool loadgame;
 
+actor_t *a_attacker, *a_victim;
+
 // Messages
 message_t messages[500];
 int currmess, maxmess;
@@ -196,8 +198,12 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_DOWN:
                         if(passable(world->curlevel, ply+1, plx)) {
                                 if(world->curlevel->c[ply+1][plx].monster) {
-                                        gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx].monster->name);
-                                        attack(player, world->curlevel->c[ply+1][plx].monster);
+                                        //gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx].monster->name);
+                                        a_attacker = player;
+                                        a_victim = world->curlevel->c[ply+1][plx].monster;
+                                        queue(ACTION_ATTACK);
+                                        fullturn = false;
+                                        break;
                                 } else
                                         ply++;
                         } else {
@@ -219,8 +225,12 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_UP:
                         if(passable(world->curlevel, ply-1,plx)) {
                                 if(world->curlevel->c[ply-1][plx].monster) {
-                                        gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx].monster->name);
-                                        attack(player, world->curlevel->c[ply-1][plx].monster);
+                                        //gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx].monster->name);
+                                        a_attacker = player;
+                                        a_victim = world->curlevel->c[ply-1][plx].monster;
+                                        queue(ACTION_ATTACK);
+                                        fullturn = false;
+                                        break;
                                 } else
                                         ply--;
                         } else {
@@ -240,8 +250,12 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_LEFT:
                         if(passable(world->curlevel, ply, plx-1)) {
                                 if(world->curlevel->c[ply][plx-1].monster) {
-                                        gtprintf("You attack the %s!", world->curlevel->c[ply][plx-1].monster->name);
-                                        attack(player, world->curlevel->c[ply][plx-1].monster);
+                                        //gtprintf("You attack the %s!", world->curlevel->c[ply][plx-1].monster->name);
+                                        a_attacker = player;
+                                        a_victim = world->curlevel->c[ply][plx-1].monster;
+                                        queue(ACTION_ATTACK);
+                                        fullturn = false;
+                                        break;
                                 } else
                                         plx--;
                         } else {
@@ -261,8 +275,12 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_RIGHT:
                         if(passable(world->curlevel, ply,plx+1)) {
                                 if(world->curlevel->c[ply][plx+1].monster) {
-                                        gtprintf("You attack the %s!", world->curlevel->c[ply][plx+1].monster->name);
-                                        attack(player, world->curlevel->c[ply][plx+1].monster);
+                                        //gtprintf("You attack the %s!", world->curlevel->c[ply][plx+1].monster->name);
+                                        a_attacker = player;
+                                        a_victim = world->curlevel->c[ply][plx+1].monster;
+                                        queue(ACTION_ATTACK);
+                                        fullturn = false;
+                                        break;
                                 } else
                                         plx++;
                         } else {
@@ -284,8 +302,12 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_NW:
                         if(passable(world->curlevel, ply-1,plx-1)) {
                                 if(world->curlevel->c[ply-1][plx-1].monster) {
-                                        gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx-1].monster->name);
-                                        attack(player, world->curlevel->c[ply-1][plx-1].monster);
+                                        //gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx-1].monster->name);
+                                        a_attacker = player;
+                                        a_victim = world->curlevel->c[ply-1][plx-1].monster;
+                                        queue(ACTION_ATTACK);
+                                        fullturn = false;
+                                        break;
                                 } else {
                                         ply--;
                                         plx--;
@@ -316,8 +338,12 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_NE:
                         if(passable(world->curlevel, ply-1,plx+1)) {
                                 if(world->curlevel->c[ply-1][plx+1].monster) {
-                                        gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx+1].monster->name);
-                                        attack(player, world->curlevel->c[ply-1][plx+1].monster);
+                                        //gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx+1].monster->name);
+                                        a_attacker = player;
+                                        a_victim = world->curlevel->c[ply-1][plx+1].monster;
+                                        queue(ACTION_ATTACK);
+                                        fullturn = false;
+                                        break;
                                 } else {
                                         ply--; plx++;
                                 }
@@ -352,8 +378,12 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_SW:
                         if(passable(world->curlevel, ply+1, plx-1)) {
                                 if(world->curlevel->c[ply+1][plx-1].monster) {
-                                        gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx-1].monster->name);
-                                        attack(player, world->curlevel->c[ply+1][plx-1].monster);
+                                        //gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx-1].monster->name);
+                                        a_attacker = player;
+                                        a_victim = world->curlevel->c[ply+1][plx-1].monster;
+                                        queue(ACTION_ATTACK);
+                                        fullturn = false;
+                                        break;
                                 } else {
                                         ply++; plx--;
                                 }
@@ -386,8 +416,12 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_SE:
                         if(passable(world->curlevel, ply+1, plx+1)) {
                                 if(world->curlevel->c[ply+1][plx+1].monster) {
-                                        gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx+1].monster->name);
-                                        attack(player, world->curlevel->c[ply+1][plx+1].monster);
+                                        //gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx+1].monster->name);
+                                        a_attacker = player;
+                                        a_victim = world->curlevel->c[ply+1][plx+1].monster;
+                                        queue(ACTION_ATTACK);
+                                        fullturn = false;
+                                        break;
                                 } else {
                                         ply++; plx++;
                                 }
@@ -422,11 +456,29 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         break;
+                case ACTION_PICKUP:
+                        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0) {
+                                player->inventory->quantity += ci(ply, plx)->quantity;
+                                ci(ply, plx)->quantity -= ci(ply, plx)->quantity;
+                        }
+
+                        if(ci(ply, plx) && ci(ply, plx)->next) {
+                                pick_up(ci(ply, plx)->next, player);
+                        }
+                        break;
+                case ACTION_ATTACK:
+                        attack(a_attacker, a_victim);
+                        break;
+                case ACTION_MOVE_MONSTERS:
+                        move_monsters();
+                        fullturn = false;
+                        break;
                 case ACTION_NOTHING:
                         //updatescreen = false;
                         break;
                 default:
                         fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, action);
+                        gtprintf("DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, action);
                         fullturn = false;
                         //updatescreen = false;
                         break;
@@ -439,17 +491,6 @@ bool do_action(int action)
                 ply = oldy; plx = oldx;
         }
 
-        if(cf(ply, plx) & CF_HAS_STAIRS_DOWN)
-                gtprintf("There's a staircase of stone leading down here.");
-
-        if(cf(ply, plx) & CF_HAS_STAIRS_UP)
-                gtprintf("There's a staircase of stone leading up here.");
-
-        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0)
-                gtprintf("There is %d gold pieces here!", ci(ply, plx)->quantity);
-
-        if(ci(ply, plx) && ci(ply, plx)->next)
-                gtprintf("There is a %s here.", ci(ply, plx)->next->basename);
 
         return fullturn;
 }
@@ -479,6 +520,7 @@ void queue(int action)
         actionnum++;
         tmp->num = actionnum;
         prev->next = tmp;
+        aq->num++;
 }
 
 /*
@@ -527,15 +569,9 @@ bool do_next_thing_in_queue() // needs a better name..
 
         if(tmp) {
                 ret = do_action(tmp->action);
+                aq->num--;
                 aq->next = tmp->next;
                 gtfree(tmp);
-        }
-
-        if(ret) {
-                game->turn++;
-                draw_world(world->curlevel);
-                draw_wstat();
-                update_screen();
         }
 
         return ret;
@@ -550,8 +586,6 @@ bool do_all_things_in_queue() // needs a better name..
 
         while(tmp) {
                 ret = do_next_thing_in_queue();
-                if(ret)
-                        move_monsters();
                 tmp = tmp->next;
         }
 
@@ -560,21 +594,51 @@ bool do_all_things_in_queue() // needs a better name..
 
 void do_turn(int do_all)
 {
-        bool fullturn;
+       // bool fullturn;
+        int i, ret;
 
-        if(!do_all)
+        i = aq->num;
+        while(i) {
+                i = aq->num;
+                ret = do_next_thing_in_queue();
+
+                if(ret) {
+                        game->turn++;
+                
+                        draw_world(world->curlevel);
+                        draw_wstat();
+                        update_screen();
+
+                        if(cf(ply, plx) & CF_HAS_STAIRS_DOWN)
+                                gtprintf("There's a staircase of stone leading down here.");
+
+                        if(cf(ply, plx) & CF_HAS_STAIRS_UP)
+                                gtprintf("There's a staircase of stone leading up here.");
+
+                        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0)
+                                gtprintf("There is %d gold pieces here!", ci(ply, plx)->quantity);
+
+                        if(ci(ply, plx) && ci(ply, plx)->next)
+                                gtprintf("There is a %s here.", ci(ply, plx)->next->basename);
+
+                        queue(ACTION_MOVE_MONSTERS);
+                }
+
+        }
+
+
+
+        /*if(!do_all)
                 fullturn = do_next_thing_in_queue();
-        else
-                fullturn = do_all_things_in_queue();
+        else*/
+                //fullturn = do_all_things_in_queue();
 
         // TODO: make move_monsters act on a specific level!?!?!?
-        if(fullturn)
-                move_monsters();
 }
 
 int main(int argc, char *argv[])
 {
-        int c, x, updatescreen;
+        int c, x;
         char s[15];
 
         if(!setlocale(LC_ALL, ""))
@@ -625,7 +689,7 @@ int main(int argc, char *argv[])
         draw_wstat();
         initial_update_screen();
 
-        updatescreen = true;
+        //updatescreen = true;
         do {
                 c = get_command();
 
@@ -633,7 +697,7 @@ int main(int argc, char *argv[])
                 bool do_all = false;
                 player->oldx = plx;
                 player->oldy = ply;
-                updatescreen = true;
+                //updatescreen = true;
 
 
                 switch(c) {
@@ -723,7 +787,6 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_SAVE:
                                 save_game(game->savefile);
-                                updatescreen = true;
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_LOAD:
@@ -756,18 +819,12 @@ int main(int argc, char *argv[])
                                 dump_objects(player->inventory);
                                 break;
                         case CMD_PICKUP:
-                                if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0) {
-                                        player->inventory->quantity += ci(ply, plx)->quantity;
-                                        ci(ply, plx)->quantity -= ci(ply, plx)->quantity;
-                                }
-
-                                if(ci(ply, plx) && ci(ply, plx)->next) {
-                                        pick_up(ci(ply, plx)->next, player);
-                                }
-                        //case 'a': dump_action_queue();
+                                queue(ACTION_PICKUP);
+                                break;
+                        case 'a': dump_action_queue();
                         default:
                                 queue(ACTION_NOTHING);
-                                updatescreen = false;
+                                //updatescreen = false;
                                 game->turn--;
                                 break;
                 }

@@ -24,13 +24,16 @@
 
 unsigned int oid_counter;
 char objchars[] = {
+        ' ',               // nothing
         ')',               // weapon
-        ']',               // armor
-        '=',               // ring/jewellery
+        '[',               // armor
+        '=',               // ring
         '+',               // card
-        '|',               // wand
+        '/',               // wand
         '?',               // thing
         '$',               // gold
+        '"',               // amulet
+        '!',               // potion
 };
 
 obj_t get_objdef(int n)

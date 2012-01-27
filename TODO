@@ -1,3 +1,5 @@
 * Signal handler!
-* Garbage collection!?
-gtmalloc må holde styr på hva som er allokert?
+
+Det er noe galt med oppdatering av skjerm, flytting av monster etc
+Tror alt av attacks må endres til ACTION_
+Bruke global variabel for victim etc.

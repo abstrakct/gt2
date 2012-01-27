@@ -15,11 +15,12 @@ typedef void (*aifunction)(monster_t *);
 extern unsigned int mid_counter;
 extern aifunction aitable[];
 
-#define MF_ISHOSTILE         0x00000001
-#define MF_CANUSEWEAPON      0x00000002
-#define MF_CANUSEARMOR       0x00000004
-#define MF_CANHAVEGOLD       0x00000008
-#define MF_CANUSESIMPLESWORD 0x00000010
+#define MF_ISDEAD            (1 <<  1)
+#define MF_ISHOSTILE         (1 <<  2)
+#define MF_CANUSEWEAPON      (1 <<  3)
+#define MF_CANUSEARMOR       (1 <<  4)
+#define MF_CANHAVEGOLD       (1 <<  5)
+#define MF_CANUSESIMPLESWORD (1 <<  6)
 
 // Prototypes
 monster_t get_monsterdef(int n);

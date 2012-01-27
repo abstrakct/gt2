@@ -99,9 +99,36 @@ bool actor_in_lineofsight(actor_t *src, actor_t *dest)
         }
 }
 
+bool next_to(actor_t *a, actor_t *b)
+{
+        if(!a)
+                return 0;
+        if(!b)
+                return 0;
+
+        if((a->x == b->x-1 && a->y == b->y) ||
+                        (a->x == b->x+1 && a->y == b->y) ||
+                        (a->y == b->y-1 && a->x == b->x) ||
+                        (a->y == b->y+1 && a->x == b->x) ||
+                        (a->x == b->x-1 && a->y == b->y-1) ||
+                        (a->x == b->x+1 && a->y == b->y+1) ||
+                        (a->x == b->x-1 && a->y == b->y+1) ||
+                        (a->x == b->x+1 && a->y == b->y-1))
+                return true;
+        else
+                return false;
+
+        return false;
+}
+
+/*
+ * ATTACK!
+ */
 void attack(actor_t *attacker, actor_t *victim)
 {
         int damage;
+
+        victim->attacker = attacker;
 
         damage = dice(1, 10, 0);
         victim->hp -= damage;

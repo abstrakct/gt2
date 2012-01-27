@@ -58,6 +58,9 @@ struct actionqueue {                          // struct actionqueue
 #define ACTION_PLAYER_MOVE_NE     6
 #define ACTION_PLAYER_MOVE_SW     7
 #define ACTION_PLAYER_MOVE_SE     8
+#define ACTION_PICKUP             9
+#define ACTION_ATTACK            10
+#define ACTION_MOVE_MONSTERS     11
 
 #define CONTEXT_OUTSIDE 0
 #define CONTEXT_DUNGEON 1
@@ -100,6 +103,7 @@ extern WINDOW *wmap;*/
 
 /* function prototypes */
 
+bool do_next_thing_in_queue();
 void queue(int action);
 void shutdown_gt();
 

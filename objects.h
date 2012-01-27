@@ -31,13 +31,16 @@ struct object {
 
 typedef struct object obj_t;
 
-#define OT_WEAPON     0
-#define OT_ARMOR      1
-#define OT_RING       2
-#define OT_CARD       3
-#define OT_WAND       4
-#define OT_THING      5
-#define OT_GOLD       6
+#define OT_WEAPON     1
+#define OT_ARMOR      2
+#define OT_RING       3
+#define OT_CARD       4
+#define OT_WAND       5
+#define OT_THING      6
+#define OT_GOLD       7
+#define OT_AMULET     8
+#define OT_POTION     9
+
 
 extern char objchars[];
 extern char *otypestrings[];

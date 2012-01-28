@@ -183,6 +183,31 @@ struct room {
         int y1, x1, y2, x2, sx, sy;
 };
 
+/*
+ * this function cleans the dungeon for stuff
+ * made by the dungeon generator which shouldn't be there.
+ */
+void cleanup_dungeon(level_t *l)
+{
+        int y, x;
+
+        for(y = 0; y < l->ysize; y++) {
+                for(x = 0; x < l->xsize; x++) {
+                        if(hasbit(l->c[y][x].flags, CF_HAS_DOOR_CLOSED) && l->c[y][x].type == DNG_WALL)
+                                l->c[y][x].type = DNG_FLOOR;
+
+                        if(hasbit(l->c[y][x].flags, CF_HAS_DOOR_CLOSED)) {
+                                if(l->c[y+1][x].type == DNG_WALL && l->c[y-1][x].type == DNG_WALL)
+                                        break;
+                                if(l->c[y][x+1].type == DNG_WALL && l->c[y][x-1].type == DNG_WALL)
+                                        break;
+
+                                clearbit(l->c[y][x].flags, CF_HAS_DOOR_OPEN);
+                        }
+                }
+        }
+}
+
 void generate_dungeon_normal2(int d)
 {
         struct room **r;        
@@ -356,6 +381,9 @@ void generate_dungeon_normal2(int d)
                 addwall(&world->dng[d], l->ysize-4, tx);
                 addwall(&world->dng[d], l->ysize-5, tx);
         }
+
+        // And finally, do some cleaning:
+        cleanup_dungeon(&world->dng[d]);
 }
 
 /*********************************************

@@ -513,11 +513,6 @@ bool do_action(int action)
                                 player->viewradius = 50;
                         }
                         player->ticks -= TICKS_MOVEMENT;
-
-                        // a rather stupid hack to make sure the screen is properly updated after entering dungeon..
-                        game->turn -= 2;
-                        queue(ACTION_PLAYER_MOVE_NW);
-                        queue(ACTION_PLAYER_MOVE_SE);
                         break;
                 case ACTION_NOTHING:
                         //updatescreen = false;
@@ -756,6 +751,11 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_ENTERDUNGEON:
                                 queue(ACTION_ENTER_DUNGEON);
+
+                                // a rather stupid hack to make sure the screen is properly updated after entering dungeon..
+                                game->turn -= 2;
+                                queue(ACTION_PLAYER_MOVE_NW);
+                                queue(ACTION_PLAYER_MOVE_SE);
                                 break;
                         case CMD_FLOODFILL:
                                 x = ri(11,111);

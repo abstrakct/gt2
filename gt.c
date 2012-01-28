@@ -74,6 +74,7 @@ WINDOW *wall;
 WINDOW *wstat;
 WINDOW *winfo;
 WINDOW *wmap;
+WINDOW *wleft;
 #endif
 
 struct option gt_options[] = {
@@ -711,8 +712,8 @@ int main(int argc, char *argv[])
                 world->cmap = world->dng[game->currentlevel].c;
                 world->curlevel = &world->dng[game->currentlevel];
         } else {
-                world->dng[1].xsize = (ri(100, 180));  // let's start withing reasonable sizes!
-                world->dng[1].ysize = (ri(100, 180));
+                world->dng[1].xsize = (ri(50, 100));  // let's start within reasonable sizes!
+                world->dng[1].ysize = (ri(50, 100));
                 init_level(&world->dng[1]);
                 init_level(world->out);
                 generate_world();

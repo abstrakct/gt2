@@ -34,5 +34,6 @@ void kill_monster(monster_t *m);
 // AI
 void simpleai(monster_t *m);
 void advancedai(monster_t *m);
+void hostile_ai(monster_t *m);
 
 #endif

@@ -30,6 +30,8 @@ extern WINDOW *wall;
 extern WINDOW *wstat;
 extern WINDOW *winfo;
 extern WINDOW *wmap;
+extern WINDOW *wleft;
+
 extern int maxmess;
 
 // Stolen from DCSS!
@@ -70,18 +72,21 @@ void init_display()
 
         game->width = COLS;
         game->height = LINES;
-        game->mapw = ((COLS/4)*3);
+        game->mapw = ((COLS/4)*3) - (COLS/4);
         game->maph = ((LINES/3)*2)-1;
 
-        wall  = newwin(0, 0, 0, 0);                                                                                                                                                                                                                                                                                         
-        wmap  = subwin(wall, game->maph, game->mapw, 0, 0);               //øverst venstre                                                                                                                                                                                                                                          
+        wall  = newwin(0, 0, 0, 0);
+        wleft = subwin(wall, game->maph, (COLS/4), 0, 0);
+        wmap  = subwin(wall, game->maph, game->mapw, 0, (COLS/4));               //øverst venstre                                                                                                                                                                                                                                          
         wstat = subwin(wall, (LINES/3)*2-1, (COLS/4), 0, COLS-((COLS/4)));  //øverst høyre                                                                                                                                                                                                                                    
         winfo = subwin(wall, LINES/3, COLS, LINES-(LINES/3)-1, 0);          //nederst                                                                                                                                                                                                                                                 
         maxmess = (LINES/3)-2;
 
-        box(wmap, ACS_VLINE, ACS_HLINE);
+        box(wmap,  ACS_VLINE, ACS_HLINE);
         box(wstat, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                         
         box(winfo, ACS_VLINE, ACS_HLINE);
+        box(wleft, ACS_VLINE, ACS_HLINE);
+
 
         cbreak();
         // raw(); bruk denne istedet hvis vi skal takle interrupt handling.
@@ -100,6 +105,7 @@ void init_display()
         touchwin(wmap);
         touchwin(wstat);
         touchwin(winfo);
+        touchwin(wleft);
 }
 
 void shutdown_display()
@@ -352,6 +358,7 @@ void initial_update_screen()
         wnoutrefresh(wmap);
         wnoutrefresh(winfo);
         wnoutrefresh(wstat);
+        wnoutrefresh(wleft);
         doupdate();
 }
 

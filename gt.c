@@ -514,8 +514,9 @@ bool do_action(int action)
                         }
                         player->ticks -= TICKS_MOVEMENT;
                         game->turn -= 2;
-                        //queue(ACTION_PLAYER_MOVE_NW);
-                        //queue(ACTION_PLAYER_MOVE_SE);
+                        // a rather stupid hack to make sure the screen is properly updated after entering dungeon..
+                        queue(ACTION_PLAYER_MOVE_NW);
+                        queue(ACTION_PLAYER_MOVE_SE);
                         break;
                 case ACTION_NOTHING:
                         //updatescreen = false;

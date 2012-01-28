@@ -189,12 +189,16 @@ void generate_dungeon_normal2(int d)
         int numrooms, maxroomsizex, maxroomsizey, nrx, nry, i, j;
         int x1, y1, sy, sx, x2, y2, ty, tx;
         int starty, startx, endy, endx;
+        int minroomsizex, minroomsizey;
         level_t *l;
                 
         l = &world->dng[d];
 
-        maxroomsizey = 15;
-        maxroomsizex = 25;
+
+        minroomsizey = 5;
+        minroomsizex = 5;
+        maxroomsizey = 10;
+        maxroomsizex = 20;
 
         nrx = l->xsize / maxroomsizex;
         nry = l->ysize / maxroomsizey;
@@ -209,13 +213,11 @@ void generate_dungeon_normal2(int d)
         
         for(i = 1; i <= nrx; i++) {
                 for(j = 1; j <= nry; j++) {
-                        maxroomsizey = 15;
-                        maxroomsizex = 25;
                         do {
                                 y1 = ((j-1) * maxroomsizey) + ri(0,5);
                                 x1 = ((i-1) * maxroomsizex) + ri(0,5);
-                                sy = ri(5,  maxroomsizey - 5);
-                                sx = ri(15, maxroomsizex - 5);
+                                sy = ri(minroomsizey,  maxroomsizey);
+                                sx = ri(minroomsizex, maxroomsizex);
                                 y2 = y1 + sy;
                                 x2 = x1 + sx;
                                 if(y2 >= l->ysize)

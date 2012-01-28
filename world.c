@@ -823,7 +823,7 @@ void generate_world()
         generate_dungeon_normal2(1);
         spawn_monsters(20, &world->dng[1], 100);
         spawn_objects(ri(world->dng[1].xsize/10, world->dng[1].xsize/5), &world->dng[1]);
-        spawn_golds((int) ri(10, world->dng[1].xsize / 10), (player->level+1) * 35, &world->dng[1]);
+        spawn_golds((int) ri(10, 10+world->dng[1].xsize / 10), (player->level+1) * 35, &world->dng[1]);
         game->createddungeons++;
 
         // create the edge of the world

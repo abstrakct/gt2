@@ -136,7 +136,7 @@ void init_player()
         game->mapcy = game->maph + 2;
         player->viewradius = 50;
         player->level = 1;
-        player->hp = 10;
+        player->hp = player->maxhp = 100;
         //player->inventory = init_inventory();
 }
 

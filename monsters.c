@@ -221,10 +221,12 @@ void hostile_ai(actor_t *m)
                 }
                 world->cmap[oy][ox].monster = NULL;
                 world->cmap[m->y][m->x].monster = m;
+                m->ticks -= 1000;
 
         } else {
                 m->attacker = NULL;
                 simpleoutdoorpathfinder(m);
+                m->ticks -= 1000;
         }
 }
 
@@ -238,9 +240,8 @@ void move_monsters()
 
         while(m) {
                 m = m->next;
-                if(m)
-                        while(hasbit(m->flags, MF_ISDEAD))
-                                m = m->next;
+                while(m && hasbit(m->flags, MF_ISDEAD))
+                        m = m->next;
 
                 if(m) {
                         if(m->attacker) {
@@ -251,7 +252,6 @@ void move_monsters()
 
                                         while(m->ticks >= 1000) {
                                                 hostile_ai(m);
-                                                m->ticks -= 1000;
                                                 draw_world(world->curlevel);
                                                 draw_wstat();
                                                 update_screen();

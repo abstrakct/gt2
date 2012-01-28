@@ -140,7 +140,8 @@ void attack(actor_t *attacker, actor_t *victim)
 
         if(victim->hp <= 0) {
                 if(victim == player)
-                        you("die!!!");
+                        player->hp += 10;
+                        //you("die!!!");
                 else {
                         you("kill the %s!", victim->name);
                         kill_monster(victim);
@@ -150,5 +151,5 @@ void attack(actor_t *attacker, actor_t *victim)
         if(attacker == player)
                 player->ticks -= TICKS_ATTACK;
         else
-                attacker->ticks = TICKS_ATTACK;
+                attacker->ticks -= TICKS_ATTACK;
 }

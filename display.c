@@ -315,18 +315,28 @@ void draw_wstat()
 {
         obj_t *o;
         int i;
+        int color;
 
-        mvwprintw(wstat, 1, 1, "Name:");
-        mvwprintw(wstat, 2, 1, "Turn:   %d", game->turn);
-        mvwprintw(wstat, 3, 1, "(y,x)   (%d,%d)     ", ply, plx);
-        mvwprintw(wstat, 4, 1, "(py,px) (%d,%d)     ", ppy, ppx);
-        mvwprintw(wstat, 5, 1, "viewradius: %d      ", player->viewradius);
-        mvwprintw(wstat, 6, 1, "HP: %d              ", player->hp);
-        mvwprintw(wstat, 7, 1, "--------------------");
-        mvwprintw(wstat, 8, 1, "Gold: %d            ", player->inventory->quantity);
-        mvwprintw(wstat, 9, 1, "Inventory:");
+        mvwprintw(wleft, 1, 1, "Name:");
+        mvwprintw(wleft, 2, 1, "Turn:   %d", game->turn);
+        mvwprintw(wleft, 3, 1, "(y,x)   (%d,%d)     ", ply, plx);
+        mvwprintw(wleft, 4, 1, "(py,px) (%d,%d)     ", ppy, ppx);
+        mvwprintw(wleft, 5, 1, "viewradius: %d      ", player->viewradius);
+        if(player->hp >= (player->maxhp/4*3))
+                color = COLOR_PAIR(COLOR_GREEN);
+        else if(player->hp >= (player->maxhp/4) && player->hp < (player->maxhp/4*3))
+                color = COLOR_PAIR(COLOR_YELLOW);
+        else if(player->hp < (player->maxhp/4))
+                color = COLOR_PAIR(COLOR_RED);
+        mvwprintw(wleft, 6, 1, "HP:");
+        wattron(wleft, color);
+        mvwprintw(wleft, 6, 5, "%d   ", player->hp);
+        wattroff(wleft, color);
+
+        mvwprintw(wstat, 1, 1, "Inventory:");
+        mvwprintw(wstat, 2, 1, "Gold: %d            ", player->inventory->quantity);
         o = player->inventory->next;
-        i = 10;
+        i = 3;
         while(o) {
                 mvwprintw(wstat, i, 1, "  * %s             ", o->basename);
                 i++;
@@ -350,6 +360,7 @@ void gtmapaddch(int y, int x, int color, char c)
 void update_screen()
 {
         wnoutrefresh(wstat);
+        wnoutrefresh(wleft);
         doupdate();
 }
 

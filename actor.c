@@ -146,4 +146,9 @@ void attack(actor_t *attacker, actor_t *victim)
                         kill_monster(victim);
                 }
         }
+
+        if(attacker == player)
+                player->ticks -= TICKS_ATTACK;
+        else
+                attacker->ticks = TICKS_ATTACK;
 }

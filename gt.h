@@ -29,6 +29,7 @@ typedef struct {                              // game_t
         short        context;                 // which context are we in? see CONTEXT_ defines
         short        currentlevel;            // what's the current level?
         int          turn;                    // count turns
+        long long    tick;
         unsigned int seed;                    // random seed
         short        monsterdefs;             // number of monster definitions
         short        objdefs;                 // number of object definitions
@@ -61,6 +62,10 @@ struct actionqueue {                          // struct actionqueue
 #define ACTION_PICKUP             9
 #define ACTION_ATTACK            10
 #define ACTION_MOVE_MONSTERS     11
+#define ACTION_ENTER_DUNGEON     12
+
+#define TICKS_MOVEMENT 1000
+#define TICKS_ATTACK   1000
 
 #define CONTEXT_OUTSIDE 0
 #define CONTEXT_DUNGEON 1

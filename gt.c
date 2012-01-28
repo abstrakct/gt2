@@ -221,6 +221,7 @@ bool do_action(int action)
                         }
                         if(ppy < 0)
                                 ppy = 0;
+                        player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_PLAYER_MOVE_UP:
                         if(passable(world->curlevel, ply-1,plx)) {
@@ -246,6 +247,7 @@ bool do_action(int action)
                         }
                         if(ppy < 0)
                                 ppy = 0;
+                        player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
                         if(passable(world->curlevel, ply, plx-1)) {
@@ -271,6 +273,7 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
+                        player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
                         if(passable(world->curlevel, ply,plx+1)) {
@@ -298,6 +301,7 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
+                        player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_PLAYER_MOVE_NW:
                         if(passable(world->curlevel, ply-1,plx-1)) {
@@ -334,6 +338,7 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
+                        player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_PLAYER_MOVE_NE:
                         if(passable(world->curlevel, ply-1,plx+1)) {
@@ -374,6 +379,7 @@ bool do_action(int action)
                         }
                         if(ppy < 0)
                                 ppy = 0;
+                        player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_PLAYER_MOVE_SW:
                         if(passable(world->curlevel, ply+1, plx-1)) {
@@ -412,6 +418,7 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
+                        player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_PLAYER_MOVE_SE:
                         if(passable(world->curlevel, ply+1, plx+1)) {
@@ -455,6 +462,7 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
+                        player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_PICKUP:
                         if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0) {
@@ -465,13 +473,49 @@ bool do_action(int action)
                         if(ci(ply, plx) && ci(ply, plx)->next) {
                                 pick_up(ci(ply, plx)->next, player);
                         }
+                        player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_ATTACK:
                         attack(a_attacker, a_victim);
+                        player->ticks -= TICKS_ATTACK;
                         break;
                 case ACTION_MOVE_MONSTERS:
                         move_monsters();
                         fullturn = false;
+                        break;
+                case ACTION_ENTER_DUNGEON:
+                        if(world->cmap == world->out->c) {
+                                game->currentlevel++;
+                                world->cmap = world->dng[game->currentlevel].c;
+                                world->curlevel = &(world->dng[game->currentlevel]);
+                                game->context = CONTEXT_DUNGEON;
+
+                                ply = 0; plx = 0;
+                                while(!passable(world->curlevel, ply, plx)) {
+                                        ply = ri(0, world->curlevel->ysize-5);
+                                        plx = ri(0, world->curlevel->xsize-5);
+                                }
+
+                                ppy = ply - (game->maph / 2);
+                                ppx = plx - (game->mapw / 2);
+
+                                if(ppy <= 0)
+                                        ppy = 0;
+                                if(ppx <= 0)
+                                        ppx = 0;
+
+                                player->viewradius = 20;
+                        } else {
+                                game->currentlevel--;
+                                world->cmap = world->out->c;
+                                world->curlevel = world->out;
+                                game->context = CONTEXT_OUTSIDE;
+                                player->viewradius = 50;
+                        }
+                        player->ticks -= TICKS_MOVEMENT;
+                        game->turn -= 2;
+                        //queue(ACTION_PLAYER_MOVE_NW);
+                        //queue(ACTION_PLAYER_MOVE_SE);
                         break;
                 case ACTION_NOTHING:
                         //updatescreen = false;
@@ -597,17 +641,18 @@ void do_turn(int do_all)
        // bool fullturn;
         int i, ret;
 
+        player->ticks += 1000;
+        queue(ACTION_MOVE_MONSTERS);
         i = aq->num;
+
         while(i) {
                 i = aq->num;
-                ret = do_next_thing_in_queue();
-
+                //while(player->ticks > 0)
+                        ret = do_next_thing_in_queue();
+                        
                 if(ret) {
                         game->turn++;
-                
-                        draw_world(world->curlevel);
-                        draw_wstat();
-                        update_screen();
+                        //do_next_thing_in_queue();
 
                         if(cf(ply, plx) & CF_HAS_STAIRS_DOWN)
                                 gtprintf("There's a staircase of stone leading down here.");
@@ -620,9 +665,11 @@ void do_turn(int do_all)
 
                         if(ci(ply, plx) && ci(ply, plx)->next)
                                 gtprintf("There is a %s here.", ci(ply, plx)->next->basename);
-
-                        queue(ACTION_MOVE_MONSTERS);
                 }
+
+                draw_world(world->curlevel);
+                draw_wstat();
+                update_screen();
 
         }
 
@@ -706,37 +753,7 @@ int main(int argc, char *argv[])
                                 game->dead = 1;
                                 break;
                         case CMD_ENTERDUNGEON:
-                                if(world->cmap == world->out->c) {
-                                        game->currentlevel++;
-                                        world->cmap = world->dng[game->currentlevel].c;
-                                        world->curlevel = &(world->dng[game->currentlevel]);
-                                        game->context = CONTEXT_DUNGEON;
-
-                                        ply = 0; plx = 0;
-                                        while(!passable(world->curlevel, ply, plx)) {
-                                                ply = ri(0, world->curlevel->ysize-5);
-                                                plx = ri(0, world->curlevel->xsize-5);
-                                        }
-
-                                        ppy = ply - (game->maph / 2);
-                                        ppx = plx - (game->mapw / 2);
-                                        
-                                        if(ppy <= 0)
-                                                ppy = 0;
-                                        if(ppx <= 0)
-                                                ppx = 0;
-                                        
-                                        player->viewradius = 20;
-                                } else {
-                                        game->currentlevel--;
-                                        world->cmap = world->out->c;
-                                        world->curlevel = world->out;
-                                        game->context = CONTEXT_OUTSIDE;
-                                        player->viewradius = 50;
-                                }
-                                queue(ACTION_PLAYER_MOVE_NW);
-                                queue(ACTION_PLAYER_MOVE_SE);
-                                do_all = true;
+                                queue(ACTION_ENTER_DUNGEON);
                                 break;
                         case CMD_FLOODFILL:
                                 x = ri(11,111);

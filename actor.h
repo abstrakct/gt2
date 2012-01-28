@@ -60,6 +60,7 @@ typedef struct actorstruct {     // actor_t
         int c;             // character, for monsters.
         double speed;
         double movement;
+        long long ticks;
         int thac0;
         float skill[MAX_SKILLS];
         /* monster specific stuff */

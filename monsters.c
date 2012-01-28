@@ -27,68 +27,80 @@ aifunction aitable[] = {
         advancedai
 };
 
-void simpleoutdoorpathfinder(actor_t *creature, actor_t *player)
+void simpleoutdoorpathfinder(actor_t *m)
 {
         int choice;
+        int oy, ox;
 
-        if(!creature->goalx || !creature->goaly || creature->x == creature->goalx || creature->y == creature->goaly) {
+        oy = m->y;
+        ox = m->x;
+
+        if(!m->goalx || !m->goaly || m->x == m->goalx || m->y == m->goaly) {
                 // basically, if we have no goal, or have reached the goal, set a new goal.
-                creature->goalx = ri(1, world->curlevel->xsize - 1);
-                creature->goaly = ri(1, world->curlevel->ysize - 1);
+                m->goalx = ri(1, world->curlevel->xsize - 1);
+                m->goaly = ri(1, world->curlevel->ysize - 1);
         }
 
         // now, let's try to avoid the stupid diagonal only walk.
 
         choice = ri(1,100);
         if(choice <= 45) {
-                if(creature->x > creature->goalx)
-                        creature->x--;
-                if(creature->x < creature->goalx)
-                        creature->x++;
+                if(m->x > m->goalx)
+                        m->x--;
+                if(m->x < m->goalx)
+                        m->x++;
         } else if(choice > 45 && choice <= 90) {
-                if(creature->y > creature->goaly)
-                        creature->y--;
-                if(creature->y < creature->goaly)
-                        creature->y++;
+                if(m->y > m->goaly)
+                        m->y--;
+                if(m->y < m->goaly)
+                        m->y++;
         } else if(choice > 90) {
                 // maybe not extremely useful, but adds randomness to the movements,
                 // as if the creature's attention was briefly caught by something else..
 
                 switch(choice) {
                         case 91:
-                                creature->x--;
-                                creature->y++;
+                                m->x--;
+                                m->y++;
                                 break;
                         case 92: 
-                                creature->y++;
+                                m->y++;
                                 break;
                         case 93:
-                                creature->y++;
-                                creature->x++;
+                                m->y++;
+                                m->x++;
                                 break;
                         case 94:
-                                creature->x--;
+                                m->x--;
                                 break;
                         case 95: 
                                 break;
                         case 96:
-                                creature->x++;
+                                m->x++;
                                 break;
                         case 97:
-                                creature->x--;
-                                creature->y--;
+                                m->x--;
+                                m->y--;
                                 break;
                         case 98:
-                                creature->y--;
+                                m->y--;
                                 break;
                         case 99:
-                                creature->x++;
-                                creature->y--;
+                                m->x++;
+                                m->y--;
                                 break;
                         case 100:
                                 break;
                 }
         }
+
+        if(!monster_passable(world->curlevel, m->y, m->x)) {
+                m->y = oy;
+                m->x = ox;
+        }
+
+        world->cmap[oy][ox].monster = NULL;
+        world->cmap[m->y][m->x].monster = m;
 }
 
 void simpleai(monster_t *m)
@@ -142,12 +154,12 @@ void simpleai(monster_t *m)
         }
 
         world->cmap[oy][ox].monster = NULL;
-        if(m->x < 0)
+        world->cmap[m->y][m->x].monster = m;
+/*        if(m->x < 0)
                 m->x = 0;
         if(m->y < 0)
-                m->y = 0;
+                m->y = 0;*/
 
-        world->cmap[m->y][m->x].monster = m;
 }
 
 void advancedai(monster_t *m)
@@ -158,43 +170,55 @@ void advancedai(monster_t *m)
         simpleai(m);
 }
 
-void hostile_ai(actor_t *creature, actor_t *player)
+void hostile_ai(actor_t *m)
 {
-        if(player->x >= (creature->x-10) && player->x <= creature->x+10 && player->y >= creature->y-10 && player->y <= creature->y+10) {
-                creature->goalx = player->x;
-                creature->goaly = player->y;
+        int oy, ox;
 
-                if(creature->x > creature->goalx) {
-                        creature->x--;
-                        if(creature->y == player->y && creature->x == player->x)
-                                creature->x++;
+        oy = m->y;
+        ox = m->x;
+
+        if(player->x >= (m->x-10) && player->x <= m->x+10 && player->y >= m->y-10 && player->y <= m->y+10) {
+                m->goalx = player->x;
+                m->goaly = player->y;
+
+                if(m->x > m->goalx) {
+                        m->x--;
+                        if(m->y == player->y && m->x == player->x)
+                                m->x++;
                 }
 
-                if(creature->x < creature->goalx) {
-                        creature->x++;
-                        if(creature->y == player->y && creature->x == player->x)
-                                creature->x--;
+                if(m->x < m->goalx) {
+                        m->x++;
+                        if(m->y == player->y && m->x == player->x)
+                                m->x--;
                 }
 
-                if(creature->y > creature->goaly) {
-                        creature->y--;
-                        if(creature->y == player->y && creature->x == player->x)
-                                creature->y++;
+                if(m->y > m->goaly) {
+                        m->y--;
+                        if(m->y == player->y && m->x == player->x)
+                                m->y++;
                 }
 
-                if(creature->y < creature->goaly) {
-                        creature->y++;
-                        if(creature->y == player->y && creature->x == player->x)
-                                creature->y--;
+                if(m->y < m->goaly) {
+                        m->y++;
+                        if(m->y == player->y && m->x == player->x)
+                                m->y--;
                 }
 
-                /*if(next_to(creature, player)) {
-                        creature->attacker = player;
-                        player->attacker = creature;
+                /*if(next_to(m, player)) {
+                        m->attacker = player;
+                        player->attacker = m;
                 }*/
+                if(!monster_passable(world->curlevel, m->y, m->x)) {
+                        m->y = oy;
+                        m->x = ox;
+                }
+                world->cmap[oy][ox].monster = NULL;
+                world->cmap[m->y][m->x].monster = m;
+
         } else {
-                creature->attacker = NULL;
-                simpleoutdoorpathfinder(creature, player);
+                m->attacker = NULL;
+                simpleoutdoorpathfinder(m);
         }
 }
 
@@ -217,12 +241,10 @@ void move_monsters()
                                 if(next_to(m, m->attacker)) {
                                         attack(m, m->attacker);
                                 } else {
-                                        m->movement += m->speed;
-                                        while(m->movement >= 1.0) {
-                                                world->curlevel->c[m->y][m->x].monster = NULL;
-                                                hostile_ai(m, m->attacker);
-                                                world->curlevel->c[m->y][m->x].monster = m;
-                                                m->movement -= 1.0;
+                                        m->ticks += (int) (m->speed*1000);
+                                        while(m->ticks >= 1000) {
+                                                hostile_ai(m);
+                                                m->ticks -= 1000;
                                                 draw_world(world->curlevel);
                                                 draw_wstat();
                                                 update_screen();
@@ -233,11 +255,11 @@ void move_monsters()
                                         }
                                 }
                         } else {
-                                m->movement += m->speed;
-                                while(m->movement >= 1.0) {
+                                m->ticks += (int) (m->speed*1000);
+                                while(m->ticks >= 1000) {
                                         if(m->ai)
                                                 m->ai(m);
-                                        m->movement -= 1.0;
+                                        m->ticks -= 1000;
                                 }
                         }
                 }
@@ -320,7 +342,7 @@ bool spawn_monster_at(int y, int x, int n, monster_t *head, void *level)
 {
         spawn_monster(n, head);
         if(!place_monster_at(y, x, head->next, (level_t *) level)) {
-                gtprintf("place_monster failed! probably tried to spawn at non-passable cell");
+                //gtprintf("place_monster failed! probably tried to spawn at non-passable cell");
                 unspawn_monster(head->next);
                 return false;
         }

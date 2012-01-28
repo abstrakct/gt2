@@ -202,7 +202,7 @@ void cleanup_dungeon(level_t *l)
                                 if(l->c[y][x+1].type == DNG_WALL && l->c[y][x-1].type == DNG_WALL)
                                         break;
 
-                                clearbit(l->c[y][x].flags, CF_HAS_DOOR_OPEN);
+                                clearbit(l->c[y][x].flags, CF_HAS_DOOR_CLOSED);
                         }
                 }
         }

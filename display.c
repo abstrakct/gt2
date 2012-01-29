@@ -337,7 +337,7 @@ void draw_wstat()
         o = player->inventory->next;
         i = 3;
         while(o) {
-                mvwprintw(wstat, i, 1, "  * %s             ", o->basename);
+                mvwprintw(wstat, i, 1, "  * %s                ", o->fullname);
                 i++;
                 o = o->next;
         }

@@ -73,11 +73,14 @@ int perc(int i)
 {
         int x;
 
+        if(i >= 100)
+                return true;
+
         x = ri(1, 100);
         if(x <= i)
-                return TRUE;
+                return true;
         else
-                return FALSE;
+                return false;
 }
 
 void *gtmalloc(size_t size)
@@ -204,6 +207,14 @@ void uppercase(char *s)
                         return;
                 }
         }
+}
+
+char *Upper(char *s)
+{
+        if(s[0] >= 97 && s[0] <= 122)
+                s[0] -= 32;
+
+        return s;
 }
 
 char *a_an(char *s)

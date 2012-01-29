@@ -182,6 +182,12 @@ void hostile_ai(actor_t *m)
                 return;
         }
 
+        if(next_to(m, player)) {
+                m->attacker = player;
+                attack(m, m->attacker);
+                return;
+        }
+
         //if(player->x >= (m->x-10) && player->x <= m->x+10 && player->y >= m->y-10 && player->y <= m->y+10) {
         if(actor_in_lineofsight(m, player)) {
                 m->goalx = player->x;

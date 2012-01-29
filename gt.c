@@ -662,9 +662,9 @@ void do_turn(int do_all)
 
                         if(ci(ply, plx) && ci(ply, plx)->next) {
                                 if(is_pair(ci(ply, plx)->next))
-                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->next->basename);
+                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->next->fullname);
                                 else
-                                        gtprintf("There is %s here.", a_an(ci(ply, plx)->next->basename));
+                                        gtprintf("There is %s here.", a_an(ci(ply, plx)->next->fullname));
                         }
                 }
 

@@ -21,6 +21,9 @@
 #include "display.h"
 #include "gt.h"
 
+// statistical debug stuff
+int pluses, minuses;
+
 unsigned int oid_counter;
 char objchars[] = {
         ' ',               // nothing
@@ -136,6 +139,27 @@ bool move_to_inventory(obj_t *o, obj_t *i)
 }
 
 /*
+ * Generate the full name of object
+ */
+
+void generate_fullname(obj_t *o)
+{
+        char n[200];
+
+        if(o->modifier > 0)
+                sprintf(n, "+%d ", o->modifier);
+        if(o->modifier < 0)
+                sprintf(n, "%d ", o->modifier);
+
+        strcat(n, o->basename);
+
+        if(hasbit(o->flags, OF_HOLYFUCK))
+                strcat(n, "of Holy Fuck");
+        
+        strcpy(o->fullname, n);
+}
+
+/*
  * place a spawned object at (y,x)
  */
 bool place_object_at(int y, int x, obj_t *obj, void *p)
@@ -159,6 +183,7 @@ bool place_object_at(int y, int x, obj_t *obj, void *p)
 void spawn_object(int n, obj_t *head)
 {
         obj_t *tmp;
+        //int i;
 
         tmp = head->next;
         head->next = gtmalloc(sizeof(obj_t));
@@ -168,6 +193,46 @@ void spawn_object(int n, obj_t *head)
         head->next->head = head;
         oid_counter++;
         head->next->oid = oid_counter;
+
+        // maybe this object is magical?
+        if(!is_unique(head->next->flags)) {
+                if(perc(50+(player->level*2))) {
+                        if(perc(40)) {
+                                if(perc(66))
+                                        head->next->modifier = ri(0, 1);
+                                else
+                                        head->next->modifier = ri(-1, 0);
+                        }
+                        if(perc(30) && !head->next->modifier) {
+                                if(perc(66))
+                                        head->next->modifier = ri(0, 2);
+                                else
+                                        head->next->modifier = ri(-2, 0);
+                        }
+                        if(perc(20) && !head->next->modifier) {
+                                if(perc(66))
+                                        head->next->modifier = ri(0, 3);
+                                else
+                                        head->next->modifier = ri(-3, 0);
+                        }
+                        if(perc(10) && !head->next->modifier) {
+                                if(perc(50)) {
+                                        if(perc(66))
+                                                head->next->modifier = ri(0, 4);
+                                        else
+                                                head->next->modifier = ri(-4, 0);
+                                } else {
+                                        if(perc(66))
+                                                head->next->modifier = ri(0, 5);
+                                        else
+                                                head->next->modifier = ri(-5, 0);
+                                }
+                        }
+                }
+
+        }
+
+        generate_fullname(head->next);
 
         //fprintf(stderr, "spawned obj %s (oid %d)\n", head->next->basename, head->next->oid);
 }
@@ -199,6 +264,12 @@ bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
                 unspawn_object(i->next);
                 return false;
         }
+fprintf(stderr, "DEBUG: %s:%d - Spawned a %s\n", __FILE__, __LINE__, i->next->fullname);
+
+        if(i->next->modifier > 0)
+                pluses++;
+        if(i->next->modifier < 0)
+                minuses++;
 
         return true;
 }
@@ -248,17 +319,24 @@ void spawn_objects(int num, void *p)
 {
         int i, x, y, o;
         level_t *l;
+        double mp, pp, np, tot;
 
         i = 0;
         l = (level_t *) p;
+        minuses = 0; pluses = 0;
         while(i < num) {
                 x = ri(1, l->xsize-1);
                 y = ri(1, l->ysize-1);
                 o = ri(1, game->objdefs);
-                if (spawn_object_at(y, x, o, l->objects, l)) {
+                if (spawn_object_at(y, x, o, l->objects, l))
                         i++;
-                        //fprintf(stderr, "DEBUG: %s:%d - spawned object %d (objdef %d) at %d,%d\n", __FILE__, __LINE__, i, o, y, x);
-                }
         }
-        fprintf(stderr, "DEBUG: %s:%d - spawn_objects spawned %d objects (should spawn %d)\n", __FILE__, __LINE__, i, num);
+
+        tot = (double) i;
+        mp = (100 / tot) * (double) minuses;
+        pp = (100 / tot) * (double) pluses;
+        np = (100 / tot) * (double) (tot - minuses - pluses);
+
+        fprintf(stderr, "\nDEBUG: %s:%d - Spawned %d objects    %.1f %% with +    %.1f %% with -     %.1f %% neutral.\n", __FILE__, __LINE__, i, pp, mp, np);
+        fprintf(stderr, "\nDEBUG: %s:%d - spawn_objects spawned %d objects (should spawn %d)\n\n", __FILE__, __LINE__, i, num);
 }

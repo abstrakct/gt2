@@ -131,8 +131,8 @@ int parse_monsters()
                 }
 
                 
-if(m->weapon)
-fprintf(stderr, "DEBUG: %s:%d - %s has the weapon called a %s\n", __FILE__, __LINE__, m->name, m->weapon->basename);
+//if(m->weapon)
+//fprintf(stderr, "DEBUG: %s:%d - %s has the weapon called a %s\n", __FILE__, __LINE__, m->name, m->weapon->basename);
                         
 
                 /*

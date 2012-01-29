@@ -178,12 +178,13 @@ void hostile_ai(actor_t *m)
         oy = m->y;
         ox = m->x;
 
-        if(next_to(m, m->attacker)) {
+        if(m->attacker && next_to(m, m->attacker)) {
                 attack(m, m->attacker);
                 return;
         }
 
-        if(player->x >= (m->x-10) && player->x <= m->x+10 && player->y >= m->y-10 && player->y <= m->y+10) {
+        //if(player->x >= (m->x-10) && player->x <= m->x+10 && player->y >= m->y-10 && player->y <= m->y+10) {
+        if(actor_in_lineofsight(m, player)) {
                 m->goalx = player->x;
                 m->goaly = player->y;
 
@@ -211,10 +212,6 @@ void hostile_ai(actor_t *m)
                                 m->y--;
                 }
 
-                /*if(next_to(m, player)) {
-                        m->attacker = player;
-                        player->attacker = m;
-                }*/
                 if(!monster_passable(world->curlevel, m->y, m->x)) {
                         m->y = oy;
                         m->x = ox;

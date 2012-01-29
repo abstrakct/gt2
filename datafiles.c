@@ -109,6 +109,17 @@ int parse_monsters()
 
                 m->viewradius = 5; // temporary solution?!
 
+                // Let's give the monster a weapon!
+                if(hasbit(m->flags, MF_CANUSEWEAPON) && hasbit(m->flags, MF_CANUSESIMPLESWORD)) {
+                        obj_t *w;
+
+                        m->inventory = init_inventory();
+                        spawn_object(x, m->inventory);
+                        m->weapon = m->inventory->next;
+                }
+
+                        
+
                 /*
                  * the following was written in one go, it's beautiful and seems totally bugfree!!
                  */
@@ -335,8 +346,8 @@ int parse_data_files(int option)
          * This return value stuff makes no sense!!
          */
         ret = parse_configfile();
-        ret = parse_monsters();
         ret = parse_objects();
+        ret = parse_monsters();
 
         config_destroy(cf);
         return ret;

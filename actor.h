@@ -53,7 +53,7 @@ typedef struct actorstruct {     // actor_t
         short race, cla;
         //char wvfactor;
         //short worldview;
-        //struct object *weapon;
+        obj_t *weapon;           // currently wielded weapon
         obj_t *inventory;
         wear_t w;
         long flags;

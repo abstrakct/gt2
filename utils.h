@@ -6,9 +6,9 @@
 #ifndef _GT_UTILS_H
 #define _GT_UTILS_H
 
-#define clearbit(a, b) (a &= ~(b))
-#define setbit(a, b)   (a |= b)
-#define hasbit(a, b)   (a & b)
+#define clearbit(a, b) ((a) &= ~(b))
+#define setbit(a, b)   ((a) |=  (b))
+#define hasbit(a, b)   ((a) &   (b))
 
 #define MAX_GARBAGE 100000
 // d(a, b)
@@ -29,6 +29,12 @@ void gtfree(void *ptr);
 int dice(int num, int sides, signed int modifier);
 int perc(int i);
 int ri(int a, int b);
+
+void you(char *fmt, ...);
+void youc(int color, char *fmt, ...);
+void yousee(char *fmt, ...);
+void gtprintf(char *fmt, ...);
+void gtprintfc(int color, char *fmt, ...);
 
 extern int garbageindex;
 extern void *garbage[MAX_GARBAGE];

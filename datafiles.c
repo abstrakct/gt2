@@ -84,22 +84,22 @@ int parse_monsters()
                 sprintf(sname, "monsters.[%d].havegold", j);
                 if(config_lookup_bool(cf, sname, &boolval))
                         if(boolval)
-                                m->flags |= MF_CANHAVEGOLD;
+                                setbit(m->flags, MF_CANHAVEGOLD);
 
                 sprintf(sname, "monsters.[%d].useweapon", j);
                 if(config_lookup_bool(cf, sname, &boolval))
                         if(boolval)
-                                m->flags |= MF_CANUSEWEAPON;
+                                setbit(m->flags, MF_CANUSEWEAPON);
 
                 sprintf(sname, "monsters.[%d].usearmor", j);
                 if(config_lookup_bool(cf, sname, &boolval))
                         if(boolval)
-                                m->flags |= MF_CANUSEARMOR;
+                                setbit(m->flags, MF_CANUSEARMOR);
 
                 sprintf(sname, "monsters.[%d].usesimplesword", j);
                 if(config_lookup_bool(cf, sname, &boolval))
                         if(boolval)
-                                m->flags |= MF_CANUSESIMPLESWORD;
+                                setbit(m->flags, MF_CANUSESIMPLESWORD);
 
                 sprintf(sname, "monsters.[%d].aitype", j);
                 config_lookup_int(cf, sname, &tmp);
@@ -110,14 +110,29 @@ int parse_monsters()
                 m->viewradius = 12; // temporary solution?!
 
                 // Let's give the monster a weapon!
-                if(hasbit(m->flags, MF_CANUSEWEAPON) && hasbit(m->flags, MF_CANUSESIMPLESWORD)) {
-                        obj_t *w;
+                if(hasbit(m->flags, MF_CANUSESIMPLESWORD)) {
+                        int x;
+
+                        x = get_objdef_by_name("short sword");
 
                         m->inventory = init_inventory();
                         spawn_object(x, m->inventory);
                         m->weapon = m->inventory->next;
                 }
 
+                if(hasbit(m->flags, MF_CANUSEWEAPON) && !hasbit(m->flags, MF_CANUSESIMPLESWORD)) {
+                        int x;
+
+                        x = get_objdef_by_name("dagger");
+
+                        m->inventory = init_inventory();
+                        spawn_object(x, m->inventory);
+                        m->weapon = m->inventory->next;
+                }
+
+                
+if(m->weapon)
+fprintf(stderr, "DEBUG: %s:%d - %s has the weapon called a %s\n", __FILE__, __LINE__, m->name, m->weapon->basename);
                         
 
                 /*

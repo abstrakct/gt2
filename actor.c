@@ -130,13 +130,18 @@ void attack(actor_t *attacker, actor_t *victim)
 
         victim->attacker = attacker;
 
-        damage = dice(1, 10, 0);
+        if(attacker->weapon) {
+                damage = dice(attacker->weapon->dice, attacker->weapon->sides, attacker->weapon->modifier);
+        } else {
+                damage = dice(1, 3, 0);
+        }
+
         victim->hp -= damage;
 
         if(attacker == player)
                 you("hit the %s for %d damage!", victim->name, damage);
         else
-                gtprintf("The %s hits you for %d damage", attacker->name, damage);
+                gtprintf("The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
 
         if(victim->hp <= 0) {
                 if(victim == player)

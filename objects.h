@@ -116,7 +116,10 @@ bool spawn_object_at(int y, int x, int n, obj_t *head, void *level);
 void unspawn_object(obj_t *m);
 void spawn_object(int n, obj_t *head);
 bool place_object_at(int y, int x, obj_t *obj, void *l);
+
 obj_t get_objdef(int n);
+int get_objdef_by_name(char *wanted);
+
 bool move_to_inventory(obj_t *o, obj_t *i);
 void pick_up(obj_t *o, void *a);
 

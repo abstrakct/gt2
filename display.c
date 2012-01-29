@@ -397,9 +397,8 @@ void domess()
                 wattroff(winfo, COLOR_PAIR(messages[i].color));
         }
 
-        fprintf(messagefile, "%d\t%d\t%s\n", currmess-1, messages[currmess-1].color, messages[currmess-1].text);
+        fprintf(messagefile, "%d\t%s\n", messages[currmess-1].color, messages[currmess-1].text);
         wnoutrefresh(winfo);
-//        doupdate();
 }
 
 void scrollmessages()

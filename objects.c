@@ -48,6 +48,17 @@ obj_t get_objdef(int n)
         return *tmp;
 }
 
+int get_objdef_by_name(char *wanted)
+{
+        obj_t *o;
+
+        o = objdefs->head->next;
+        while(strcmp(o->basename, wanted))
+                o = o->next;
+
+        return o->id;
+}
+
 void unspawn_object(obj_t *m)
 {
         if(m) {
@@ -81,6 +92,11 @@ void pick_up(obj_t *o, void *p)
         o->next = a->inventory->next;
         a->inventory->next = o;
         o->head = a->inventory;
+
+        if(o->type == OT_WEAPON) {
+                a->weapon = o;
+                gtprintf("You are now wielding a %s!", o->basename);
+        }
 
         // TODO: tackle cells with multiple items!
         world->curlevel->c[a->y][a->x].inventory->next = NULL;

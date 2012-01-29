@@ -27,7 +27,6 @@
 #include "utils.h"
 #include "datafiles.h"
 #include "world.h"
-#include "you.h"
 #include "display.h"
 #include "debug.h"
 #include "saveload.h"
@@ -659,10 +658,14 @@ void do_turn(int do_all)
                                 gtprintf("There's a staircase of stone leading up here.");
 
                         if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0)
-                                gtprintf("There is %d gold pieces here!", ci(ply, plx)->quantity);
+                                gtprintf("There is %d gold %s here.", ci(ply, plx)->quantity, (ci(ply, plx)->quantity > 1) ? "pieces" : "piece");
 
-                        if(ci(ply, plx) && ci(ply, plx)->next)
-                                gtprintf("There is a %s here.", ci(ply, plx)->next->basename);
+                        if(ci(ply, plx) && ci(ply, plx)->next) {
+                                if(is_pair(ci(ply, plx)->next))
+                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->next->basename);
+                                else
+                                        gtprintf("There is %s here.", a_an(ci(ply, plx)->next->basename));
+                        }
                 }
 
                 draw_world(world->curlevel);

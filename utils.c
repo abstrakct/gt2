@@ -194,3 +194,35 @@ void gtprintfc(int color, char *fmt, ...)
         messc(color, s);
 }
 
+void uppercase(char *s)
+{
+        int i;
+
+        for(i=0;i<strlen(s);i++) {
+                if(s[i] >= 97 && s[i] <= 122) {
+                        s[i] -= 32;
+                        return;
+                }
+        }
+}
+
+char *a_an(char *s)
+{
+        static char ret[4];
+        char *test;
+
+        test = gtmalloc((strlen(s) + 5) * sizeof(char));
+
+        if(s[0] == 'a' || s[0] == 'A' ||
+           s[0] == 'e' || s[0] == 'A' ||
+           s[0] == 'i' || s[0] == 'I' ||
+           s[0] == 'o' || s[0] == 'O' ||
+           s[0] == 'u' || s[0] == 'U' ||
+           s[0] == 'y' || s[0] == 'Y')
+                strcpy(ret, "an");
+        else
+                strcpy(ret, "a");
+
+        sprintf(test, "%s %s", ret, s);
+        return test;
+}

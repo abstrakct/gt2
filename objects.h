@@ -119,6 +119,7 @@ bool place_object_at(int y, int x, obj_t *obj, void *l);
 
 obj_t get_objdef(int n);
 int get_objdef_by_name(char *wanted);
+bool is_pair(obj_t *o);
 
 bool move_to_inventory(obj_t *o, obj_t *i);
 void pick_up(obj_t *o, void *a);

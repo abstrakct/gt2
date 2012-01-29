@@ -18,7 +18,6 @@
 #include "utils.h"
 #include "datafiles.h"
 #include "world.h"
-#include "you.h"
 #include "display.h"
 #include "gt.h"
 
@@ -57,6 +56,14 @@ int get_objdef_by_name(char *wanted)
                 o = o->next;
 
         return o->id;
+}
+
+bool is_pair(obj_t *o)
+{
+        if(hasbit(o->flags, OF_GLOVES) || hasbit(o->flags, OF_FOOTARMOR))
+                return true;
+        else
+                return false;
 }
 
 void unspawn_object(obj_t *m)

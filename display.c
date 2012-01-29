@@ -19,7 +19,6 @@
 #include "utils.h"
 #include "datafiles.h"
 #include "world.h"
-#include "you.h"
 #include "display.h"
 #include "gt.h"
 

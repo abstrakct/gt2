@@ -18,7 +18,6 @@
 #include "utils.h"
 #include "datafiles.h"
 #include "world.h"
-#include "you.h"
 #include "display.h"
 #include "gt.h"
 
@@ -139,7 +138,7 @@ void attack(actor_t *attacker, actor_t *victim)
         victim->hp -= damage;
 
         if(attacker == player)
-                you("hit the %s for %d damage!", victim->name, damage);
+                you("hit the %s with a %s for %d damage!", victim->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
         else
                 gtprintf("The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
 

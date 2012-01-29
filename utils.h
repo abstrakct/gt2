@@ -35,6 +35,7 @@ void youc(int color, char *fmt, ...);
 void yousee(char *fmt, ...);
 void gtprintf(char *fmt, ...);
 void gtprintfc(int color, char *fmt, ...);
+char *a_an(char *s);
 
 extern int garbageindex;
 extern void *garbage[MAX_GARBAGE];

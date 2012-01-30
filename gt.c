@@ -504,7 +504,7 @@ bool do_action(int action)
                                 if(ppx <= 0)
                                         ppx = 0;
 
-                                player->viewradius = 20;
+                                player->viewradius = 16;
                         } else {
                                 game->currentlevel--;
                                 world->cmap = world->out->c;
@@ -756,9 +756,11 @@ int main(int argc, char *argv[])
                                 queue(ACTION_ENTER_DUNGEON);
 
                                 // a rather stupid hack to make sure the screen is properly updated after entering dungeon..
-                                game->turn -= 2;
+                                game->turn -= 4;
                                 queue(ACTION_PLAYER_MOVE_NW);
+                                queue(ACTION_PLAYER_MOVE_SW);
                                 queue(ACTION_PLAYER_MOVE_SE);
+                                queue(ACTION_PLAYER_MOVE_NE);
                                 break;
                         case CMD_FLOODFILL:
                                 x = ri(11,111);
@@ -769,14 +771,14 @@ int main(int argc, char *argv[])
                                 floodfill(world->curlevel, x, x);
                                 queue(ACTION_NOTHING);
                                 break;
-                        case CMD_DOWN: queue(ACTION_PLAYER_MOVE_DOWN); break;
-                        case CMD_UP: queue(ACTION_PLAYER_MOVE_UP); break;
-                        case CMD_LEFT: queue(ACTION_PLAYER_MOVE_LEFT); break;
+                        case CMD_DOWN:  queue(ACTION_PLAYER_MOVE_DOWN); break;
+                        case CMD_UP:    queue(ACTION_PLAYER_MOVE_UP); break;
+                        case CMD_LEFT:  queue(ACTION_PLAYER_MOVE_LEFT); break;
                         case CMD_RIGHT: queue(ACTION_PLAYER_MOVE_RIGHT); break;
-                        case CMD_NW: queue(ACTION_PLAYER_MOVE_NW); break;
-                        case CMD_NE: queue(ACTION_PLAYER_MOVE_NE); break;
-                        case CMD_SW: queue(ACTION_PLAYER_MOVE_SW); break;
-                        case CMD_SE: queue(ACTION_PLAYER_MOVE_SE); break;
+                        case CMD_NW:    queue(ACTION_PLAYER_MOVE_NW); break;
+                        case CMD_NE:    queue(ACTION_PLAYER_MOVE_NE); break;
+                        case CMD_SW:    queue(ACTION_PLAYER_MOVE_SW); break;
+                        case CMD_SE:    queue(ACTION_PLAYER_MOVE_SE); break;
                         case CMD_LONGDOWN:
                                 queuex(20, ACTION_PLAYER_MOVE_DOWN);
                                 do_all = true;

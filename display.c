@@ -237,6 +237,7 @@ void FOVlight(actor_t *a, level_t *l)
         for(i = 0; i < 360; i++) {
                 x = cos((float) i * 0.01745f);
                 y = sin((float) i * 0.01745f);
+//fprintf(stderr, "DEBUG: %s:%d - now going to dofovlight i = %d y = %.4f x = %.4f\n", __FILE__, __LINE__, i, y, x);
                 dofovlight(a, l, x, y);
         }
 }

@@ -6,6 +6,10 @@
 #ifndef _GT_UTILS_H
 #define _GT_UTILS_H
 
+#ifdef GT_USE_NCURSES
+#include <curses.h>
+#endif
+
 #define clearbit(a, b) ((a) &= ~(b))
 #define setbit(a, b)   ((a) |=  (b))
 #define hasbit(a, b)   ((a) &   (b))
@@ -24,7 +28,7 @@ void die(char *m, ...);
 
 void *gtmalloc(size_t size);
 void *gtcalloc(size_t num, size_t size);
-void gtfree(void *ptr);
+void  gtfree(void *ptr);
 
 int dice(int num, int sides, signed int modifier);
 int perc(int i);
@@ -35,6 +39,8 @@ void youc(int color, char *fmt, ...);
 void yousee(char *fmt, ...);
 void gtprintf(char *fmt, ...);
 void gtprintfc(int color, char *fmt, ...);
+void gtprintfwc(WINDOW *win, int color, char *fmt, ...);
+
 char *a_an(char *s);
 char *Upper(char *s);
 

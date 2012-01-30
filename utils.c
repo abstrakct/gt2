@@ -12,6 +12,10 @@
 #include <math.h>
 #include <stdbool.h>
 
+#ifdef GT_USE_NCURSES
+#include <curses.h>
+#endif
+
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
@@ -196,6 +200,24 @@ void gtprintfc(int color, char *fmt, ...)
 
         messc(color, s);
 }
+
+#ifdef GT_USE_NCURSES
+void gtprintfwc(WINDOW *win, int color, char *fmt, ...)
+{
+        va_list argp;
+        char s[1000];
+
+        va_start(argp, fmt);
+        vsprintf(s, fmt, argp);
+        va_end(argp);
+
+        wattron(win, COLOR_PAIR(color));
+        wprintw(win, s);
+        wattroff(win, COLOR_PAIR(color));
+
+        //messc(color, s);
+}
+#endif
 
 void uppercase(char *s)
 {

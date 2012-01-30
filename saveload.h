@@ -31,6 +31,7 @@ struct monsterdef_save_struct {
 /* This one must match obj_t when it comes to variable types etc.! */
 struct objdef_save_struct {
        int          id;
+       int          color;
        short        type;
        long         flags;
        signed short attackmod;
@@ -40,7 +41,7 @@ struct objdef_save_struct {
        char         fullname[100];   // we might want to not include these here...??
        char         c;
        char         minlevel;
-       short        quantity;
+       int          quantity;
        char         material;
        short        dice, sides;
        char         skill;

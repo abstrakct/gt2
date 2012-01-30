@@ -15,19 +15,20 @@ struct object {
         struct object *head;
         int  id;                // objdef-id
         int oid;                // unique id
+        int color;              // color!
         short type;             // see OT_defines below
         long flags;             // 4 bytes = 32 bits/flags, see OF_defines below - CONSIDER CHANGE TO LONG LONG
         signed short attackmod; // +/- on attack; for armor: acmodifier
         signed short damagemod; // +/- on damage;
-        char basename[50];      // the basic name of the item
-        char unidname[100];     // unidentified name
-        char fullname[100];     // should be more than enough, adjust later
-        char c;
-        char minlevel;
-        short quantity;
-        char material;
+        char  basename[50];     // the basic name of the item
+        char  unidname[100];    // unidentified name
+        char  fullname[100];    // should be more than enough, adjust later
+        char  c;
+        char  minlevel;
+        int   quantity;
+        char  material;
         short dice, sides;      // sides is used for AC for armor!
-        char skill;             // a particular skill needed to use this weapon?
+        char  skill;            // a particular skill needed to use this weapon?
 };
 
 typedef struct object obj_t;

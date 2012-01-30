@@ -645,11 +645,11 @@ void do_turn(int do_all)
         while(i) {
                 i = aq->num;
                 //while(player->ticks > 0)
-                        ret = do_next_thing_in_queue();
+
+                ret = do_next_thing_in_queue();
                         
                 if(ret) {
                         game->turn++;
-                        //do_next_thing_in_queue();
 
                         if(cf(ply, plx) & CF_HAS_STAIRS_DOWN)
                                 gtprintf("There's a staircase of stone leading down here.");
@@ -747,7 +747,6 @@ int main(int argc, char *argv[])
                 player->oldy = ply;
                 //updatescreen = true;
 
-
                 switch(c) {
                         case CMD_QUIT:
                                 queue(ACTION_NOTHING);
@@ -833,7 +832,10 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_DUMPCOLORS:
                                 for(x = 0;  x < 64; x++) {
-                                        gtprintfc(x, "This is color %d", x);
+                                        gtprintfwc(wstat, x, "This is color %d  ", x);
+                                        wattron(wstat, A_BOLD);
+                                        gtprintfwc(wstat, x, "This is BOLD color %d  ", x);
+                                        wattroff(wstat, A_BOLD);
                                 }
                                 queue(ACTION_NOTHING);
                                 break;
@@ -844,7 +846,11 @@ int main(int argc, char *argv[])
                         case CMD_PICKUP:
                                 queue(ACTION_PICKUP);
                                 break;
-                        case 'a': dump_action_queue();
+                        case CMD_REST:
+                                queue(ACTION_NOTHING);
+
+                                break;
+                        //case 'a': dump_action_queue();
                         default:
                                 queue(ACTION_NOTHING);
                                 //updatescreen = false;

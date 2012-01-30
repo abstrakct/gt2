@@ -149,7 +149,8 @@ void save_objdef(obj_t *o, FILE *f)
         s.id = o->id;
         s.type = o->type;
         s.flags = o->flags;
-        s.modifier = o->modifier;
+        s.attackmod = o->attackmod;
+        s.damagemod = o->damagemod;
         strcpy(s.basename, o->basename);
         strcpy(s.unidname, o->unidname);
         strcpy(s.fullname, o->fullname);
@@ -486,7 +487,8 @@ bool load_objdef(obj_t *o, FILE *f)
         o->id = s.id;
         o->type = s.type;
         o->flags = s.flags;
-        o->modifier = s.modifier;
+        o->attackmod = s.attackmod;
+        o->damagemod = s.damagemod;
         strcpy(o->basename, s.basename);
         strcpy(o->unidname, s.unidname);
         strcpy(o->fullname, s.fullname);

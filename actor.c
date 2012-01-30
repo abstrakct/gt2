@@ -130,7 +130,7 @@ void attack(actor_t *attacker, actor_t *victim)
         victim->attacker = attacker;
 
         if(attacker->weapon) {
-                damage = dice(attacker->weapon->dice, attacker->weapon->sides, attacker->weapon->modifier);
+                damage = dice(attacker->weapon->dice, attacker->weapon->sides, attacker->weapon->damagemod);
         } else {
                 damage = dice(1, 3, 0);
         }

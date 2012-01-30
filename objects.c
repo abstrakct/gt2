@@ -146,15 +146,64 @@ void generate_fullname(obj_t *o)
 {
         char n[200];
 
-        if(o->modifier > 0)
-                sprintf(n, "+%d ", o->modifier);
-        if(o->modifier < 0)
-                sprintf(n, "%d ", o->modifier);
+        if(o->type == OT_WEAPON) {
+                if(!o->attackmod && !o->damagemod) {
+                        strcat(n, o->basename);
+                }
+                if(o->attackmod && !o->damagemod) {
+                        if(o->attackmod > 0)
+                                sprintf(n, "+%d,+0", o->attackmod);
+                        if(o->attackmod < 0)
+                                sprintf(n,  "%d,+0", o->attackmod);
+                        strcat(n, " ");
+                        strcat(n, o->basename);
+                }
+                if(!o->attackmod && o->damagemod) {
+                        if(o->damagemod > 0)
+                                sprintf(n, "0,+%d", o->damagemod);
+                        if(o->damagemod < 0)
+                                sprintf(n, "0,%d", o->damagemod);
+                        strcat(n, " ");
+                        strcat(n, o->basename);
+                }
+                if(o->attackmod && o->damagemod) {
+                        if(o->attackmod > 0)
+                                sprintf(n, "+%d", o->attackmod);
+                        if(o->attackmod < 0)
+                                sprintf(n,  "%d", o->attackmod);
+                        if(o->damagemod > 0)
+                                sprintf(n, "%s,+%d", n, o->damagemod);
+                        if(o->damagemod < 0)
+                                sprintf(n, "%s,%d", n, o->damagemod);
+                        strcat(n, " ");
+                        strcat(n, o->basename);
+                }
+        } else if(o->type == OT_ARMOR) {
+                if(o->attackmod > 0)
+                        sprintf(n, "+%d ", o->attackmod);
+                if(o->attackmod < 0)
+                        sprintf(n,  "%d ", o->attackmod);
 
-        strcat(n, o->basename);
+                strcat(n, o->basename);
+                
+        } else {
+       /* 
+        if(o->attackmod && o->damagemod)
+                strcat(n, ",");
+
+        if(o->damagemod > 0)
+                sprintf(n, "%s+%d",n, o->damagemod);
+        else if(o->damagemod < 0)
+                sprintf(n, "%s%d",n, o->damagemod);
+
+        if(o->attackmod || o->damagemod)
+                strcat(n, " ");*/
+
+                strcat(n, o->basename);
+        }
 
         if(hasbit(o->flags, OF_HOLYFUCK))
-                strcat(n, "of Holy Fuck");
+                strcat(n, " of Holy Fuck");
         
         strcpy(o->fullname, n);
 }
@@ -195,37 +244,74 @@ void spawn_object(int n, obj_t *head)
         head->next->oid = oid_counter;
 
         // maybe this object is magical?
-        if(!is_unique(head->next->flags)) {
+        if(!is_unique(head->next->flags) && (head->next->type == OT_WEAPON || head->next->type == OT_ARMOR)) {
                 if(perc(50+(player->level*2))) {
                         if(perc(40)) {
                                 if(perc(66))
-                                        head->next->modifier = ri(0, 1);
+                                        head->next->attackmod = ri(0, 1);
                                 else
-                                        head->next->modifier = ri(-1, 0);
+                                        head->next->attackmod = ri(-1, 0);
                         }
-                        if(perc(30) && !head->next->modifier) {
+                        if(perc(30) && !head->next->attackmod) {
                                 if(perc(66))
-                                        head->next->modifier = ri(0, 2);
+                                        head->next->attackmod = ri(0, 2);
                                 else
-                                        head->next->modifier = ri(-2, 0);
+                                        head->next->attackmod = ri(-2, 0);
                         }
-                        if(perc(20) && !head->next->modifier) {
+                        if(perc(20) && !head->next->attackmod) {
                                 if(perc(66))
-                                        head->next->modifier = ri(0, 3);
+                                        head->next->attackmod = ri(0, 3);
                                 else
-                                        head->next->modifier = ri(-3, 0);
+                                        head->next->attackmod = ri(-3, 0);
                         }
-                        if(perc(10) && !head->next->modifier) {
+                        if(perc(10) && !head->next->attackmod) {
                                 if(perc(50)) {
                                         if(perc(66))
-                                                head->next->modifier = ri(0, 4);
+                                                head->next->attackmod = ri(0, 4);
                                         else
-                                                head->next->modifier = ri(-4, 0);
+                                                head->next->attackmod = ri(-4, 0);
                                 } else {
                                         if(perc(66))
-                                                head->next->modifier = ri(0, 5);
+                                                head->next->attackmod = ri(0, 5);
                                         else
-                                                head->next->modifier = ri(-5, 0);
+                                                head->next->attackmod = ri(-5, 0);
+                                }
+                        }
+                }
+
+        }
+
+        if(!is_unique(head->next->flags) && head->next->type == OT_WEAPON) {
+                if(perc(60+(player->level*2))) {
+                        if(perc(40)) {
+                                if(perc(66))
+                                        head->next->damagemod = ri(0, 1);
+                                else
+                                        head->next->damagemod = ri(-1, 0);
+                        }
+                        if(perc(30) && !head->next->damagemod) {
+                                if(perc(66))
+                                        head->next->damagemod = ri(0, 2);
+                                else
+                                        head->next->damagemod = ri(-2, 0);
+                        }
+                        if(perc(20) && !head->next->damagemod) {
+                                if(perc(66))
+                                        head->next->damagemod = ri(0, 3);
+                                else
+                                        head->next->damagemod = ri(-3, 0);
+                        }
+                        if(perc(10) && !head->next->damagemod) {
+                                if(perc(50)) {
+                                        if(perc(66))
+                                                head->next->damagemod = ri(0, 4);
+                                        else
+                                                head->next->damagemod = ri(-4, 0);
+                                } else {
+                                        if(perc(66))
+                                                head->next->damagemod = ri(0, 5);
+                                        else
+                                                head->next->damagemod = ri(-5, 0);
                                 }
                         }
                 }
@@ -260,16 +346,16 @@ bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
 
         spawn_object(n, i);
         if(!place_object_at(y, x, i->next, (level_t *) level)) {
-                //gtprintf("place_obj failed! why?!??");
                 unspawn_object(i->next);
                 return false;
         }
-fprintf(stderr, "DEBUG: %s:%d - Spawned a %s\n", __FILE__, __LINE__, i->next->fullname);
+        if(i->next->attackmod || i->next->damagemod || (i->next->attackmod && i->next->damagemod))
+                fprintf(stderr, "DEBUG: %s:%d - Spawned a %s\n", __FILE__, __LINE__, i->next->fullname);
 
-        if(i->next->modifier > 0)
+        /*if(i->next->modifier > 0)
                 pluses++;
         if(i->next->modifier < 0)
-                minuses++;
+                minuses++;*/
 
         return true;
 }

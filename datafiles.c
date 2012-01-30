@@ -261,7 +261,7 @@ int parse_weapons()
                 x = 0;
                 sprintf(sname, "weapon.[%d].mod", j);
                 config_lookup_int(cf, sname, &x);
-                o->modifier = x;
+                o->attackmod = o->damagemod = x;
 
                 o->id = objid; objid++;
 

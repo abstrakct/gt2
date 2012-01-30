@@ -63,7 +63,8 @@ void dump_objects(obj_t *i)
                         gtprintf("Amount:   %d\n", o->quantity);
                 if(is_armor(o->type))
                         gtprintf("AC:       %d\n", o->ac);
-                gtprintf("Modifier:%s%d\n", (o->modifier >= 0 ? " +" : " "), o->modifier);
+                gtprintf("Attack modifier:%s%d\n", (o->attackmod >= 0 ? " +" : " "), o->attackmod);
+                gtprintf("Damage modifier:%s%d\n", (o->damagemod >= 0 ? " +" : " "), o->damagemod);
                 gtprintf("Unique:   %s\n", is_unique(o->flags) ? "yes" : "no");
                 if(is_weapon(o->type))
                         gtprintf("Damage:   %dd%d\n", o->dice, o->sides);

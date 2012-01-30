@@ -17,7 +17,8 @@ struct object {
         int oid;                // unique id
         short type;             // see OT_defines below
         long flags;             // 4 bytes = 32 bits/flags, see OF_defines below - CONSIDER CHANGE TO LONG LONG
-        signed short modifier;  // +/-, for armor: acmodifier
+        signed short attackmod; // +/- on attack; for armor: acmodifier
+        signed short damagemod; // +/- on damage;
         char basename[50];      // the basic name of the item
         char unidname[100];     // unidentified name
         char fullname[100];     // should be more than enough, adjust later
@@ -68,9 +69,18 @@ extern char *otypestrings[];
 #define OF_STICK      0x00080000   /// ???
 #define OF_MACE       0x00100000
 #define OF_HAMMER     0x00200000
+//#define OF_UNUSED1    0x00400000   // do we need more flags?!?! long long or?
 #define OF_TWOHANDED  0x00800000
 
+//#define OF_UNUSED2    0x01000000
+//#define OF_UNUSED3    0x02000000
+//#define OF_UNUSED4    0x04000000
+//#define OF_UNUSED5    0x08000000
+//#define OF_UNUSED6    0x10000000
+//#define OF_UNUSED7    0x20000000
+
 // Special flags!
+#define OF_SPAWNED    0x40000000        // use to set if a unique object has been spawned or not!
 #define OF_HOLYFUCK   0x80000000
 
 #define MAT_GOLD       1

@@ -21,9 +21,9 @@ typedef struct { // sattr_t
 
 typedef struct { // uattr_t
         int str;
-        int phys;
+        int phy;
         int intl;
-        int know;
+        int wis;
         int dex;
         int cha;
 } uattr_t;
@@ -39,7 +39,7 @@ typedef struct { // wear_t
         struct object *rightring;
 } wear_t;
 
-typedef struct actorstruct {     // actor_t
+typedef struct actorstruct {     // actor_t 
         short id;                          // id = monsterdef id
         unsigned int mid;                  // mid = unique id for this monster; in monsterdefs mid = index into aitable! (that should work right?)
         short x, y, oldx, oldy, px, py;

@@ -136,7 +136,16 @@ void init_player()
         player->viewradius = 50;
         player->level = 1;
         player->hp = player->maxhp = 100;
-        //player->inventory = init_inventory();
+
+        player->attr.str  = dice(3, 6, 0);
+        player->attr.dex  = dice(3, 6, 0);
+        player->attr.phy  = dice(3, 6, 0);
+        player->attr.wis  = dice(3, 6, 0);
+        player->attr.cha  = dice(3, 6, 0);
+        player->attr.intl = dice(3, 6, 0);
+
+        // TODO: FIXXX!!!!!
+        player->thac0 = (player->attr.dex / 2) + (player->attr.str / 2);
 }
 
 void shutdown_gt()

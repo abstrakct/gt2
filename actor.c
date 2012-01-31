@@ -126,6 +126,7 @@ bool next_to(actor_t *a, actor_t *b)
 void attack(actor_t *attacker, actor_t *victim)
 {
         int damage;
+        int hit, tohit;
 
         victim->attacker = attacker;
 
@@ -135,21 +136,38 @@ void attack(actor_t *attacker, actor_t *victim)
                 damage = dice(1, 3, 0);
         }
 
-        victim->hp -= damage;
+        // TODO: FIXXX!!!!!!!!!!
+        hit = d(1, 20);             // throw 1d20
+        tohit = attacker->thac0;
+        tohit -= victim->ac;
+        if(attacker->weapon)
+                tohit += attacker->weapon->attackmod;
+        if(tohit < 1)
+                tohit = 1;
 
-        if(attacker == player)
-                you("hit the %s with a %s for %d damage!", victim->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
-        else
-                gtprintf("The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+        
+        gtprintfc(C_BLACK_MAGENTA, "DEBUG: %s:%d - hit = %d    tohit = %d\n", __FILE__, __LINE__, hit, tohit);
+        if(hit <= tohit) {
+                if(attacker == player)
+                        youc(C_BLACK_GREEN, "hit the %s with a %s for %d damage!", victim->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                else
+                        gtprintfc(C_BLACK_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
 
-        if(victim->hp <= 0) {
-                if(victim == player)
-                        player->hp += 10;
+                victim->hp -= damage;
+                if(victim->hp <= 0) {
+                        if(victim == player)
+                                player->hp += 10;
                         //you("die!!!");
-                else {
-                        you("kill the %s!", victim->name);
-                        kill_monster(victim);
+                        else {
+                                youc(C_BLACK_GREEN, "kill the %s!", victim->name);
+                                kill_monster(victim);
+                        }
                 }
+        } else {
+                if(attacker == player)
+                        youc(C_BLACK_RED, "miss the %s!", victim->name);
+                else
+                        gtprintfc(C_BLACK_GREEN, "The %s tries to hit you, but fails!", attacker->name);
         }
 
         if(attacker == player)

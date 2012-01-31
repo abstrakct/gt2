@@ -53,12 +53,12 @@ int parse_monsters()
 
                 sprintf(sname, "monsters.[%d].str", j);
                 config_lookup_int(cf, sname, &(m->attr.str));
-                sprintf(sname, "monsters.[%d].phys", j);
-                config_lookup_int(cf, sname, &(m->attr.phys));
+                sprintf(sname, "monsters.[%d].phy", j);
+                config_lookup_int(cf, sname, &(m->attr.phy));
                 sprintf(sname, "monsters.[%d].intl", j);
                 config_lookup_int(cf, sname, &(m->attr.intl));
-                sprintf(sname, "monsters.[%d].know", j);
-                config_lookup_int(cf, sname, &(m->attr.know));
+                sprintf(sname, "monsters.[%d].wis", j);
+                config_lookup_int(cf, sname, &(m->attr.wis));
                 sprintf(sname, "monsters.[%d].dex", j);
                 config_lookup_int(cf, sname, &(m->attr.dex));
                 sprintf(sname, "monsters.[%d].cha", j);

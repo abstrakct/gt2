@@ -771,6 +771,108 @@ bool monster_passable(level_t *l, int y, int x)
                 return passable(l, y, x);
 }
 
+void generate_stairs_outside()
+{
+        /* Here's what we're gonna do:
+         * - Choose 3 destinations in dng[1]
+         * - Make about 30 downstairs on outside level, each leading to one of 3 destinations
+         * - Make the 3 upstairs in dng[1]
+         * - Then, use another function for generating stairs in each dungeon.
+         */
+
+        struct dest {
+                int y, x;
+        } d[3];
+        int i, s, j;
+        int sy, sx;
+
+        
+        for(i = 0; i < 3; i++) {
+                d[i].y = ri(0, world->dng[1].ysize-5);
+                d[i].x = ri(0, world->dng[1].xsize-5);
+                while(!passable(&world->dng[1], d[i].y, d[i].x)) {
+                        d[i].y = ri(0, world->dng[1].ysize-5);
+                        d[i].x = ri(0, world->dng[1].xsize-5);
+                }
+
+                setbit(world->dng[1].c[d[i].y][d[i].x].flags, CF_HAS_STAIRS_UP);
+fprintf(stderr, "DEBUG: %s:%d - OK, we have stair %d at %d,%d\n", __FILE__, __LINE__, i, d[i].y, d[i].x);
+        }
+
+        s = ri(35, 70);
+        for(i = 0; i < s; i++) {
+                sy = ri(5, world->out->ysize-5);
+                sx = ri(5, world->out->xsize-5);
+                j  = ri(0, 2);
+
+                setbit(world->dng[0].c[sy][sx].flags, CF_HAS_STAIRS_DOWN);
+                world->dng[0].c[sy][sx].desty = d[j].y;
+                world->dng[0].c[sy][sx].destx = d[j].x;
+                world->dng[1].c[d[j].y][d[j].x].desty = sy;
+                world->dng[1].c[d[j].y][d[j].x].destx = sx;
+        }
+
+}
+
+void create_stairs(int num, int s, int d)
+{
+        level_t *a, *b;
+        int x1, y1, x2, y2;
+        int i;
+
+        a = &world->dng[s];
+        b = &world->dng[d];
+
+        for(i = 0; i < num; i++) {
+                y1 = ri(5, a->ysize-5);
+                x1 = ri(5, a->xsize-5);
+                while(!passable(a, y1, x1)) {
+                        y1 = ri(5, a->ysize-5);
+                        x1 = ri(5, a->xsize-5);
+                }
+
+                y2 = ri(5, b->ysize-5);
+                x2 = ri(5, b->xsize-5);
+                while(!passable(b, y2, x2)) {
+                        y2 = ri(5, b->ysize-5);
+                        x2 = ri(5, b->xsize-5);
+                }
+
+                setbit(a->c[y1][x1].flags, CF_HAS_STAIRS_DOWN);
+                a->c[y1][x1].desty = y2;
+                a->c[y1][x1].destx = x2;
+
+                setbit(b->c[y2][x2].flags, CF_HAS_STAIRS_UP);
+                b->c[y2][x2].desty = y1;
+                b->c[y2][x2].destx = x1;
+        }
+}
+
+void meta_generate_dungeon(int type, int d)
+{
+        if(type == 2) {
+                int num_monsters;
+
+                world->dng[d].xsize = (ri(50, 100));  // let's start within reasonable sizes!
+                world->dng[d].ysize = (ri(50, 100));
+                init_level(&world->dng[d]);
+
+                zero_level(&world->dng[d]);
+                generate_dungeon_normal2(d);
+
+                num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 2;
+                num_monsters /= 10;
+                spawn_monsters(num_monsters, &world->dng[d], 100);
+
+                spawn_objects(ri(world->dng[d].xsize/10, world->dng[d].xsize/5), &world->dng[d]);
+                spawn_golds((int) ri(10, 10+world->dng[d].xsize / 15), (player->level+1) * 35, &world->dng[d]);
+
+                game->createddungeons++;
+        } else {
+                die("trying to generate dungeon of unknown type!");
+        }
+}
+
 /*********************************************
 * Description - One big function which should
 * take care of all world generation stuff.
@@ -815,26 +917,26 @@ void generate_world()
         spawn_golds(100, 100, world->out);
         spawn_objects(ri(world->out->xsize/8, world->out->ysize/4), world->out);
 
-        //fprintf(stderr, "DEBUG: %s:%d - Generating dungeon!!\n", __FILE__, __LINE__);
-        //generate_dungeon_labyrinthine(1);
-        
-        zero_level(&world->dng[1]);
-        generate_dungeon_normal2(1);
-        spawn_monsters(20, &world->dng[1], 100);
-        spawn_objects(ri(world->dng[1].xsize/10, world->dng[1].xsize/5), &world->dng[1]);
-        spawn_golds((int) ri(10, 10+world->dng[1].xsize / 10), (player->level+1) * 35, &world->dng[1]);
-        game->createddungeons++;
+
+        meta_generate_dungeon(2, 1);
+        meta_generate_dungeon(2, 2);
+        meta_generate_dungeon(2, 3);
+
+        generate_stairs_outside();
+        create_stairs(3, 1, 2);
+        create_stairs(3, 2, 3);
+
 
         // create the edge of the world
         for(x=0; x<world->out->xsize; x++) {
-                world->out->c[1][x].type = AREA_WALL;
-                world->out->c[2][x].type = AREA_WALL;
+                world->out->c[1][x].type   = AREA_WALL;
+                world->out->c[2][x].type   = AREA_WALL;
                 world->out->c[794][x].type = AREA_WALL;
                 world->out->c[795][x].type = AREA_WALL;
         }
         for(y=0; y<world->out->ysize; y++) {
-                world->out->c[y][1].type = AREA_WALL;
-                world->out->c[y][2].type = AREA_WALL;
+                world->out->c[y][1].type   = AREA_WALL;
+                world->out->c[y][2].type   = AREA_WALL;
                 world->out->c[y][794].type = AREA_WALL;
                 world->out->c[y][795].type = AREA_WALL;
         }

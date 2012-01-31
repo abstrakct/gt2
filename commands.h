@@ -39,6 +39,8 @@ typedef struct {
 #define CMD_SE            23
 #define CMD_INVENTORY     24
 #define CMD_REST          25
+#define CMD_DESCEND       26
+#define CMD_ASCEND        27
 
 // development/debug commands
 #define CMD_FLOODFILL     1001

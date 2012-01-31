@@ -63,6 +63,7 @@ typedef struct actorstruct {     // actor_t
         long long ticks;
         int thac0;
         float skill[MAX_SKILLS];
+
         /* monster specific stuff */
         void (*ai)(struct actorstruct *);      // artificial intelligence handler!!
         short goalx, goaly;                      // for simple outdoor pathfinder ai
@@ -70,7 +71,6 @@ typedef struct actorstruct {     // actor_t
         struct actorstruct *next;
         struct actorstruct *attacker;
         struct actorstruct *head;
-        // infinite recursion inclusion fuck shit level_t *l;                            // pointer to the level where it's at
 } actor_t;
 
 bool actor_in_lineofsight(actor_t *src, actor_t *dest);

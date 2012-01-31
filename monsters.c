@@ -254,9 +254,9 @@ void move_monsters()
 
                                         while(m->ticks >= 1000) {
                                                 hostile_ai(m);
-                                                draw_world(world->curlevel);
+                                                /*draw_world(world->curlevel);
                                                 draw_wstat();
-                                                update_screen();
+                                                update_screen();*/
                                         }
                         } else {
                                 m->ticks += (int) (m->speed*1000);

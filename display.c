@@ -215,12 +215,22 @@ void dofovlight(actor_t *actor, level_t *l, float x, float y)
         oy = (float) actor->y + 0.5f;
 
 
+        //gtprintf("\tentering dofovlight");
         for(i = 0; i < (actor->viewradius/2); i++) {       // TODO: add a lightradius in actor_t, calculate it based on stuff
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
-                        if(l->c[(int)oy][(int)ox].type == DNG_WALL)
-                                l->c[(int)oy][(int)ox].flags |= CF_LIT;
-                        if(blocks_light((int) oy, (int) ox))
+                        //gtprintf("\t\tchecking cell %d,%d", (int)oy, (int)ox);
+                        if(hasbit(l->c[(int)oy][(int)ox].flags, CF_LIT))
                                 return;
+
+                        if(l->c[(int)oy][(int)ox].type == DNG_WALL) {
+                                //gtprintf("alright setting CF_LIT on %d,%d (%.4f,%.4f) (y,x = %.4f, %.4f)", (int)oy, (int)ox, oy, ox, y, x);
+                                l->c[(int)oy][(int)ox].flags |= CF_LIT;
+                        }
+
+                        if(blocks_light((int) oy, (int) ox)) {
+                                //gtprintf("cell %d,%d blocks light", (int)oy, (int)ox);
+                                return;
+                        }
 
                         ox += x;
                         oy += y;
@@ -233,11 +243,12 @@ void FOVlight(actor_t *a, level_t *l)
         float x, y;
         int i;
 
+        //gtprintf("entering FOVlight..");
         clear_map_to_unlit(l);
         for(i = 0; i < 360; i++) {
                 x = cos((float) i * 0.01745f);
                 y = sin((float) i * 0.01745f);
-//fprintf(stderr, "DEBUG: %s:%d - now going to dofovlight i = %d y = %.4f x = %.4f\n", __FILE__, __LINE__, i, y, x);
+                //fprintf(stderr, "DEBUG: %s:%d - now going to dofovlight i = %d y = %.4f x = %.4f\n", __FILE__, __LINE__, i, y, x);
                 dofovlight(a, l, x, y);
         }
 }
@@ -263,7 +274,7 @@ void draw_world(level_t *level)
         for(i = ppx, dx = 0; i <= (ppx + game->mapw); i++, dx++) {
                 for(j = ppy, dy = 0; j <= (ppy + game->maph); j++, dy++) {
                         if(j < level->ysize && i < level->xsize) {
-                                if(level->c[j][i].flags & CF_VISITED) {
+                                if(hasbit(level->c[j][i].flags, CF_VISITED)) {
                                         color = cc(j,i);
                                         if(game->context == CONTEXT_DUNGEON)
                                                 wattron(wmap, A_BOLD);
@@ -273,14 +284,9 @@ void draw_world(level_t *level)
                                                 color = COLOR_CITY;
                                         }
 
-                                        if(level->c[j][i].flags & CF_HAS_DOOR_CLOSED)
-                                                gtmapaddch(dy, dx, color, '+');
-                                        else if(level->c[j][i].flags & CF_HAS_DOOR_OPEN)
-                                                gtmapaddch(dy, dx, color, '\'');
-                                        else
-                                                gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
+                                        gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
 
-                                        if(level->c[j][i].visible && level->c[j][i].inventory) {
+                                        if(level->c[j][i].inventory) {
                                                 if(level->c[j][i].inventory->quantity > 0) {
                                                         wattron(wmap, A_BOLD);
                                                         gtmapaddch(dy, dx, COLOR_YELLOW, objchars[OT_GOLD]);
@@ -291,6 +297,17 @@ void draw_world(level_t *level)
                                                         }
                                                 }
                                         }
+
+                                        
+
+                                        if(hasbit(level->c[j][i].flags, CF_HAS_DOOR_CLOSED))
+                                                gtmapaddch(dy, dx, color, '+');
+                                        else if(hasbit(level->c[j][i].flags, CF_HAS_DOOR_OPEN))
+                                                gtmapaddch(dy, dx, color, '\'');
+                                        else if(hasbit(level->c[j][i].flags, CF_HAS_STAIRS_DOWN))
+                                                gtmapaddch(dy, dx, color, '>');
+                                        else if(hasbit(level->c[j][i].flags, CF_HAS_STAIRS_UP))
+                                                gtmapaddch(dy, dx, color, '<');
                                 }
 
 
@@ -319,7 +336,7 @@ void draw_wstat()
 
         mvwprintw(wleft, 1, 1, "Name:");
         mvwprintw(wleft, 2, 1, "Turn:   %d", game->turn);
-        mvwprintw(wleft, 3, 1, "(y,x)   (%d,%d)     ", ply, plx);
+        mvwprintw(wleft, 3, 1, "y,x     %d,%d     ", ply, plx);
         mvwprintw(wleft, 4, 1, "(py,px) (%d,%d)     ", ppy, ppx);
         mvwprintw(wleft, 5, 1, "viewradius: %d      ", player->viewradius);
         if(player->hp >= (player->maxhp/4*3))
@@ -332,6 +349,11 @@ void draw_wstat()
         wattron(wleft, color);
         mvwprintw(wleft, 6, 5, "%d   ", player->hp);
         wattroff(wleft, color);
+        mvwprintw(wleft, 7, 1, "Player level: %d", player->level);
+        mvwprintw(wleft, 8, 1, "THAC0: %d", player->thac0);
+        mvwprintw(wleft, 9, 1, "Dungeon level: %d (out of %d total)", game->currentlevel, game->createddungeons);
+
+
 
         mvwprintw(wstat, 1, 1, "Inventory:");
         mvwprintw(wstat, 2, 1, "Gold: %d            ", player->inventory->quantity);

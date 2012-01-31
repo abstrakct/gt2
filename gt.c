@@ -180,14 +180,43 @@ void parse_commandline(int argc, char **argv)
         }
 }
 
+void fixview()
+{
+        ppx = plx - (game->mapw / 2);
+        ppy = ply - (game->maph / 2);
+
+        if(plx < 0)
+                plx = 0;
+        if(plx <= (ppx+(game->mapcx/6)))
+                ppx--;
+        if(plx >= (ppx+(game->mapcx/6*5)))
+                ppx++;
+        if(ppx >= world->curlevel->xsize-game->mapcx)
+                ppx = world->curlevel->xsize-game->mapcx-1;
+        if(ppx < 0)
+                ppx = 0;
+
+        if(ply < 0)
+                ply = 0;
+        if(ply <= (ppy + (game->mapcy/6)))
+                ppy--;
+        if(ply >= (ppy + (game->mapcy/6*5)))
+                ppy++;
+        if(ppy >= world->curlevel->ysize-game->mapcy)
+                ppy = world->curlevel->ysize - game->mapcy - 1;
+        if(ppy < 0)
+                ppy = 0;
+}
+
 /*********************************************
 * Description - Do an action specified by parameter action
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-bool do_action(int action)
+bool do_action(int action, int specialmove)
 {
         int oldy, oldx;
+        int tmpy, tmpx;
         bool fullturn;
         //int updatescreen = true;
 
@@ -321,6 +350,10 @@ bool do_action(int action)
                                 break;
                         }
 
+                        if(specialmove) {
+                                ply--; plx--;
+                        }
+
                         if(ply < 0)
                                 ply = 0;
                         if(ply <= (ppy + (game->mapcy/6))) {
@@ -357,6 +390,9 @@ bool do_action(int action)
                                 break;
                         }
 
+                        if(specialmove) {
+                                ply--; plx++;
+                        }
                         
                         if(plx >= world->curlevel->xsize)
                                 plx = world->curlevel->xsize-1;
@@ -398,6 +434,9 @@ bool do_action(int action)
                                 break;
                         }
 
+                        if(specialmove) {
+                                ply++; plx--;
+                        }
 
                         if(ply >= world->curlevel->ysize)
                                 ply = world->curlevel->ysize-1;
@@ -435,6 +474,10 @@ bool do_action(int action)
                         } else {
                                 fullturn = false;
                                 break;
+                        }
+
+                        if(specialmove) {
+                                ply++; plx++;
                         }
 
                         if(ply >= world->curlevel->ysize)
@@ -483,36 +526,57 @@ bool do_action(int action)
                         move_monsters();
                         fullturn = false;
                         break;
-                case ACTION_ENTER_DUNGEON:
-                        if(world->cmap == world->out->c) {
+                case ACTION_GO_DOWN_STAIRS:
+                        if(game->currentlevel < game->createddungeons) {
+                                tmpy = world->curlevel->c[ply][plx].desty;
+                                tmpx = world->curlevel->c[ply][plx].destx;
+                                if(game->currentlevel == 0) {
+                                        world->dng[1].c[tmpy][tmpx].desty = ply;
+                                        world->dng[1].c[tmpy][tmpx].destx = plx;
+                                        gtprintf("setting return destination to %d,%d", ply, plx);
+                                }
+
                                 game->currentlevel++;
                                 world->cmap = world->dng[game->currentlevel].c;
                                 world->curlevel = &(world->dng[game->currentlevel]);
-                                game->context = CONTEXT_DUNGEON;
+                                if(game->currentlevel > 0)
+                                        game->context = CONTEXT_DUNGEON;
 
-                                ply = 0; plx = 0;
+                                /*ply = 0; plx = 0;
                                 while(!passable(world->curlevel, ply, plx)) {
                                         ply = ri(0, world->curlevel->ysize-5);
                                         plx = ri(0, world->curlevel->xsize-5);
-                                }
+                                }*/
 
-                                ppy = ply - (game->maph / 2);
-                                ppx = plx - (game->mapw / 2);
-
-                                if(ppy <= 0)
-                                        ppy = 0;
-                                if(ppx <= 0)
-                                        ppx = 0;
+                                ply = tmpy;
+                                plx = tmpx;
 
                                 player->viewradius = 16;
-                        } else {
+                        }
+                        player->ticks -= TICKS_MOVEMENT;
+                        break;
+                case ACTION_GO_UP_STAIRS:
+                        tmpy = ply; tmpx = plx;
+                        ply = world->curlevel->c[tmpy][tmpx].desty;
+                        plx = world->curlevel->c[tmpy][tmpx].destx;
+
+                        if(game->currentlevel > 0)
                                 game->currentlevel--;
-                                world->cmap = world->out->c;
-                                world->curlevel = world->out;
+                        world->cmap = world->dng[game->currentlevel].c;
+                        world->curlevel = &(world->dng[game->currentlevel]);
+
+                        if(game->currentlevel == 0) {
                                 game->context = CONTEXT_OUTSIDE;
                                 player->viewradius = 50;
                         }
                         player->ticks -= TICKS_MOVEMENT;
+                        break;
+                case ACTION_FIX_VIEW:
+                        /*do_action(ACTION_PLAYER_MOVE_NW, true);
+                        do_action(ACTION_PLAYER_MOVE_SW, true);
+                        do_action(ACTION_PLAYER_MOVE_SE, true);
+                        do_action(ACTION_PLAYER_MOVE_NE, true);*/
+                        fixview();
                         break;
                 case ACTION_NOTHING:
                         //updatescreen = false;
@@ -609,7 +673,7 @@ bool do_next_thing_in_queue() // needs a better name..
         tmp = aq->next;
 
         if(tmp) {
-                ret = do_action(tmp->action);
+                ret = do_action(tmp->action, false);
                 aq->num--;
                 aq->next = tmp->next;
                 gtfree(tmp);
@@ -651,11 +715,19 @@ void do_turn(int do_all)
                 if(ret) {
                         game->turn++;
 
-                        if(cf(ply, plx) & CF_HAS_STAIRS_DOWN)
-                                gtprintf("There's a staircase of stone leading down here.");
+                        if(cf(ply, plx) & CF_HAS_STAIRS_DOWN) {
+                                if(game->currentlevel == 0)
+                                        gtprintf("There is a portal to the underworld here!");
+                                else                                
+                                        gtprintf("There is a staircase of stone leading down here.");
+                        }
 
-                        if(cf(ply, plx) & CF_HAS_STAIRS_UP)
-                                gtprintf("There's a staircase of stone leading up here.");
+                        if(cf(ply, plx) & CF_HAS_STAIRS_UP) {
+                                if(game->currentlevel == 1) 
+                                        gtprintf("There is a portal to the outside world here!");
+                                else
+                                        gtprintf("There is a staircase of stone leading up here.");
+                        }
 
                         if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0)
                                 gtprintf("There is %d gold %s here.", ci(ply, plx)->quantity, (ci(ply, plx)->quantity > 1) ? "pieces" : "piece");
@@ -715,9 +787,7 @@ int main(int argc, char *argv[])
                 world->cmap = world->dng[game->currentlevel].c;
                 world->curlevel = &world->dng[game->currentlevel];
         } else {
-                world->dng[1].xsize = (ri(50, 100));  // let's start within reasonable sizes!
-                world->dng[1].ysize = (ri(50, 100));
-                init_level(&world->dng[1]);
+
                 init_level(world->out);
                 generate_world();
 
@@ -847,6 +917,24 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_PICKUP:
                                 queue(ACTION_PICKUP);
+                                break;
+                        case CMD_DESCEND:
+                                if(hasbit(cf(ply,plx), CF_HAS_STAIRS_DOWN)) {
+                                        queue(ACTION_GO_DOWN_STAIRS);
+                                        queue(ACTION_FIX_VIEW);
+                                } else {
+                                        gtprintf("You can't go up here!");
+                                        queue(ACTION_NOTHING);
+                                }
+                                break;
+                        case CMD_ASCEND:
+                                if(hasbit(cf(ply,plx), CF_HAS_STAIRS_UP)) {
+                                        queue(ACTION_GO_UP_STAIRS);
+                                        queue(ACTION_FIX_VIEW);
+                                } else {
+                                        gtprintf("You can't go up here!");
+                                        queue(ACTION_NOTHING);
+                                }
                                 break;
                         case CMD_REST:
                                 queue(ACTION_NOTHING);

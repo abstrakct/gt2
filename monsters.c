@@ -95,8 +95,9 @@ void simpleoutdoorpathfinder(actor_t *m)
         }
 
         if(!monster_passable(world->curlevel, m->y, m->x)) {
-                m->y = oy;
-                m->x = ox;
+                //m->y = oy;
+                //m->x = ox;
+                simpleoutdoorpathfinder(m);                  // can we do this recursively, so that the monster will find a path eventually instead of just banging its head into a wall?!
         }
 
         world->cmap[oy][ox].monster = NULL;

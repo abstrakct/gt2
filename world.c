@@ -796,7 +796,7 @@ void generate_stairs_outside()
                 }
 
                 setbit(world->dng[1].c[d[i].y][d[i].x].flags, CF_HAS_STAIRS_UP);
-fprintf(stderr, "DEBUG: %s:%d - OK, we have stair %d at %d,%d\n", __FILE__, __LINE__, i, d[i].y, d[i].x);
+//fprintf(stderr, "DEBUG: %s:%d - OK, we have stair %d at %d,%d\n", __FILE__, __LINE__, i, d[i].y, d[i].x);
         }
 
         s = ri(35, 70);

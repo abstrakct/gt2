@@ -12,6 +12,7 @@
 #include <stdbool.h>
 
 #include "objects.h"
+#include "o_effects.h"
 #include "actor.h"
 #include "monsters.h"
 #include "utils.h"
@@ -280,12 +281,82 @@ int parse_weapons()
         return 0;
 }
 
+
+int parse_jewelry()
+{
+        config_setting_t *cfg;
+        int i, j;
+        char sname[100];
+        const char *value;
+
+        cfg = config_lookup(cf, "ring");
+        i = config_setting_length(cfg);
+        printf("Parsing jewelry file... We have %d rings", i);
+        for(j=0;j<i;j++) {
+                obj_t *o;
+                int x;
+
+                o = (obj_t *) gtmalloc(sizeof(obj_t));
+
+                sprintf(sname, "ring.[%d].name", j);
+                config_lookup_string(cf, sname, &value);
+                strcpy(o->basename, value);
+                
+                sprintf(sname, "ring.[%d].brand", j);
+                config_lookup_string(cf, sname, &value);
+                if(!strcmp(value, "stat")) {                     // This means this ring modifies a stat
+                        sprintf(sname, "ring.[%d].stat", j);
+                        config_lookup_string(cf, sname, &value);
+
+                        if(!strcmp(value, "strength")) 
+                                add_effect(o, oe_strength);
+                        if(!strcmp(value, "physique"))
+                                add_effect(o, oe_physique);
+                        if(!strcmp(value, "intelligence"))
+                                add_effect(o, oe_intelligence);
+                        if(!strcmp(value, "wisdom"))
+                                add_effect(o, oe_wisdom);
+                        if(!strcmp(value, "dexterity"))
+                                add_effect(o, oe_dexterity);
+                        if(!strcmp(value, "charisma"))
+                                add_effect(o, oe_charisma);
+                }
+
+                sprintf(sname, "ring.[%d].unique", j);
+                config_lookup_bool(cf, sname, &x);
+                if(x)
+                        o->flags |= OF_UNIQUE;
+
+                x = 0;
+                sprintf(sname, "ring.[%d].mod", j);
+                config_lookup_int(cf, sname, &x);
+                o->attackmod = o->damagemod = x;
+
+                o->type = OT_RING;
+                o->id = objid; objid++;
+
+                o->head = objdefs->head;
+                objdefs->next = o;
+                o->next = NULL;
+                o->prev = objdefs;
+                objdefs = o;
+
+                game->objdefs++;
+                printf(".");
+        }
+
+        printf(" OK\n");
+
+        return 0;
+}
+
 int parse_objects()
 {
         int ret;
 
         ret = parse_armor();
         ret = parse_weapons();
+        ret = parse_jewelry();
 
         return ret;
 }

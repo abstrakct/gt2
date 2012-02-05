@@ -287,15 +287,15 @@ void draw_world(level_t *level)
                                         gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
 
                                         if(level->c[j][i].inventory) {
+                                                wattron(wmap, A_BOLD);
                                                 if(level->c[j][i].inventory->quantity > 0) {
-                                                        wattron(wmap, A_BOLD);
                                                         gtmapaddch(dy, dx, COLOR_YELLOW, objchars[OT_GOLD]);
-                                                        wattroff(wmap, A_BOLD);
                                                 } else {                                                         // TODO ADD OBJECT COLORS!!!
                                                         if(level->c[j][i].inventory->next) {
                                                                 gtmapaddch(dy, dx, COLOR_BLUE, objchars[level->c[j][i].inventory->next->type]);
                                                         }
                                                 }
+                                                wattroff(wmap, A_BOLD);
                                         }
 
                                         
@@ -352,12 +352,12 @@ void draw_wstat()
         mvwprintw(wleft, 7, 1, "Player level: %d", player->level);
         mvwprintw(wleft, 8, 1, "THAC0: %d", player->thac0);
         mvwprintw(wleft, 9, 1, "Dungeon level: %d (out of %d total)", game->currentlevel, game->createddungeons);
-        mvwprintw(wleft, 10, 1, "STR: %d", player->attr.str);
-        mvwprintw(wleft, 11, 1, "DEX: %d", player->attr.dex);
-        mvwprintw(wleft, 12, 1, "PHY: %d", player->attr.phy);
-        mvwprintw(wleft, 13, 1, "INT: %d", player->attr.intl);
-        mvwprintw(wleft, 14, 1, "WIS: %d", player->attr.wis);
-        mvwprintw(wleft, 15, 1, "CHA: %d", player->attr.cha);
+        mvwprintw(wleft, 10, 1, "STR: %d  ", player->attr.str);
+        mvwprintw(wleft, 11, 1, "DEX: %d  ", player->attr.dex);
+        mvwprintw(wleft, 12, 1, "PHY: %d  ", player->attr.phy);
+        mvwprintw(wleft, 13, 1, "INT: %d  ", player->attr.intl);
+        mvwprintw(wleft, 14, 1, "WIS: %d  ", player->attr.wis);
+        mvwprintw(wleft, 15, 1, "CHA: %d  ", player->attr.cha);
 
 
 

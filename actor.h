@@ -39,34 +39,34 @@ typedef struct { // wear_t
         struct object *rightring;
 } wear_t;
 
-typedef struct actorstruct {     // actor_t 
-        short id;                          // id = monsterdef id
-        unsigned int mid;                  // mid = unique id for this monster; in monsterdefs mid = index into aitable! (that should work right?)
-        short x, y, oldx, oldy, px, py;
-        short viewradius;
-        char name[50];
-        int hp, maxhp;
-        int xp;
-        short ac;
-        uattr_t attr;
-        int level;
-        short race, cla;
-        //char wvfactor;
-        //short worldview;
-        obj_t *weapon;           // currently wielded weapon
-        obj_t *inventory;
-        wear_t w;
-        long flags;
-        int c;             // character, for monsters.
-        double speed;
-        double movement;
-        long long ticks;
-        int thac0;
-        float skill[MAX_SKILLS];
+typedef struct actorstruct {            // actor_t 
+        short        id;                // id = monsterdef id
+        unsigned int mid;               // mid = unique id for this monster; in monsterdefs mid = index into aitable! (that should work right?)
+        short        x, y, oldx, oldy, px, py;
+        short        viewradius;
+        char         name[50];
+        int          hp, maxhp;
+        int          xp;
+        short        ac;
+        uattr_t      attr;
+        int          level;
+        short        race, cla;
+        obj_t        *weapon;           // currently wielded weapon
+        obj_t        *inventory;
+        wear_t       w;
+        long         flags;
+        int          c;                 // character, for monsters.
+        double       speed;
+        double       movement;
+        long long    ticks;
+        int          thac0;
+        float        skill[MAX_SKILLS];
+        //char         wvfactor;
+        //short        worldview;
 
         /* monster specific stuff */
-        void (*ai)(struct actorstruct *);      // artificial intelligence handler!!
-        short goalx, goaly;                      // for simple outdoor pathfinder ai
+        void               (*ai)(struct actorstruct *);      // artificial intelligence handler!!
+        short              goalx, goaly;                      // for simple outdoor pathfinder ai
         struct actorstruct *prev;
         struct actorstruct *next;
         struct actorstruct *attacker;

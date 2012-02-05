@@ -69,6 +69,22 @@ bool is_pair(obj_t *o)
                 return false;
 }
 
+bool is_worn(obj_t *o)      // worn by player, that is..
+{
+        if(o == player->weapon ||
+                        o == player->w.head ||
+                        o == player->w.body ||
+                        o == player->w.gloves ||
+                        o == player->w.footwear ||
+                        o == player->w.robe ||
+                        o == player->w.amulet ||
+                        o == player->w.leftring ||
+                        o == player->w.rightring)
+                return true;
+        else
+                return false;
+}
+
 void unspawn_object(obj_t *m)
 {
         if(m) {
@@ -89,6 +105,17 @@ obj_t *init_inventory()
         return i;
 }
 
+void apply_effects(obj_t *o)
+{
+        int i;
+
+        for(i = 0; i < o->effects; i++)
+                if(o->effect[i])
+                        o->effect[i](o);
+}
+
+#define unapply_effects apply_effects
+
 void pick_up(obj_t *o, void *p)
 {
         actor_t *a;
@@ -105,7 +132,14 @@ void pick_up(obj_t *o, void *p)
 
         if(o->type == OT_WEAPON) {
                 a->weapon = o;
-                gtprintf("You are now wielding a %s!", o->basename);
+                gtprintf("You are now wielding a %s!", o->fullname);
+        } else if(o->type == OT_RING) {
+                if(a->w.leftring)
+                        unapply_effects(a->w.leftring);
+
+                gtprintf("You put on a %s!", o->fullname);
+                apply_effects(o);
+                a->w.leftring = o;
         }
 
         // TODO: tackle cells with multiple items!
@@ -178,7 +212,7 @@ void generate_fullname(obj_t *o)
                         strcat(n, " ");
                         strcat(n, o->basename);
                 }
-        } else if(o->type == OT_ARMOR) {
+        } else if(o->type == OT_ARMOR || o->type == OT_RING) {
                 if(o->attackmod > 0)
                         sprintf(n, "+%d ", o->attackmod);
                 if(o->attackmod < 0)
@@ -244,9 +278,13 @@ void spawn_object(int n, obj_t *head)
         head->next->oid = oid_counter;
 
         // maybe this object is magical?
-        if(!is_unique(head->next->flags) && (head->next->type == OT_WEAPON || head->next->type == OT_ARMOR)) {
+        if(!is_unique(head->next->flags) && (head->next->type == OT_WEAPON || head->next->type == OT_ARMOR || head->next->type == OT_RING)) {
+                if(head->next->type == OT_RING)
+                        while(!head->next->attackmod)
+                                head->next->attackmod = ri(-1, 1);
+
                 if(perc(50+(player->level*2))) {
-                        if(perc(40)) {
+                        if(perc(40)) {                // a ring must be at least +/- 1
                                 if(perc(66))
                                         head->next->attackmod = ri(0, 1);
                                 else
@@ -349,8 +387,8 @@ bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
                 unspawn_object(i->next);
                 return false;
         }
-        if(i->next->attackmod || i->next->damagemod || (i->next->attackmod && i->next->damagemod))
-                fprintf(stderr, "DEBUG: %s:%d - Spawned a %s\n", __FILE__, __LINE__, i->next->fullname);
+        //if(i->next->attackmod || i->next->damagemod || (i->next->attackmod && i->next->damagemod))
+                //fprintf(stderr, "DEBUG: %s:%d - Spawned a %s\n", __FILE__, __LINE__, i->next->fullname);
 
         /*if(i->next->modifier > 0)
                 pluses++;
@@ -405,7 +443,7 @@ void spawn_objects(int num, void *p)
 {
         int i, x, y, o;
         level_t *l;
-        double mp, pp, np, tot;
+        //double mp, pp, np, tot;
 
         i = 0;
         l = (level_t *) p;
@@ -418,11 +456,11 @@ void spawn_objects(int num, void *p)
                         i++;
         }
 
-        tot = (double) i;
+        /*tot = (double) i;
         mp = (100 / tot) * (double) minuses;
         pp = (100 / tot) * (double) pluses;
-        np = (100 / tot) * (double) (tot - minuses - pluses);
+        np = (100 / tot) * (double) (tot - minuses - pluses);*/
 
-        fprintf(stderr, "\nDEBUG: %s:%d - Spawned %d objects    %.1f %% with +    %.1f %% with -     %.1f %% neutral.\n", __FILE__, __LINE__, i, pp, mp, np);
-        fprintf(stderr, "\nDEBUG: %s:%d - spawn_objects spawned %d objects (should spawn %d)\n\n", __FILE__, __LINE__, i, num);
+        //fprintf(stderr, "\nDEBUG: %s:%d - Spawned %d objects    %.1f %% with +    %.1f %% with -     %.1f %% neutral.\n", __FILE__, __LINE__, i, pp, mp, np);
+        //fprintf(stderr, "\nDEBUG: %s:%d - spawn_objects spawned %d objects (should spawn %d)\n\n", __FILE__, __LINE__, i, num);
 }

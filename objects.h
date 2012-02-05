@@ -9,29 +9,42 @@
 #ifndef _OBJECTS_H
 #define _OBJECTS_H
 
+#define MAX_EFFECTS  10
+/*
+typedef struct object_effect {
+        struct object_effect *next;
+        void   (*effect)(void *data);
+} oe_t;
+*/
+
 struct object {
         struct object *prev;
         struct object *next;
         struct object *head;
-        int  id;                // objdef-id
-        int oid;                // unique id
-        int color;              // color!
-        short type;             // see OT_defines below
-        long flags;             // 4 bytes = 32 bits/flags, see OF_defines below - CONSIDER CHANGE TO LONG LONG
-        signed short attackmod; // +/- on attack; for armor: acmodifier
-        signed short damagemod; // +/- on damage;
-        char  basename[50];     // the basic name of the item
-        char  unidname[100];    // unidentified name
-        char  fullname[100];    // should be more than enough, adjust later
+        int  id;                           // objdef-id
+        int oid;                           // unique id
+        int color;                         // color!
+        short type;                        // see OT_defines below
+        long flags;                        // 4 bytes = 32 bits/flags, see OF_defines below - CONSIDER CHANGE TO LONG LONG
+        signed short attackmod;            // +/- on attack; for armor: acmodifier
+        signed short damagemod;            // +/- on damage;
+        char  basename[50];                // the basic name of the item
+        char  unidname[100];               // unidentified name
+        char  fullname[100];               // should be more than enough, adjust later
         char  c;
         char  minlevel;
         int   quantity;
         char  material;
-        short dice, sides;      // sides is used for AC for armor!
-        char  skill;            // a particular skill needed to use this weapon?
+        short dice, sides;                 // sides is used for AC for armor!
+        char  skill;                       // a particular skill needed to use this weapon?
+        //oe_t  *e;                          // pointer to linked list of function(s) which will (un)apply the object's effect(s)!
+        char  effects;
+        void  (*effect[MAX_EFFECTS])(void *data);   // easier is better. max 10 (?) effects/enchantments per object.
 };
 
 typedef struct object obj_t;
+
+#define add_effect(a, b) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects] = b; a->effects++; }
 
 #define OT_WEAPON     1
 #define OT_ARMOR      2
@@ -131,6 +144,7 @@ bool place_object_at(int y, int x, obj_t *obj, void *l);
 obj_t get_objdef(int n);
 int get_objdef_by_name(char *wanted);
 bool is_pair(obj_t *o);
+bool is_worn(obj_t *o);      // worn by player, that is..
 
 bool move_to_inventory(obj_t *o, obj_t *i);
 void pick_up(obj_t *o, void *a);

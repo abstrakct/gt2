@@ -430,8 +430,13 @@ void wear(obj_t *o)
                         }
                 } else if(c == 'r') {
                         if(player->w.rightring) {
-                                gtprintf("You have to remove your %s first!", player->w.rightring->fullname);
-                                return;
+                                if(!yesno("Do you want to remove your %s", player->w.rightring->fullname)) {
+                                        return;
+                                } else {
+                                        tmp = player->w.rightring;
+                                        player->w.rightring = o;
+                                        unapply_effects(tmp);
+                                }
                         } else {
                                 player->w.rightring = o;
                         }

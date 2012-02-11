@@ -126,6 +126,8 @@ void init_variables()
 * *******************************************/
 void init_player()
 {
+        int i;
+
         // TODO: Character generation!!
         plx = game->mapw / 2;
         ply = game->maph / 2;
@@ -135,6 +137,8 @@ void init_player()
         game->mapcy = game->maph + 2;
         player->viewradius = 50;
         player->level = 1;
+
+        // TODO: FIXXX!!!
         player->hp = player->maxhp = 100;
 
         player->attr.str  = dice(3, 6, 0);
@@ -146,6 +150,9 @@ void init_player()
 
         // TODO: FIXXX!!!!!
         player->thac0 = (player->attr.dex / 2) + (player->attr.str / 2);
+
+        for(i=0;i<52;i++)
+                objlet[i] = NULL;
 }
 
 void shutdown_gt()

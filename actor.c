@@ -21,7 +21,82 @@
 #include "display.h"
 #include "gt.h"
 
+obj_t *objlet[52];    // 52 pointers to objects, a-z & A-Z
+
 #define SGN(a) (((a)<0) ? -1 : 1)
+
+// object-to-letter and vise versa 
+
+char get_first_free_letter()
+{
+        int i;
+
+        for(i = 0; i < 52; i++) {
+                if(!objlet[i])
+                        return(slot_to_letter(i));
+        }
+        
+        return 0;    // == no free slots!
+}
+
+char slot_to_letter(int i)
+{
+        int retval;
+
+        retval = i;
+        if(i >= 0 && i <= 25)
+                retval += 97;
+        if(i >= 26 && i < 52)
+                retval += 39;
+
+        return retval;
+}
+
+int letter_to_slot(char c)
+{
+        int retval;
+
+        retval = c;
+        if(c >= 97 && c <= 122)
+                retval -= 97;
+        if(c >= 65 && c <= 90)
+                retval -= 39;
+
+        return retval;
+}
+
+obj_t *get_object_from_letter(char c)
+{
+        return objlet[letter_to_slot(c)];
+}
+
+int object_to_slot(obj_t *o)
+{
+        int i;
+
+        for(i = 0; i < 52; i++) {
+                if(objlet[i] == o)
+                        return i;
+        }
+
+        return -1;
+}
+
+void assign_slot(obj_t *o)
+{
+        char c;
+
+        c = get_first_free_letter();
+        o->slot = c;
+        objlet[letter_to_slot(c)] = o;
+}
+
+void unassign_object(obj_t *o)
+{
+        objlet[object_to_slot(o)] = NULL;
+        o->slot = 0;
+}
+
 
 /*
  * This function will check if the actor src can see actor dest
@@ -146,7 +221,7 @@ void attack(actor_t *attacker, actor_t *victim)
                 tohit = 1;
 
         
-        gtprintfc(C_BLACK_MAGENTA, "DEBUG: %s:%d - hit = %d    tohit = %d\n", __FILE__, __LINE__, hit, tohit);
+        //gtprintfc(C_BLACK_MAGENTA, "DEBUG: %s:%d - hit = %d    tohit = %d\n", __FILE__, __LINE__, hit, tohit);
         if(hit <= tohit) {
                 if(attacker == player)
                         youc(C_BLACK_GREEN, "hit the %s with a %s for %d damage!", victim->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);

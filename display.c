@@ -331,7 +331,7 @@ void draw_world(level_t *level)
 void draw_wstat()
 {
         obj_t *o;
-        int i;
+        int i, j;
         int color;
 
         mvwprintw(wleft, 1, 1, "Name:");
@@ -360,16 +360,29 @@ void draw_wstat()
         mvwprintw(wleft, 15, 1, "CHA: %d  ", player->attr.cha);
 
 
-
-        mvwprintw(wstat, 1, 1, "Inventory:");
+        werase(wstat);
+        box(wstat, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                         
+        mvwprintw(wstat, 1, 1, "== INVENTORY ==");
         mvwprintw(wstat, 2, 1, "Gold: %d            ", player->inventory->quantity);
-        o = player->inventory->next;
+        
         i = 3;
+        for(j = 0; j < 52; j++) {
+                if(objlet[j]) {
+                        o = get_object_from_letter(slot_to_letter(j));
+                        mvwprintw(wstat, i, 1, "%c) %s     ", o->slot, o->fullname);
+                        i++;
+                }
+        }
+                
+
+        /*o = player->inventory->next;
+        
+        
         while(o) {
-                mvwprintw(wstat, i, 1, "  * %s                ", o->fullname);
+                mvwprintw(wstat, i, 1, "%c) %s     ", o->slot, o->fullname);
                 i++;
                 o = o->next;
-        }
+        }*/
 }
 
 void update_player()

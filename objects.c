@@ -130,17 +130,27 @@ void pick_up(obj_t *o, void *p)
         a->inventory->next = o;
         o->head = a->inventory;
 
+        assign_slot(o);
+
+/*
         if(o->type == OT_WEAPON) {
                 a->weapon = o;
                 gtprintf("You are now wielding a %s!", o->fullname);
         } else if(o->type == OT_RING) {
-                if(a->w.leftring)
+                if(a->w.leftring) {
+                        gtprintf("You take off your %s.", a->w.leftring->fullname);
                         unapply_effects(a->w.leftring);
+                }
 
                 gtprintf("You put on a %s!", o->fullname);
-                apply_effects(o);
+
+                if(o->attackmod)
+                        apply_effects(o);
+                else
+                        gtprintf("The %s seems to be malfunctioning!", o->fullname);      // change this when we implement the identification system!
                 a->w.leftring = o;
         }
+        */
 
         // TODO: tackle cells with multiple items!
         world->curlevel->c[a->y][a->x].inventory->next = NULL;

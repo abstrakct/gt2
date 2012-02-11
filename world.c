@@ -915,7 +915,8 @@ void generate_world()
         generate_village(world->villages);
         spawn_monsters(100, world->out, 100); 
         spawn_golds(100, 100, world->out);
-        spawn_objects(ri(world->out->xsize/8, world->out->ysize/4), world->out);
+        //spawn_objects(ri(world->out->xsize/8, world->out->ysize/4), world->out);
+        spawn_objects(ri(world->out->xsize/2, world->out->ysize/2), world->out);
 
 
         meta_generate_dungeon(2, 1);

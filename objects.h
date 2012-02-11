@@ -32,6 +32,7 @@ struct object {
         char  unidname[100];               // unidentified name
         char  fullname[100];               // should be more than enough, adjust later
         char  c;
+        char  slot;                        // inventory slot; not sure if needed?!
         char  minlevel;
         int   quantity;
         char  material;

@@ -10,6 +10,8 @@
 
 #define MAX_SKILLS 10
 
+extern obj_t *objlet[52];    // 52 pointers to objects, a-z & A-Z
+
 typedef struct { // sattr_t
         signed char str;
         signed char phys;
@@ -72,6 +74,15 @@ typedef struct actorstruct {            // actor_t
         struct actorstruct *attacker;
         struct actorstruct *head;
 } actor_t;
+
+char   get_first_free_letter();
+char   slot_to_letter(int i);
+int    letter_to_slot(char c);
+obj_t *get_object_from_letter(char c);
+int object_to_slot(obj_t *o);
+void assign_slot(obj_t *o);
+void unassign_object(obj_t *o);
+
 
 bool actor_in_lineofsight(actor_t *src, actor_t *dest);
 bool next_to(actor_t *a, actor_t *b);

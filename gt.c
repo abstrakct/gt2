@@ -230,7 +230,7 @@ void fixview()
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-bool do_action(int action, int specialmove)
+bool do_action(int action)
 {
         int oldy, oldx;
         int tmpy, tmpx;
@@ -368,10 +368,6 @@ bool do_action(int action, int specialmove)
                                 break;
                         }
 
-                        if(specialmove) {
-                                ply--; plx--;
-                        }
-
                         if(ply < 0)
                                 ply = 0;
                         if(ply <= (ppy + (game->mapcy/6))) {
@@ -408,10 +404,6 @@ bool do_action(int action, int specialmove)
                                 break;
                         }
 
-                        if(specialmove) {
-                                ply--; plx++;
-                        }
-                        
                         if(plx >= world->curlevel->xsize)
                                 plx = world->curlevel->xsize-1;
                         if(plx >= (ppx+(game->mapcx/6*5))) {
@@ -452,10 +444,6 @@ bool do_action(int action, int specialmove)
                                 break;
                         }
 
-                        if(specialmove) {
-                                ply++; plx--;
-                        }
-
                         if(ply >= world->curlevel->ysize)
                                 ply = world->curlevel->ysize-1;
                         if(ply >= (ppy+(game->mapcy/6*5))) {
@@ -492,10 +480,6 @@ bool do_action(int action, int specialmove)
                         } else {
                                 fullturn = false;
                                 break;
-                        }
-
-                        if(specialmove) {
-                                ply++; plx++;
                         }
 
                         if(ply >= world->curlevel->ysize)
@@ -598,10 +582,6 @@ bool do_action(int action, int specialmove)
                         player->ticks -= TICKS_WIELDWEAR;
                         break;
                 case ACTION_FIX_VIEW:
-                        /*do_action(ACTION_PLAYER_MOVE_NW, true);
-                        do_action(ACTION_PLAYER_MOVE_SW, true);
-                        do_action(ACTION_PLAYER_MOVE_SE, true);
-                        do_action(ACTION_PLAYER_MOVE_NE, true);*/
                         fixview();
                         break;
                 case ACTION_NOTHING:
@@ -699,7 +679,7 @@ bool do_next_thing_in_queue() // needs a better name..
         tmp = aq->next;
 
         if(tmp) {
-                ret = do_action(tmp->action, false);
+                ret = do_action(tmp->action);
                 aq->num--;
                 aq->next = tmp->next;
                 gtfree(tmp);

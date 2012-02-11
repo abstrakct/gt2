@@ -12,6 +12,8 @@
 
 #define MAIN_DATA_FILE "data/data.cfg"
 
+#define DEVELOPMENT_MODE
+
 typedef struct {                              // gt_config_t
         int minf, maxf;
         int minc, maxc;

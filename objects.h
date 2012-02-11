@@ -40,8 +40,6 @@ struct object {
         char          skill;                       // a particular skill needed to use this weapon?
         char          effects;
         short         effect[MAX_EFFECTS];
-        // TODO: REPLACE WITH ARRAY OF SHORTS THIS IS STUPISRDSF!!!
-        //void         (*effect[MAX_EFFECTS])(void *data);   // easier is better. max 10 (?) effects/enchantments per object.
 };
 
 typedef struct object obj_t;

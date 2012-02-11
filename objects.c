@@ -491,13 +491,6 @@ void pick_up(obj_t *o, void *p)
 
         assign_slot(o);
 
-/*
-        if(o->type == OT_WEAPON) {
-                a->weapon = o;
-                gtprintf("You are now wielding a %s!", o->fullname);
-        }
-        */
-
         // TODO: tackle cells with multiple items!
         world->curlevel->c[a->y][a->x].inventory->next = NULL;
 }

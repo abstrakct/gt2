@@ -214,7 +214,7 @@ void attack(actor_t *attacker, actor_t *victim)
         // TODO: FIXXX!!!!!!!!!!
         hit = d(1, 20);             // throw 1d20
         tohit = attacker->thac0;
-        tohit -= victim->ac;
+        tohit -= victim->ac;        // TODO: NO, AC should reduce DAMAGE! and maybe your chance to hit (heavy armor)
         if(attacker->weapon)
                 tohit += attacker->weapon->attackmod;
         if(tohit < 1)

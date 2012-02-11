@@ -119,12 +119,18 @@ bool blocks_light(int y, int x)
         if(l->c[y][x].flags & CF_HAS_DOOR_CLOSED)
                 return true;
 
+        if(l->c[y][x].type == AREA_FOREST || l->c[y][x].type == AREA_CITY || l->c[y][x].type == AREA_VILLAGE) {    // trees and houses can be "see through" (e.g. if they are small)
+                if(perc(20))
+                        return false;
+                else
+                        return true;
+        }
+
         switch(l->c[y][x].type) {
                 case AREA_NOTHING:
                 case AREA_MOUNTAIN:
-                case AREA_CITY:
-                case AREA_FOREST:
-                case AREA_VILLAGE:
+                //case AREA_CITY:
+                //case AREA_VILLAGE:
                 case AREA_WALL:
                 case DNG_WALL:
                        return true;

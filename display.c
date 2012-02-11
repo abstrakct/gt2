@@ -98,8 +98,8 @@ void init_display()
         meta(wall, TRUE);
         intrflush(wmap, FALSE);
 
-        mess("*** Welcome to Gullible's Travails ***");
-        mess("Press q to exit.");
+        gtprintf("*** Welcome to Gullible's Travails v%s ***", game->version);
+        gtprintf("Press q to exit.");
 
         touchwin(wmap);
         touchwin(wstat);

@@ -785,16 +785,16 @@ void do_turn(int do_all)
 int main(int argc, char *argv[])
 {
         int c, x, l;
-        char s[15];
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
 
-        messagefile = fopen("messages.txt", "w");
-        get_version_string(s);
-        printf("Gullible's Travails v%s\n", s);
-
         init_variables();
+
+        messagefile = fopen("messages.txt", "w");
+        get_version_string(game->version);
+        printf("Gullible's Travails v%s\n", game->version);
+
         parse_commandline(argc, argv);
 
         if(!loadgame) {

@@ -8,7 +8,7 @@
 
 #define GT_VERSION_MAJ 0
 #define GT_VERSION_MIN 0
-#define GT_VERSION_REV 1
+#define GT_VERSION_REV 2
 
 #define MAIN_DATA_FILE "data/data.cfg"
 
@@ -22,6 +22,7 @@ typedef struct {                              // gt_config_t
 } gt_config_t;
 
 typedef struct {                              // game_t
+        char         version[20];
         short        width, height;           // width, height of screen
         short        mapw, maph;              // width, height of map window
         int          mapcx, mapcy;

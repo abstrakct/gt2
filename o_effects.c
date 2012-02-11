@@ -22,6 +22,17 @@
 #include "debug.h"
 #include "gt.h"
 
+typedef void (*effectfunctionpointer)(void *data);
+
+effectfunctionpointer effecttable[OE_LAST] = {
+        0,
+        oe_strength,
+        oe_wisdom,
+        oe_intelligence,
+        oe_physique,
+        oe_dexterity,
+        oe_charisma
+};
                 
 void oe_strength(void *data)
 {
@@ -148,29 +159,8 @@ void apply_effect(int effect, void *data)
         if(!effect)
                 return;
 
-        switch(effect) {
-                case OE_STRENGTH:
-                        oe_strength(data);
-                        break;
-                case OE_WISDOM:
-                        oe_wisdom(data);
-                        break;
-                case OE_INTELLIGENCE:
-                        oe_intelligence(data);
-                        break;
-                case OE_PHYSIQUE:
-                        oe_physique(data);
-                        break;
-                case OE_DEXTERITY:
-                        oe_dexterity(data);
-                        break;
-                case OE_CHARISMA:
-                        oe_charisma(data);
-                        break;
-                default:
-                        gtprintf("Huh? Unknown effect!");
-                        break;
-        }
+        if(effect < OE_LAST)
+                effecttable[effect](data);
 }
 
 void apply_effects(obj_t *o)

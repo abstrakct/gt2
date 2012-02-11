@@ -14,6 +14,7 @@
 #define OE_PHYSIQUE     4
 #define OE_DEXTERITY    5
 #define OE_CHARISMA     6
+#define OE_LAST         7
 
 void apply_effects(obj_t *o);
 void apply_effect(int effect, void *data);

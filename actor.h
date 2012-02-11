@@ -84,6 +84,7 @@ void assign_slot(obj_t *o);
 void unassign_object(obj_t *o);
 
 
+bool in_lineofsight(actor_t *src, int goaly, int goalx);
 bool actor_in_lineofsight(actor_t *src, actor_t *dest);
 bool next_to(actor_t *a, actor_t *b);
 void attack(actor_t *attacker, actor_t *victim);

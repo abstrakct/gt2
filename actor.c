@@ -98,23 +98,26 @@ void unassign_object(obj_t *o)
 }
 
 
+bool actor_in_lineofsight(actor_t *src, actor_t *dest)
+{
+        return in_lineofsight(src, dest->y, dest->x);
+}
+
 /*
- * This function will check if the actor src can see actor dest
+ * This function will check if the actor src can see cell at goaly,goalx
  * Returns true if it can, false if not,
  *
  * Adapted from http://roguebasin.roguelikedevelopment.org/index.php/Simple_Line_of_Sight
- *
- * TODO: Generalize so that this can work for any pair of x,y coordinates!
  */
-bool actor_in_lineofsight(actor_t *src, actor_t *dest)
+bool in_lineofsight(actor_t *src, int goaly, int goalx)
 {
         int t, x, y, ax, ay, sx, sy, dx, dy;
 
-        if(src->x == dest->x && src->y == dest->y) // shouldn't actually happen?
+        if(src->x == goalx && src->y == goaly) // shouldn't actually happen?
                 return true;
 
-        dx = dest->x - src->x;
-        dy = dest->y - src->y;
+        dx = goalx - src->x;
+        dy = goaly - src->y;
 
         ax = abs(dx) << 1;
         ay = abs(dy) << 1;
@@ -126,13 +129,13 @@ bool actor_in_lineofsight(actor_t *src, actor_t *dest)
         y = src->y;
 
         // This must be changed to a FOV thing!
-        if(dest->x > (x + src->viewradius))
+        if(goalx > (x + src->viewradius))
                 return false;
-        if(dest->y > (y + src->viewradius))
+        if(goaly > (y + src->viewradius))
                 return false;
-        if(dest->x < (x - src->viewradius))
+        if(goalx < (x - src->viewradius))
                 return false;
-        if(dest->y < (y - src->viewradius))
+        if(goaly < (y - src->viewradius))
                 return false;
 
 
@@ -148,7 +151,7 @@ bool actor_in_lineofsight(actor_t *src, actor_t *dest)
                         x += sx;
                         t += ay;
 
-                        if(x == dest->x && y == dest->y) {
+                        if(x == goalx && y == goaly) {
                                 return true;
                         }
                 } while(!blocks_light(src->y, src->x));
@@ -164,7 +167,7 @@ bool actor_in_lineofsight(actor_t *src, actor_t *dest)
 
                         y += sy;
                         t += ax;
-                        if(x == dest->x && y == dest->y) {
+                        if(x == goalx && y == goaly) {
                                 return true;
                         }
                 } while(!blocks_light(src->y, src->x));
@@ -211,10 +214,13 @@ void attack(actor_t *attacker, actor_t *victim)
                 damage = dice(1, 3, 0);
         }
 
+        damage -= victim->ac;       // TODO: Adjust/change 
+
         // TODO: FIXXX!!!!!!!!!!
         hit = d(1, 20);             // throw 1d20
         tohit = attacker->thac0;
-        tohit -= victim->ac;        // TODO: NO, AC should reduce DAMAGE! and maybe your chance to hit (heavy armor)
+        //tohit -= victim->ac;        // TODO: AC should maybe reduce your chance to hit (heavy armor)
+
         if(attacker->weapon)
                 tohit += attacker->weapon->attackmod;
         if(tohit < 1)

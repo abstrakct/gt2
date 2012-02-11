@@ -21,26 +21,27 @@ struct object {
         struct object *prev;
         struct object *next;
         struct object *head;
-        int  id;                           // objdef-id
-        int oid;                           // unique id
-        int color;                         // color!
-        short type;                        // see OT_defines below
-        long flags;                        // 4 bytes = 32 bits/flags, see OF_defines below - CONSIDER CHANGE TO LONG LONG
-        signed short attackmod;            // +/- on attack; for armor: acmodifier
-        signed short damagemod;            // +/- on damage;
-        char  basename[50];                // the basic name of the item
-        char  unidname[100];               // unidentified name
-        char  fullname[100];               // should be more than enough, adjust later
-        char  c;
-        char  slot;                        // inventory slot; not sure if needed?!
-        char  minlevel;
-        int   quantity;
-        char  material;
-        short dice, sides;                 // sides is used for AC for armor!
-        char  skill;                       // a particular skill needed to use this weapon?
-        //oe_t  *e;                          // pointer to linked list of function(s) which will (un)apply the object's effect(s)!
-        char  effects;
-        void  (*effect[MAX_EFFECTS])(void *data);   // easier is better. max 10 (?) effects/enchantments per object.
+        int           id;                   // objdef-id
+        int           oid;                  // unique id
+        int           color;                // color!
+        short         type;                 // see OT_defines below
+        long          flags;                // 4 bytes = 32 bits/flags, see OF_defines below - CONSIDER CHANGE TO LONG LONG
+        signed short  attackmod;            // +/- on attack; for armor: acmodifier
+        signed short  damagemod;            // +/- on damage;
+        char          basename[50];         // the basic name of the item
+        char          unidname[100];        // unidentified name
+        char          fullname[100];        // should be more than enough, adjust later
+        char          c;
+        char          slot;                 // inventory slot; not sure if needed?!
+        char          minlevel;
+        int           quantity;
+        char          material;
+        short         dice, sides;                 // sides is used for AC for armor!
+        char          skill;                       // a particular skill needed to use this weapon?
+        char          effects;
+        short         effect[MAX_EFFECTS];
+        // TODO: REPLACE WITH ARRAY OF SHORTS THIS IS STUPISRDSF!!!
+        //void         (*effect[MAX_EFFECTS])(void *data);   // easier is better. max 10 (?) effects/enchantments per object.
 };
 
 typedef struct object obj_t;
@@ -118,20 +119,25 @@ extern char *otypestrings[];
 #define ac sides
 
 // and some nice macros
-#define identified(a)   (a & OF_IDENTIFIED)
-#define do_identify(a)   a|= OF_IDENTIFIED
-#define is_armor(a)     (a == OT_ARMOR)
-#define is_weapon(a)    (a == OT_WEAPON)
-#define is_magic(a)     (a & OF_MAGIC)
-#define is_eatable(a)   (a & OF_EATABLE)
-#define is_drinkable(a) (a & OF_DRINKABLE)
-#define is_holyfuck(a)  (a & OF_HOLYFUCK)
-#define is_unique(a)    (a & OF_UNIQUE)
-#define is_headwear(a)  (a & OF_HEADARMOR)
-#define is_footwear(a)  (a & OF_FOOTARMOR)
-#define is_bodywear(a)  (a & OF_BODYARMOR)
-#define is_gloves(a)    (a & OF_GLOVES)
-#define is_shield(a)    (a & OF_SHIELD)
+#define is_armor(a)     (a->type  == OT_ARMOR)
+#define is_weapon(a)    (a->type  == OT_WEAPON)
+#define is_ring(a)      (a->type  == OT_RING)
+#define is_amulet(a)    (a->type  == OT_AMULET)
+
+#define identified(a)   (a->flags & OF_IDENTIFIED)
+#define do_identify(a)   a->flags|= OF_IDENTIFIED
+#define is_magic(a)     (a->flags & OF_MAGIC)
+#define is_eatable(a)   (a->flags & OF_EATABLE)
+#define is_drinkable(a) (a->flags & OF_DRINKABLE)
+#define is_holyfuck(a)  (a->flags & OF_HOLYFUCK)
+#define is_unique(a)    (a->flags & OF_UNIQUE)
+#define is_headwear(a)  (a->flags & OF_HEADARMOR)
+#define is_footwear(a)  (a->flags & OF_FOOTARMOR)
+#define is_bodywear(a)  (a->flags & OF_BODYARMOR)
+#define is_gloves(a)    (a->flags & OF_GLOVES)
+#define is_shield(a)    (a->flags & OF_SHIELD)
+
+#define unapply_effects apply_effects
 
 // Prototypes
 //
@@ -149,6 +155,8 @@ bool is_worn(obj_t *o);      // worn by player, that is..
 
 bool move_to_inventory(obj_t *o, obj_t *i);
 void pick_up(obj_t *o, void *a);
+void wieldwear(obj_t *o);
+void wield(obj_t *o);
 
 obj_t *init_inventory();
 void spawn_golds(int num, int max, void *p);

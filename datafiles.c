@@ -309,17 +309,17 @@ int parse_jewelry()
                         config_lookup_string(cf, sname, &value);
 
                         if(!strcmp(value, "strength")) 
-                                add_effect(o, oe_strength);
+                                add_effect(o, OE_STRENGTH);
                         if(!strcmp(value, "physique"))
-                                add_effect(o, oe_physique);
+                                add_effect(o, OE_PHYSIQUE);
                         if(!strcmp(value, "intelligence"))
-                                add_effect(o, oe_intelligence);
+                                add_effect(o, OE_INTELLIGENCE);
                         if(!strcmp(value, "wisdom"))
-                                add_effect(o, oe_wisdom);
+                                add_effect(o, OE_WISDOM);
                         if(!strcmp(value, "dexterity"))
-                                add_effect(o, oe_dexterity);
+                                add_effect(o, OE_DEXTERITY);
                         if(!strcmp(value, "charisma"))
-                                add_effect(o, oe_charisma);
+                                add_effect(o, OE_CHARISMA);
                 }
 
                 sprintf(sname, "ring.[%d].unique", j);

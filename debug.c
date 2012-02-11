@@ -61,12 +61,12 @@ void dump_objects(obj_t *i)
                 gtprintf("OID:      %d\tBasename: %s\tType:     %s", o->oid, o->basename, otypestrings[o->type]);
                 if(o->type == OT_GOLD)
                         gtprintf("Amount:   %d\n", o->quantity);
-                if(is_armor(o->type))
+                if(is_armor(o))
                         gtprintf("AC:       %d\n", o->ac);
                 gtprintf("Attack modifier:%s%d\n", (o->attackmod >= 0 ? " +" : " "), o->attackmod);
                 gtprintf("Damage modifier:%s%d\n", (o->damagemod >= 0 ? " +" : " "), o->damagemod);
-                gtprintf("Unique:   %s\n", is_unique(o->flags) ? "yes" : "no");
-                if(is_weapon(o->type))
+                gtprintf("Unique:   %s\n", is_unique(o) ? "yes" : "no");
+                if(is_weapon(o))
                         gtprintf("Damage:   %dd%d\n", o->dice, o->sides);
                 
                 gtprintf("\n");

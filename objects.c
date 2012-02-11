@@ -13,6 +13,7 @@
 #include <stdbool.h>
 
 #include "objects.h"
+#include "o_effects.h"
 #include "actor.h"
 #include "monsters.h"
 #include "utils.h"
@@ -69,7 +70,7 @@ bool is_pair(obj_t *o)
                 return false;
 }
 
-bool is_worn(obj_t *o)      // worn by player, that is..
+bool is_worn(obj_t *o)      // worn by player, that is.. or wielded (weapons)
 {
         if(o == player->weapon ||
                         o == player->w.head ||
@@ -95,92 +96,6 @@ void unspawn_object(obj_t *m)
         }
 }
 
-obj_t *init_inventory()
-{
-        obj_t *i;
-
-        i = gtmalloc(sizeof(obj_t));
-        i->type = OT_GOLD;
-
-        return i;
-}
-
-void apply_effects(obj_t *o)
-{
-        int i;
-
-        for(i = 0; i < o->effects; i++)
-                if(o->effect[i])
-                        o->effect[i](o);
-}
-
-#define unapply_effects apply_effects
-
-void pick_up(obj_t *o, void *p)
-{
-        actor_t *a;
-
-        a = (actor_t *) p;
-
-        if(!a->inventory)
-                die("inventory not initialized!");
-
-        o->prev = a->inventory;
-        o->next = a->inventory->next;
-        a->inventory->next = o;
-        o->head = a->inventory;
-
-        assign_slot(o);
-
-/*
-        if(o->type == OT_WEAPON) {
-                a->weapon = o;
-                gtprintf("You are now wielding a %s!", o->fullname);
-        } else if(o->type == OT_RING) {
-                if(a->w.leftring) {
-                        gtprintf("You take off your %s.", a->w.leftring->fullname);
-                        unapply_effects(a->w.leftring);
-                }
-
-                gtprintf("You put on a %s!", o->fullname);
-
-                if(o->attackmod)
-                        apply_effects(o);
-                else
-                        gtprintf("The %s seems to be malfunctioning!", o->fullname);      // change this when we implement the identification system!
-                a->w.leftring = o;
-        }
-        */
-
-        // TODO: tackle cells with multiple items!
-        world->curlevel->c[a->y][a->x].inventory->next = NULL;
-}
-
-/*
- * Move object *o to inventory *i
- */
-bool move_to_inventory(obj_t *o, obj_t *i)
-{
-        if(o->type == OT_GOLD) {
-                i->quantity += o->quantity;
-                unspawn_object(o);
-                return true;
-        } else {
-                // TODO: ->prev !!!
-
-                o->head = i->head;
-                o->next = i->next;
-                if(i->next)
-                        i->next->prev = o;
-                i->next = o;
-                i->sides++;        // use 'sides' in head as counter of how many items are in here.
-                //i->type = OT_GOLD; // a strange place to set this, but for now...
-
-                return true;
-        }
-
-        return false;
-}
 
 /*
  * Generate the full name of object
@@ -288,7 +203,7 @@ void spawn_object(int n, obj_t *head)
         head->next->oid = oid_counter;
 
         // maybe this object is magical?
-        if(!is_unique(head->next->flags) && (head->next->type == OT_WEAPON || head->next->type == OT_ARMOR || head->next->type == OT_RING)) {
+        if(!is_unique(head->next) && (is_weapon(head->next) || is_armor(head->next) || is_ring(head->next))) {
                 if(head->next->type == OT_RING)
                         while(!head->next->attackmod)
                                 head->next->attackmod = ri(-1, 1);
@@ -329,7 +244,7 @@ void spawn_object(int n, obj_t *head)
 
         }
 
-        if(!is_unique(head->next->flags) && head->next->type == OT_WEAPON) {
+        if(!is_unique(head->next) && is_weapon(head->next)) {
                 if(perc(60+(player->level*2))) {
                         if(perc(40)) {
                                 if(perc(66))
@@ -473,4 +388,142 @@ void spawn_objects(int num, void *p)
 
         //fprintf(stderr, "\nDEBUG: %s:%d - Spawned %d objects    %.1f %% with +    %.1f %% with -     %.1f %% neutral.\n", __FILE__, __LINE__, i, pp, mp, np);
         //fprintf(stderr, "\nDEBUG: %s:%d - spawn_objects spawned %d objects (should spawn %d)\n\n", __FILE__, __LINE__, i, num);
+}
+
+/*
+ * Functions related to actors and interacting with objects
+ */
+obj_t *init_inventory()
+{
+        obj_t *i;
+
+        i = gtmalloc(sizeof(obj_t));
+        i->type = OT_GOLD;
+
+        return i;
+}
+
+
+void wear(obj_t *o)
+{
+        obj_t *tmp;
+
+        if(is_ring(o)) {
+                char c;
+
+                c = ask_for_hand();
+                if(!c) {
+                        gtprintf("Alright then.");
+                        return;
+                }
+                if(c == 'l') {
+                        if(player->w.leftring) {
+                                if(!yesno("Do you want to remove your %s", player->w.leftring->fullname)) {
+                                        return;
+                                } else {
+                                        tmp = player->w.leftring;
+                                        player->w.leftring = o;
+                                        unapply_effects(tmp);
+                                }
+                        } else {
+                                player->w.leftring = o;
+                        }
+                } else if(c == 'r') {
+                        if(player->w.rightring) {
+                                gtprintf("You have to remove your %s first!", player->w.rightring->fullname);
+                                return;
+                        } else {
+                                player->w.rightring = o;
+                        }
+                }
+
+                if(o->attackmod)            // i think we need a better test here..
+                        apply_effects(o);
+                else
+                        gtprintf("The %s seems to be malfunctioning!", o->fullname);      // change this when we implement the identification system!
+
+        }
+}
+
+void wield(obj_t *o)
+{
+        player->weapon = o;
+        apply_effects(o);
+}
+
+void wieldwear(obj_t *o)
+{
+        if(!o)
+                return;
+
+        if(is_worn(o)) {
+                if(is_weapon(o))
+                        youc(COLOR_INFO, "are already wielding that!");
+                else
+                        youc(COLOR_INFO, "are already wearing that!");
+                return;
+        }
+
+        if(is_weapon(o)) {
+                wield(o);
+                youc(COLOR_INFO, "are now wielding a %s.", o->fullname);
+        } else {
+                wear(o);
+        }
+}
+                
+                
+
+
+void pick_up(obj_t *o, void *p)
+{
+        actor_t *a;
+
+        a = (actor_t *) p;
+
+        if(!a->inventory)
+                die("inventory not initialized!");
+
+        o->prev = a->inventory;
+        o->next = a->inventory->next;
+        a->inventory->next = o;
+        o->head = a->inventory;
+
+        assign_slot(o);
+
+/*
+        if(o->type == OT_WEAPON) {
+                a->weapon = o;
+                gtprintf("You are now wielding a %s!", o->fullname);
+        }
+        */
+
+        // TODO: tackle cells with multiple items!
+        world->curlevel->c[a->y][a->x].inventory->next = NULL;
+}
+
+/*
+ * Move object *o to inventory *i
+ */
+bool move_to_inventory(obj_t *o, obj_t *i)
+{
+        if(o->type == OT_GOLD) {
+                i->quantity += o->quantity;
+                unspawn_object(o);
+                return true;
+        } else {
+                // TODO: ->prev !!!
+
+                o->head = i->head;
+                o->next = i->next;
+                if(i->next)
+                        i->next->prev = o;
+                i->next = o;
+                i->sides++;        // use 'sides' in head as counter of how many items are in here.
+                //i->type = OT_GOLD; // a strange place to set this, but for now...
+
+                return true;
+        }
+
+        return false;
 }

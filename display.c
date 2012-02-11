@@ -287,15 +287,16 @@ void draw_world(level_t *level)
                                         gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
 
                                         if(level->c[j][i].inventory) {
-                                                wattron(wmap, A_BOLD);
+                                                wattroff(wmap, A_BOLD);
                                                 if(level->c[j][i].inventory->quantity > 0) {
+                                                        wattron(wmap, A_BOLD);
                                                         gtmapaddch(dy, dx, COLOR_YELLOW, objchars[OT_GOLD]);
+                                                        wattroff(wmap, A_BOLD);
                                                 } else {                                                         // TODO ADD OBJECT COLORS!!!
                                                         if(level->c[j][i].inventory->next) {
                                                                 gtmapaddch(dy, dx, COLOR_BLUE, objchars[level->c[j][i].inventory->next->type]);
                                                         }
                                                 }
-                                                wattroff(wmap, A_BOLD);
                                         }
 
                                         
@@ -334,11 +335,17 @@ void draw_wstat()
         int i, j;
         int color;
 
+        werase(wleft);
+        werase(wstat);
+        box(wleft, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                         
+        box(wstat, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                         
+
         mvwprintw(wleft, 1, 1, "Name:");
         mvwprintw(wleft, 2, 1, "Turn:   %d", game->turn);
-        mvwprintw(wleft, 3, 1, "y,x     %d,%d     ", ply, plx);
-        mvwprintw(wleft, 4, 1, "(py,px) (%d,%d)     ", ppy, ppx);
-        mvwprintw(wleft, 5, 1, "viewradius: %d      ", player->viewradius);
+        mvwprintw(wleft, 3, 1, "Weapon: %s", player->weapon ? player->weapon->fullname : "bare hands");
+        //mvwprintw(wleft, 3, 1, "y,x     %d,%d", ply, plx);
+        //mvwprintw(wleft, 4, 1, "(py,px) (%d,%d)", ppy, ppx);
+        mvwprintw(wleft, 5, 1, "viewradius: %d", player->viewradius);
         if(player->hp >= (player->maxhp/4*3))
                 color = COLOR_PAIR(COLOR_GREEN);
         else if(player->hp >= (player->maxhp/4) && player->hp < (player->maxhp/4*3))
@@ -347,29 +354,33 @@ void draw_wstat()
                 color = COLOR_PAIR(COLOR_RED);
         mvwprintw(wleft, 6, 1, "HP:");
         wattron(wleft, color);
-        mvwprintw(wleft, 6, 5, "%d   ", player->hp);
+        mvwprintw(wleft, 6, 5, "%d", player->hp);
         wattroff(wleft, color);
         mvwprintw(wleft, 7, 1, "Player level: %d", player->level);
         mvwprintw(wleft, 8, 1, "THAC0: %d", player->thac0);
-        mvwprintw(wleft, 9, 1, "Dungeon level: %d (out of %d total)", game->currentlevel, game->createddungeons);
-        mvwprintw(wleft, 10, 1, "STR: %d  ", player->attr.str);
-        mvwprintw(wleft, 11, 1, "DEX: %d  ", player->attr.dex);
-        mvwprintw(wleft, 12, 1, "PHY: %d  ", player->attr.phy);
-        mvwprintw(wleft, 13, 1, "INT: %d  ", player->attr.intl);
-        mvwprintw(wleft, 14, 1, "WIS: %d  ", player->attr.wis);
-        mvwprintw(wleft, 15, 1, "CHA: %d  ", player->attr.cha);
+        mvwprintw(wleft, 9, 1, "Dungeon level: %d (out of %d)", game->currentlevel, game->createddungeons);
+        mvwprintw(wleft, 10, 1, "STR: %d", player->attr.str);
+        mvwprintw(wleft, 11, 1, "DEX: %d", player->attr.dex);
+        mvwprintw(wleft, 12, 1, "PHY: %d", player->attr.phy);
+        mvwprintw(wleft, 13, 1, "INT: %d", player->attr.intl);
+        mvwprintw(wleft, 14, 1, "WIS: %d", player->attr.wis);
+        mvwprintw(wleft, 15, 1, "CHA: %d", player->attr.cha);
 
 
-        werase(wstat);
-        box(wstat, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                         
         mvwprintw(wstat, 1, 1, "== INVENTORY ==");
-        mvwprintw(wstat, 2, 1, "Gold: %d            ", player->inventory->quantity);
+        mvwprintw(wstat, 2, 1, "Gold: %d", player->inventory->quantity);
         
         i = 3;
         for(j = 0; j < 52; j++) {
                 if(objlet[j]) {
                         o = get_object_from_letter(slot_to_letter(j));
-                        mvwprintw(wstat, i, 1, "%c) %s     ", o->slot, o->fullname);
+                        if(is_worn(o)) {
+                                wattron(wstat, COLOR_PAIR(COLOR_INFO));
+                                mvwprintw(wstat, i, 1, "%c) %s", o->slot, o->fullname);
+                                wattroff(wstat, COLOR_PAIR(COLOR_INFO));
+                        } else {
+                                mvwprintw(wstat, i, 1, "%c) %s", o->slot, o->fullname);
+                        }
                         i++;
                 }
         }

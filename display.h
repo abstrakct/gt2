@@ -6,25 +6,6 @@
 #ifndef _DISPALY_H
 #define _DISPALY_H
 
-#define COLOR_PLAIN    0
-#define COLOR_FOREST   2
-#define COLOR_CITY     3
-#define COLOR_VILLAGE  COLOR_CITY
-#define COLOR_DUNGEON  COLOR_CITY
-#define COLOR_MOUNTAIN 3
-#define COLOR_LAKE     4
-#define COLOR_PLAYER   56
-
-#define COLOR_WARNING 10
-#define COLOR_BAD     COLOR_WARNING
-#define COLOR_GOOD    1               // Green
-#define COLOR_NORMAL  COLOR_PLAIN     // White
-#define COLOR_VISIBLE COLOR_CITY
-
-#define COLOR_SHADE   63
-#define COLOR_LIGHT   62
-
-#define COLOR_INVISIBLE 63
 
 // Prototypes
 void init_display();
@@ -110,4 +91,27 @@ bool blocks_light(int y, int x);
 #define C_WHITE_MAGENTA         61
 #define C_WHITE_CYAN            62
 #define C_WHITE_WHITE           63
+
+
+#define COLOR_PLAIN    0
+#define COLOR_FOREST   2
+#define COLOR_CITY     3
+#define COLOR_VILLAGE  COLOR_CITY
+#define COLOR_DUNGEON  COLOR_CITY
+#define COLOR_MOUNTAIN 3
+#define COLOR_LAKE     4
+#define COLOR_PLAYER   56
+
+#define COLOR_WARNING 10
+#define COLOR_BAD     COLOR_WARNING
+#define COLOR_GOOD    1               // Green
+#define COLOR_NORMAL  COLOR_PLAIN     // White
+#define COLOR_INFO    C_BLACK_YELLOW
+#define COLOR_VISIBLE COLOR_CITY
+
+#define COLOR_SHADE   63
+#define COLOR_LIGHT   62
+
+#define COLOR_INVISIBLE 63
+
 #endif

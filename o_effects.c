@@ -31,16 +31,16 @@ void oe_strength(void *data)
         o = (obj_t *) data;
         x = player->attr.str;
 
-        if(!is_worn(o)) {
+        if(is_worn(o)) {
                 player->attr.str += o->attackmod;
         } else {
                 player->attr.str -= o->attackmod;
         }
 
         if(x > player->attr.str)
-                you("feel weaker!");
+                youc(COLOR_INFO, "feel weaker.");
         else
-                you("feel stronger!");
+                youc(COLOR_INFO, "feel stronger!");
 }
 
 void oe_wisdom(void *data)
@@ -51,16 +51,16 @@ void oe_wisdom(void *data)
         o = (obj_t *) data;
         x = player->attr.wis;
 
-        if(!is_worn(o)) {
+        if(is_worn(o)) {
                 player->attr.wis += o->attackmod;
         } else {
                 player->attr.wis -= o->attackmod;
         }
 
         if(x > player->attr.wis)
-                you("feel more ignorant!");
+                youc(COLOR_INFO, "feel more ignorant.");
         else
-                you("feel wiser!");
+                youc(COLOR_INFO, "feel wiser!");
 }
 
 void oe_physique(void *data)
@@ -71,16 +71,16 @@ void oe_physique(void *data)
         o = (obj_t *) data;
         x = player->attr.phy;
 
-        if(!is_worn(o)) {
+        if(is_worn(o)) {
                 player->attr.phy += o->attackmod;
         } else {
                 player->attr.phy -= o->attackmod;
         }
 
         if(x > player->attr.phy)
-                you("feel small and fragile.");
+                youc(COLOR_INFO, "feel small and fragile.");
         else
-                you("feel more able to perform physically challenging tasks!");
+                youc(COLOR_INFO, "feel more able to perform physically challenging tasks!");
 }
 
 void oe_intelligence(void *data)
@@ -91,16 +91,16 @@ void oe_intelligence(void *data)
         o = (obj_t *) data;
         x = player->attr.intl;
 
-        if(!is_worn(o)) {
+        if(is_worn(o)) {
                 player->attr.intl += o->attackmod;
         } else {
                 player->attr.intl -= o->attackmod;
         }
 
         if(x > player->attr.intl)
-                you("feel stupider!");
+                youc(COLOR_INFO, "feel stupider.");
         else
-                you("feel smarter!");
+                youc(COLOR_INFO, "feel smarter!");
 }
 
 void oe_dexterity(void *data)
@@ -111,16 +111,16 @@ void oe_dexterity(void *data)
         o = (obj_t *) data;
         x = player->attr.dex;
 
-        if(!is_worn(o)) {
+        if(is_worn(o)) {
                 player->attr.dex += o->attackmod;
         } else {
                 player->attr.dex -= o->attackmod;
         }
 
         if(x > player->attr.dex)
-                you("feel less agile!");
+                youc(COLOR_INFO, "feel less agile.");
         else
-                you("feel more agile!");
+                youc(COLOR_INFO, "feel more agile!");
 }
 
 void oe_charisma(void *data)
@@ -131,14 +131,53 @@ void oe_charisma(void *data)
         o = (obj_t *) data;
         x = player->attr.cha;
 
-        if(!is_worn(o)) {
+        if(is_worn(o)) {
                 player->attr.cha += o->attackmod;
         } else {
                 player->attr.cha -= o->attackmod;
         }
 
         if(x > player->attr.cha)
-                you("feel ugly and disgusting.");
+                youc(COLOR_INFO, "feel a bit more unattractive.");
         else
-                you("feel beautiful and attractive.");
+                youc(COLOR_INFO, "feel more attractive!");
+}
+
+void apply_effect(int effect, void *data)
+{
+        if(!effect)
+                return;
+
+        switch(effect) {
+                case OE_STRENGTH:
+                        oe_strength(data);
+                        break;
+                case OE_WISDOM:
+                        oe_wisdom(data);
+                        break;
+                case OE_INTELLIGENCE:
+                        oe_intelligence(data);
+                        break;
+                case OE_PHYSIQUE:
+                        oe_physique(data);
+                        break;
+                case OE_DEXTERITY:
+                        oe_dexterity(data);
+                        break;
+                case OE_CHARISMA:
+                        oe_charisma(data);
+                        break;
+                default:
+                        gtprintf("Huh? Unknown effect!");
+                        break;
+        }
+}
+
+void apply_effects(obj_t *o)
+{
+        int i;
+
+        for(i = 0; i < o->effects; i++)
+                if(o->effect[i])
+                        apply_effect(o->effect[i], o);
 }

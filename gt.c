@@ -60,6 +60,7 @@ FILE *messagefile;
 bool mapchanged;
 int tempxsize, tempysize;
 bool loadgame;
+void *actiondata;
 
 actor_t *a_attacker, *a_victim;
 
@@ -234,6 +235,7 @@ bool do_action(int action, int specialmove)
         int oldy, oldx;
         int tmpy, tmpx;
         bool fullturn;
+        obj_t *o;
         //int updatescreen = true;
 
         oldy = ply; oldx = plx;
@@ -587,6 +589,14 @@ bool do_action(int action, int specialmove)
                         }
                         player->ticks -= TICKS_MOVEMENT;
                         break;
+                case ACTION_WIELDWEAR:
+                        o = (obj_t *) actiondata;
+                        if(o)
+                                wieldwear(o);
+                        else
+                                gtprintf("HUH????????????????????");
+                        player->ticks -= TICKS_WIELDWEAR;
+                        break;
                 case ACTION_FIX_VIEW:
                         /*do_action(ACTION_PLAYER_MOVE_NW, true);
                         do_action(ACTION_PLAYER_MOVE_SW, true);
@@ -774,7 +784,7 @@ void do_turn(int do_all)
 
 int main(int argc, char *argv[])
 {
-        int c, x;
+        int c, x, l;
         char s[15];
 
         if(!setlocale(LC_ALL, ""))
@@ -865,6 +875,11 @@ int main(int argc, char *argv[])
                         case CMD_NE:    queue(ACTION_PLAYER_MOVE_NE); break;
                         case CMD_SW:    queue(ACTION_PLAYER_MOVE_SW); break;
                         case CMD_SE:    queue(ACTION_PLAYER_MOVE_SE); break;
+                        case CMD_WIELDWEAR:
+                                       l = ask_char("Which item would you like to wield/wear?");
+                                       actiondata = (void *) get_object_from_letter(l);
+                                       queue(ACTION_WIELDWEAR);
+                                       break;
                         case CMD_LONGDOWN:
                                 queuex(20, ACTION_PLAYER_MOVE_DOWN);
                                 do_all = true;

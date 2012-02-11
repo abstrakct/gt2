@@ -66,10 +66,12 @@ struct actionqueue {                          // struct actionqueue
 #define ACTION_GO_DOWN_STAIRS    13
 #define ACTION_GO_UP_STAIRS      14
 #define ACTION_FIX_VIEW          15
+#define ACTION_WIELDWEAR         16
 
 
-#define TICKS_MOVEMENT 1000
-#define TICKS_ATTACK   1000
+#define TICKS_MOVEMENT  1000
+#define TICKS_ATTACK    1000
+#define TICKS_WIELDWEAR  500
 
 #define CONTEXT_OUTSIDE 0
 #define CONTEXT_DUNGEON 1

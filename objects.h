@@ -156,6 +156,7 @@ bool move_to_inventory(obj_t *o, obj_t *i);
 void pick_up(obj_t *o, void *a);
 void wieldwear(obj_t *o);
 void wield(obj_t *o);
+void unwieldwear(obj_t *o);
 
 obj_t *init_inventory();
 void spawn_golds(int num, int max, void *p);

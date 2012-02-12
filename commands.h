@@ -41,6 +41,7 @@ typedef struct {
 #define CMD_REST          25
 #define CMD_DESCEND       26
 #define CMD_ASCEND        27
+#define CMD_UNWIELDWEAR   28
 
 // development/debug commands
 #define CMD_FLOODFILL     1001

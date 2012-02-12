@@ -46,6 +46,7 @@ cmd_t outsidecommands[] = {
         { 'q',       CMD_QUIT,        "Quit" },
         { 'i',       CMD_INVENTORY,   "Show inventory" },
         { 'w',       CMD_WIELDWEAR,   "Wield or wear an item" },
+        { 'r',       CMD_UNWIELDWEAR, "Remove or unwield an item" },
         { KEY_F(5),  CMD_SAVE,        "Save" },
         { KEY_F(6),  CMD_LOAD,        "Load" },
         { ',',       CMD_PICKUP,      "Pick up something" },

@@ -70,11 +70,12 @@ struct actionqueue {                          // struct actionqueue
 #define ACTION_GO_UP_STAIRS      14
 #define ACTION_FIX_VIEW          15
 #define ACTION_WIELDWEAR         16
+#define ACTION_UNWIELDWEAR       17
 
 
 #define TICKS_MOVEMENT  1000
 #define TICKS_ATTACK    1000
-#define TICKS_WIELDWEAR  500
+#define TICKS_WIELDWEAR  333
 
 #define CONTEXT_OUTSIDE 0
 #define CONTEXT_DUNGEON 1

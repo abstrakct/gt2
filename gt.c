@@ -581,6 +581,16 @@ bool do_action(int action)
                                 gtprintf("HUH????????????????????");
                         player->ticks -= TICKS_WIELDWEAR;
                         break;
+                case ACTION_UNWIELDWEAR:
+                        o = (obj_t *) actiondata;
+                        if(o)
+                                unwieldwear(o);
+                        else
+                                gtprintf("HUH????????????????????");
+
+                        player->ticks -= TICKS_WIELDWEAR;
+                        break;
+                                
                 case ACTION_FIX_VIEW:
                         fixview();
                         break;
@@ -859,6 +869,11 @@ int main(int argc, char *argv[])
                                        l = ask_char("Which item would you like to wield/wear?");
                                        actiondata = (void *) get_object_from_letter(l);
                                        queue(ACTION_WIELDWEAR);
+                                       break;
+                        case CMD_UNWIELDWEAR:
+                                       l = ask_char("Which item would you like to remove/unwield?");
+                                       actiondata = (void *) get_object_from_letter(l);
+                                       queue(ACTION_UNWIELDWEAR);
                                        break;
                         case CMD_LONGDOWN:
                                 queuex(20, ACTION_PLAYER_MOVE_DOWN);

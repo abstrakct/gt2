@@ -434,6 +434,7 @@ void wear(obj_t *o)
                 if(c == 'l') {
                         if(player->w.leftring) {
                                 if(!yesno("Do you want to remove your %s", player->w.leftring->fullname)) {
+                                        gtprintf("OK then.");
                                         return;
                                 } else {
                                         tmp = player->w.leftring;
@@ -446,6 +447,7 @@ void wear(obj_t *o)
                 } else if(c == 'r') {
                         if(player->w.rightring) {
                                 if(!yesno("Do you want to remove your %s", player->w.rightring->fullname)) {
+                                        gtprintf("OK then.");
                                         return;
                                 } else {
                                         tmp = player->w.rightring;
@@ -460,7 +462,7 @@ void wear(obj_t *o)
                 if(o->attackmod)            // i think we need a better test here..
                         apply_effects(o);
                 else
-                        gtprintf("The %s seems to be malfunctioning!", o->fullname);      // change this when we implement the identification system!
+                        gtprintfc(COLOR_INFO, "The %s seems to be malfunctioning!", o->fullname);      // change this when we implement the identification system!
 
         }
 }
@@ -491,9 +493,62 @@ void wieldwear(obj_t *o)
                 wear(o);
         }
 }
-                
-                
 
+void unwear(obj_t *o)
+{
+        if(player->w.leftring == o) {
+                player->w.leftring = NULL;
+                unapply_effects(o);
+        }
+
+        if(player->w.rightring == o) {
+                player->w.rightring = NULL;
+                unapply_effects(o);
+        }
+
+        // ADD for other wear-slots later.
+        // IDEA: wear = array med #defines!!? kan gjøre ting enklere!!
+/*
+        if(player->w.leftring == o) {
+                player->w.leftring = NULL;
+                unapply_effects(o);
+        }
+
+        if(player->w.leftring == o) {
+                player->w.leftring = NULL;
+                unapply_effects(o);
+        }
+
+        if(player->w.leftring == o) {
+                player->w.leftring = NULL;
+                unapply_effects(o);
+        }
+*/
+}
+
+void unwield(obj_t *o)
+{
+        player->weapon = NULL;
+        unapply_effects(o);
+}
+
+void unwieldwear(obj_t *o)
+{
+        if(!is_worn(o)) {
+                if(is_weapon(o))
+                        youc(COLOR_INFO, "aren't wielding that!");
+                else
+                        youc(COLOR_INFO, "aren't wearing that!");
+                return;
+        }
+
+        if(is_weapon(o)) {
+                unwield(o);
+                youc(COLOR_INFO, "unwield the %s.", o->fullname);
+        } else {
+                unwear(o);
+        }
+}
 
 void pick_up(obj_t *o, void *p)
 {

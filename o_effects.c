@@ -31,9 +31,15 @@ effectfunctionpointer effecttable[OE_LAST] = {
         oe_intelligence,
         oe_physique,
         oe_dexterity,
-        oe_charisma
+        oe_charisma,
+        oe_protection_life
 };
-                
+
+void oe_protection_life(void *data)
+{
+        youc(COLOR_INFO, "feel protected.");
+}
+
 void oe_strength(void *data)
 {
         obj_t *o;

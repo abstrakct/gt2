@@ -28,15 +28,14 @@ int pluses, minuses;
 unsigned int oid_counter;
 char objchars[] = {
         ' ',               // nothing
+        '$',               // gold
         ')',               // weapon
         '[',               // armor
         '=',               // ring
-        '+',               // card
+        '"',               // amulet  (evt. 186!)
+        '*',               // card    (evt. 246!)
         '/',               // wand
-        '?',               // thing
-        '$',               // gold
-        '"',               // amulet
-        '!',               // potion
+        191,               // potion
 };
 
 obj_t get_objdef(int n)
@@ -464,6 +463,22 @@ void wear(obj_t *o)
                 else
                         gtprintfc(COLOR_INFO, "The %s seems to be malfunctioning!", o->fullname);      // change this when we implement the identification system!
 
+        }
+
+        if(is_amulet(o)) {
+                if(player->w.amulet) {
+                        if(!yesno("Do you want to remove your %s", player->w.amulet->fullname)) {
+                                gtprintf("OK then.");
+                                return;
+                        } else {
+                                tmp = player->w.amulet;
+                                player->w.amulet = o;
+                                unapply_effects(tmp);
+                        }
+                } else {
+                        player->w.amulet = o;
+                        apply_effects(o);
+                }
         }
 }
 

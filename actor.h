@@ -31,14 +31,14 @@ typedef struct { // uattr_t
 } uattr_t;
 
 typedef struct { // wear_t
-        struct object *head;
-        struct object *body;
-        struct object *gloves;
-        struct object *footwear;
-        struct object *robe;
-        struct object *amulet;
-        struct object *leftring;
-        struct object *rightring;
+        obj_t *head;
+        obj_t *body;
+        obj_t *gloves;
+        obj_t *footwear;
+        obj_t *robe;
+        obj_t *amulet;
+        obj_t *leftring;
+        obj_t *rightring;
 } wear_t;
 
 typedef struct actorstruct {            // actor_t 

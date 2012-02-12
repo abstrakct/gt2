@@ -281,8 +281,66 @@ int parse_weapons()
         return 0;
 }
 
+int parse_amulet()
+{
+        config_setting_t *cfg;
+        int i, j;
+        char sname[100];
+        const char *value;
 
-int parse_jewelry()
+        cfg = config_lookup(cf, "amulet");
+        i = config_setting_length(cfg);
+        printf("Parsing jewelry file... We have %d amulets", i);
+        for(j=0;j<i;j++) {
+                obj_t *o;
+                int x;
+
+                o = (obj_t *) gtmalloc(sizeof(obj_t));
+
+                sprintf(sname, "amulet.[%d].name", j);
+                config_lookup_string(cf, sname, &value);
+                strcpy(o->basename, value);
+                
+                sprintf(sname, "amulet.[%d].brand", j);
+                config_lookup_string(cf, sname, &value);
+                if(!strcmp(value, "protection")) {                     // This means this amulet is some sort of protection
+                        sprintf(sname, "amulet.[%d].type", j);
+                        config_lookup_string(cf, sname, &value);
+
+                        if(!strcmp(value, "life")) 
+                                add_effect(o, OE_PROTECTION_LIFE);
+                }
+
+                sprintf(sname, "amulet.[%d].unique", j);
+                config_lookup_bool(cf, sname, &x);
+                if(x)
+                        o->flags |= OF_UNIQUE;
+
+                x = 0;
+                /*sprintf(sname, "amulet.[%d].mod", j);
+                config_lookup_int(cf, sname, &x);
+                o->attackmod = o->damagemod = x;*/
+
+                o->type = OT_AMULET;
+                o->id = objid; objid++;
+
+                o->head = objdefs->head;
+                objdefs->next = o;
+                o->next = NULL;
+                o->prev = objdefs;
+                objdefs = o;
+
+                game->objdefs++;
+                printf(".");
+        }
+
+        printf(" OK\n");
+
+        return 0;
+}
+
+
+int parse_ring()
 {
         config_setting_t *cfg;
         int i, j;
@@ -348,6 +406,16 @@ int parse_jewelry()
         printf(" OK\n");
 
         return 0;
+}
+
+int parse_jewelry()
+{
+        int ret;
+
+        ret = parse_ring();
+        ret = parse_amulet();
+
+        return ret;
 }
 
 int parse_objects()

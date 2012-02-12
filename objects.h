@@ -31,6 +31,7 @@ struct object {
         char          basename[50];         // the basic name of the item
         char          unidname[100];        // unidentified name
         char          fullname[100];        // should be more than enough, adjust later
+        char          name[128];
         char          c;
         char          slot;                 // inventory slot; not sure if needed?!
         char          minlevel;
@@ -46,16 +47,14 @@ typedef struct object obj_t;
 
 #define add_effect(a, b) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects] = b; a->effects++; }
 
-#define OT_WEAPON     1
-#define OT_ARMOR      2
-#define OT_RING       3
-#define OT_CARD       4
-#define OT_WAND       5
-#define OT_THING      6
-#define OT_GOLD       7
-#define OT_AMULET     8
-#define OT_POTION     9
-
+#define OT_GOLD       1
+#define OT_WEAPON     2
+#define OT_ARMOR      3
+#define OT_RING       4
+#define OT_AMULET     5
+#define OT_CARD       6
+#define OT_WAND       7
+#define OT_POTION     8
 
 extern char objchars[];
 extern char *otypestrings[];
@@ -123,7 +122,7 @@ extern char *otypestrings[];
 #define is_amulet(a)    (a->type  == OT_AMULET)
 
 #define identified(a)   (a->flags & OF_IDENTIFIED)
-#define do_identify(a)   a->flags|= OF_IDENTIFIED
+#define do_identify(a)  (a->flags|= OF_IDENTIFIED)
 #define is_magic(a)     (a->flags & OF_MAGIC)
 #define is_eatable(a)   (a->flags & OF_EATABLE)
 #define is_drinkable(a) (a->flags & OF_DRINKABLE)

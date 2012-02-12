@@ -25,6 +25,7 @@ struct monsterdef_save_struct {
         int     thac0;
         long    flags;
         int     aitableindex;       // == the field mid
+        short   viewradius;
         // what about AC?
 };
 

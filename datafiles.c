@@ -105,7 +105,7 @@ int parse_monsters()
                 sprintf(sname, "monsters.[%d].aitype", j);
                 config_lookup_int(cf, sname, &tmp);
                 m->ai = aitable[tmp];
-                m->mid = tmp;
+                m->mid = tmp;   // for monsterdefs, mid holds aitableindex
                 m->id = id;
 
                 m->viewradius = 12; // temporary solution?!

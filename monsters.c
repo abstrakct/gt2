@@ -108,6 +108,7 @@ void simpleai(monster_t *m)
 {
         int dir, ox, oy;
 
+        //gtprintf("hello it's simpleai!");
         dir = ri(1,9);
         ox = m->x; oy = m->y;
 
@@ -168,6 +169,7 @@ void advancedai(monster_t *m)
         //if(actor_in_lineofsight(m, player))
           //      gtprintf("%d - %s - I can see you!", game->turn, m->name);
 
+        //gtprintf("hello it's advancedai!");
         simpleai(m);
 }
 
@@ -175,6 +177,7 @@ void hostile_ai(actor_t *m)
 {
         int oy, ox;
 
+        //gtprintf("hello it's hostileai!!");
         oy = m->y;
         ox = m->x;
 

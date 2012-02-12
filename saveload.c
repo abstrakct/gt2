@@ -62,6 +62,8 @@ void save_inventory(obj_t *i, FILE *f)
  */
 void save_monster(monster_t *m, FILE *f)
 {
+        int tmp;
+
         fwrite("MONSTER",    sizeof(char),  7, f);     // is this necessary?
         fwrite(&m->id,       sizeof(short), 1, f);     // write the monsterdef ID, then any vars which might have changed
         fwrite(&m->mid,      sizeof(int),   1, f);
@@ -71,6 +73,12 @@ void save_monster(monster_t *m, FILE *f)
         fwrite(&m->goalx,    sizeof(short), 1, f);
         fwrite(&m->goaly,    sizeof(short), 1, f);
         fwrite(&m->movement, sizeof(float), 1, f);
+        if(m->attacker && m->attacker == player)
+                tmp = 1;
+        else
+                tmp = 0;
+
+        fwrite(&tmp,         sizeof(int), 1, f);
 
         // add saving inventory etc here later when implemented
         // add saving attacker, wear_t, etc.
@@ -135,6 +143,7 @@ void save_monsterdef(monster_t *m, FILE *f)
         s.thac0 = m->thac0;
         s.flags = m->flags;
         s.aitableindex = m->mid;
+        s.viewradius = m->viewradius;
 
         fwrite("MONSTERDEF", sizeof(char), 10, f);
         fwrite(&s, sizeof(struct monsterdef_save_struct), 1, f);
@@ -336,6 +345,7 @@ obj_t *load_inventory(FILE *f)
 bool load_monster(monster_t *m, level_t *l, FILE *f)
 {
         char str[7];
+        int i;
         monster_t mdef;
 
         fread(str, sizeof(char), 7, f);
@@ -356,8 +366,14 @@ bool load_monster(monster_t *m, level_t *l, FILE *f)
         fread(&m->goalx,    sizeof(short), 1, f);
         fread(&m->goaly,    sizeof(short), 1, f);
         fread(&m->movement, sizeof(float), 1, f);
+        fread(&i,           sizeof(int),   1, f);
+        if(i)
+                m->attacker = player;
+        else
+                m->attacker = NULL;
 
         mdef = get_monsterdef(m->id);
+
         m->oldx = mdef.oldx;
         m->oldy = mdef.oldy;
         m->viewradius = mdef.viewradius;
@@ -383,7 +399,6 @@ bool load_monster(monster_t *m, level_t *l, FILE *f)
         l->monsters->next = m;
         if(m->next)
                 m->next->prev = m;
-
 
         // add loading inventory etc here later when implemented
         // add loading attacker, wear_t, etc.
@@ -471,6 +486,8 @@ bool load_monsterdef(monster_t *m, FILE *f)
         m->thac0 = s.thac0;
         m->flags = s.flags;
         m->ai = aitable[s.aitableindex];
+        m->viewradius = s.viewradius;
+
         //printf("loaded monsterdef %s id=%d\n", m->name, m->id);
         return true;
 }

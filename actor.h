@@ -80,8 +80,9 @@ char   slot_to_letter(int i);
 int    letter_to_slot(char c);
 obj_t *get_object_from_letter(char c);
 int object_to_slot(obj_t *o);
-void assign_slot(obj_t *o);
+void assign_free_slot(obj_t *o);
 void unassign_object(obj_t *o);
+void assign_letter(char c, obj_t *o);
 
 
 bool in_lineofsight(actor_t *src, int goaly, int goalx);

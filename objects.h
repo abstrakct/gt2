@@ -148,6 +148,7 @@ bool place_object_at(int y, int x, obj_t *obj, void *l);
 
 obj_t get_objdef(int n);
 int get_objdef_by_name(char *wanted);
+obj_t *get_object_by_oid(obj_t *i, int oid);
 bool is_pair(obj_t *o);
 bool is_worn(obj_t *o);      // worn by player, that is..
 

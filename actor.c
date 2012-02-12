@@ -82,7 +82,7 @@ int object_to_slot(obj_t *o)
         return -1;
 }
 
-void assign_slot(obj_t *o)
+void assign_free_slot(obj_t *o)
 {
         char c;
 
@@ -97,6 +97,10 @@ void unassign_object(obj_t *o)
         o->slot = 0;
 }
 
+void assign_letter(char c, obj_t *o)
+{
+        objlet[letter_to_slot(c)] = o;
+}
 
 bool actor_in_lineofsight(actor_t *src, actor_t *dest)
 {

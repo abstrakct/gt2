@@ -103,7 +103,7 @@ void init_variables()
 
         world = (world_t *) gtmalloc(sizeof(world_t));
 
-        world->dng = gtcalloc(4, sizeof(level_t));    // allocate 4 levels, 0 = outside, 1..n = dungeons
+        world->dng = gtcalloc(26, sizeof(level_t));    // allocate 26 levels, 0 = outside, 1..n = dungeons
         world->out = world->dng;                      // i.e. it points to world->dng[0]
         world->out->xsize = XSIZE;
         world->out->ysize = YSIZE;

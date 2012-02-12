@@ -51,6 +51,21 @@ obj_t get_objdef(int n)
         return *tmp;
 }
 
+obj_t *get_object_by_oid(obj_t *i, int oid)
+{
+        obj_t *tmp;
+
+        tmp = i->next;
+        while(tmp) {
+                if(tmp->oid == oid)
+                        return tmp;
+
+                tmp = tmp->next;
+        }
+
+        return 0;
+}
+
 int get_objdef_by_name(char *wanted)
 {
         obj_t *o;
@@ -494,7 +509,7 @@ void pick_up(obj_t *o, void *p)
         a->inventory->next = o;
         o->head = a->inventory;
 
-        assign_slot(o);
+        assign_free_slot(o);
 
         // TODO: tackle cells with multiple items!
         world->curlevel->c[a->y][a->x].inventory->next = NULL;

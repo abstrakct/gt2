@@ -881,7 +881,7 @@ void meta_generate_dungeon(int type, int d)
 * *******************************************/
 void generate_world()
 {
-        int x, y;
+        int x, y, i;
 
         /*
          * Generate the outside world first.
@@ -919,9 +919,8 @@ void generate_world()
         spawn_objects(ri(world->out->xsize/2, world->out->ysize/2), world->out);
 
 
-        meta_generate_dungeon(2, 1);
-        meta_generate_dungeon(2, 2);
-        meta_generate_dungeon(2, 3);
+        for(i = 1; i <= 3; i++)
+                meta_generate_dungeon(2, i);
 
         generate_stairs_outside();
         create_stairs(3, 1, 2);

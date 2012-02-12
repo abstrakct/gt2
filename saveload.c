@@ -192,6 +192,8 @@ void save_player(actor_t *p, FILE *f)
         s.flags = p->flags;
         s.speed = p->speed;
         s.movement = p->movement;
+        s.weapon = p->weapon->oid;
+
         for(i = 0; i < MAX_SKILLS; i++)
                 s.skill[i] = p->skill[i];
 
@@ -505,6 +507,18 @@ bool load_objdef(obj_t *o, FILE *f)
         return true;
 }
 
+void load_set_objlets(actor_t *p)
+{
+        obj_t *o;
+
+        o = p->inventory;
+        while(o) {
+                if(o->type != OT_GOLD)
+                        assign_letter(o->slot, o);
+                o = o->next;
+        }
+}
+
 bool load_player(actor_t *p, FILE *f)
 {
         struct player_save_struct s;
@@ -545,9 +559,16 @@ bool load_player(actor_t *p, FILE *f)
         p->inventory = load_inventory(f);
 
         if(!p->inventory) {
-                printf("load_inventory in player failed!");
+                printf("load_inventory in player failed!\n");
                 return false;
         }
+
+        p->weapon = get_object_by_oid(p->inventory, s.weapon);
+        if(!p->weapon) {
+                printf("get_object_by_oid failed!\n");
+                return false;
+        }
+        load_set_objlets(p);
         printf("loadplayerend\n");
         return true;
 }

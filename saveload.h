@@ -57,6 +57,7 @@ struct player_save_struct {
         uattr_t attr;
         int     level;
         short   race, cla;
+        int     weapon;              // save OID of weapon!
         //wear_t  w;
         long    flags;
         double  speed;

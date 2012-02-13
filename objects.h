@@ -99,9 +99,9 @@ extern char *otypestrings[];
 #define MAT_GOLD       1
 #define MAT_SILVER     2
 #define MAT_BRONZE     3
-#define MAT_WOOD       4
-#define MAT_IRON       5
-#define MAT_COPPER     6
+#define MAT_COPPER     4
+#define MAT_WOOD       5
+#define MAT_IRON       6
 #define MAT_MARBLE     7
 #define MAT_GLASS      8
 #define MAT_BONE       9
@@ -110,7 +110,11 @@ extern char *otypestrings[];
 #define MAT_BLACKWOOD 12
 #define MAT_BRASS     13
 #define MAT_EBONY     14
-#define MATERIALS     14
+#define MAT_BLOODWOOD 15
+
+#define MATERIALS     15
+extern int mats_rings[MATERIALS];
+extern int mats_amulets[MATERIALS];
 
 // defines so that we can easily use fields in obj_t for various stuff
 #define ac sides
@@ -160,7 +164,7 @@ void unwieldwear(obj_t *o);
 obj_t *init_inventory();
 void spawn_golds(int num, int max, void *p);
 
-//void init_objects();
+void init_objects();
 //void init_materials();
 //char *get_def_name(obj_t object);
 //char *a_an(char *s);

@@ -37,17 +37,6 @@ typedef struct { // uattr_t
 #define pdex player->attr.dex
 #define pcha player->attr.cha
 
-typedef struct { // wear_t
-        obj_t *head;
-        obj_t *body;
-        obj_t *gloves;
-        obj_t *footwear;
-        obj_t *robe;
-        obj_t *amulet;
-        obj_t *leftring;
-        obj_t *rightring;
-} wear_t;
-
 #define pw_headgear  player->w[0]
 #define pw_body      player->w[1]
 #define pw_gloves    player->w[2]
@@ -58,6 +47,11 @@ typedef struct { // wear_t
 #define pw_rightring player->w[7]
 
 #define WEAR_SLOTS             8
+
+#define pr_life      player->prot[0]
+#define pr_fire      player->prot[1]
+
+#define PROTECTIONS 2
 
 typedef struct actorstruct {            // actor_t 
         short        id;                // id = monsterdef id
@@ -73,8 +67,8 @@ typedef struct actorstruct {            // actor_t
         short        race, cla;
         obj_t        *weapon;           // currently wielded weapon
         obj_t        *inventory;
-        //wear_t       w;
         obj_t        *w[WEAR_SLOTS];     // array rather than struct makes things easier!
+        short        prot[PROTECTIONS];
         long         flags;
         int          c;                 // character, for monsters.
         double       speed;

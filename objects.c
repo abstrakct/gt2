@@ -24,6 +24,8 @@
 
 // statistical debug stuff
 int pluses, minuses;
+int mats_rings[MATERIALS];
+int mats_amulets[MATERIALS];
 
 unsigned int oid_counter;
 char objchars[] = {
@@ -36,6 +38,10 @@ char objchars[] = {
         '*',               // card    (evt. 246!)
         '/',               // wand
         191,               // potion
+};
+
+char *materialstring[] = {
+        "gold", "silver", "bronze", "copper", "wooden", "iron", "marble", "glass", "bone", "platinum", "steel", "blackwood", "brass", "ebony", "bloodwood"
 };
 
 obj_t get_objdef(int n)
@@ -109,6 +115,10 @@ void unspawn_object(obj_t *m)
         }
 }
 
+void get_random_unused_material(short type)
+{
+
+}
 
 /*
  * Generate the full name of object
@@ -150,27 +160,16 @@ void generate_fullname(obj_t *o)
                         strcat(n, " ");
                         strcat(n, o->basename);
                 }
-        } else if(o->type == OT_ARMOR || o->type == OT_RING) {
+        } else if(o->type == OT_ARMOR) {
                 if(o->attackmod > 0)
                         sprintf(n, "+%d ", o->attackmod);
                 if(o->attackmod < 0)
                         sprintf(n,  "%d ", o->attackmod);
 
-                strcat(n, o->basename);
-                
+                strcat(n, o->basename); 
+        } else if(o->type == OT_RING) {
+                sprintf(n, "%s ring", materialstring[(int)o->material]);
         } else {
-       /* 
-        if(o->attackmod && o->damagemod)
-                strcat(n, ",");
-
-        if(o->damagemod > 0)
-                sprintf(n, "%s+%d",n, o->damagemod);
-        else if(o->damagemod < 0)
-                sprintf(n, "%s%d",n, o->damagemod);
-
-        if(o->attackmod || o->damagemod)
-                strcat(n, " ");*/
-
                 strcat(n, o->basename);
         }
 
@@ -473,6 +472,7 @@ void wear(obj_t *o)
                                 tmp = pw_amulet;
                                 pw_amulet = o;
                                 unapply_effects(tmp);
+                                apply_effects(o);
                         }
                 } else {
                         pw_amulet = o;
@@ -510,34 +510,14 @@ void wieldwear(obj_t *o)
 
 void unwear(obj_t *o)
 {
-        if(pw_leftring == o) {
-                pw_leftring = NULL;
-                unapply_effects(o);
-        }
+        int i;
 
-        if(pw_rightring == o) {
-                pw_rightring = NULL;
-                unapply_effects(o);
+        for(i = 0; i < WEAR_SLOTS; i++) {
+                if(player->w[i] == o) {
+                        player->w[i] = NULL;
+                        unapply_effects(o);
+                }
         }
-
-        // ADD for other wear-slots later.
-        // IDEA: wear = array med #defines!!? kan gjøre ting enklere!!
-/*
-        if(pw_leftring == o) {
-                pw_leftring = NULL;
-                unapply_effects(o);
-        }
-
-        if(pw_leftring == o) {
-                pw_leftring = NULL;
-                unapply_effects(o);
-        }
-
-        if(pw_leftring == o) {
-                pw_leftring = NULL;
-                unapply_effects(o);
-        }
-*/
 }
 
 void unwield(obj_t *o)
@@ -608,4 +588,21 @@ bool move_to_inventory(obj_t *o, obj_t *i)
         }
 
         return false;
+}
+
+void init_objects()
+{
+        int i, j;
+
+        mats_rings[0] = mats_amulets[0] = 0;
+
+        for(i = 0; i <= MATERIALS; i++) {
+                j = ri(1, MATERIALS);
+                while(mats_rings[j] != 0)
+                        j = ri(1, MATERIALS);
+                mats_rings[j] = i;
+
+        }
+        for(i=0; i<= MATERIALS; i++)
+                fprintf(stderr, "DEBUG: %s:%d - material %d = %d\n", __FILE__, __LINE__, i, mats_rings[i]);
 }

@@ -309,6 +309,8 @@ int parse_amulet()
 
                         if(!strcmp(value, "life")) 
                                 add_effect(o, OE_PROTECTION_LIFE);
+                        if(!strcmp(value, "fire"))
+                                add_effect(o, OE_PROTECTION_FIRE);
                 }
 
                 sprintf(sname, "amulet.[%d].unique", j);
@@ -343,14 +345,15 @@ int parse_amulet()
 int parse_ring()
 {
         config_setting_t *cfg;
-        int i, j;
+        int i, j, material;
         char sname[100];
         const char *value;
 
         cfg = config_lookup(cf, "ring");
         i = config_setting_length(cfg);
         printf("Parsing jewelry file... We have %d rings", i);
-        for(j=0;j<i;j++) {
+        material = 1;
+        for(j = 0; j < i; j++) {
                 obj_t *o;
                 int x;
 
@@ -392,6 +395,11 @@ int parse_ring()
 
                 o->type = OT_RING;
                 o->id = objid; objid++;
+
+                o->material = mats_rings[material];
+                material++;
+                if(material > MATERIALS)
+                        die("whoa! we ran out of material!");
 
                 o->head = objdefs->head;
                 objdefs->next = o;

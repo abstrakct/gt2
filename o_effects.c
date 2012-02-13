@@ -24,7 +24,7 @@
 
 typedef void (*effectfunctionpointer)(void *data);
 
-effectfunctionpointer effecttable[OE_LAST] = {
+effectfunctionpointer effecttable[] = {
         0,
         oe_strength,
         oe_wisdom,
@@ -32,12 +32,48 @@ effectfunctionpointer effecttable[OE_LAST] = {
         oe_physique,
         oe_dexterity,
         oe_charisma,
-        oe_protection_life
+        oe_protection_life,
+        oe_protection_fire
 };
 
 void oe_protection_life(void *data)
 {
-        youc(COLOR_INFO, "feel protected.");
+        obj_t *o;
+
+        o = (obj_t *)data;
+        if(is_worn(o)) {
+                pr_life++;
+                youc(COLOR_INFO, "feel protected.");
+        } else {
+                pr_life--;
+                youc(COLOR_INFO, "feel less protected.");
+        }
+}
+
+void oe_protection_fire(void *data)
+{
+        obj_t *o;
+
+        o = (obj_t *)data;
+        if(is_worn(o))
+                pr_fire++;
+        else
+                pr_fire--;
+
+        switch(pr_fire) {
+                case 1:
+                        youc(COLOR_INFO, "feel a bit resistant to fire.");
+                        break;
+                case 2:
+                        youc(COLOR_INFO, "feel rather resistant to fire.");
+                        break;
+                case 3:
+                        youc(COLOR_INFO, "feel quite resistant to fire.");
+                        break;
+                case 4:
+                        pr_fire = 3;
+                        break;
+        }
 }
 
 void oe_strength(void *data)

@@ -751,6 +751,8 @@ bool passable(level_t *l, int y, int x)
 
 bool monster_passable(level_t *l, int y, int x)
 { 
+        int type;
+
         if(y < 0)
                 return false;
         if(x < 0)
@@ -763,12 +765,23 @@ bool monster_passable(level_t *l, int y, int x)
 
         if(l->c[y][x].type == AREA_VILLAGE || l->c[y][x].type == AREA_CITY)
                 return false;
-        else if(l->c[y][x].monster)
+        if(l->c[y][x].monster)
                 return false;
-        else if(l->c[y][x].flags & CF_HAS_DOOR_CLOSED)
+        if(l->c[y][x].flags & CF_HAS_DOOR_CLOSED)
                 return false;
-        else
-                return passable(l, y, x);
+        
+        type = l->c[y][x].type;
+
+        if(type == DNG_WALL)
+                return false;
+        if(type == AREA_LAKE)
+                return false;
+        if(type == AREA_WALL)
+                return false;
+        if(type == AREA_NOTHING)
+                return false;
+
+        return true;
 }
 
 void generate_stairs_outside()

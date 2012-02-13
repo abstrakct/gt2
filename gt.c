@@ -788,6 +788,7 @@ int main(int argc, char *argv[])
         parse_commandline(argc, argv);
 
         if(!loadgame) {
+                init_objects();
                 printf("Reading data files...\n");
                 if(parse_data_files(0))
                         die("Couldn't parse data files.");

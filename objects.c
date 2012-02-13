@@ -330,14 +330,30 @@ void spawn_gold(int n, obj_t *head)
  */
 bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
 {
+        obj_t *tmp;
+        level_t *l;
+
+        l = (level_t *) level;
+
         if(!i)
                 i = init_inventory();
 
         spawn_object(n, i);
+
+
+        if(!l->objects)
+                l->objects = init_inventory();
+
         if(!place_object_at(y, x, i->next, (level_t *) level)) {
                 unspawn_object(i->next);
                 return false;
         }
+
+        tmp = l->objects;
+        i->next->next = tmp->next;
+        tmp->next = i->next;
+        i->next->head = tmp;
+
         //if(i->next->attackmod || i->next->damagemod || (i->next->attackmod && i->next->damagemod))
                 //fprintf(stderr, "DEBUG: %s:%d - Spawned a %s\n", __FILE__, __LINE__, i->next->fullname);
 
@@ -416,6 +432,26 @@ void spawn_objects(int num, void *p)
         //fprintf(stderr, "\nDEBUG: %s:%d - spawn_objects spawned %d objects (should spawn %d)\n\n", __FILE__, __LINE__, i, num);
 }
 
+// identify all objects which are the same material & type as o
+void do_identify_all(obj_t *o)
+{
+        int i;
+
+        for(i = 0; i < game->createddungeons; i++) {
+                obj_t *t;
+
+                t = world->dng[i].objects->head;
+                while(t) {
+                        if((t->type == o->type) && (t->material == o->material)) {
+                                setbit(t->flags, OF_IDENTIFIED);
+                                generate_fullname(t);
+                        }
+
+                        t = t->next;
+                }
+        }
+}
+
 /*
  * Functions related to actors and interacting with objects
  */
@@ -435,6 +471,7 @@ void puton(int slot, obj_t *o)
         apply_effects(o);
         if(!hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
                 setbit(o->flags, OF_IDENTIFIED);
+                do_identify_all(o);
                 generate_fullname(o);
                 gtprintfc(COLOR_INFO, "This is %s!", a_an(o->fullname));
         }
@@ -616,7 +653,6 @@ void init_objects()
                 while(mats_rings[j] != 0)
                         j = ri(1, MATERIALS);
                 mats_rings[j] = i;
-
         }
 
         for(i = 0; i <= MATERIALS; i++) {

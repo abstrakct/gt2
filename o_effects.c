@@ -92,7 +92,7 @@ void oe_strength(void *data)
 
         if(x > player->attr.str)
                 youc(COLOR_INFO, "feel weaker.");
-        else
+        else if(x < player->attr.str)
                 youc(COLOR_INFO, "feel stronger!");
 }
 
@@ -112,7 +112,7 @@ void oe_wisdom(void *data)
 
         if(x > player->attr.wis)
                 youc(COLOR_INFO, "feel more ignorant.");
-        else
+        else if(x < player->attr.wis)
                 youc(COLOR_INFO, "feel wiser!");
 }
 
@@ -132,7 +132,7 @@ void oe_physique(void *data)
 
         if(x > player->attr.phy)
                 youc(COLOR_INFO, "feel small and fragile.");
-        else
+        else if(x < player->attr.phy)
                 youc(COLOR_INFO, "feel more able to perform physically challenging tasks!");
 }
 
@@ -152,7 +152,7 @@ void oe_intelligence(void *data)
 
         if(x > player->attr.intl)
                 youc(COLOR_INFO, "feel stupider.");
-        else
+        else if(x < player->attr.intl)
                 youc(COLOR_INFO, "feel smarter!");
 }
 
@@ -172,7 +172,7 @@ void oe_dexterity(void *data)
 
         if(x > player->attr.dex)
                 youc(COLOR_INFO, "feel less agile.");
-        else
+        else if(x < player->attr.dex)
                 youc(COLOR_INFO, "feel more agile!");
 }
 
@@ -192,7 +192,7 @@ void oe_charisma(void *data)
 
         if(x > player->attr.cha)
                 youc(COLOR_INFO, "feel a bit more unattractive.");
-        else
+        else if(x < player->attr.cha)
                 youc(COLOR_INFO, "feel more attractive!");
 }
 

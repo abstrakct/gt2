@@ -85,7 +85,7 @@ extern char *otypestrings[];
 //#define OF_UNUSED1    0x00400000   // do we need more flags?!?! long long or?
 #define OF_TWOHANDED  0x00800000
 
-//#define OF_UNUSED2    0x01000000
+#define OF_OBVIOUS    0x01000000     // Effect is obvious -> identification!
 //#define OF_UNUSED3    0x02000000
 //#define OF_UNUSED4    0x04000000
 //#define OF_UNUSED5    0x08000000
@@ -120,23 +120,24 @@ extern int mats_amulets[MATERIALS];
 #define ac sides
 
 // and some nice macros
-#define is_armor(a)     (a->type  == OT_ARMOR)
-#define is_weapon(a)    (a->type  == OT_WEAPON)
-#define is_ring(a)      (a->type  == OT_RING)
-#define is_amulet(a)    (a->type  == OT_AMULET)
+#define is_armor(a)         (a->type  == OT_ARMOR)
+#define is_weapon(a)        (a->type  == OT_WEAPON)
+#define is_ring(a)          (a->type  == OT_RING)
+#define is_amulet(a)        (a->type  == OT_AMULET)
 
-#define identified(a)   (a->flags & OF_IDENTIFIED)
-#define do_identify(a)  (a->flags|= OF_IDENTIFIED)
-#define is_magic(a)     (a->flags & OF_MAGIC)
-#define is_eatable(a)   (a->flags & OF_EATABLE)
-#define is_drinkable(a) (a->flags & OF_DRINKABLE)
-#define is_holyfuck(a)  (a->flags & OF_HOLYFUCK)
-#define is_unique(a)    (a->flags & OF_UNIQUE)
-#define is_headwear(a)  (a->flags & OF_HEADARMOR)
-#define is_footwear(a)  (a->flags & OF_FOOTARMOR)
-#define is_bodywear(a)  (a->flags & OF_BODYARMOR)
-#define is_gloves(a)    (a->flags & OF_GLOVES)
-#define is_shield(a)    (a->flags & OF_SHIELD)
+#define is_identified(a)    (a->flags & OF_IDENTIFIED)
+#define do_identify(a)      (a->flags|= OF_IDENTIFIED)
+#define is_magic(a)         (a->flags & OF_MAGIC)
+#define is_eatable(a)       (a->flags & OF_EATABLE)
+#define is_drinkable(a)     (a->flags & OF_DRINKABLE)
+#define is_holyfuck(a)      (a->flags & OF_HOLYFUCK)
+#define is_unique(a)        (a->flags & OF_UNIQUE)
+#define is_headwear(a)      (a->flags & OF_HEADARMOR)
+#define is_footwear(a)      (a->flags & OF_FOOTARMOR)
+#define is_bodywear(a)      (a->flags & OF_BODYARMOR)
+#define is_gloves(a)        (a->flags & OF_GLOVES)
+#define is_shield(a)        (a->flags & OF_SHIELD)
+#define obvious_effect(a)   (a->flags & OF_OBVIOUS)
 
 #define unapply_effects apply_effects
 
@@ -160,6 +161,9 @@ void pick_up(obj_t *o, void *a);
 void wieldwear(obj_t *o);
 void wield(obj_t *o);
 void unwieldwear(obj_t *o);
+void unwield(obj_t *o);
+void unwear(obj_t *o);
+void puton(int slot, obj_t *o);
 
 obj_t *init_inventory();
 void spawn_golds(int num, int max, void *p);

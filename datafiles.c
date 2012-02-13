@@ -316,7 +316,12 @@ int parse_amulet()
                 sprintf(sname, "amulet.[%d].unique", j);
                 config_lookup_bool(cf, sname, &x);
                 if(x)
-                        o->flags |= OF_UNIQUE;
+                        setbit(o->flags, OF_UNIQUE);
+                
+                sprintf(sname, "amulet.[%d].obvious", j);
+                config_lookup_bool(cf, sname, &x);
+                if(x)
+                        setbit(o->flags, OF_OBVIOUS);
 
                 x = 0;
                 /*sprintf(sname, "amulet.[%d].mod", j);
@@ -386,7 +391,13 @@ int parse_ring()
                 sprintf(sname, "ring.[%d].unique", j);
                 config_lookup_bool(cf, sname, &x);
                 if(x)
-                        o->flags |= OF_UNIQUE;
+                        setbit(o->flags, OF_UNIQUE);
+
+                x = 0;
+                sprintf(sname, "ring.[%d].obvious", j);
+                config_lookup_bool(cf, sname, &x);
+                if(x)
+                        setbit(o->flags, OF_OBVIOUS);
 
                 x = 0;
                 sprintf(sname, "ring.[%d].mod", j);
@@ -395,6 +406,7 @@ int parse_ring()
 
                 o->type = OT_RING;
                 o->id = objid; objid++;
+                clearbit(o->flags, OF_IDENTIFIED);
 
                 o->material = mats_rings[material];
                 material++;

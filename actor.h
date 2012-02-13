@@ -37,14 +37,22 @@ typedef struct { // uattr_t
 #define pdex player->attr.dex
 #define pcha player->attr.cha
 
-#define pw_headgear  player->w[0]
-#define pw_body      player->w[1]
-#define pw_gloves    player->w[2]
-#define pw_footwear  player->w[3]
-#define pw_cloak     player->w[4]
-#define pw_amulet    player->w[5]
-#define pw_leftring  player->w[6]
-#define pw_rightring player->w[7]
+#define SLOT_HEAD      0
+#define SLOT_BODY      1
+#define SLOT_GLOVES    2
+#define SLOT_FOOTWEAR  3
+#define SLOT_CLOAK     4
+#define SLOT_AMULET    5
+#define SLOT_LEFTRING  6
+#define SLOT_RIGHTRING 7
+#define pw_headgear  player->w[SLOT_HEAD]
+#define pw_body      player->w[SLOT_BODY]
+#define pw_gloves    player->w[SLOT_GLOVES]
+#define pw_footwear  player->w[SLOT_FOOTWEAR]
+#define pw_cloak     player->w[SLOT_CLOAK]
+#define pw_amulet    player->w[SLOT_AMULET]
+#define pw_leftring  player->w[SLOT_LEFTRING]
+#define pw_rightring player->w[SLOT_RIGHTRING]
 
 #define WEAR_SLOTS             8
 

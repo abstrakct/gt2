@@ -168,7 +168,15 @@ void generate_fullname(obj_t *o)
 
                 strcat(n, o->basename); 
         } else if(o->type == OT_RING) {
-                sprintf(n, "%s ring", materialstring[(int)o->material]);
+                if(is_identified(o)) {
+                        if(o->attackmod > 0)
+                                sprintf(n, "+%d ", o->attackmod);
+                        if(o->attackmod < 0)
+                                sprintf(n,  "%d ", o->attackmod);
+                        strcat(n, o->basename); 
+                } else {
+                        sprintf(n, "%s ring", materialstring[(int)o->material]);
+                }
         } else {
                 strcat(n, o->basename);
         }
@@ -221,7 +229,7 @@ void spawn_object(int n, obj_t *head)
                                 head->next->attackmod = ri(-1, 1);
 
                 if(perc(50+(player->level*2))) {
-                        if(perc(40)) {                // a ring must be at least +/- 1
+                        if(perc(40)) {                // a ring must be at least +/- 1 (or 0 for malfunctioning rings!)
                                 if(perc(66))
                                         head->next->attackmod = ri(0, 1);
                                 else
@@ -229,27 +237,27 @@ void spawn_object(int n, obj_t *head)
                         }
                         if(perc(30) && !head->next->attackmod) {
                                 if(perc(66))
-                                        head->next->attackmod = ri(0, 2);
+                                        head->next->attackmod = ri(1, 2);
                                 else
-                                        head->next->attackmod = ri(-2, 0);
+                                        head->next->attackmod = ri(-2, 1);
                         }
                         if(perc(20) && !head->next->attackmod) {
                                 if(perc(66))
-                                        head->next->attackmod = ri(0, 3);
+                                        head->next->attackmod = ri(1, 3);
                                 else
-                                        head->next->attackmod = ri(-3, 0);
+                                        head->next->attackmod = ri(-3, 1);
                         }
                         if(perc(10) && !head->next->attackmod) {
                                 if(perc(50)) {
                                         if(perc(66))
-                                                head->next->attackmod = ri(0, 4);
+                                                head->next->attackmod = ri(1, 4);
                                         else
-                                                head->next->attackmod = ri(-4, 0);
+                                                head->next->attackmod = ri(-4, 1);
                                 } else {
                                         if(perc(66))
-                                                head->next->attackmod = ri(0, 5);
+                                                head->next->attackmod = ri(1, 5);
                                         else
-                                                head->next->attackmod = ri(-5, 0);
+                                                head->next->attackmod = ri(-5, 1);
                                 }
                         }
                 }
@@ -415,11 +423,19 @@ obj_t *init_inventory()
         return i;
 }
 
+void puton(int slot, obj_t *o)
+{
+        player->w[slot] = o;
+        apply_effects(o);
+        if(!hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
+                setbit(o->flags, OF_IDENTIFIED);
+                generate_fullname(o);
+                gtprintfc(COLOR_INFO, "This is %s!", a_an(o->fullname));
+        }
+}
 
 void wear(obj_t *o)
 {
-        obj_t *tmp;
-
         if(is_ring(o)) {
                 char c;
 
@@ -434,12 +450,11 @@ void wear(obj_t *o)
                                         gtprintf("OK then.");
                                         return;
                                 } else {
-                                        tmp = pw_leftring;
-                                        pw_leftring = o;
-                                        unapply_effects(tmp);
+                                        unwear(pw_leftring);
+                                        puton(SLOT_LEFTRING, o);
                                 }
                         } else {
-                                pw_leftring = o;
+                                puton(SLOT_LEFTRING, o);
                         }
                 } else if(c == 'r') {
                         if(pw_rightring) {
@@ -447,18 +462,15 @@ void wear(obj_t *o)
                                         gtprintf("OK then.");
                                         return;
                                 } else {
-                                        tmp = pw_rightring;
-                                        pw_rightring = o;
-                                        unapply_effects(tmp);
+                                        unwear(pw_rightring);
+                                        puton(SLOT_RIGHTRING, o);
                                 }
                         } else {
-                                pw_rightring = o;
+                                puton(SLOT_RIGHTRING, o);
                         }
                 }
 
-                if(o->attackmod)            // i think we need a better test here..
-                        apply_effects(o);
-                else
+                if(!o->attackmod)
                         gtprintfc(COLOR_INFO, "The %s seems to be malfunctioning!", o->fullname);      // change this when we implement the identification system!
 
         }
@@ -469,14 +481,11 @@ void wear(obj_t *o)
                                 gtprintf("OK then.");
                                 return;
                         } else {
-                                tmp = pw_amulet;
-                                pw_amulet = o;
-                                unapply_effects(tmp);
-                                apply_effects(o);
+                                unwear(pw_amulet);
+                                puton(SLOT_AMULET, o);
                         }
                 } else {
-                        pw_amulet = o;
-                        apply_effects(o);
+                        puton(SLOT_AMULET, o);
                 }
         }
 }

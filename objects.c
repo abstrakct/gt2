@@ -177,6 +177,12 @@ void generate_fullname(obj_t *o)
                 } else {
                         sprintf(n, "%s ring", materialstring[(int)o->material]);
                 }
+        } else if(o->type == OT_AMULET) {
+                if(is_identified(o)) {
+                        sprintf(n, "%s", o->basename);
+                } else {
+                        sprintf(n, "%s amulet", materialstring[(int)o->material]);
+                }
         } else {
                 strcat(n, o->basename);
         }
@@ -612,6 +618,12 @@ void init_objects()
                 mats_rings[j] = i;
 
         }
-        for(i=0; i<= MATERIALS; i++)
-                fprintf(stderr, "DEBUG: %s:%d - material %d = %d\n", __FILE__, __LINE__, i, mats_rings[i]);
+
+        for(i = 0; i <= MATERIALS; i++) {
+                j = ri(1, MATERIALS);
+                while(mats_amulets[j] != 0)
+                        j = ri(1, MATERIALS);
+                mats_amulets[j] = i;
+
+        }
 }

@@ -284,13 +284,14 @@ int parse_weapons()
 int parse_amulet()
 {
         config_setting_t *cfg;
-        int i, j;
+        int i, j, material;
         char sname[100];
         const char *value;
 
         cfg = config_lookup(cf, "amulet");
         i = config_setting_length(cfg);
         printf("Parsing jewelry file... We have %d amulets", i);
+        material = 1;
         for(j=0;j<i;j++) {
                 obj_t *o;
                 int x;
@@ -330,6 +331,11 @@ int parse_amulet()
 
                 o->type = OT_AMULET;
                 o->id = objid; objid++;
+
+                o->material = mats_amulets[material];
+                material++;
+                if(material > MATERIALS)
+                        die("whoa! we ran out of material!");
 
                 o->head = objdefs->head;
                 objdefs->next = o;

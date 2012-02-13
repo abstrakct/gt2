@@ -384,7 +384,7 @@ bool load_monster(monster_t *m, level_t *l, FILE *f)
         m->level = mdef.level;
         m->race = mdef.race;
         m->cla = mdef.cla;
-        m->w = mdef.w;
+        //m->w = mdef.w;          // implement this when monsters can wield and wear stuff!
         m->flags = mdef.flags;
         m->c = mdef.c;
         m->speed = mdef.speed;

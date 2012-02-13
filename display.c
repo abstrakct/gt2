@@ -116,7 +116,7 @@ bool blocks_light(int y, int x)
 {
         level_t *l = world->curlevel;
 
-        if(l->c[y][x].flags & CF_HAS_DOOR_CLOSED)
+        if(hasbit(l->c[y][x].flags, CF_HAS_DOOR_CLOSED))
                 return true;
 
         if(l->c[y][x].type == AREA_FOREST || l->c[y][x].type == AREA_CITY || l->c[y][x].type == AREA_VILLAGE) {    // trees and houses can be "see through" (e.g. if they are small)
@@ -160,7 +160,7 @@ void clear_map_to_unlit(level_t *l)
 
         for(y = 0; y < l->ysize; y++) {
                 for(x = 0; x < l->xsize; x++) {
-                        l->c[y][x].flags &= ~(CF_LIT);   // TODO: make setbit/clearbit macros!
+                        clearbit(l->c[y][x].flags, CF_LIT);
                 }
         }
 }
@@ -181,7 +181,7 @@ void dofov(actor_t *actor, level_t *l, float x, float y)
         for(i = 0; i < actor->viewradius; i++) {
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
                         l->c[(int)oy][(int)ox].visible = 1;
-                        l->c[(int)oy][(int)ox].flags  |= CF_VISITED;
+                        setbit(l->c[(int)oy][(int)ox].flags, CF_VISITED);
                         if(blocks_light((int) oy, (int) ox)) {
                                 return;
                         }/* else {  //SCARY MODE! 
@@ -229,8 +229,7 @@ void dofovlight(actor_t *actor, level_t *l, float x, float y)
                                 return;
 
                         if(l->c[(int)oy][(int)ox].type == DNG_WALL) {
-                                //gtprintf("alright setting CF_LIT on %d,%d (%.4f,%.4f) (y,x = %.4f, %.4f)", (int)oy, (int)ox, oy, ox, y, x);
-                                l->c[(int)oy][(int)ox].flags |= CF_LIT;
+                                setbit(l->c[(int)oy][(int)ox].flags, CF_LIT);
                         }
 
                         if(blocks_light((int) oy, (int) ox)) {
@@ -285,7 +284,7 @@ void draw_world(level_t *level)
                                         if(game->context == CONTEXT_DUNGEON)
                                                 wattron(wmap, A_BOLD);
 
-                                        if(level->c[j][i].flags & CF_LIT) {
+                                        if(hasbit(level->c[j][i].flags, CF_LIT)) {
                                                 wattroff(wmap, A_BOLD);
                                                 color = COLOR_CITY;
                                         }
@@ -360,10 +359,10 @@ void draw_wstat()
                 color = COLOR_PAIR(COLOR_RED);
         mvwprintw(wleft, 6, 1, "HP:");
         wattron(wleft, color);
-        mvwprintw(wleft, 6, 5, "%d", player->hp);
+        mvwprintw(wleft, 6, 5, "%d (%.1f%%)", player->hp, ((float)(100/(float)player->maxhp) * (float)player->hp));
         wattroff(wleft, color);
         mvwprintw(wleft, 7, 1, "Player level: %d", player->level);
-        mvwprintw(wleft, 8, 1, "THAC0: %d", player->thac0);
+        mvwprintw(wleft, 8, 1, "AC: %d", player->ac);
         mvwprintw(wleft, 9, 1, "Dungeon level: %d (out of %d)", game->currentlevel, game->createddungeons);
         mvwprintw(wleft, 10, 1, "STR: %d", player->attr.str);
         mvwprintw(wleft, 11, 1, "DEX: %d", player->attr.dex);
@@ -382,7 +381,7 @@ void draw_wstat()
                         o = get_object_from_letter(slot_to_letter(j));
                         if(is_worn(o)) {
                                 wattron(wstat, COLOR_PAIR(COLOR_INFO));
-                                mvwprintw(wstat, i, 1, "%c) %s %s", o->slot, o->fullname, is_ring(o) ? (o == player->w.leftring ? "[<]" : "[>]") : "\0");
+                                mvwprintw(wstat, i, 1, "%c) %s %s", o->slot, o->fullname, is_ring(o) ? (o == pw_leftring ? "[<]" : "[>]") : "\0");
                                 wattroff(wstat, COLOR_PAIR(COLOR_INFO));
                         } else {
                                 mvwprintw(wstat, i, 1, "%c) %s", o->slot, o->fullname);

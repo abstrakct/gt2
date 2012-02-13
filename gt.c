@@ -139,15 +139,15 @@ void init_player()
         player->viewradius = 50;
         player->level = 1;
 
-        // TODO: FIXXX!!!
-        player->hp = player->maxhp = 100;
-
         player->attr.str  = dice(3, 6, 0);
         player->attr.dex  = dice(3, 6, 0);
         player->attr.phy  = dice(3, 6, 0);
         player->attr.wis  = dice(3, 6, 0);
         player->attr.cha  = dice(3, 6, 0);
         player->attr.intl = dice(3, 6, 0);
+
+        // TODO: Starting HP - FIX?
+        player->hp = player->maxhp = (d(2, 6)) + (player->attr.phy/2);
 
         // TODO: FIXXX!!!!!
         player->thac0 = (player->attr.dex / 2) + (player->attr.str / 2);

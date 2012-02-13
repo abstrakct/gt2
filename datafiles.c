@@ -497,7 +497,7 @@ int parse_data_files(int option)
         }
 
         /* TODO:
-         * This return value stuff makes no sense!!
+         * This return value stuff makes rather little sense!!
          */
         ret = parse_configfile();
         ret = parse_objects();

@@ -30,6 +30,13 @@ typedef struct { // uattr_t
         int cha;
 } uattr_t;
 
+#define pstr player->attr.str
+#define pphy player->attr.phy
+#define pint player->attr.intl
+#define pwis player->attr.wis
+#define pdex player->attr.dex
+#define pcha player->attr.cha
+
 typedef struct { // wear_t
         obj_t *head;
         obj_t *body;
@@ -40,6 +47,17 @@ typedef struct { // wear_t
         obj_t *leftring;
         obj_t *rightring;
 } wear_t;
+
+#define pw_headgear  player->w[0]
+#define pw_body      player->w[1]
+#define pw_gloves    player->w[2]
+#define pw_footwear  player->w[3]
+#define pw_cloak     player->w[4]
+#define pw_amulet    player->w[5]
+#define pw_leftring  player->w[6]
+#define pw_rightring player->w[7]
+
+#define WEAR_SLOTS             8
 
 typedef struct actorstruct {            // actor_t 
         short        id;                // id = monsterdef id
@@ -55,7 +73,8 @@ typedef struct actorstruct {            // actor_t
         short        race, cla;
         obj_t        *weapon;           // currently wielded weapon
         obj_t        *inventory;
-        wear_t       w;
+        //wear_t       w;
+        obj_t        *w[WEAR_SLOTS];     // array rather than struct makes things easier!
         long         flags;
         int          c;                 // character, for monsters.
         double       speed;

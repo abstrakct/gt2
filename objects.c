@@ -86,18 +86,17 @@ bool is_pair(obj_t *o)
 
 bool is_worn(obj_t *o)      // worn by player, that is.. or wielded (weapons)
 {
-        if(o == player->weapon ||
-                        o == player->w.head ||
-                        o == player->w.body ||
-                        o == player->w.gloves ||
-                        o == player->w.footwear ||
-                        o == player->w.robe ||
-                        o == player->w.amulet ||
-                        o == player->w.leftring ||
-                        o == player->w.rightring)
+        int i;
+
+        if(o == player->weapon)
                 return true;
-        else
-                return false;
+
+        for(i=0;i<WEAR_SLOTS;i++) {
+                if(o == player->w[i])
+                        return true;
+        }
+
+        return false;
 }
 
 void unspawn_object(obj_t *m)
@@ -431,30 +430,30 @@ void wear(obj_t *o)
                         return;
                 }
                 if(c == 'l') {
-                        if(player->w.leftring) {
-                                if(!yesno("Do you want to remove your %s", player->w.leftring->fullname)) {
+                        if(pw_leftring) {
+                                if(!yesno("Do you want to remove your %s", pw_leftring->fullname)) {
                                         gtprintf("OK then.");
                                         return;
                                 } else {
-                                        tmp = player->w.leftring;
-                                        player->w.leftring = o;
+                                        tmp = pw_leftring;
+                                        pw_leftring = o;
                                         unapply_effects(tmp);
                                 }
                         } else {
-                                player->w.leftring = o;
+                                pw_leftring = o;
                         }
                 } else if(c == 'r') {
-                        if(player->w.rightring) {
-                                if(!yesno("Do you want to remove your %s", player->w.rightring->fullname)) {
+                        if(pw_rightring) {
+                                if(!yesno("Do you want to remove your %s", pw_rightring->fullname)) {
                                         gtprintf("OK then.");
                                         return;
                                 } else {
-                                        tmp = player->w.rightring;
-                                        player->w.rightring = o;
+                                        tmp = pw_rightring;
+                                        pw_rightring = o;
                                         unapply_effects(tmp);
                                 }
                         } else {
-                                player->w.rightring = o;
+                                pw_rightring = o;
                         }
                 }
 
@@ -466,17 +465,17 @@ void wear(obj_t *o)
         }
 
         if(is_amulet(o)) {
-                if(player->w.amulet) {
-                        if(!yesno("Do you want to remove your %s", player->w.amulet->fullname)) {
+                if(pw_amulet) {
+                        if(!yesno("Do you want to remove your %s", pw_amulet->fullname)) {
                                 gtprintf("OK then.");
                                 return;
                         } else {
-                                tmp = player->w.amulet;
-                                player->w.amulet = o;
+                                tmp = pw_amulet;
+                                pw_amulet = o;
                                 unapply_effects(tmp);
                         }
                 } else {
-                        player->w.amulet = o;
+                        pw_amulet = o;
                         apply_effects(o);
                 }
         }
@@ -511,31 +510,31 @@ void wieldwear(obj_t *o)
 
 void unwear(obj_t *o)
 {
-        if(player->w.leftring == o) {
-                player->w.leftring = NULL;
+        if(pw_leftring == o) {
+                pw_leftring = NULL;
                 unapply_effects(o);
         }
 
-        if(player->w.rightring == o) {
-                player->w.rightring = NULL;
+        if(pw_rightring == o) {
+                pw_rightring = NULL;
                 unapply_effects(o);
         }
 
         // ADD for other wear-slots later.
         // IDEA: wear = array med #defines!!? kan gjøre ting enklere!!
 /*
-        if(player->w.leftring == o) {
-                player->w.leftring = NULL;
+        if(pw_leftring == o) {
+                pw_leftring = NULL;
                 unapply_effects(o);
         }
 
-        if(player->w.leftring == o) {
-                player->w.leftring = NULL;
+        if(pw_leftring == o) {
+                pw_leftring = NULL;
                 unapply_effects(o);
         }
 
-        if(player->w.leftring == o) {
-                player->w.leftring = NULL;
+        if(pw_leftring == o) {
+                pw_leftring = NULL;
                 unapply_effects(o);
         }
 */

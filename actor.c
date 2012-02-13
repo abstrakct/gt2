@@ -25,6 +25,11 @@ obj_t *objlet[52];    // 52 pointers to objects, a-z & A-Z
 
 #define SGN(a) (((a)<0) ? -1 : 1)
 
+//                            x   1   2   3   4   5   6   7   8  9 10 11 12 13 14 15 16 17 18 19 20
+//int strength_modifier[20] = { 0, -5, -4, -3, -3, -2, -2, -1, -1, 0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 4, 5 };
+
+
+
 // object-to-letter and vise versa 
 
 char get_first_free_letter()
@@ -202,15 +207,30 @@ bool next_to(actor_t *a, actor_t *b)
         return false;
 }
 
+// loaned from the d20 system
+int ability_modifier(int ab)
+{
+        return ((ab / 2) - 5);
+}
+
 /*
  * ATTACK!
  */
-void attack(actor_t *attacker, actor_t *victim)
+void attack(actor_t *attacker, actor_t *defender)
 {
-        int damage;
-        int hit, tohit;
+        int attack, defense, damage;
 
-        victim->attacker = attacker;
+        defender->attacker = attacker;
+
+        attack  = d(1, 20);
+        attack += ability_modifier(attacker->attr.str); // strength_modifier[pstr];
+        if(attacker->weapon)
+                attack += attacker->weapon->attackmod;
+
+        defense = 10;         // base defense
+        defense += ability_modifier(defender->attr.dex);
+        // + class/race bonus
+        // + equipment  bonus
 
         if(attacker->weapon) {
                 damage = dice(attacker->weapon->dice, attacker->weapon->sides, attacker->weapon->damagemod);
@@ -218,39 +238,36 @@ void attack(actor_t *attacker, actor_t *victim)
                 damage = dice(1, 3, 0);
         }
 
-        damage -= victim->ac;       // TODO: Adjust/change 
+        damage -= defender->ac;       // TODO: Adjust/change 
 
-        // TODO: FIXXX!!!!!!!!!!
-        hit = d(1, 20);             // throw 1d20
-        tohit = attacker->thac0;
-        //tohit -= victim->ac;        // TODO: AC should maybe reduce your chance to hit (heavy armor)
 
-        if(attacker->weapon)
-                tohit += attacker->weapon->attackmod;
-        if(tohit < 1)
-                tohit = 1;
+        gtprintfc(C_BLACK_MAGENTA, "DEBUG: %s:%d - attack = %d   defense = %d   damage = %d\n", __FILE__, __LINE__, attack, defense, damage);
+        if(attack >= defense) {  // it's a hit!
+                if(attacker == player) {
+                        if(damage == 0)
+                                youc(COLOR_INFO, "You hit the %s, but do no damage!", defender->name);
+                        else
+                                youc(C_BLACK_GREEN, "hit the %s with a %s for %d damage!", defender->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                } else {
+                        if(damage == 0)
+                                gtprintfc(COLOR_INFO, "The %s hits you, but does no damage!", attacker->name);
+                        else
+                                gtprintfc(C_BLACK_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                }
 
-        
-        //gtprintfc(C_BLACK_MAGENTA, "DEBUG: %s:%d - hit = %d    tohit = %d\n", __FILE__, __LINE__, hit, tohit);
-        if(hit <= tohit) {
-                if(attacker == player)
-                        youc(C_BLACK_GREEN, "hit the %s with a %s for %d damage!", victim->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
-                else
-                        gtprintfc(C_BLACK_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
-
-                victim->hp -= damage;
-                if(victim->hp <= 0) {
-                        if(victim == player)
+                defender->hp -= damage;
+                if(defender->hp <= 0) {
+                        if(defender == player) {
+                                you("die!!!");
                                 player->hp += 10;
-                        //you("die!!!");
-                        else {
-                                youc(C_BLACK_GREEN, "kill the %s!", victim->name);
-                                kill_monster(victim);
+                        } else {
+                                youc(C_BLACK_GREEN, "kill the %s!", defender->name);
+                                kill_monster(defender);
                         }
                 }
         } else {
                 if(attacker == player)
-                        youc(C_BLACK_RED, "miss the %s!", victim->name);
+                        youc(C_BLACK_RED, "miss the %s!", defender->name);
                 else
                         gtprintfc(C_BLACK_GREEN, "The %s tries to hit you, but fails!", attacker->name);
         }

@@ -27,13 +27,21 @@ aifunction aitable[] = {
         hostile_ai
 };
 
-void simpleoutdoorpathfinder(actor_t *m)
+int simpleoutdoorpathfinder(actor_t *m)
 {
         int choice;
         int oy, ox;
 
         oy = m->y;
         ox = m->x;
+
+
+//fprintf(stderr, "DEBUG: %s:%d - simpleoutdoorpathfinder: %d,%d\n", __FILE__, __LINE__, m->y, m->x);
+
+        if(m->y <= 1)
+                return true;
+        if(m->x <= 1)
+                return true;
 
         if(!m->goalx || !m->goaly || m->x == m->goalx || m->y == m->goaly) {
                 // basically, if we have no goal, or have reached the goal, set a new goal.
@@ -95,13 +103,14 @@ void simpleoutdoorpathfinder(actor_t *m)
         }
 
         if(!monster_passable(world->curlevel, m->y, m->x)) {
-                //m->y = oy;
-                //m->x = ox;
-                simpleoutdoorpathfinder(m);                  // can we do this recursively, so that the monster will find a path eventually instead of just banging its head into a wall?!
+                m->y = oy;
+                m->x = ox;
+                return false;
         }
 
         world->cmap[oy][ox].monster = NULL;
         world->cmap[m->y][m->x].monster = m;
+        return true;
 }
 
 void simpleai(monster_t *m)
@@ -231,7 +240,7 @@ void hostile_ai(actor_t *m)
 
         } else {
                 m->attacker = NULL;
-                simpleoutdoorpathfinder(m);
+                while(!simpleoutdoorpathfinder(m));
                 m->ticks -= 1000;
         }
 }

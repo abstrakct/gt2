@@ -19,6 +19,9 @@
 // "throw" a b-sided dices without any modifiers
 #define d(a,b) dice(a,b,0)
 
+#define min(a, b) (a > b ? b : a)
+#define max(a, b) (a > b ? a : b)
+
 // ri(a, b)
 // pick a random number in the range [a, b]
 //#define ri(a,b) (a + (rand() % (b-a+1)))

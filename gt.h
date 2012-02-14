@@ -75,6 +75,7 @@ struct actionqueue {                          // struct actionqueue
 #define ACTION_WIELDWEAR         16
 #define ACTION_UNWIELDWEAR       17
 #define ACTION_HEAL_PLAYER       18
+#define ACTION_MAKE_DISTANCEMAP  19
 
 
 #define TICKS_MOVEMENT  1000

@@ -607,6 +607,10 @@ bool do_action(int action)
 
                         fullturn = false;
                         break;
+                case ACTION_MAKE_DISTANCEMAP:
+                        makedistancemap(player->y, player->x);
+                        fullturn = false;
+                        break;
                 case ACTION_NOTHING:
                         //updatescreen = false;
                         break;
@@ -732,6 +736,9 @@ void do_turn(int do_all)
         int i, ret;
 
         player->ticks += 1000;
+
+        if(game->currentlevel)
+                queue(ACTION_MAKE_DISTANCEMAP);
         queue(ACTION_MOVE_MONSTERS);
         queue(ACTION_HEAL_PLAYER);
         i = aq->num;

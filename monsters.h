@@ -36,4 +36,6 @@ void simpleai(monster_t *m);
 void advancedai(monster_t *m);
 void hostile_ai(monster_t *m);
 
+void makedistancemap(int desty, int destx);
+
 #endif

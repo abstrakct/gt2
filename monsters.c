@@ -20,6 +20,7 @@
 #include "gt.h"
 
 unsigned int mid_counter;
+int distancemap[800][800];
 
 aifunction aitable[] = {
         simpleai,
@@ -182,11 +183,125 @@ void advancedai(monster_t *m)
         simpleai(m);
 }
 
+void newpathfinder_chaseplayer(actor_t *m)
+{
+        int dx, dy;
+
+        dx = player->x - m->x;
+        dy = player->y - m->y;
+
+        dx = max(min(1, dx), -1);
+        dy = max(min(1, dy), -1);
+
+        m->y += dy;
+        m->x += dx;
+}
+
+
+void makedistancemap(int desty, int destx)
+{
+        int y, x, newdist;
+        bool flag;
+
+        for(y = 0; y < world->curlevel->ysize; y++) {
+                for(x = 0; x < world->curlevel->xsize; x++) {
+                        distancemap[y][x] = 99999;
+                }
+        }
+
+        distancemap[desty][destx] = 0;
+        flag = true;
+        while(flag) {
+                flag = false;
+                for(y = 1; y < world->curlevel->ysize; y++) {
+                        for(x = 1; x < world->curlevel->xsize; x++) {
+                                if(monster_passable(world->curlevel, y, x)) {
+                                        newdist = min(min(2+distancemap[y][x-1], 2+distancemap[y-1][x]), min(3+distancemap[y-1][x-1], 3+distancemap[y-1][x+1]));
+                                        if(newdist < distancemap[y][x]) {
+                                                distancemap[y][x] = newdist;
+                                                flag = true;
+                                        }
+                                }
+                        }
+                }
+
+                for(y = world->curlevel->ysize - 3; y >= 1; --y) {
+                        for(x = world->curlevel->xsize - 3; x >= 1; --x) {
+                                if(monster_passable(world->curlevel, y, x)) {
+                                        newdist = min(min(2+distancemap[y][x+1], 2+distancemap[y+1][x]), min(3+distancemap[y+1][x+1], 3+distancemap[y+1][x-1]));
+                                        if(newdist < distancemap[y][x]) {
+                                                distancemap[y][x] = newdist;
+                                                flag = true;
+                                        }
+                                }
+                        }
+                }
+        }
+}
+
+/*
+ * The following code, and some code in hostile_ai, is taken/adapted from:
+ *
+ * Newsgroups: rec.games.roguelike.development
+ * From: "copx" <inva...@dd.com>
+ * Date: Mon, 23 Dec 2002 09:57:10 +0100
+ * Local: Mon, Dec 23 2002 9:57 am
+ * Subject: Re: *simple* pathfinding
+ * 
+ */
+bool newpathfinder(actor_t *m)
+{
+        int oy, ox, dx, dy, dist, newdist, newdx, newdy;
+
+        if(!m->goalx || !m->goaly || m->x == m->goalx || m->y == m->goaly) {
+                m->goalx = ri(1, world->curlevel->xsize - 1);
+                m->goaly = ri(1, world->curlevel->ysize - 1);
+                while(!monster_passable(world->curlevel, m->goaly, m->goalx)) {
+                        m->goalx = ri(1, world->curlevel->xsize - 1);
+                        m->goaly = ri(1, world->curlevel->ysize - 1);
+                }
+        }
+
+        oy = m->y;
+        ox = m->x;
+        makedistancemap(m->goaly, m->goalx);
+
+        dx = 0; 
+        dy = 0;
+        dist = 99999;
+
+        for(newdy = -1; newdy <= 1; newdy++) {
+                for(newdx = -1; newdx <= 1; newdx++) {
+                        newdist = distancemap[m->y + newdy][m->x + newdx];
+                        if(newdist < dist) {
+                                dist = newdist;
+                                dx = newdx;
+                                dy = newdy;
+                        }
+                }
+        }
+
+        m->y += dy;
+        m->x += dx;
+
+        if(!monster_passable(world->curlevel, m->y, m->x)) {
+                m->y = oy;
+                m->x = ox;
+                return false;
+        }
+
+        world->cmap[oy][ox].monster = NULL;
+        world->cmap[m->y][m->x].monster = m;
+        return true;
+}
+
+
+
+
 void hostile_ai(actor_t *m)
 {
-        int oy, ox;
+        int oy, ox, dx, dy, dist, newdist, newdx, newdy;
 
-        //gtprintf("hello it's hostileai!!");
         oy = m->y;
         ox = m->x;
 
@@ -203,32 +318,22 @@ void hostile_ai(actor_t *m)
 
         //if(player->x >= (m->x-10) && player->x <= m->x+10 && player->y >= m->y-10 && player->y <= m->y+10) {
         if(actor_in_lineofsight(m, player)) {
-                m->goalx = player->x;
-                m->goaly = player->y;
-
-                if(m->x > m->goalx) {
-                        m->x--;
-                        if(m->y == player->y && m->x == player->x)
-                                m->x++;
+                dx = 0; 
+                dy = 0;
+                dist = 99999;
+                for(newdy = -1; newdy <= 1; newdy++) {
+                        for(newdx = -1; newdx <= 1; newdx++) {
+                                newdist = distancemap[m->y + newdy][m->x + newdx];
+                                if(newdist < dist) {
+                                        dist = newdist;
+                                        dx = newdx;
+                                        dy = newdy;
+                                }
+                        }
                 }
 
-                if(m->x < m->goalx) {
-                        m->x++;
-                        if(m->y == player->y && m->x == player->x)
-                                m->x--;
-                }
-
-                if(m->y > m->goaly) {
-                        m->y--;
-                        if(m->y == player->y && m->x == player->x)
-                                m->y++;
-                }
-
-                if(m->y < m->goaly) {
-                        m->y++;
-                        if(m->y == player->y && m->x == player->x)
-                                m->y--;
-                }
+                m->y += dy;
+                m->x += dx;
 
                 if(!monster_passable(world->curlevel, m->y, m->x)) {
                         m->y = oy;
@@ -237,7 +342,6 @@ void hostile_ai(actor_t *m)
                 world->cmap[oy][ox].monster = NULL;
                 world->cmap[m->y][m->x].monster = m;
                 m->ticks -= 1000;
-
         } else {
                 m->attacker = NULL;
                 while(!simpleoutdoorpathfinder(m));
@@ -253,11 +357,12 @@ void move_monsters()
         if(!m)
                 return;
 
+
         while(m) {
                 m = m->next;
                 while(m && hasbit(m->flags, MF_ISDEAD))
                         m = m->next;
-
+// TODO: SIMPLYFI!!!!!
                 if(m) {
                         if(m->attacker) {
                                 /*if(next_to(m, m->attacker)) {

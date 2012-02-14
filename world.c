@@ -801,19 +801,6 @@ bool monster_passable(level_t *l, int y, int x)
         
         type = l->c[y][x].type;
 
-        if(type == DNG_WALL && l->c[y][x].color == COLOR_LAKE)
-                
-
-        /*o = player->inventory->next;
-        
-        
-        while(o) {
-                mvwprintw(wstat, i, 1, "%c) %s     ", o->slot, o->fullname);
-                i++;
-                o = o->next;
-        }*/
-                return true;
-
         if(type == DNG_WALL)
                 return false;
         if(type == AREA_LAKE)

@@ -324,6 +324,7 @@ void spawn_monster(int n, monster_t *head)
         //gtprintf("spawned monster %s\n", head->next->name);
         mid_counter++;
         head->next->mid = mid_counter;
+        game->num_monsters++;
 }
 
 void kill_monster(monster_t *m)

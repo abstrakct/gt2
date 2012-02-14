@@ -82,7 +82,7 @@ typedef struct actorstruct {            // actor_t
         double       speed;
         double       movement;
         long long    ticks;
-        int          thac0;
+         int          thac0;
         float        skill[MAX_SKILLS];
         //char         wvfactor;
         //short        worldview;

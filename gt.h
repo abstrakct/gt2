@@ -37,8 +37,11 @@ typedef struct {                              // game_t
         short        monsterdefs;             // number of monster definitions
         short        objdefs;                 // number of object definitions
         short        createddungeons;         // number of dungeons which have been created
+        int          num_objects;             // number of spawned objects
+        int          num_monsters;            // number of spawned monsters
         bool         wizardmode;              // yay!
         char         savefile[255];           // filename of the save file for this game
+        obj_t       *objects[2000];
 } game_t;
 
 typedef struct {                              // message_t

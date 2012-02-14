@@ -241,7 +241,7 @@ void attack(actor_t *attacker, actor_t *defender)
         damage -= defender->ac;       // TODO: Adjust/change 
 
 
-        gtprintfc(C_BLACK_MAGENTA, "DEBUG: %s:%d - attack = %d   defense = %d   damage = %d\n", __FILE__, __LINE__, attack, defense, damage);
+        //gtprintfc(C_BLACK_MAGENTA, "DEBUG: %s:%d - attack = %d   defense = %d   damage = %d\n", __FILE__, __LINE__, attack, defense, damage);
         if(attack >= defense) {  // it's a hit!
                 if(attacker == player) {
                         if(damage == 0)

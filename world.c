@@ -571,6 +571,32 @@ void generate_village(int num)
                 generate_area(i, AREA_VILLAGE, 1, VILLAGESIZE);
 }
 
+void pathfinder(level_t *l, int y1, int x1, int y2, int x2)
+{
+        float x, y, xinc, yinc, dx, dy;
+        int k, step;
+
+        dx = x2 - x1;
+        dy = y2 - y1;
+        if(abs(dx) > abs(dy))
+                step = abs(dx);
+        else
+                step = abs(dy);
+
+        xinc = dx / step;
+        yinc = dy / step;
+
+        x = (float) x1;
+        y = (float) y1;
+
+        l->c[(int)y][(int)x].color = COLOR_LAKE;
+        for(k = 1; k <= step; k++) {
+                x += xinc;
+                y += yinc;
+                l->c[(int)y][(int)x].color = COLOR_LAKE;
+        }
+}
+
 /*********************************************
 * Description - Flood fill to test dungeon gen
 * Author - RK
@@ -737,6 +763,9 @@ bool passable(level_t *l, int y, int x)
                 return true;
 
         type = l->c[y][x].type;
+
+        if(type == DNG_WALL && l->c[y][x].color == COLOR_LAKE)
+                return true;
         if(type == DNG_WALL)
                 return false;
         if(type == AREA_LAKE)
@@ -771,6 +800,9 @@ bool monster_passable(level_t *l, int y, int x)
                 return false;
         
         type = l->c[y][x].type;
+
+        if(type == DNG_WALL && l->c[y][x].color == COLOR_LAKE)
+                return true;
 
         if(type == DNG_WALL)
                 return false;
@@ -886,6 +918,17 @@ void meta_generate_dungeon(int type, int d)
         }
 }
 
+void generate_stairs()
+{
+        int i;
+
+        generate_stairs_outside();
+
+        for(i = 1; i < game->createddungeons; i++) {
+                create_stairs(3, i, i+1);
+        }
+}
+
 /*********************************************
 * Description - One big function which should
 * take care of all world generation stuff.
@@ -932,12 +975,10 @@ void generate_world()
         spawn_objects(ri(world->out->xsize/2, world->out->ysize/2), world->out);
 
 
-        for(i = 1; i <= 3; i++)
+        for(i = 1; i <= 25; i++)
                 meta_generate_dungeon(2, i);
 
-        generate_stairs_outside();
-        create_stairs(3, 1, 2);
-        create_stairs(3, 2, 3);
+        generate_stairs();
 
 
         // create the edge of the world
@@ -953,4 +994,8 @@ void generate_world()
                 world->out->c[y][794].type = AREA_WALL;
                 world->out->c[y][795].type = AREA_WALL;
         }
+
+
+fprintf(stderr, "DEBUG: %s:%d - Generated a total of %d objects.\n", __FILE__, __LINE__, game->num_objects);
+fprintf(stderr, "DEBUG: %s:%d - Generated a total of %d monsters.\n", __FILE__, __LINE__, game->num_monsters);
 }

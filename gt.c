@@ -103,7 +103,7 @@ void init_variables()
 
         world = (world_t *) gtmalloc(sizeof(world_t));
 
-        world->dng = gtcalloc(26, sizeof(level_t));    // allocate 26 levels, 0 = outside, 1..n = dungeons
+        world->dng = gtcalloc(26, sizeof(level_t));    // allocate n levels, 0 = outside, 1..n = dungeons
         world->out = world->dng;                      // i.e. it points to world->dng[0]
         world->out->xsize = XSIZE;
         world->out->ysize = YSIZE;
@@ -513,6 +513,7 @@ bool do_action(int action)
                         if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0) {
                                 player->inventory->quantity += ci(ply, plx)->quantity;
                                 ci(ply, plx)->quantity -= ci(ply, plx)->quantity;
+                                youc(COLOR_INFO, "now have %d gold pieces.", player->inventory->quantity);
                         }
 
                         if(ci(ply, plx) && ci(ply, plx)->next) {
@@ -774,7 +775,7 @@ void do_turn(int do_all)
 
 int main(int argc, char *argv[])
 {
-        int c, x, l;
+        int c, x, y, l;
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
@@ -850,12 +851,14 @@ int main(int argc, char *argv[])
                                 queue(ACTION_PLAYER_MOVE_NE);
                                 break;
                         case CMD_FLOODFILL:
-                                x = ri(11,111);
-                                while(world->dng[1].c[x][x].type != DNG_FLOOR) {
-                                        x = ri(11,111);
+                                x = ri(11, world->curlevel->xsize);
+                                y = ri(11, world->curlevel->ysize);
+                                while(world->curlevel->c[y][x].type != DNG_FLOOR) {
+                                        x = ri(11, world->curlevel->xsize);
+                                        y = ri(11, world->curlevel->ysize);
                                 }
-                                gtprintf("floodfilling from %d, %d\n", x, x);
-                                floodfill(world->curlevel, x, x);
+                                gtprintf("floodfilling from %d, %d\n", y, x);
+                                floodfill(world->curlevel, y, x);
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_DOWN:  queue(ACTION_PLAYER_MOVE_DOWN); break;
@@ -965,7 +968,10 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_REST:
                                 queue(ACTION_NOTHING);
-
+                                break;
+                        case CMD_PATHFINDER:
+                                pathfinder(world->curlevel, player->y, player->x, player->y + ri(-15,15), player->x + ri(-15,15));
+                                queue(ACTION_NOTHING);
                                 break;
                         //case 'a': dump_action_queue();
                         default:

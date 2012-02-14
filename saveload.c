@@ -203,6 +203,9 @@ void save_player(actor_t *p, FILE *f)
         s.movement = p->movement;
         s.weapon = (p->weapon ? p->weapon->oid : 0);
 
+        for(i = 0; i < WEAR_SLOTS; i++)
+                s.w[i] = (p->w[i] ? p->w[i]->oid : 0);
+
         for(i = 0; i < MAX_SKILLS; i++)
                 s.skill[i] = p->skill[i];
 
@@ -572,6 +575,7 @@ bool load_player(actor_t *p, FILE *f)
         p->movement = s.movement;
         for(i = 0; i < MAX_SKILLS; i++)
                 p->skill[i] = s.skill[i];
+                
 
         p->inventory = load_inventory(f);
 
@@ -589,6 +593,19 @@ bool load_player(actor_t *p, FILE *f)
         } else {
                 p->weapon = NULL;
         }
+
+        for(i = 0; i < WEAR_SLOTS; i++) {
+                if(s.w[i]) {
+                        p->w[i] = get_object_by_oid(p->inventory, s.w[i]);
+                        if(!p->w[i]) {
+                                printf("get_object_by_oid failed!\n");
+                                return false;
+                        }
+                } else {
+                        p->w[i] = NULL;
+                }
+        }
+
         load_set_objlets(p);
         printf("loadplayerend\n");
         return true;

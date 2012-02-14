@@ -36,7 +36,6 @@ cmd_t outsidecommands[] = {
         { KEY_UP,    CMD_UP,          "Move up" },
         { 'h',       CMD_LEFT,        "Move left" },
         { KEY_LEFT,  CMD_LEFT,        "Move left" },
-        { 'k',       CMD_RIGHT,       "Move right" },
         { KEY_RIGHT, CMD_RIGHT,       "Move right" },
         { 'l',       CMD_RIGHT,       "Move right" },
         { 'y',       CMD_NW,          "Move up-left" },
@@ -69,6 +68,7 @@ cmd_t outsidecommands[] = {
         { KEY_F(4),  CMD_DUMPOBJECTS, "Dump objects" },
         { 'o',       CMD_DUMPOBJECTS, "" },
         { 'c',       CMD_DUMPCOLORS, "" },
+        { 'p',       CMD_PATHFINDER, "" },
 #endif
         //{ , CMD_WIELD, "Wield/wear" },
         //{ , CMD_IDENTIFYALL, "Identify everything" },

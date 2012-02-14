@@ -41,7 +41,7 @@ char objchars[] = {
 };
 
 char *materialstring[] = {
-        "gold", "silver", "bronze", "copper", "wooden", "iron", "marble", "glass", "bone", "platinum", "steel", "blackwood", "brass", "ebony", "bloodwood"
+        0, "gold", "silver", "bronze", "copper", "wooden", "iron", "marble", "glass", "bone", "platinum", "steel", "blackwood", "brass", "ebony", "bloodwood"
 };
 
 obj_t get_objdef(int n)
@@ -168,13 +168,15 @@ void generate_fullname(obj_t *o)
 
                 strcat(n, o->basename); 
         } else if(o->type == OT_RING) {
-                if(is_identified(o)) {
+                if(is_identified(o) && is_id_mod(o)) {
                         if(o->attackmod > 0)
                                 sprintf(n, "+%d ", o->attackmod);
                         if(o->attackmod < 0)
                                 sprintf(n,  "%d ", o->attackmod);
                         strcat(n, o->basename); 
-                } else {
+                } else if(is_identified(o) && !is_id_mod(o)) {
+                        sprintf(n, "%s", o->basename);
+                } else if(!is_identified(o)) {
                         sprintf(n, "%s ring", materialstring[(int)o->material]);
                 }
         } else if(o->type == OT_AMULET) {
@@ -212,6 +214,19 @@ bool place_object_at(int y, int x, obj_t *obj, void *p)
                 return false;
 
         return false;
+}
+
+void spawn_gold(int n, obj_t *head)
+{
+        obj_t *tmp;
+
+        tmp = head->next;
+        head->next = gtmalloc(sizeof(obj_t));
+        head->type = OT_GOLD;
+        head->next->next = tmp;
+        head->next->prev = head;
+        head->next->head = head;
+        head->next->quantity = n;
 }
 
 void spawn_object(int n, obj_t *head)
@@ -309,20 +324,10 @@ void spawn_object(int n, obj_t *head)
 
         generate_fullname(head->next);
 
+        game->objects[game->num_objects] = head->next;
+        game->num_objects++;
+
         //fprintf(stderr, "spawned obj %s (oid %d)\n", head->next->basename, head->next->oid);
-}
-
-void spawn_gold(int n, obj_t *head)
-{
-        obj_t *tmp;
-
-        tmp = head->next;
-        head->next = gtmalloc(sizeof(obj_t));
-        head->type = OT_GOLD;
-        head->next->next = tmp;
-        head->next->prev = head;
-        head->next->head = head;
-        head->next->quantity = n;
 }
 
 /*
@@ -330,29 +335,15 @@ void spawn_gold(int n, obj_t *head)
  */
 bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
 {
-        obj_t *tmp;
-        level_t *l;
-
-        l = (level_t *) level;
-
         if(!i)
                 i = init_inventory();
 
         spawn_object(n, i);
 
-
-        if(!l->objects)
-                l->objects = init_inventory();
-
         if(!place_object_at(y, x, i->next, (level_t *) level)) {
                 unspawn_object(i->next);
                 return false;
         }
-
-        tmp = l->objects;
-        i->next->next = tmp->next;
-        tmp->next = i->next;
-        i->next->head = tmp;
 
         //if(i->next->attackmod || i->next->damagemod || (i->next->attackmod && i->next->damagemod))
                 //fprintf(stderr, "DEBUG: %s:%d - Spawned a %s\n", __FILE__, __LINE__, i->next->fullname);
@@ -437,17 +428,10 @@ void do_identify_all(obj_t *o)
 {
         int i;
 
-        for(i = 0; i < game->createddungeons; i++) {
-                obj_t *t;
-
-                t = world->dng[i].objects->head;
-                while(t) {
-                        if((t->type == o->type) && (t->material == o->material)) {
-                                setbit(t->flags, OF_IDENTIFIED);
-                                generate_fullname(t);
-                        }
-
-                        t = t->next;
+        for(i = 0; i < game->num_objects; i++) {
+                if((game->objects[i]->type == o->type) && (game->objects[i]->material == o->material)) {
+                        setbit(game->objects[i]->flags, OF_IDENTIFIED);
+                        generate_fullname(game->objects[i]);
                 }
         }
 }
@@ -469,8 +453,15 @@ void puton(int slot, obj_t *o)
 {
         player->w[slot] = o;
         apply_effects(o);
+        
+        if(hasbit(o->flags, OF_IDENTIFIED)) {
+                setbit(o->flags, OF_ID_MOD);
+                generate_fullname(o);
+        }
+
         if(!hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
                 setbit(o->flags, OF_IDENTIFIED);
+                setbit(o->flags, OF_ID_MOD);
                 do_identify_all(o);
                 generate_fullname(o);
                 gtprintfc(COLOR_INFO, "This is %s!", a_an(o->fullname));
@@ -611,6 +602,7 @@ void pick_up(obj_t *o, void *p)
         o->head = a->inventory;
 
         assign_free_slot(o);
+        gtprintfc(COLOR_INFO, "%c) %s", slot_to_letter(o->slot), a_an(o->fullname));
 
         // TODO: tackle cells with multiple items!
         world->curlevel->c[a->y][a->x].inventory->next = NULL;

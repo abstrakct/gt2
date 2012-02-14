@@ -34,7 +34,6 @@ nmap cs <Plug>Csurround
 nmap ds <Plug>Dsurround
 nmap gx <Plug>NetrwBrowseX
 xmap gS <Plug>VgSurround
-map g> :%s/>/->/g
 map gr gT
 map n nzz
 xmap s <Plug>Vsurround
@@ -48,8 +47,6 @@ nmap <F7> g
 map <F12> :nohlsearch
 nmap <F5> :make
 map <F6> :!gt
-vmap <F3> A ->j
-omap <F3> A ->j
 nnoremap <silent> <Plug>NetrwBrowseX :call netrw#NetrwBrowseX(expand("<cWORD>"),0)
 nmap <F4> mz:execute FunctionHeading()`zjA
 vnoremap <F5> ygv"=TwiddleCase(@")Pgv
@@ -64,11 +61,8 @@ imap S <Plug>ISurround
 imap s <Plug>Isurround
 inoremap 	 =SuperCleverTab()
 imap  <Plug>Isurround
-inoremap ( ()<Left>
 map æ @
 map ø :
-inoremap { {
-inoremap { {}O
 let &cpo=s:cpo_save
 unlet s:cpo_save
 set autoindent

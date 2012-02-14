@@ -59,7 +59,7 @@ struct player_save_struct {
         int     level;
         short   race, cla;
         int     weapon;              // save OID of weapon!
-        //wear_t  w;
+        int     w[WEAR_SLOTS];
         long    flags;
         double  speed;
         double  movement;

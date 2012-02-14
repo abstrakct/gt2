@@ -42,6 +42,7 @@ typedef struct {
 #define CMD_DESCEND       26
 #define CMD_ASCEND        27
 #define CMD_UNWIELDWEAR   28
+#define CMD_PATHFINDER    29
 
 // development/debug commands
 #define CMD_FLOODFILL     1001

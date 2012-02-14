@@ -61,7 +61,7 @@ extern char *otypestrings[];
 
 #define OF_MAGIC      0x00000001
 #define OF_EATABLE    0x00000002
-#define OF_DRINKABLE  0x00000004
+#define OF_ID_MOD     0x00000004      // set if modifier is known (e.g. if player knows that this is a +1 ring of whatever, not just a ring of whatever
 #define OF_IDENTIFIED 0x00000008
 #define OF_BAD        0x00000010
 #define OF_GOOD       0x00000020
@@ -125,8 +125,9 @@ extern int mats_amulets[MATERIALS];
 #define is_ring(a)          (a->type  == OT_RING)
 #define is_amulet(a)        (a->type  == OT_AMULET)
 
-#define is_identified(a)    (a->flags & OF_IDENTIFIED)
 #define do_identify(a)      (a->flags|= OF_IDENTIFIED)
+#define is_identified(a)    (a->flags & OF_IDENTIFIED)
+#define is_id_mod(a)        (a->flags & OF_ID_MOD)
 #define is_magic(a)         (a->flags & OF_MAGIC)
 #define is_eatable(a)       (a->flags & OF_EATABLE)
 #define is_drinkable(a)     (a->flags & OF_DRINKABLE)

@@ -311,17 +311,19 @@ bool place_monster_at(int y, int x, monster_t *monster, level_t *l)
         }
 }
 
-void spawn_monster(int n, monster_t *head)
+void spawn_monster(int n, monster_t *head, int maxlevel)
 {
         monster_t *tmp;
 
         tmp = head->next;
         head->next = gtmalloc(sizeof(monster_t));
         *head->next = get_monsterdef(n);
+
         head->next->next = tmp;
         head->next->prev = head;
         head->next->head = head;
         //gtprintf("spawned monster %s\n", head->next->name);
+        
         mid_counter++;
         head->next->mid = mid_counter;
         game->num_monsters++;
@@ -356,11 +358,15 @@ void unspawn_monster(monster_t *m)
 /*
  * spawn a monster and place it at (y,x)
  */
-bool spawn_monster_at(int y, int x, int n, monster_t *head, void *level)
+bool spawn_monster_at(int y, int x, int n, monster_t *head, void *level, int maxlevel)
 {
-        spawn_monster(n, head);
+        spawn_monster(n, head, maxlevel);
+        if(head->next->level > maxlevel) {
+                unspawn_monster(head->next);
+                return false;
+        }
+
         if(!place_monster_at(y, x, head->next, (level_t *) level)) {
-                //gtprintf("place_monster failed! probably tried to spawn at non-passable cell");
                 unspawn_monster(head->next);
                 return false;
         }
@@ -372,7 +378,7 @@ bool spawn_monster_at(int y, int x, int n, monster_t *head, void *level)
  * Spawn num monsters of maximum level max_level, on level l
  * (yeah, level is used for two things, and confusing... i should change the terminology!
  */
-void spawn_monsters(int num, void *p, int max_level)
+void spawn_monsters(int num, int max_level, void *p)
 {
         int i, x, y, m;
         level_t *l;
@@ -381,7 +387,7 @@ void spawn_monsters(int num, void *p, int max_level)
         l = (level_t *) p;
         while(i < num) {
                 x = 1; y = 1; m = ri(1, game->monsterdefs);
-                while(!spawn_monster_at(y, x, m, l->monsters, l)) { 
+                while(!spawn_monster_at(y, x, m, l->monsters, l, max_level)) { 
                         x = ri(1, l->xsize-1);
                         y = ri(1, l->ysize-1);
                         m = ri(1, game->monsterdefs);

@@ -259,7 +259,6 @@ void attack(actor_t *attacker, actor_t *defender)
                 if(defender->hp <= 0) {
                         if(defender == player) {
                                 you("die!!!");
-                                player->hp += 10;
                         } else {
                                 youc(C_BLACK_GREEN, "kill the %s!", defender->name);
                                 kill_monster(defender);

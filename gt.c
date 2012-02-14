@@ -236,7 +236,7 @@ bool do_action(int action)
         int tmpy, tmpx;
         bool fullturn;
         obj_t *o;
-        //int updatescreen = true;
+        int i;
 
         oldy = ply; oldx = plx;
         fullturn = true;
@@ -595,6 +595,18 @@ bool do_action(int action)
                 case ACTION_FIX_VIEW:
                         fixview();
                         break;
+                case ACTION_HEAL_PLAYER:
+                        i = 20 - pphy;
+                        if(i < 0)
+                                i = 1;
+
+                        if(game->turn % i) {
+                                if(player->hp != player->maxhp)
+                                        player->hp++;
+                        }
+
+                        fullturn = false;
+                        break;
                 case ACTION_NOTHING:
                         //updatescreen = false;
                         break;
@@ -721,6 +733,7 @@ void do_turn(int do_all)
 
         player->ticks += 1000;
         queue(ACTION_MOVE_MONSTERS);
+        queue(ACTION_HEAL_PLAYER);
         i = aq->num;
 
         while(i) {
@@ -903,7 +916,7 @@ int main(int argc, char *argv[])
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_SPAWNMONSTER:
-                                spawn_monster_at(ply+5, plx+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel);
+                                spawn_monster_at(ply+5, plx+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel, 100);
                                 //dump_monsters(world->curlevel->monsters);
                                 queue(ACTION_NOTHING);
                                 break;

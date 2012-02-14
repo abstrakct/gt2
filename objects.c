@@ -229,10 +229,17 @@ void spawn_gold(int n, obj_t *head)
         head->next->quantity = n;
 }
 
-void spawn_object(int n, obj_t *head)
+void spawn_object(int n, obj_t *head, void *level)
 {
         obj_t *tmp;
-        //int i;
+        level_t *l;
+        int lev;
+
+        l = (level_t *) level;
+        if(l)
+                lev = l->level;
+        else
+                lev = 1;
 
         tmp = head->next;
         head->next = gtmalloc(sizeof(obj_t));
@@ -256,20 +263,20 @@ void spawn_object(int n, obj_t *head)
                                 else
                                         head->next->attackmod = ri(-1, 0);
                         }
-                        if(perc(30) && !head->next->attackmod) {
+                        if(perc(30 + (lev*3)) && !head->next->attackmod) {
                                 if(perc(66))
                                         head->next->attackmod = ri(1, 2);
                                 else
                                         head->next->attackmod = ri(-2, 1);
                         }
-                        if(perc(20) && !head->next->attackmod) {
+                        if(perc(20 + (lev*3)) && !head->next->attackmod) {
                                 if(perc(66))
                                         head->next->attackmod = ri(1, 3);
                                 else
                                         head->next->attackmod = ri(-3, 1);
                         }
-                        if(perc(10) && !head->next->attackmod) {
-                                if(perc(50)) {
+                        if(perc(10 + (lev*3)) && !head->next->attackmod) {
+                                if(perc(50 + (lev*2))) {
                                         if(perc(66))
                                                 head->next->attackmod = ri(1, 4);
                                         else
@@ -293,20 +300,20 @@ void spawn_object(int n, obj_t *head)
                                 else
                                         head->next->damagemod = ri(-1, 0);
                         }
-                        if(perc(30) && !head->next->damagemod) {
+                        if(perc(30 + (lev*3)) && !head->next->damagemod) {
                                 if(perc(66))
                                         head->next->damagemod = ri(0, 2);
                                 else
                                         head->next->damagemod = ri(-2, 0);
                         }
-                        if(perc(20) && !head->next->damagemod) {
+                        if(perc(20 + (lev*3)) && !head->next->damagemod) {
                                 if(perc(66))
                                         head->next->damagemod = ri(0, 3);
                                 else
                                         head->next->damagemod = ri(-3, 0);
                         }
-                        if(perc(10) && !head->next->damagemod) {
-                                if(perc(50)) {
+                        if(perc(10 + (lev*3)) && !head->next->damagemod) {
+                                if(perc(50 + (lev*2))) {
                                         if(perc(66))
                                                 head->next->damagemod = ri(0, 4);
                                         else
@@ -338,7 +345,7 @@ bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
         if(!i)
                 i = init_inventory();
 
-        spawn_object(n, i);
+        spawn_object(n, i, level);
 
         if(!place_object_at(y, x, i->next, (level_t *) level)) {
                 unspawn_object(i->next);

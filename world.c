@@ -207,7 +207,7 @@ void cleanup_dungeon(level_t *l)
         }
 }
 
-void generate_dungeon_normal2(int d)
+void generate_dungeon_type_1(int d)
 {
         struct room **r;        
         int numrooms, maxroomsizex, maxroomsizey, nrx, nry, i, j;
@@ -802,6 +802,16 @@ bool monster_passable(level_t *l, int y, int x)
         type = l->c[y][x].type;
 
         if(type == DNG_WALL && l->c[y][x].color == COLOR_LAKE)
+                
+
+        /*o = player->inventory->next;
+        
+        
+        while(o) {
+                mvwprintw(wstat, i, 1, "%c) %s     ", o->slot, o->fullname);
+                i++;
+                o = o->next;
+        }*/
                 return true;
 
         if(type == DNG_WALL)
@@ -895,21 +905,23 @@ void create_stairs(int num, int s, int d)
 
 void meta_generate_dungeon(int type, int d)
 {
-        if(type == 2) {
+        if(type == 1) {
                 int num_monsters;
 
                 world->dng[d].xsize = (ri(50, 100));  // let's start within reasonable sizes!
                 world->dng[d].ysize = (ri(50, 100));
+                world->dng[d].level = d;
                 init_level(&world->dng[d]);
 
                 zero_level(&world->dng[d]);
-                generate_dungeon_normal2(d);
+                generate_dungeon_type_1(d);
 
                 num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 2;
                 num_monsters /= 10;
-                spawn_monsters(num_monsters, &world->dng[d], 100);
+                spawn_monsters(num_monsters, d+2, &world->dng[d]);
 
                 spawn_objects(ri(world->dng[d].xsize/10, world->dng[d].xsize/5), &world->dng[d]);
+
                 spawn_golds((int) ri(10, 10+world->dng[d].xsize / 15), (player->level+1) * 35, &world->dng[d]);
 
                 game->createddungeons++;
@@ -969,14 +981,14 @@ void generate_world()
         //fprintf(stderr, "DEBUG: %s:%d - Generating %d villages\n", __FILE__, __LINE__, world->villages);
         world->village = gtcalloc((size_t)world->villages, sizeof(city_t));
         generate_village(world->villages);
-        spawn_monsters(100, world->out, 100); 
-        spawn_golds(100, 100, world->out);
+        spawn_monsters(ri(75,125), 3, world->out); 
+        spawn_golds(ri(75,125), 100, world->out);
         //spawn_objects(ri(world->out->xsize/8, world->out->ysize/4), world->out);
         spawn_objects(ri(world->out->xsize/2, world->out->ysize/2), world->out);
 
 
         for(i = 1; i <= 25; i++)
-                meta_generate_dungeon(2, i);
+                meta_generate_dungeon(1, i);
 
         generate_stairs();
 

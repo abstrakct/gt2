@@ -117,7 +117,7 @@ int parse_monsters()
                         x = get_objdef_by_name("short sword");
 
                         m->inventory = init_inventory();
-                        spawn_object(x, m->inventory);
+                        spawn_object(x, m->inventory, 0);
                         m->weapon = m->inventory->next;
                 }
 
@@ -127,7 +127,7 @@ int parse_monsters()
                         x = get_objdef_by_name("dagger");
 
                         m->inventory = init_inventory();
-                        spawn_object(x, m->inventory);
+                        spawn_object(x, m->inventory, 0);
                         m->weapon = m->inventory->next;
                 }
 

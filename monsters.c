@@ -384,6 +384,7 @@ void move_monsters()
                                 clearbit(m->flags, MF_SLEEPING);
                 }
 
+
                 // TODO: SIMPLIFY!
                 //
 

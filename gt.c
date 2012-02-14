@@ -776,13 +776,15 @@ void do_turn(int do_all)
 int main(int argc, char *argv[])
 {
         int c, x, y, l;
+        char messagefilename[50];
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
 
         init_variables();
 
-        messagefile = fopen("messages.txt", "w");
+        sprintf(messagefilename, "%s/messages.%d.gtsave", SAVE_DIRECTORY, game->seed);
+        messagefile = fopen(messagefilename, "w");
         get_version_string(game->version);
         printf("Gullible's Travails v%s\n", game->version);
 

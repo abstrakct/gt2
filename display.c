@@ -380,25 +380,15 @@ void draw_wstat()
                 if(objlet[j]) {
                         o = get_object_from_letter(slot_to_letter(j));
                         if(is_worn(o)) {
-                                wattron(wstat, COLOR_PAIR(COLOR_INFO));
+                                wattron(wstat, COLOR_PAIR(COLOR_GREEN));
                                 mvwprintw(wstat, i, 1, "%c) %s %s", o->slot, a_an(o->fullname), is_ring(o) ? (o == pw_leftring ? "[<]" : "[>]") : "\0");
-                                wattroff(wstat, COLOR_PAIR(COLOR_INFO));
+                                wattroff(wstat, COLOR_PAIR(COLOR_GREEN));
                         } else {
                                 mvwprintw(wstat, i, 1, "%c) %s", o->slot, a_an(o->fullname));
                         }
                         i++;
                 }
         }
-                
-
-        /*o = player->inventory->next;
-        
-        
-        while(o) {
-                mvwprintw(wstat, i, 1, "%c) %s     ", o->slot, o->fullname);
-                i++;
-                o = o->next;
-        }*/
 }
 
 void update_player()

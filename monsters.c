@@ -36,9 +36,6 @@ int simpleoutdoorpathfinder(actor_t *m)
         oy = m->y;
         ox = m->x;
 
-
-//fprintf(stderr, "DEBUG: %s:%d - simpleoutdoorpathfinder: %d,%d\n", __FILE__, __LINE__, m->y, m->x);
-
         if(m->y <= 1)
                 return true;
         if(m->x <= 1)
@@ -48,6 +45,10 @@ int simpleoutdoorpathfinder(actor_t *m)
                 // basically, if we have no goal, or have reached the goal, set a new goal.
                 m->goalx = ri(1, world->curlevel->xsize - 1);
                 m->goaly = ri(1, world->curlevel->ysize - 1);
+                while(!monster_passable(world->curlevel, m->goaly, m->goalx)) {
+                        m->goalx = ri(1, world->curlevel->xsize - 1);
+                        m->goaly = ri(1, world->curlevel->ysize - 1);
+                }
         }
 
         // now, let's try to avoid the stupid diagonal only walk.
@@ -176,10 +177,6 @@ void simpleai(monster_t *m)
 
 void advancedai(monster_t *m)
 {
-        //if(actor_in_lineofsight(m, player))
-          //      gtprintf("%d - %s - I can see you!", game->turn, m->name);
-
-        //gtprintf("hello it's advancedai!");
         simpleai(m);
 }
 
@@ -284,11 +281,13 @@ bool newpathfinder(actor_t *m)
         m->y += dy;
         m->x += dx;
 
+        /*
         if(!monster_passable(world->curlevel, m->y, m->x)) {
                 m->y = oy;
                 m->x = ox;
                 return false;
         }
+        */
 
         world->cmap[oy][ox].monster = NULL;
         world->cmap[m->y][m->x].monster = m;
@@ -335,10 +334,6 @@ void hostile_ai(actor_t *m)
                 m->y += dy;
                 m->x += dx;
 
-                if(!monster_passable(world->curlevel, m->y, m->x)) {
-                        m->y = oy;
-                        m->x = ox;
-                }
                 world->cmap[oy][ox].monster = NULL;
                 world->cmap[m->y][m->x].monster = m;
                 m->ticks -= 1000;

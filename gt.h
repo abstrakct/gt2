@@ -56,6 +56,11 @@ struct actionqueue {                          // struct actionqueue
         long num;
 };
 
+typedef struct coord {
+        int y;
+        int x;
+} co;
+
 #define ACTION_NOTHING            0
 #define ACTION_PLAYER_MOVE_LEFT   1
 #define ACTION_PLAYER_MOVE_RIGHT  2

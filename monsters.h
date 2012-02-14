@@ -21,6 +21,7 @@ extern aifunction aitable[];
 #define MF_CANUSEARMOR       (1 <<  4)
 #define MF_CANHAVEGOLD       (1 <<  5)
 #define MF_CANUSESIMPLESWORD (1 <<  6)
+#define MF_SLEEPING          (1 <<  7)
 
 // Prototypes
 monster_t get_monsterdef(int n);
@@ -36,6 +37,7 @@ void simpleai(monster_t *m);
 void advancedai(monster_t *m);
 void hostile_ai(monster_t *m);
 
+void makedistancemap(int desty, int destx);
 void makedistancemap(int desty, int destx);
 
 #endif

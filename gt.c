@@ -570,7 +570,7 @@ bool do_action(int action)
 
                         if(game->currentlevel == 0) {
                                 game->context = CONTEXT_OUTSIDE;
-                                player->viewradius = 50;
+                                player->viewradius = 45;
                         }
                         player->ticks -= TICKS_MOVEMENT;
                         break;
@@ -737,6 +737,7 @@ void do_turn(int do_all)
 
         player->ticks += 1000;
 
+
         if(game->currentlevel)
                 queue(ACTION_MAKE_DISTANCEMAP);
         queue(ACTION_MOVE_MONSTERS);
@@ -745,7 +746,6 @@ void do_turn(int do_all)
 
         while(i) {
                 i = aq->num;
-                //while(player->ticks > 0)
 
                 ret = do_next_thing_in_queue();
                         
@@ -782,15 +782,6 @@ void do_turn(int do_all)
                 update_screen();
 
         }
-
-
-
-        /*if(!do_all)
-                fullturn = do_next_thing_in_queue();
-        else*/
-                //fullturn = do_all_things_in_queue();
-
-        // TODO: make move_monsters act on a specific level!?!?!?
 }
 
 int main(int argc, char *argv[])
@@ -861,27 +852,6 @@ int main(int argc, char *argv[])
                         case CMD_QUIT:
                                 queue(ACTION_NOTHING);
                                 game->dead = 1;
-                                break;
-                        case CMD_ENTERDUNGEON:
-                                queue(ACTION_ENTER_DUNGEON);
-
-                                // a rather stupid hack to make sure the screen is properly updated after entering dungeon..
-                                game->turn -= 4;
-                                queue(ACTION_PLAYER_MOVE_NW);
-                                queue(ACTION_PLAYER_MOVE_SW);
-                                queue(ACTION_PLAYER_MOVE_SE);
-                                queue(ACTION_PLAYER_MOVE_NE);
-                                break;
-                        case CMD_FLOODFILL:
-                                x = ri(11, world->curlevel->xsize);
-                                y = ri(11, world->curlevel->ysize);
-                                while(world->curlevel->c[y][x].type != DNG_FLOOR) {
-                                        x = ri(11, world->curlevel->xsize);
-                                        y = ri(11, world->curlevel->ysize);
-                                }
-                                gtprintf("floodfilling from %d, %d\n", y, x);
-                                floodfill(world->curlevel, y, x);
-                                queue(ACTION_NOTHING);
                                 break;
                         case CMD_DOWN:  queue(ACTION_PLAYER_MOVE_DOWN); break;
                         case CMD_UP:    queue(ACTION_PLAYER_MOVE_UP); break;
@@ -963,6 +933,17 @@ int main(int argc, char *argv[])
                                 }
                                 queue(ACTION_NOTHING);
                                 break;
+                        case CMD_FLOODFILL:
+                                x = ri(11, world->curlevel->xsize);
+                                y = ri(11, world->curlevel->ysize);
+                                while(world->curlevel->c[y][x].type != DNG_FLOOR) {
+                                        x = ri(11, world->curlevel->xsize);
+                                        y = ri(11, world->curlevel->ysize);
+                                }
+                                gtprintf("floodfilling from %d, %d\n", y, x);
+                                floodfill(world->curlevel, y, x);
+                                queue(ACTION_NOTHING);
+                                break;
                         case CMD_INVENTORY:
                                 queue(ACTION_NOTHING);
                                 dump_objects(player->inventory);
@@ -995,10 +976,8 @@ int main(int argc, char *argv[])
                                 pathfinder(world->curlevel, player->y, player->x, player->y + ri(-15,15), player->x + ri(-15,15));
                                 queue(ACTION_NOTHING);
                                 break;
-                        //case 'a': dump_action_queue();
                         default:
                                 queue(ACTION_NOTHING);
-                                //updatescreen = false;
                                 game->turn--;
                                 break;
                 }

@@ -23,7 +23,6 @@
 
 obj_t *objlet[52];    // 52 pointers to objects, a-z & A-Z
 
-#define SGN(a) (((a)<0) ? -1 : 1)
 
 //                            x   1   2   3   4   5   6   7   8  9 10 11 12 13 14 15 16 17 18 19 20
 //int strength_modifier[20] = { 0, -5, -4, -3, -3, -2, -2, -1, -1, 0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 4, 5 };
@@ -244,18 +243,20 @@ void attack(actor_t *attacker, actor_t *defender)
         //gtprintfc(C_BLACK_MAGENTA, "DEBUG: %s:%d - attack = %d   defense = %d   damage = %d\n", __FILE__, __LINE__, attack, defense, damage);
         if(attack >= defense) {  // it's a hit!
                 if(attacker == player) {
-                        if(damage == 0)
+                        if(damage <= 0)
                                 youc(COLOR_INFO, "You hit the %s, but do no damage!", defender->name);
                         else
                                 youc(C_BLACK_GREEN, "hit the %s with a %s for %d damage!", defender->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
                 } else {
-                        if(damage == 0)
+                        if(damage <= 0)
                                 gtprintfc(COLOR_INFO, "The %s hits you, but does no damage!", attacker->name);
                         else
                                 gtprintfc(C_BLACK_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
                 }
 
-                defender->hp -= damage;
+                if(damage > 0)
+                        defender->hp -= damage;
+
                 if(defender->hp <= 0) {
                         if(defender == player) {
                                 you("die!!!");

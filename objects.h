@@ -69,10 +69,10 @@ extern char *otypestrings[];
 #define OF_UNIQUE     0x00000080
 
 // Armor flags
-#define OF_HEADARMOR  0x00000100
+#define OF_HEADGEAR   0x00000100
 #define OF_BODYARMOR  0x00000200
 #define OF_GLOVES     0x00000400
-#define OF_FOOTARMOR  0x00000800
+#define OF_FOOTWEAR   0x00000800
 #define OF_SHIELD     0x00001000
 
 // Weapon flags
@@ -133,9 +133,9 @@ extern int mats_amulets[MATERIALS];
 #define is_drinkable(a)     (a->flags & OF_DRINKABLE)
 #define is_holyfuck(a)      (a->flags & OF_HOLYFUCK)
 #define is_unique(a)        (a->flags & OF_UNIQUE)
-#define is_headwear(a)      (a->flags & OF_HEADARMOR)
-#define is_footwear(a)      (a->flags & OF_FOOTARMOR)
-#define is_bodywear(a)      (a->flags & OF_BODYARMOR)
+#define is_headgear(a)      (a->flags & OF_HEADGEAR)
+#define is_footwear(a)      (a->flags & OF_FOOTWEAR)
+#define is_bodyarmor(a)     (a->flags & OF_BODYARMOR)
 #define is_gloves(a)        (a->flags & OF_GLOVES)
 #define is_shield(a)        (a->flags & OF_SHIELD)
 #define obvious_effect(a)   (a->flags & OF_OBVIOUS)

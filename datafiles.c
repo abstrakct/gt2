@@ -179,13 +179,13 @@ int parse_armor()
                 if(!strcmp(value, "bodyarmor"))
                         o->flags |= OF_BODYARMOR;
                 if(!strcmp(value, "headarmor"))
-                        o->flags |= OF_HEADARMOR;
+                        o->flags |= OF_HEADGEAR;
                 if(!strcmp(value, "shield"))
                         o->flags |= OF_SHIELD;
                 if(!strcmp(value, "gloves"))
                         o->flags |= OF_GLOVES;
                 if(!strcmp(value, "footarmor"))
-                        o->flags |= OF_FOOTARMOR;
+                        o->flags |= OF_FOOTWEAR;
 
                 o->type   = OT_ARMOR;
                 sprintf(sname, "armor.[%d].ac", j);

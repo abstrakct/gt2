@@ -14,6 +14,8 @@
 #define setbit(a, b)   ((a) |=  (b))
 #define hasbit(a, b)   ((a) &   (b))
 
+#define SGN(a) (((a)<0) ? -1 : 1)
+
 #define MAX_GARBAGE 100000
 // d(a, b)
 // "throw" a b-sided dices without any modifiers

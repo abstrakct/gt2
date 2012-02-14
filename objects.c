@@ -84,7 +84,7 @@ int get_objdef_by_name(char *wanted)
 
 bool is_pair(obj_t *o)
 {
-        if(hasbit(o->flags, OF_GLOVES) || hasbit(o->flags, OF_FOOTARMOR))
+        if(hasbit(o->flags, OF_GLOVES) || hasbit(o->flags, OF_FOOTWEAR))
                 return true;
         else
                 return false;
@@ -460,6 +460,11 @@ void puton(int slot, obj_t *o)
 {
         player->w[slot] = o;
         apply_effects(o);
+
+        if(is_armor(o)) {
+                player->ac += o->ac;
+                player->ac += o->attackmod;
+        }
         
         if(hasbit(o->flags, OF_IDENTIFIED)) {
                 setbit(o->flags, OF_ID_MOD);
@@ -529,6 +534,38 @@ void wear(obj_t *o)
                         puton(SLOT_AMULET, o);
                 }
         }
+
+        if(is_armor(o)) {
+                if(is_bodyarmor(o)) {
+                        if(pw_body) {
+                                if(!yesno("Do you want to remove your %s", pw_body->fullname)) {
+                                        gtprintf("OK then.");
+                                        return;
+                                } else {
+                                        unwear(pw_body);
+                                        puton(SLOT_BODY, o);
+                                }
+                        } else {
+                                puton(SLOT_BODY, o);
+                        }
+                }
+        }
+
+        if(is_armor(o)) {
+                if(is_headgear(o)) {
+                        if(pw_headgear) {
+                                if(!yesno("Do you want to remove your %s", pw_headgear->fullname)) {
+                                        gtprintf("OK then.");
+                                        return;
+                                } else {
+                                        unwear(pw_headgear);
+                                        puton(SLOT_HEAD, o);
+                                }
+                        } else {
+                                puton(SLOT_HEAD, o);
+                        }
+                }
+        }
 }
 
 void wield(obj_t *o)
@@ -566,6 +603,10 @@ void unwear(obj_t *o)
                 if(player->w[i] == o) {
                         player->w[i] = NULL;
                         unapply_effects(o);
+                        if(is_armor(o)) {
+                                player->ac -= o->ac;
+                                player->ac -= o->attackmod;
+                        }
                 }
         }
 }

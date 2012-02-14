@@ -31,17 +31,25 @@ cmd_t *curcommands;
 
 cmd_t outsidecommands[] = {
         { 'j',       CMD_DOWN,        "Move down" },
-        { KEY_DOWN,  CMD_DOWN,        "Move down" },
         { 'k',       CMD_UP,          "Move up" },
-        { KEY_UP,    CMD_UP,          "Move up" },
         { 'h',       CMD_LEFT,        "Move left" },
+        { 'l',       CMD_RIGHT,       "Move right" },
+        { 56,        CMD_UP,          "Move up" },
+        { 50,        CMD_DOWN,        "Move down" },
+        { 52,        CMD_LEFT,        "Move left" },
+        { 54,        CMD_RIGHT,       "Move right" },
+        { KEY_UP,    CMD_UP,          "Move up" },
+        { KEY_DOWN,  CMD_DOWN,        "Move down" },
         { KEY_LEFT,  CMD_LEFT,        "Move left" },
         { KEY_RIGHT, CMD_RIGHT,       "Move right" },
-        { 'l',       CMD_RIGHT,       "Move right" },
         { 'y',       CMD_NW,          "Move up-left" },
+        { 55,        CMD_NW,          "Move up-left" },
         { 'u',       CMD_NE,          "Move up-right" },
+        { 57,        CMD_NE,          "Move up-right" },
         { 'b',       CMD_SW,          "Move down-left" },
+        { 49,        CMD_SW,          "Move down-left" },
         { 'n',       CMD_SE,          "Move down-right" },
+        { 51,        CMD_SE,          "Move down-right" },
         { 'q',       CMD_QUIT,        "Quit" },
         { 'i',       CMD_INVENTORY,   "Show inventory" },
         { 'w',       CMD_WIELDWEAR,   "Wield or wear an item" },
@@ -90,6 +98,8 @@ int get_command()
                 if(curcommands[i].key == key)
                         return curcommands[i].cmd;
         }
+
+        gtprintf("unknown key: %d", key);
 
         return 0;
 }

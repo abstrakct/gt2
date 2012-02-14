@@ -44,6 +44,7 @@ void makedistancemap(int desty, int destx)
         int y, x, newdist;
         bool flag;
 
+        //gtprintf("%d - makedistancemap - START!", game->turn);
         for(y = 0; y < world->curlevel->ysize; y++) {
                 for(x = 0; x < world->curlevel->xsize; x++) {
                         distancemap[y][x] = 99999;
@@ -78,6 +79,7 @@ void makedistancemap(int desty, int destx)
                         }
                 }
         }
+        //gtprintf("%d - makedistancemap - END!", game->turn);
 }
 
 co get_next_step(int y, int x)

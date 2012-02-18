@@ -31,9 +31,10 @@
 void get_version_string(char *s);
 void die(char *m, ...);
 
-void *gtmalloc(size_t size);
-void *gtcalloc(size_t num, size_t size);
-void  gtfree(void *ptr);
+void  *gtmalloc(size_t size);
+void  *gtcalloc(size_t num, size_t size);
+void **gtmalloc2d(int y, int x, size_t size);
+void   gtfree(void *ptr);
 
 int dice(int num, int sides, signed int modifier);
 int perc(int i);

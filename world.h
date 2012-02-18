@@ -64,14 +64,23 @@ typedef struct {                 // cell_t
 
 struct levelstruct {
         short      xsize, ysize;
-        short      level;
+        short      level, type;
         cell_t     **c;
         monster_t  *monsters;      // point to head of linked lists of monsters on this level
         obj_t      *objects;
 };
 
+struct room {
+        int y1, x1, y2, x2, sx, sy;
+};
+
 typedef struct levelstruct level_t;
 typedef cell_t** map_ptr;
+
+struct roomdef {
+        int ysize, xsize;
+        map_ptr map;
+};
 
 typedef struct {
         level_t  *out;               // shall point to dng[0]

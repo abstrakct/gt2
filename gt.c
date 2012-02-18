@@ -554,7 +554,10 @@ bool do_action(int action)
                                 ply = tmpy;
                                 plx = tmpx;
 
-                                player->viewradius = 16;
+                                if(world->curlevel->type == 1)
+                                        player->viewradius = 16;
+                                else
+                                        player->viewradius = 8;
                         }
                         player->ticks -= TICKS_MOVEMENT;
                         break;
@@ -730,6 +733,35 @@ bool do_all_things_in_queue() // needs a better name..
         return ret;
 }
 
+void look()
+{
+        //char *stairmat[] = { "stone", "wood", "bone", "marble", "metal" };
+
+        if(cf(ply, plx) & CF_HAS_STAIRS_DOWN) {
+                if(game->currentlevel == 0)
+                        gtprintf("There is a portal to the underworld here!");
+                else                                
+                        gtprintf("There is a staircase leading down here.");
+        }
+
+        if(cf(ply, plx) & CF_HAS_STAIRS_UP) {
+                if(game->currentlevel == 1) 
+                        gtprintf("There is a portal to the outside world here!");
+                else
+                        gtprintf("There is a staircase leading up here.");
+        }
+
+        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0)
+                gtprintf("There is %d gold %s here.", ci(ply, plx)->quantity, (ci(ply, plx)->quantity > 1) ? "pieces" : "piece");
+
+        if(ci(ply, plx) && ci(ply, plx)->next) {
+                if(is_pair(ci(ply, plx)->next))
+                        gtprintf("There is a pair of %s here.", ci(ply, plx)->next->fullname);
+                else
+                        gtprintf("There is %s here.", a_an(ci(ply, plx)->next->fullname));
+        }
+}
+
 void do_turn(int do_all)
 {
        // bool fullturn;
@@ -751,30 +783,7 @@ void do_turn(int do_all)
                         
                 if(ret) {
                         game->turn++;
-
-                        if(cf(ply, plx) & CF_HAS_STAIRS_DOWN) {
-                                if(game->currentlevel == 0)
-                                        gtprintf("There is a portal to the underworld here!");
-                                else                                
-                                        gtprintf("There is a staircase of stone leading down here.");
-                        }
-
-                        if(cf(ply, plx) & CF_HAS_STAIRS_UP) {
-                                if(game->currentlevel == 1) 
-                                        gtprintf("There is a portal to the outside world here!");
-                                else
-                                        gtprintf("There is a staircase of stone leading up here.");
-                        }
-
-                        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0)
-                                gtprintf("There is %d gold %s here.", ci(ply, plx)->quantity, (ci(ply, plx)->quantity > 1) ? "pieces" : "piece");
-
-                        if(ci(ply, plx) && ci(ply, plx)->next) {
-                                if(is_pair(ci(ply, plx)->next))
-                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->next->fullname);
-                                else
-                                        gtprintf("There is %s here.", a_an(ci(ply, plx)->next->fullname));
-                        }
+                        look();
                 }
 
                 draw_world(world->curlevel);
@@ -840,6 +849,8 @@ int main(int argc, char *argv[])
 
         //updatescreen = true;
         do {
+                // IDE: Save spillet som en log som kan avspilles igjen??!
+
                 c = get_command();
 
                 mapchanged = false;

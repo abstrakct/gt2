@@ -53,118 +53,14 @@ void init_level(level_t *level)
 {
         int i;
         
-        if(!level->c) {
-                level->c = gtmalloc(level->ysize * (sizeof(cell_t)));
-        } else {
+        if(level->c) {
                 gtfree(level->c);
                 for(i = 0; i<level->xsize; i++)
                         gtfree(level->c[i]);
-                level->c = gtmalloc(level->ysize * (sizeof(cell_t)));
         }
 
-        for(i = 0; i<level->ysize; i++)
-                level->c[i] = gtmalloc(level->xsize * (sizeof(cell_t)));
-
+        level->c = (cell_t **) gtmalloc2d(level->ysize, level->xsize, sizeof(cell_t));
         level->monsters = gtmalloc(sizeof(monster_t));
-}
-
-/*********************************************
-* Description - Generate a dungeon, labyrinthine (or perhaps more like a cavern?)
-* maxsize = well, max size
-* Author - RK
-* Date - Dec 12 2011
-* *******************************************/
-void generate_dungeon_labyrinthine(int d)
-{
-        int tx, ty, xsize, ysize; 
-        int fx, fy;
-        int a, chance = 0;
-        int csx, cex, csy, cey;
-        float outerlinesx, outerlinesy;
-        int edgex, edgey;
-        level_t *l;
-        //int color;
-
-        l = &world->dng[d];
-        tx = 0; //ri(0, 10);  // starting X
-        ty = 0; //ri(0, 10);  // starting y
-        xsize = world->dng[d].xsize - tx;  // total size X
-        ysize = world->dng[d].ysize - ty;  // total size Y - rather uneccessary these two, eh?
-
-fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, __LINE__, tx, ty, xsize, ysize);
-        // let's not go over the edge
-        if(tx+xsize >= XSIZE)
-                xsize = XSIZE-tx;
-        if(ty+ysize >= YSIZE)
-                ysize = YSIZE-ty;
-
-        // now let's find center and edges 
-        csx = tx + (xsize/2) - (xsize/4);
-        cex = tx + (xsize/2) + (xsize/4);
-        csy = ty + (ysize/2) - (ysize/4);
-        cey = ty + (ysize/2) + (ysize/4);
-        outerlinesx = ((float) xsize / 100) * 10;   // outer 10%
-        outerlinesy = ((float) ysize / 100) * 10;
-        edgex = (int) outerlinesx;
-        edgey = (int) outerlinesy;
-        if(edgex <= 0)
-                edgex = 1;
-        if(edgey <= 0)
-                edgey = 1;
-
-        for(fy = ty; fy < ysize; fy++) {
-                for(fx = tx; fx < xsize; fx++) {
-                        addwall(&world->dng[d], fy, fx);
-                        world->dng[d].c[fy][fx].visible = 0;
-                }
-        }
-
-        for(fy=ty;fy<ty+ysize;fy++) {
-                for(fx=tx;fx<tx+xsize;fx++) {
-                        a = ri(1,100);
-                        chance = 60;
-                        // ensure less chance of trees at the edge of the forest and greater chance around the center
-                        //if(((fx == (tx-(xsize/2))) || (fx == (tx-(xsize/2)+1))) && ((fy == (ty-(ysize/2))) || (fy == (ty-(ysize/2)+1))))
-                        
-                        if(fx <= tx+edgex)
-                                chance = 90;
-                        if(fy <= ty+edgey)
-                                chance = 90;
-                        if(fy >= ty+ysize-edgey)
-                                chance = 90;
-                        if(fx >= tx+xsize-edgex)
-                                chance = 90;
-                        if(fx >= csx && fx <= cex && fy >= csy && fy <= cey) {
-                                chance = 20;
-                        }
-
-                        // testing testing chance percentage
-                        chance = 25;
-
-                        if(a >= chance && fy != ty && fy != (ty+ysize) && fx != tx && fx != (tx+xsize)) {
-                                world->dng[d].c[fy][fx].type = DNG_FLOOR;
-                                world->dng[d].c[fy][fx].color = COLOR_NORMAL;
-                        }
-                }
-        }
-
-        for(ty=0;ty<l->ysize;ty++) {
-                addwall(&world->dng[d], ty, 1);
-                addwall(&world->dng[d], ty, l->xsize-1);
-                addwall(&world->dng[d], ty, l->xsize-2);
-                addwall(&world->dng[d], ty, l->xsize-3);
-                addwall(&world->dng[d], ty, l->xsize-4);
-                addwall(&world->dng[d], ty, l->xsize-5);
-        }
-
-        for(tx=0;tx<l->xsize-4;tx++) {
-                addwall(&world->dng[d], 1, tx);
-                addwall(&world->dng[d], l->ysize-1, tx);
-                addwall(&world->dng[d], l->ysize-2, tx);
-                addwall(&world->dng[d], l->ysize-3, tx);
-                addwall(&world->dng[d], l->ysize-4, tx);
-                addwall(&world->dng[d], l->ysize-5, tx);
-        }
 }
 
 void zero_level(level_t *l)
@@ -177,10 +73,6 @@ void zero_level(level_t *l)
                 }
         }
 }
-
-struct room {
-        int y1, x1, y2, x2, sx, sy;
-};
 
 /*
  * this function cleans the dungeon for stuff
@@ -228,10 +120,7 @@ void generate_dungeon_type_1(int d)
         nry = l->ysize / maxroomsizey;
         numrooms = nrx * nry;
 
-
-        r = gtmalloc(sizeof(struct room) * (nry+1));
-        for(i=0;i<nry+1;i++)
-                r[i] = gtmalloc(sizeof(struct room) * (nrx+1));
+        r = (struct room **) gtmalloc2d(nry+1, nrx+1, sizeof(struct room));
 
         printf("Generating %d x %d = %d rooms (levelsize = %d x %d)\n", nry, nrx, numrooms, l->ysize, l->xsize);
         
@@ -307,61 +196,28 @@ void generate_dungeon_type_1(int d)
 
         }
 
-        //printf("PASS2 connecting last row\n");
-
         for(i = nrx; i > 2; i--) {
                 starty = r[nry][i].y1 + ri(2, r[nry][i].sy-1);
                 endx   = r[nry][i-1].x1 - ri(2, r[nry][i-1].sx-1);
 
-                //printf("1corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
                 paint_corridor_horizontal(l, starty, r[nry][i].x1, endx);
-
-
-                /*
-                if(starty < r[nry][i-1].y1) {
-                        //printf("2corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
-                        paint_corridor_vertical(l, starty, r[nry][i-1].y2, endx);       // not sure if I intended to comment out these, but it seems to work fine!?!
-                }
-
-                if(starty > r[nry][i-1].y2) {
-                        //printf("3corridor from room %d,%d to %d,%d\n", nry,i,nry,i-1);
-                        paint_corridor_vertical(l, starty, r[nry][i-1].y1, endx);
-                }*/
-
-                /*startx = r[nry][i].x1 + ri(2, r[nry][i].sx-1);
-                endy   = r[nry-1][i].y2 - ri(2, r[nry-1][i].sy-1);
-
-                printf("4corridor from room %d,%d to %d,%d\n", nry,i,nry-1,i);
-                paint_corridor_vertical(l, r[nry][i].y1, endy, startx);
-
-                if(startx < r[nry-1][i].x1) {
-                        printf("5corridor from room %d,%d to %d,%d\n", nry,i,nry-1,i);
-                        paint_corridor_horizontal(l, startx, r[nry-1][i].x2, endy);
-                }
-                if(startx > r[nry-1][i].x2) {
-                        printf("6corridor from room %d,%d to %d,%d\n", nry,i,nry-1,i);
-                        paint_corridor_horizontal(l, startx, r[nry-1][i].x1, endy);
-                }*/
-
         }
 
         for(j = nry; j > 2; j--) {
                 startx = r[j][nrx].x1 + ri(2, r[j][nrx].sx-1);
                 endy   = r[j-1][nrx].y2 - ri(2, r[j-1][nrx].sy-1);
 
-                //printf("4corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
                 paint_corridor_vertical(l, r[j][nrx].y1, endy, startx);
 
                 if(startx < r[j-1][nrx].x1) {
-                        //printf("5corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
                         paint_corridor_horizontal(l, endy, startx, r[j-1][nrx].x2);
                 }
                 if(startx > r[j-1][nrx].x2) {
-                        //printf("6corridor from room %d,%d to %d,%d\n", j,nrx,j-1,nrx);
                         paint_corridor_horizontal(l, endy, startx, r[j-1][nrx].x1);
                 }
 
         }
+
         // the edges
         for(ty=0;ty<l->ysize;ty++) {
                 addwall(&world->dng[d], ty, 1);
@@ -383,6 +239,131 @@ void generate_dungeon_type_1(int d)
 
         // And finally, do some cleaning:
         cleanup_dungeon(&world->dng[d]);
+}
+
+/*********************************************
+* Description - Generate a dungeon, labyrinthine (or perhaps more like a cavern?)
+* maxsize = well, max size
+* Author - RK
+* Date - Dec 12 2011
+* *******************************************/
+void generate_dungeon_labyrinthine(int d)
+{
+        int tx, ty, xsize, ysize; 
+        int fx, fy;
+        int a, chance = 0;
+        int csx, cex, csy, cey;
+        float outerlinesx, outerlinesy;
+        int edgex, edgey;
+        level_t *l;
+        //int color;
+
+        l = &world->dng[d];
+        tx = 0; //ri(0, 10);  // starting X
+        ty = 0; //ri(0, 10);  // starting y
+        xsize = world->dng[d].xsize;  // total size X
+        ysize = world->dng[d].ysize;  // total size Y - rather uneccessary these two, eh?
+
+fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, __LINE__, tx, ty, xsize, ysize);
+        // let's not go over the edge
+        if(tx+xsize >= XSIZE)
+                xsize = XSIZE-tx;
+        if(ty+ysize >= YSIZE)
+                ysize = YSIZE-ty;
+
+        // now let's find center and edges 
+        csx = tx + (xsize/2) - (xsize/4);
+        cex = tx + (xsize/2) + (xsize/4);
+        csy = ty + (ysize/2) - (ysize/4);
+        cey = ty + (ysize/2) + (ysize/4);
+        outerlinesx = ((float) xsize / 100) * 10;   // outer 10%
+        outerlinesy = ((float) ysize / 100) * 10;
+        edgex = (int) outerlinesx;
+        edgey = (int) outerlinesy;
+        if(edgex <= 0)
+                edgex = 1;
+        if(edgey <= 0)
+                edgey = 1;
+
+        for(fy = ty; fy < ysize; fy++) {
+                for(fx = tx; fx < xsize; fx++) {
+                        addwall(&world->dng[d], fy, fx);
+                        world->dng[d].c[fy][fx].visible = 0;
+                }
+        }
+
+        for(fy=ty;fy<ty+ysize;fy++) {
+                for(fx=tx;fx<tx+xsize;fx++) {
+                        a = ri(1,100);
+                        chance = 60;
+                        // ensure less chance of trees at the edge of the forest and greater chance around the center
+                        //if(((fx == (tx-(xsize/2))) || (fx == (tx-(xsize/2)+1))) && ((fy == (ty-(ysize/2))) || (fy == (ty-(ysize/2)+1))))
+                        
+                        if(fx <= tx+edgex)
+                                chance = 90;
+                        if(fy <= ty+edgey)
+                                chance = 90;
+                        if(fy >= ty+ysize-edgey)
+                                chance = 90;
+                        if(fx >= tx+xsize-edgex)
+                                chance = 90;
+                        if(fx >= csx && fx <= cex && fy >= csy && fy <= cey) {
+                                chance = 20;
+                        }
+
+                        // testing testing chance percentage
+                        chance = 25;
+
+                        if(a >= chance && fy != ty && fy != (ty+ysize) && fx != tx && fx != (tx+xsize)) {
+                                world->dng[d].c[fy][fx].type = DNG_FLOOR;
+                                world->dng[d].c[fy][fx].color = COLOR_NORMAL;
+                        }
+                }
+        }
+
+        for(ty=0;ty<l->ysize;ty++) {
+                addwall(&world->dng[d], ty, 1);
+                addwall(&world->dng[d], ty, l->xsize-1);
+                addwall(&world->dng[d], ty, l->xsize-2);
+                addwall(&world->dng[d], ty, l->xsize-3);
+                addwall(&world->dng[d], ty, l->xsize-4);
+                addwall(&world->dng[d], ty, l->xsize-5);
+        }
+
+        for(tx=0;tx<l->xsize;tx++) {
+                addwall(&world->dng[d], 1, tx);
+                addwall(&world->dng[d], l->ysize-1, tx);
+                addwall(&world->dng[d], l->ysize-2, tx);
+                addwall(&world->dng[d], l->ysize-3, tx);
+                addwall(&world->dng[d], l->ysize-4, tx);
+                addwall(&world->dng[d], l->ysize-5, tx);
+        }
+}
+
+void generate_dungeon_type_3(int d)
+{
+        int i, j, x, y, q, r, num;
+        level_t *l;
+
+        l = &world->dng[d];
+        q = ri(80, 230);
+        r = ri(80, 230);
+
+        for(i = 2; i < q; i++) {
+                x = l->xsize / 2;
+                y = l->ysize / 2;
+                for(j = 2; j < r; j++) {
+                        num = dice(1, 4, 0);
+                        switch(num) {
+                                case 1: x++; break;
+                                case 2: x--; break;
+                                case 3: y++; break;
+                                case 4: y--; break;
+                        }
+
+                        addfloor(l, y, x);
+                }
+        }
 }
 
 /*********************************************
@@ -635,8 +616,10 @@ void addfloor(level_t *l, float y, float x)
         if((int)y >= l->ysize || (int)x >= l->xsize || (int)y < 0 || (int)x < 0)
                 return;
 
-        l->c[(int)y][(int)x].type = DNG_FLOOR;
-        l->c[(int)y][(int)x].color = COLOR_SHADE;
+        if(l->c[(int)y][(int)x].type == DNG_WALL) {
+                l->c[(int)y][(int)x].type = DNG_FLOOR;
+                l->c[(int)y][(int)x].color = COLOR_SHADE;
+        }
 }
 
 void addwall(level_t *l, int y, int x)
@@ -892,16 +875,22 @@ void create_stairs(int num, int s, int d)
 
 void meta_generate_dungeon(int type, int d)
 {
-        if(type == 1) {
+        if(type && type <= 3) {
                 int num_monsters;
 
                 world->dng[d].xsize = (ri(50, 100));  // let's start within reasonable sizes!
                 world->dng[d].ysize = (ri(50, 100));
                 world->dng[d].level = d;
+                world->dng[d].type  = type;
                 init_level(&world->dng[d]);
 
                 zero_level(&world->dng[d]);
-                generate_dungeon_type_1(d);
+                if(type == 1)
+                        generate_dungeon_type_1(d);
+                if(type == 2)
+                        generate_dungeon_labyrinthine(d);
+                if(type == 3)
+                        generate_dungeon_type_3(d);
 
                 num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 2;
                 num_monsters /= 10;
@@ -975,7 +964,7 @@ void generate_world()
 
 
         for(i = 1; i <= 25; i++)
-                meta_generate_dungeon(1, i);
+                meta_generate_dungeon(ri(1, 3), i);
 
         generate_stairs();
 

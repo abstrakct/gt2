@@ -117,6 +117,18 @@ void *gtcalloc(size_t num, size_t size)
         return p;
 }
 
+void **gtmalloc2d(int y, int x, size_t size)
+{
+        void **p;
+        int i;
+        
+        p = gtmalloc(y * size);
+        for(i = 0; i < y; i++)
+                p[i] = gtmalloc(x * size);
+
+        return p;
+}
+
 void gtfree(void *ptr)
 {
         int i;

@@ -108,9 +108,9 @@ co get_next_step(int y, int x)
 
 int simpleoutdoorpathfinder(actor_t *m)
 {
-        //int choice;
+        int choice;
         int oy, ox;
-        co c;
+        //co c;
 
         oy = m->y;
         ox = m->x;
@@ -130,11 +130,65 @@ int simpleoutdoorpathfinder(actor_t *m)
                 }
         }
 
+        choice = ri(1,100);
+        if(choice <= 45) {
+                if(m->x > m->goalx)
+                        m->x--;
+                if(m->x < m->goalx)
+                        m->x++;
+        } else if(choice > 45 && choice <= 90) {
+                if(m->y > m->goaly)
+                        m->y--;
+                if(m->y < m->goaly)
+                        m->y++;
+        } else if(choice > 90) {
+                // maybe not extremely useful, but adds randomness to the movements,
+                // as if the creature's attention was briefly caught by something else..
+                
+                m->y += ri(-1, 1);
+                m->x += ri(-1, 1);
 
-        makedistancemap(m->goaly, m->goalx);
-        c = get_next_step(m->y, m->x);
-        m->y += c.y;
-        m->x += c.x;
+         /*       switch(choice) {
+                        case 91:
+                                m->x--;
+                                m->y++;
+                                break;
+                        case 92:
+                                m->y++;
+                                break;
+                        case 93:
+                                m->y++;
+                                m->x++;
+                                break;
+                        case 94:
+                                m->x--;
+                                break;
+                        case 95:
+                                break;
+                        case 96:
+                                m->x++;
+                                break;
+                        case 97:
+                                m->x--;
+                                m->y--;
+                                break;
+                        case 98:
+                                m->y--;
+                                break;
+                        case 99:
+                                m->x++;
+                                m->y--;
+                                break;
+                        case 100:
+                                break;
+                }*/
+        }
+
+        //makedistancemap(m->goaly, m->goalx);
+        //c = get_next_step(m->y, m->x);
+
+        //m->y += c.y;
+        //m->x += c.x;
 
         if(!monster_passable(world->curlevel, m->y, m->x)) {
                 m->y = oy;

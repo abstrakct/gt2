@@ -264,7 +264,7 @@ void generate_dungeon_labyrinthine(int d)
         xsize = world->dng[d].xsize;  // total size X
         ysize = world->dng[d].ysize;  // total size Y - rather uneccessary these two, eh?
 
-fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, __LINE__, tx, ty, xsize, ysize);
+        fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, __LINE__, tx, ty, xsize, ysize);
         // let's not go over the edge
         if(tx+xsize >= XSIZE)
                 xsize = XSIZE-tx;
@@ -878,17 +878,25 @@ void meta_generate_dungeon(int type, int d)
         if(type && type <= 3) {
                 int num_monsters;
 
-                world->dng[d].xsize = (ri(50, 100));  // let's start within reasonable sizes!
-                world->dng[d].ysize = (ri(50, 100));
+                if(type == 3) {
+                        world->dng[d].ysize = ri(75, 175);
+                        world->dng[d].xsize = ri(150, 250);
+                } else {
+                        world->dng[d].xsize = (ri(50, 100));  // let's start within reasonable sizes!
+                        world->dng[d].ysize = (ri(50, 100));
+                }
+
                 world->dng[d].level = d;
                 world->dng[d].type  = type;
+                
                 init_level(&world->dng[d]);
-
                 zero_level(&world->dng[d]);
+
                 if(type == 1)
                         generate_dungeon_type_1(d);
                 if(type == 2)
-                        generate_dungeon_labyrinthine(d);
+                        generate_dungeon_type_3(d);
+                        //generate_dungeon_labyrinthine(d);
                 if(type == 3)
                         generate_dungeon_type_3(d);
 
@@ -957,6 +965,7 @@ void generate_world()
         //fprintf(stderr, "DEBUG: %s:%d - Generating %d villages\n", __FILE__, __LINE__, world->villages);
         world->village = gtcalloc((size_t)world->villages, sizeof(city_t));
         generate_village(world->villages);
+
         spawn_monsters(ri(75,125), 3, world->out); 
         spawn_golds(ri(75,125), 100, world->out);
         //spawn_objects(ri(world->out->xsize/8, world->out->ysize/4), world->out);

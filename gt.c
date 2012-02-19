@@ -827,7 +827,6 @@ int main(int argc, char *argv[])
                 world->cmap = world->dng[game->currentlevel].c;
                 world->curlevel = &world->dng[game->currentlevel];
         } else {
-
                 init_level(world->out);
                 generate_world();
 

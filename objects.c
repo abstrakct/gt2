@@ -243,7 +243,9 @@ void spawn_object(int n, obj_t *head, void *level)
 
         tmp = head->next;
         head->next = gtmalloc(sizeof(obj_t));
+
         *head->next = get_objdef(n);
+        
         head->next->next = tmp;
         head->next->prev = head;
         head->next->head = head;

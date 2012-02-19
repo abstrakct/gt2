@@ -1,2 +1,8 @@
 gt
 *.o
+core
+asdf
+asdf.c
+.saves
+interestingseeds
+misc

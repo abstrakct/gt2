@@ -40,6 +40,7 @@ typedef struct {                              // game_t
         int          num_objects;             // number of spawned objects
         int          num_monsters;            // number of spawned monsters
         bool         wizardmode;              // yay!
+        short        replaying;
         char         savefile[255];           // filename of the save file for this game
         obj_t       *objects[2000];
 } game_t;

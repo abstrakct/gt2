@@ -56,7 +56,7 @@ actor_t   *player;
 struct actionqueue *aq;
 gt_config_t gtconfig;
 long actionnum;
-FILE *messagefile;
+FILE *messagefile, *savelog;
 bool mapchanged;
 int tempxsize, tempysize;
 bool loadgame;
@@ -169,6 +169,7 @@ void shutdown_gt()
         }
         
         fclose(messagefile);
+        fclose(savelog);
 }
 
 /*
@@ -789,8 +790,16 @@ void do_turn(int do_all)
                 draw_world(world->curlevel);
                 draw_wstat();
                 update_screen();
-
         }
+}
+
+void init_save_log()
+{
+        savelog = fopen(game->savefile, "w");
+        if(!savelog)
+                die("couldn't start savegame!");
+
+        fwrite(&game->seed, sizeof(unsigned int), 1, savelog); 
 }
 
 int main(int argc, char *argv[])
@@ -811,36 +820,34 @@ int main(int argc, char *argv[])
         parse_commandline(argc, argv);
 
         if(!loadgame) {
-                init_objects();
-                printf("Reading data files...\n");
-                if(parse_data_files(0))
-                        die("Couldn't parse data files.");
-        }
-
-        if(loadgame) {
-                init_player();
-                parse_data_files(ONLY_CONFIG);
-                if(!load_game(game->savefile, 0))
-                        die("Couldn't open file %s\n", game->savefile);
-                init_display();
-                // these next should be loaded by load_game
-                world->cmap = world->dng[game->currentlevel].c;
-                world->curlevel = &world->dng[game->currentlevel];
+                init_save_log();
+                game->replaying = 0;
         } else {
-
-                init_level(world->out);
-                generate_world();
-
-                world->cmap = world->out->c;
-
-                init_display();
-                init_player();
-                player->inventory = init_inventory();
-
-                world->curlevel = world->out;
-                game->context = CONTEXT_OUTSIDE;
-                // test
+                game->replaying = 1;
+                savelog = fopen(game->savefile, "r");
+                fread(&game->seed, sizeof(unsigned int), 1, savelog);
+                srand(game->seed);
         }
+
+        init_objects();
+        printf("Reading data files...\n");
+        if(parse_data_files(0))
+                die("Couldn't parse data files.");
+
+        init_player();
+        parse_data_files(0);
+
+        init_display();
+        init_level(world->out);
+        generate_world();
+
+        world->cmap = world->out->c;
+
+        init_player();
+        player->inventory = init_inventory();
+
+        world->curlevel = world->out;
+        game->context = CONTEXT_OUTSIDE;
 
         init_commands();
         draw_world(world->curlevel);
@@ -851,7 +858,21 @@ int main(int argc, char *argv[])
         do {
                 // IDE: Save spillet som en log som kan avspilles igjen??!
 
-                c = get_command();
+                if(game->replaying) {
+                        if(!feof(savelog)) {
+                                fread(&c, sizeof(int), 1, savelog);
+                                if(c == CMD_QUIT)
+                                        c = 0;
+                        }
+
+                        if(feof(savelog))
+                                game->replaying = 0;
+                } else {                        
+                        c = get_command();
+                }
+
+                if(!game->replaying)
+                        fwrite(&c, sizeof(int), 1, savelog);
 
                 mapchanged = false;
                 bool do_all = false;
@@ -873,12 +894,23 @@ int main(int argc, char *argv[])
                         case CMD_SW:    queue(ACTION_PLAYER_MOVE_SW); break;
                         case CMD_SE:    queue(ACTION_PLAYER_MOVE_SE); break;
                         case CMD_WIELDWEAR:
-                                       l = ask_char("Which item would you like to wield/wear?");
+                                       if(game->replaying)
+                                               fread(&l, sizeof(int), 1, savelog);
+                                       else {
+                                               l = ask_char("Which item would you like to wield/wear?");
+                                               fwrite(&l, sizeof(int), 1, savelog);
+                                       }
+
                                        actiondata = (void *) get_object_from_letter(l);
                                        queue(ACTION_WIELDWEAR);
                                        break;
                         case CMD_UNWIELDWEAR:
-                                       l = ask_char("Which item would you like to remove/unwield?");
+                                       if(game->replaying)
+                                               fread(&l, sizeof(int), 1, savelog);
+                                       else {
+                                               l = ask_char("Which item would you like to remove/unwield?");
+                                               fwrite(&l, sizeof(int), 1, savelog);
+                                       }
                                        actiondata = (void *) get_object_from_letter(l);
                                        queue(ACTION_UNWIELDWEAR);
                                        break;

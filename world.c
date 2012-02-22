@@ -876,7 +876,7 @@ void create_stairs(int num, int s, int d)
 void meta_generate_dungeon(int type, int d)
 {
         if(type && type <= 3) {
-                int num_monsters;
+                int num_monsters, mino, maxo;
 
                 if(type == 3) {
                         world->dng[d].ysize = ri(75, 175);
@@ -895,18 +895,17 @@ void meta_generate_dungeon(int type, int d)
                 if(type == 1)
                         generate_dungeon_type_1(d);
                 if(type == 2)
-                        generate_dungeon_type_3(d);
-                        //generate_dungeon_labyrinthine(d);
+                        generate_dungeon_labyrinthine(d);
                 if(type == 3)
                         generate_dungeon_type_3(d);
 
-                num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 2;
-                num_monsters /= 10;
+                num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 25;
+                mino = (world->dng[d].ysize + world->dng[d].xsize) / 40;
+                maxo = (world->dng[d].ysize + world->dng[d].xsize) / 20;
+
                 spawn_monsters(num_monsters, d+2, &world->dng[d]);
-
-                spawn_objects(ri(world->dng[d].xsize/10, world->dng[d].xsize/5), &world->dng[d]);
-
                 spawn_golds((int) ri(10, 10+world->dng[d].xsize / 15), (player->level+1) * 35, &world->dng[d]);
+                spawn_objects(ri(mino, maxo), &world->dng[d]);
 
                 game->createddungeons++;
         } else {
@@ -973,7 +972,7 @@ void generate_world()
 
 
         for(i = 1; i <= 25; i++)
-                meta_generate_dungeon(ri(1, 3), i);
+                meta_generate_dungeon(ri(1, 1), i);
 
         generate_stairs();
 

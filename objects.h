@@ -148,7 +148,7 @@ extern int mats_amulets[MATERIALS];
 void spawn_objects(int num, void *p);
 bool spawn_object_at(int y, int x, int n, obj_t *head, void *level);
 void unspawn_object(obj_t *m);
-void spawn_object(int n, obj_t *head, void *level);
+bool spawn_object(int n, obj_t *head, void *level);
 bool place_object_at(int y, int x, obj_t *obj, void *l);
 
 obj_t get_objdef(int n);

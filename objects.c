@@ -50,7 +50,11 @@ obj_t get_objdef(int n)
 
         tmp = objdefs->head->next;
         while(tmp->id != n) {
-                tmp = tmp->next;
+
+                if(tmp->next)
+                        tmp = tmp->next;
+                else
+                        return *tmp;
         }
 
         return *tmp;
@@ -216,22 +220,9 @@ bool place_object_at(int y, int x, obj_t *obj, void *p)
         return false;
 }
 
-void spawn_gold(int n, obj_t *head)
+bool spawn_object(int n, obj_t *head, void *level)
 {
-        obj_t *tmp;
-
-        tmp = head->next;
-        head->next = gtmalloc(sizeof(obj_t));
-        head->type = OT_GOLD;
-        head->next->next = tmp;
-        head->next->prev = head;
-        head->next->head = head;
-        head->next->quantity = n;
-}
-
-void spawn_object(int n, obj_t *head, void *level)
-{
-        obj_t *tmp;
+        obj_t *tmp, *new;
         level_t *l;
         int lev;
 
@@ -242,9 +233,11 @@ void spawn_object(int n, obj_t *head, void *level)
                 lev = 1;
 
         tmp = head->next;
-        head->next = gtmalloc(sizeof(obj_t));
 
+        head->next = gtmalloc(sizeof(obj_t));
         *head->next = get_objdef(n);
+        if(!head->next)
+                return false;
         
         head->next->next = tmp;
         head->next->prev = head;
@@ -252,90 +245,92 @@ void spawn_object(int n, obj_t *head, void *level)
         oid_counter++;
         head->next->oid = oid_counter;
 
+        new = head->next;
         // maybe this object is magical?
-        if(!is_unique(head->next) && (is_weapon(head->next) || is_armor(head->next) || is_ring(head->next))) {
-                if(head->next->type == OT_RING)
-                        while(!head->next->attackmod)
-                                head->next->attackmod = ri(-1, 1);
+        if(!is_unique(new) && (is_weapon(new) || is_armor(new) || is_ring(new))) {
+                if(new->type == OT_RING)
+                        while(!new->attackmod)
+                                new->attackmod = ri(-1, 1);
 
                 if(perc(50+(player->level*2))) {
                         if(perc(40)) {                // a ring must be at least +/- 1 (or 0 for malfunctioning rings!)
                                 if(perc(66))
-                                        head->next->attackmod = ri(0, 1);
+                                        new->attackmod = ri(0, 1);
                                 else
-                                        head->next->attackmod = ri(-1, 0);
+                                        new->attackmod = ri(-1, 0);
                         }
-                        if(perc(30 + (lev*3)) && !head->next->attackmod) {
+                        if(perc(30 + (lev*3)) && !new->attackmod) {
                                 if(perc(66))
-                                        head->next->attackmod = ri(1, 2);
+                                        new->attackmod = ri(1, 2);
                                 else
-                                        head->next->attackmod = ri(-2, 1);
+                                        new->attackmod = ri(-2, 1);
                         }
-                        if(perc(20 + (lev*3)) && !head->next->attackmod) {
+                        if(perc(20 + (lev*3)) && !new->attackmod) {
                                 if(perc(66))
-                                        head->next->attackmod = ri(1, 3);
+                                        new->attackmod = ri(1, 3);
                                 else
-                                        head->next->attackmod = ri(-3, 1);
+                                        new->attackmod = ri(-3, 1);
                         }
-                        if(perc(10 + (lev*3)) && !head->next->attackmod) {
+                        if(perc(10 + (lev*3)) && !new->attackmod) {
                                 if(perc(50 + (lev*2))) {
                                         if(perc(66))
-                                                head->next->attackmod = ri(1, 4);
+                                                new->attackmod = ri(1, 4);
                                         else
-                                                head->next->attackmod = ri(-4, 1);
+                                                new->attackmod = ri(-4, 1);
                                 } else {
                                         if(perc(66))
-                                                head->next->attackmod = ri(1, 5);
+                                                new->attackmod = ri(1, 5);
                                         else
-                                                head->next->attackmod = ri(-5, 1);
+                                                new->attackmod = ri(-5, 1);
                                 }
                         }
                 }
 
         }
 
-        if(!is_unique(head->next) && is_weapon(head->next)) {
+        if(!is_unique(new) && is_weapon(new)) {
                 if(perc(60+(player->level*2))) {
                         if(perc(40)) {
                                 if(perc(66))
-                                        head->next->damagemod = ri(0, 1);
+                                        new->damagemod = ri(0, 1);
                                 else
-                                        head->next->damagemod = ri(-1, 0);
+                                        new->damagemod = ri(-1, 0);
                         }
-                        if(perc(30 + (lev*3)) && !head->next->damagemod) {
+                        if(perc(30 + (lev*3)) && !new->damagemod) {
                                 if(perc(66))
-                                        head->next->damagemod = ri(0, 2);
+                                        new->damagemod = ri(0, 2);
                                 else
-                                        head->next->damagemod = ri(-2, 0);
+                                        new->damagemod = ri(-2, 0);
                         }
-                        if(perc(20 + (lev*3)) && !head->next->damagemod) {
+                        if(perc(20 + (lev*3)) && !new->damagemod) {
                                 if(perc(66))
-                                        head->next->damagemod = ri(0, 3);
+                                        new->damagemod = ri(0, 3);
                                 else
-                                        head->next->damagemod = ri(-3, 0);
+                                        new->damagemod = ri(-3, 0);
                         }
-                        if(perc(10 + (lev*3)) && !head->next->damagemod) {
+                        if(perc(10 + (lev*3)) && !new->damagemod) {
                                 if(perc(50 + (lev*2))) {
                                         if(perc(66))
-                                                head->next->damagemod = ri(0, 4);
+                                                new->damagemod = ri(0, 4);
                                         else
-                                                head->next->damagemod = ri(-4, 0);
+                                                new->damagemod = ri(-4, 0);
                                 } else {
                                         if(perc(66))
-                                                head->next->damagemod = ri(0, 5);
+                                                new->damagemod = ri(0, 5);
                                         else
-                                                head->next->damagemod = ri(-5, 0);
+                                                new->damagemod = ri(-5, 0);
                                 }
                         }
                 }
 
         }
 
-        generate_fullname(head->next);
+        generate_fullname(new);
 
-        game->objects[game->num_objects] = head->next;
+        game->objects[game->num_objects] = new;
         game->num_objects++;
 
+        return true;
         //fprintf(stderr, "spawned obj %s (oid %d)\n", head->next->basename, head->next->oid);
 }
 
@@ -347,22 +342,65 @@ bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
         if(!i)
                 i = init_inventory();
 
-        spawn_object(n, i, level);
+        if(!spawn_object(n, i, level))
+                return false;
 
         if(!place_object_at(y, x, i->next, (level_t *) level)) {
                 unspawn_object(i->next);
                 return false;
         }
 
-        //if(i->next->attackmod || i->next->damagemod || (i->next->attackmod && i->next->damagemod))
-                //fprintf(stderr, "DEBUG: %s:%d - Spawned a %s\n", __FILE__, __LINE__, i->next->fullname);
+        /*if(i->next->attackmod || i->next->damagemod || (i->next->attackmod && i->next->damagemod))
+                fprintf(stderr, "DEBUG: %s:%d - Spawned a %s\n", __FILE__, __LINE__, i->next->fullname);
 
-        /*if(i->next->modifier > 0)
+        if(i->next->modifier > 0)
                 pluses++;
         if(i->next->modifier < 0)
                 minuses++;*/
 
         return true;
+}
+
+/*
+ * Spawn num objects on level l
+ */
+void spawn_objects(int num, void *p)
+{
+        int i, x, y, o;
+        level_t *l;
+        //double mp, pp, np, tot;
+
+        i = 0;
+        l = (level_t *) p;
+        //minuses = 0; pluses = 0;
+        while(i < num) {
+                x = ri(1, l->xsize-1);
+                y = ri(1, l->ysize-1);
+                o = ri(1, game->objdefs);
+                if (spawn_object_at(y, x, o, l->objects, l))
+                        i++;
+        }
+
+        /*tot = (double) i;
+        mp = (100 / tot) * (double) minuses;
+        pp = (100 / tot) * (double) pluses;
+        np = (100 / tot) * (double) (tot - minuses - pluses);
+
+        fprintf(stderr, "\nDEBUG: %s:%d - Spawned %d objects    %.1f %% with +    %.1f %% with -     %.1f %% neutral.\n", __FILE__, __LINE__, i, pp, mp, np);
+        fprintf(stderr, "\nDEBUG: %s:%d - spawn_objects spawned %d objects (should spawn %d)\n\n", __FILE__, __LINE__, i, num);*/
+}
+
+void spawn_gold(int n, obj_t *head)
+{
+        obj_t *tmp;
+
+        tmp = head->next;
+        head->next = gtmalloc(sizeof(obj_t));
+        head->type = OT_GOLD;
+        head->next->next = tmp;
+        head->next->prev = head;
+        head->next->head = head;
+        head->next->quantity = n;
 }
 
 bool spawn_gold_at(int y, int x, int n, obj_t *i, void *level)
@@ -401,35 +439,6 @@ void spawn_golds(int num, int max, void *p)
         }
         //fprintf(stderr, "DEBUG: %s:%d - spawn_golds spawned %d golds (should spawn %d)\n", __FILE__, __LINE__, i, num);
 
-}
-
-/*
- * Spawn num objects on level l
- */
-void spawn_objects(int num, void *p)
-{
-        int i, x, y, o;
-        level_t *l;
-        //double mp, pp, np, tot;
-
-        i = 0;
-        l = (level_t *) p;
-        minuses = 0; pluses = 0;
-        while(i < num) {
-                x = ri(1, l->xsize-1);
-                y = ri(1, l->ysize-1);
-                o = ri(1, game->objdefs);
-                if (spawn_object_at(y, x, o, l->objects, l))
-                        i++;
-        }
-
-        /*tot = (double) i;
-        mp = (100 / tot) * (double) minuses;
-        pp = (100 / tot) * (double) pluses;
-        np = (100 / tot) * (double) (tot - minuses - pluses);*/
-
-        //fprintf(stderr, "\nDEBUG: %s:%d - Spawned %d objects    %.1f %% with +    %.1f %% with -     %.1f %% neutral.\n", __FILE__, __LINE__, i, pp, mp, np);
-        //fprintf(stderr, "\nDEBUG: %s:%d - spawn_objects spawned %d objects (should spawn %d)\n\n", __FILE__, __LINE__, i, num);
 }
 
 // identify all objects which are the same material & type as o
@@ -652,7 +661,7 @@ void pick_up(obj_t *o, void *p)
         o->head = a->inventory;
 
         assign_free_slot(o);
-        gtprintfc(COLOR_INFO, "%c) %s", slot_to_letter(o->slot), a_an(o->fullname));
+        gtprintfc(COLOR_INFO, "%c - %s", slot_to_letter(o->slot), a_an(o->fullname));
 
         // TODO: tackle cells with multiple items!
         world->curlevel->c[a->y][a->x].inventory->next = NULL;

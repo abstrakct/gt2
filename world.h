@@ -93,7 +93,6 @@ typedef struct {
         short    villages, cvillage;     // num of villages, current village
         short    cities, ccity;
         short    forests, cforest;
-        short    dungeons;
 } world_t;
 
 // CELLFLAGS

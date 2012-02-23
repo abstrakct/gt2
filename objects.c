@@ -325,7 +325,7 @@ bool spawn_object(int n, obj_t *head, void *level)
 
         }
 
-        generate_fullname(new);
+        generate_fullname(new);  // TODO displayname vs fullname etc.
 
         game->objects[game->num_objects] = new;
         game->num_objects++;

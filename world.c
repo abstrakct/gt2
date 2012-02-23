@@ -951,19 +951,18 @@ void generate_world()
         world->forests  = ri(gtconfig.minf, gtconfig.maxf);
         world->cities   = ri(gtconfig.minc, gtconfig.maxc);
         world->villages = ri(gtconfig.minv, gtconfig.maxv);
-        world->dungeons = ri(gtconfig.mind, gtconfig.maxd);
 
         //fprintf(stderr, "DEBUG: %s:%d - Generating %d forests\n", __FILE__, __LINE__, world->forests);
         world->forest = (forest_t *) gtcalloc((size_t)world->forests, sizeof(forest_t));
         generate_forest(world->forests);
 
-        //fprintf(stderr, "DEBUG: %s:%d - Generating %d cities\n", __FILE__, __LINE__, world->cities);
-        world->city = gtcalloc((size_t)world->cities, sizeof(city_t));
-        generate_city(world->cities);
-
         //fprintf(stderr, "DEBUG: %s:%d - Generating %d villages\n", __FILE__, __LINE__, world->villages);
         world->village = gtcalloc((size_t)world->villages, sizeof(city_t));
         generate_village(world->villages);
+
+        //fprintf(stderr, "DEBUG: %s:%d - Generating %d cities\n", __FILE__, __LINE__, world->cities);
+        world->city = gtcalloc((size_t)world->cities, sizeof(city_t));
+        generate_city(world->cities);
 
         spawn_monsters(ri(75,125), 3, world->out); 
         spawn_golds(ri(75,125), 100, world->out);

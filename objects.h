@@ -31,7 +31,7 @@ struct object {
         char          basename[50];         // the basic name of the item
         char          unidname[100];        // unidentified name
         char          fullname[100];        // should be more than enough, adjust later
-        char          name[128];
+        char          displayname[128];
         char          c;
         char          slot;                 // inventory slot; not sure if needed?!
         char          minlevel;

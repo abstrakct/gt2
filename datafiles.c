@@ -481,10 +481,6 @@ int parse_configfile()
         config_lookup_int(cf, sname, &gtconfig.minv);
         sprintf(sname, "config.[0].max_villages");
         config_lookup_int(cf, sname, &gtconfig.maxv);
-        sprintf(sname, "config.[0].min_dungeons");
-        config_lookup_int(cf, sname, &gtconfig.mind);
-        sprintf(sname, "config.[0].max_dungeons");
-        config_lookup_int(cf, sname, &gtconfig.maxd);
         sprintf(sname, "config.[0].dxsize");
         config_lookup_int(cf, sname, &gtconfig.dxsize);
         sprintf(sname, "config.[0].dysize");

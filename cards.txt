@@ -1,0 +1,37 @@
+
+jeg vil at magi i spillet skal være basert på kortene.
+
+Det vil eksistere minst 150 kort. Kombinerer man tre av disse får man
+en ability. Man kan ha mange kombinasjoner samtidig.
+
+Men for at alle skal kunne kombineres med alle, må hvert kort ha
+en form for atributt som sier hva slags effekt kortet har, og 
+videre trenger vi regler for hvordan hva som skjer når de kombineres.
+
+TANKE: skal attributtene randomiseres hver gang, eller være konstante?
+
+Så hva kan en effekt bestå av?
+* target (you, world, monster)
+* type (mental, fire, thunder, physical, ice, earth, wind, lightning, fool/5050, random)
+
+
+Symboler:
+
+
+Fargene:
+Gold
+Purple
+Black
+
+Aspekter:
+soul
+blood
+heaven
+flesh
+crescent
+master
+reaper
+star
+fool  - gir 50/50% sjanse for noe veldig bra/dårlig
+tiger - 
+

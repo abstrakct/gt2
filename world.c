@@ -526,6 +526,36 @@ void generate_forest(int num)
                 generate_area(i, AREA_FOREST, 4, MAXFORESTSIZE);
 }
 
+/*
+ * TODO: Make this work as forest generator!
+ */
+void generate_forest2(int num)
+{
+        int i, j, x, y, q, r, num;
+        level_t *l;
+
+        l = &world->out;
+        q = ri(2, MAXFORESTSIZE);
+        r = ri(2, MAXFORESTSIZE);
+
+        for(i = 2; i < q; i++) {
+                x = l->xsize / 2;
+                y = l->ysize / 2;
+                for(j = 2; j < r; j++) {
+                        num = dice(1, 4, 0);
+                        switch(num) {
+                                case 1: x++; break;
+                                case 2: x--; break;
+                                case 3: y++; break;
+                                case 4: y--; break;
+                        }
+
+                        addfloor(l, y, x);
+                }
+        }
+}
+
+
 /*********************************************
 * Description - Wrapper function for generating %num cities
 * Author - RK

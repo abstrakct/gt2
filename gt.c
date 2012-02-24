@@ -21,6 +21,7 @@
 #include <curses.h>
 #endif
 
+#include "cards.h"
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
@@ -812,6 +813,7 @@ int main(int argc, char *argv[])
 
         if(!loadgame) {
                 init_objects();
+                generate_deck();
                 printf("Reading data files...\n");
                 if(parse_data_files(0))
                         die("Couldn't parse data files.");

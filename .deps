@@ -1,6 +1,6 @@
 actor.o: actor.c objects.h actor.h monsters.h utils.h datafiles.h world.h \
  display.h gt.h
-asdf.o: asdf.c
+cards.o: cards.c cards.h
 commands.o: commands.c objects.h actor.h monsters.h utils.h datafiles.h \
  world.h display.h debug.h saveload.h commands.h gt.h
 datafiles.o: datafiles.c objects.h o_effects.h actor.h monsters.h utils.h \
@@ -9,8 +9,8 @@ debug.o: debug.c objects.h actor.h monsters.h utils.h datafiles.h world.h \
  display.h debug.h gt.h
 display.o: display.c objects.h actor.h monsters.h utils.h datafiles.h \
  world.h display.h gt.h
-gt.o: gt.c objects.h actor.h monsters.h utils.h datafiles.h world.h \
- display.h debug.h saveload.h commands.h gt.h
+gt.o: gt.c cards.h objects.h actor.h monsters.h utils.h datafiles.h \
+ world.h display.h debug.h saveload.h commands.h gt.h
 monsters.o: monsters.c objects.h actor.h monsters.h utils.h datafiles.h \
  world.h display.h gt.h
 objects.o: objects.c objects.h o_effects.h actor.h monsters.h utils.h \

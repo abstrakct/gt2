@@ -45,6 +45,13 @@ struct object {
 
 typedef struct object obj_t;
 
+typedef struct inventory {
+        short num_alloced;
+        short num_used;
+
+        obj_t **object;
+} inv_t;
+
 #define add_effect(a, b) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects] = b; a->effects++; }
 
 #define OT_GOLD       1

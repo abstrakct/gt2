@@ -832,15 +832,18 @@ int main(int argc, char *argv[])
                 init_level(world->out);
                 generate_world();
 
-                world->cmap = world->out->c;
 
                 init_display();
                 init_player();
                 player->inventory = init_inventory();
 
+                world->cmap = world->out->c;
                 world->curlevel = world->out;
                 game->context = CONTEXT_OUTSIDE;
-                // test
+
+                //world->cmap = world->dng[1].c;
+                //world->curlevel = &world->dng[1];
+                //game->context = CONTEXT_DUNGEON;
         }
 
         init_commands();

@@ -529,7 +529,7 @@ void generate_forest(int num)
 /*
  * TODO: Make this work as forest generator!
  */
-void generate_forest2(int num)
+void generate_forest2(int number)
 {
         int i, j, x, y, q, r, num;
         level_t *l;

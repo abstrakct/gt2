@@ -1,0 +1,27 @@
+
+TODO NÅ:
+combat
+
+
+
+Angående vanlig combat:
+
+Player & monster må ha:
+
+attack - hvor flink han er til å angripe 
+  -- basert på
+    - combat skill!
+    - weapon skill
+    - weapon stat  (f.eks. sverd - strength)
+    - magiske ting
+
+defense - hvor flink han er til å forsvare seg
+  -- basert på 
+    - dexterity
+    - armor
+    - armor skill
+    - magiske ting
+    
+    fra d20: A character’s Defense represents how hard it is for opponents to land a solid, damaging blow on the character.
+    It’s the attack roll result that an opponent needs to achieve to hit the character. The average, unarmored civilian has
+    a Defense of 10. A character’s Defense is equal to: 10 + Dexterity modifier + class bonus + equipment bonus + size modifier

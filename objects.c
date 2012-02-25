@@ -117,6 +117,7 @@ void add_to_master_object_list(obj_t *o)
                 if(game->objects[i] == NULL) {
                         game->objects[i] = o;
                         game->num_objects++;
+                        return;
                 }
         }
 }

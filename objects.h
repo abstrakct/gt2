@@ -18,9 +18,9 @@ typedef struct object_effect {
 */
 
 struct object {
-        struct object *prev;
-        struct object *next;
+        //struct object *prev;
         struct object *head;
+        struct object *next;
         int           id;                   // objdef-id
         int           oid;                  // unique id
         int           color;                // color!

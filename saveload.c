@@ -332,7 +332,7 @@ obj_t *load_inventory(FILE *f)
 
         for(j = 1; j < c; j++) {
                 i->head = head;
-                i->next = i->prev = NULL;
+                //i->next = i->prev = NULL;
                 i->next = load_object(f);
                 if(!i->next) {
                         printf("load_object failed!\n");
@@ -685,9 +685,9 @@ bool load_game(char *filename, int ingame)
 
                 o->next = objdefs->next;
                 o->head = objdefs;
-                o->prev = objdefs;
+                /*o->prev = objdefs;
                 if(objdefs->next)
-                        objdefs->next->prev = o;
+                        objdefs->next->prev = o;*/
                 objdefs->next = o;
         }
 

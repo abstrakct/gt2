@@ -208,7 +208,6 @@ int parse_armor()
                 o->head = objdefs->head;
                 objdefs->next = o;
                 o->next = NULL;
-                o->prev = objdefs;
                 objdefs = o;
 
                 printf(".");
@@ -280,7 +279,6 @@ int parse_weapons()
                 o->head = objdefs->head;
                 objdefs->next = o;
                 o->next = NULL;
-                o->prev = objdefs;
                 objdefs = o;
 
                 game->objdefs++;
@@ -351,7 +349,6 @@ int parse_amulet()
                 o->head = objdefs->head;
                 objdefs->next = o;
                 o->next = NULL;
-                o->prev = objdefs;
                 objdefs = o;
 
                 game->objdefs++;
@@ -433,7 +430,6 @@ int parse_ring()
                 o->head = objdefs->head;
                 objdefs->next = o;
                 o->next = NULL;
-                o->prev = objdefs;
                 objdefs = o;
 
                 game->objdefs++;

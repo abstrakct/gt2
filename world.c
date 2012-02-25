@@ -1000,7 +1000,7 @@ void generate_world()
         spawn_objects(ri(world->out->xsize/2, world->out->ysize/2), world->out);
 
 
-        for(i = 1; i <= 25; i++)
+        for(i = 1; i <= 10; i++)
                 meta_generate_dungeon(ri(1, 1), i);
 
         generate_stairs();

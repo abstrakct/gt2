@@ -109,12 +109,36 @@ bool is_worn(obj_t *o)      // worn by player, that is.. or wielded (weapons)
         return false;
 }
 
+void add_to_master_object_list(obj_t *o)
+{
+        int i;
+
+        for(i = 0; i < 2000; i++) {
+                if(game->objects[i] == NULL) {
+                        game->objects[i] = o;
+                        game->num_objects++;
+                }
+        }
+}
+
+
+void remove_from_master_object_list(obj_t *o)
+{
+        int i;
+
+        for(i = 0; i < 2000; i++) {
+                if(game->objects[i] == o) {
+                        game->objects[i] = NULL;
+                        game->num_objects--;
+                        return;
+                }
+        }
+}
+
 void unspawn_object(obj_t *m)
 {
         if(m) {
-                m->prev->next = m->next;
-                if(m->next)
-                        m->next->prev = m->prev;
+                remove_from_master_object_list(m);
                 gtfree(m);
         }
 }
@@ -202,7 +226,7 @@ void generate_fullname(obj_t *o)
 /*
  * place a spawned object at (y,x)
  */
-bool place_object_at(int y, int x, obj_t *obj, void *p)
+bool place_object_at(obj_t *obj, int y, int x, void *p)
 {
         level_t *l;
 
@@ -210,7 +234,7 @@ bool place_object_at(int y, int x, obj_t *obj, void *p)
         
         if(l->c[y][x].type == AREA_PLAIN || l->c[y][x].type == DNG_FLOOR) {
                 if(!l->c[y][x].inventory)
-                        l->c[y][x].inventory = gtmalloc(sizeof(obj_t));
+                        l->c[y][x].inventory = init_inventory();
 
                 if(move_to_inventory(obj, l->c[y][x].inventory))
                         return true;
@@ -220,9 +244,9 @@ bool place_object_at(int y, int x, obj_t *obj, void *p)
         return false;
 }
 
-bool spawn_object(int n, obj_t *head, void *level)
+obj_t *spawn_object(int n, void *level)
 {
-        obj_t *tmp, *new;
+        obj_t *new;
         level_t *l;
         int lev;
 
@@ -232,21 +256,18 @@ bool spawn_object(int n, obj_t *head, void *level)
         else
                 lev = 1;
 
-        tmp = head->next;
-
-        head->next = gtmalloc(sizeof(obj_t));
-        *head->next = get_objdef(n);
-        if(!head->next)
+        new = gtmalloc(sizeof(obj_t));
+        if(!new)
                 return false;
         
-        head->next->next = tmp;
-        head->next->prev = head;
-        head->next->head = head;
-        oid_counter++;
-        head->next->oid = oid_counter;
+        *new = get_objdef(n);
 
-        new = head->next;
+        oid_counter++;
+        new->oid = oid_counter;
+
         // maybe this object is magical?
+        // TODO: move this to separate function(s)!!!!
+
         if(!is_unique(new) && (is_weapon(new) || is_armor(new) || is_ring(new))) {
                 if(new->type == OT_RING)
                         while(!new->attackmod)
@@ -326,27 +347,24 @@ bool spawn_object(int n, obj_t *head, void *level)
         }
 
         generate_fullname(new);  // TODO displayname vs fullname etc.
+        add_to_master_object_list(new);
 
-        game->objects[game->num_objects] = new;
-        game->num_objects++;
-
-        return true;
-        //fprintf(stderr, "spawned obj %s (oid %d)\n", head->next->basename, head->next->oid);
+        return new;
 }
 
 /*
  * spawn an object (objdef n) and place it at (y,x) on level
  */
-bool spawn_object_at(int y, int x, int n, obj_t *i, void *level)
+bool spawn_object_at(int y, int x, int n, void *level)
 {
-        if(!i)
-                i = init_inventory();
+        obj_t *o;
 
-        if(!spawn_object(n, i, level))
+        o = spawn_object(n, level);
+        if(!o)
                 return false;
 
-        if(!place_object_at(y, x, i->next, (level_t *) level)) {
-                unspawn_object(i->next);
+        if(!place_object_at(o, y, x, level)) {
+                unspawn_object(o);
                 return false;
         }
 
@@ -377,7 +395,7 @@ void spawn_objects(int num, void *p)
                 x = ri(1, l->xsize-1);
                 y = ri(1, l->ysize-1);
                 o = ri(1, game->objdefs);
-                if (spawn_object_at(y, x, o, l->objects, l))
+                if (spawn_object_at(y, x, o, l))
                         i++;
         }
 
@@ -390,29 +408,27 @@ void spawn_objects(int num, void *p)
         fprintf(stderr, "\nDEBUG: %s:%d - spawn_objects spawned %d objects (should spawn %d)\n\n", __FILE__, __LINE__, i, num);*/
 }
 
-void spawn_gold(int n, obj_t *head)
+void spawn_gold(int n, inv_t *i)
 {
-        obj_t *tmp;
+        if(!i)
+                i = init_inventory();
 
-        tmp = head->next;
-        head->next = gtmalloc(sizeof(obj_t));
-        head->type = OT_GOLD;
-        head->next->next = tmp;
-        head->next->prev = head;
-        head->next->head = head;
-        head->next->quantity = n;
+        i->gold = n;
 }
 
-bool spawn_gold_at(int y, int x, int n, obj_t *i, void *level)
+bool spawn_gold_at(int y, int x, int n, void *level)
 {
         level_t *l;
+        inv_t *i;
 
         l = (level_t *) level;
+        i = l->c[y][x].inventory;
+
         if(l->c[y][x].type == AREA_PLAIN || l->c[y][x].type == DNG_FLOOR) {
                 if(!i)
                         i = init_inventory();
 
-                i->quantity += n;
+                i->gold = n;
                 l->c[y][x].inventory = i;
 
                 return true;
@@ -432,12 +448,10 @@ void spawn_golds(int num, int max, void *p)
                 x = ri(1, l->xsize-1);
                 y = ri(1, l->ysize-1);
                 n = ri(1, max);
-                if (spawn_gold_at(y, x, n, l->objects, l)) {
+                if (spawn_gold_at(y, x, n, l)) {
                         i++;
-                        //fprintf(stderr, "DEBUG: %s:%d - spawned %d gold at %d,%d\n", __FILE__, __LINE__, n, y, x);
                 }
         }
-        //fprintf(stderr, "DEBUG: %s:%d - spawn_golds spawned %d golds (should spawn %d)\n", __FILE__, __LINE__, i, num);
 
 }
 
@@ -446,10 +460,12 @@ void do_identify_all(obj_t *o)
 {
         int i;
 
-        for(i = 0; i < game->num_objects; i++) {
-                if((game->objects[i]->type == o->type) && (game->objects[i]->material == o->material)) {
-                        setbit(game->objects[i]->flags, OF_IDENTIFIED);
-                        generate_fullname(game->objects[i]);
+        for(i = 0; i < 2000; i++) {
+                if(game->objects[i]) {
+                        if((game->objects[i]->type == o->type) && (game->objects[i]->material == o->material)) {
+                                setbit(game->objects[i]->flags, OF_IDENTIFIED);
+                                generate_fullname(game->objects[i]);
+                        }
                 }
         }
 }
@@ -457,12 +473,11 @@ void do_identify_all(obj_t *o)
 /*
  * Functions related to actors and interacting with objects
  */
-obj_t *init_inventory()
+inv_t *init_inventory()
 {
-        obj_t *i;
+        inv_t *i;
 
-        i = gtmalloc(sizeof(obj_t));
-        i->type = OT_GOLD;
+        i = gtmalloc(sizeof(inv_t));
 
         return i;
 }
@@ -646,46 +661,48 @@ void unwieldwear(obj_t *o)
         }
 }
 
+int get_first_free_slot_in_inventory(inv_t *i)
+{
+        int j;
+
+        j = 0;
+        while(i->object[j])
+                j++;
+
+        return j;
+}
+
 void pick_up(obj_t *o, void *p)
 {
         actor_t *a;
+        int slot;
 
         a = (actor_t *) p;
 
         if(!a->inventory)
-                die("inventory not initialized!");
+                a->inventory = init_inventory();
 
-        o->prev = a->inventory;
-        o->next = a->inventory->next;
-        a->inventory->next = o;
-        o->head = a->inventory;
+        slot = get_first_free_slot_in_inventory(a->inventory);
+        a->inventory->object[slot] = o;
 
-        assign_free_slot(o);
-        gtprintfc(COLOR_INFO, "%c - %s", slot_to_letter(o->slot), a_an(o->fullname));
-
-        // TODO: tackle cells with multiple items!
-        world->curlevel->c[a->y][a->x].inventory->next = NULL;
+        //assign_free_slot(o);
+        gtprintfc(COLOR_INFO, "%c - %s", slot_to_letter(slot), a_an(o->fullname));
 }
 
 /*
- * Move object *o to inventory *i
+ * Move object *o to first free slot in inventory *i
  */
-bool move_to_inventory(obj_t *o, obj_t *i)
+bool move_to_inventory(obj_t *o, inv_t *i)
 {
         if(o->type == OT_GOLD) {
-                i->quantity += o->quantity;
+                i->gold += o->quantity;
                 unspawn_object(o);
                 return true;
         } else {
-                // TODO: ->prev !!!
+                int x;
 
-                o->head = i->head;
-                o->next = i->next;
-                if(i->next)
-                        i->next->prev = o;
-                i->next = o;
-                i->sides++;        // use 'sides' in head as counter of how many items are in here.
-                //i->type = OT_GOLD; // a strange place to set this, but for now...
+                x = get_first_free_slot_in_inventory(i);
+                i->object[x] = o;
 
                 return true;
         }

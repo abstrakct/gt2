@@ -113,22 +113,33 @@ int parse_monsters()
                 // Let's give the monster a weapon!
                 if(hasbit(m->flags, MF_CANUSESIMPLESWORD)) {
                         int x;
+                        obj_t *o;
 
                         x = get_objdef_by_name("short sword");
 
                         m->inventory = init_inventory();
-                        spawn_object(x, m->inventory, 0);
-                        m->weapon = m->inventory->next;
+                        o = spawn_object(x, 0);
+                        m->inventory->object[0] = o;
+                        m->weapon = o;
                 }
 
                 if(hasbit(m->flags, MF_CANUSEWEAPON) && !hasbit(m->flags, MF_CANUSESIMPLESWORD)) {
                         int x;
+                        obj_t *o;
 
                         x = get_objdef_by_name("dagger");
 
                         m->inventory = init_inventory();
-                        spawn_object(x, m->inventory, 0);
-                        m->weapon = m->inventory->next;
+                        o = spawn_object(x, 0);
+                        m->inventory->object[0] = o;
+                        m->weapon = o;
+                }
+
+                if(hasbit(m->flags, MF_CANHAVEGOLD)) {
+                        if(!m->inventory) {
+                                m->inventory = init_inventory();
+                                m->inventory->gold += ri(2, 20);
+                        }
                 }
 
                 

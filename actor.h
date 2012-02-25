@@ -74,11 +74,12 @@ typedef struct actorstruct {            // actor_t
         int          level;
         short        race, cla;
         obj_t        *weapon;           // currently wielded weapon
-        obj_t        *inventory;
+        inv_t        *inventory;
         obj_t        *w[WEAR_SLOTS];     // array rather than struct makes things easier!
         short        prot[PROTECTIONS];
         long         flags;
         int          c;                 // character, for monsters.
+        // TODO: Add variable for glyph color?!
         double       speed;
         double       movement;
         long long    ticks;
@@ -99,11 +100,11 @@ typedef struct actorstruct {            // actor_t
 char   get_first_free_letter();
 char   slot_to_letter(int i);
 int    letter_to_slot(char c);
-obj_t *get_object_from_letter(char c);
-int object_to_slot(obj_t *o);
-void assign_free_slot(obj_t *o);
-void unassign_object(obj_t *o);
-void assign_letter(char c, obj_t *o);
+obj_t *get_object_from_letter(char c, inv_t *i);
+int    object_to_slot(obj_t *o);
+void   assign_free_slot(obj_t *o);
+void   unassign_object(obj_t *o);
+void   assign_letter(char c, obj_t *o);
 
 
 bool in_lineofsight(actor_t *src, int goaly, int goalx);

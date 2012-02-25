@@ -19,7 +19,7 @@ void generate_deck()
                                 deck[t][c][a].type = t;
                                 deck[t][c][a].aspect = a;
                                 sprintf(deck[t][c][a].name, "%s %s card of the %s", ccolors[deck[t][c][a].color], ctypes[deck[t][c][a].type], aspects[deck[t][c][a].aspect]);
-fprintf(stderr, "DEBUG: %s:%d - Generated card: The %s\n", __FILE__, __LINE__, deck[t][c][a].name);
+//fprintf(stderr, "DEBUG: %s:%d - Generated card: The %s\n", __FILE__, __LINE__, deck[t][c][a].name);
                         }
                 }
         }

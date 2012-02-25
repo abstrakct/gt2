@@ -69,9 +69,9 @@ int letter_to_slot(char c)
         return retval;
 }
 
-obj_t *get_object_from_letter(char c)
+obj_t *get_object_from_letter(char c, inv_t *i)
 {
-        return objlet[letter_to_slot(c)];
+        return i->object[letter_to_slot(c)];
 }
 
 int object_to_slot(obj_t *o)

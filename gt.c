@@ -511,14 +511,15 @@ bool do_action(int action)
                         player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_PICKUP:
-                        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0) {
-                                player->inventory->quantity += ci(ply, plx)->quantity;
-                                ci(ply, plx)->quantity -= ci(ply, plx)->quantity;
-                                youc(COLOR_INFO, "now have %d gold pieces.", player->inventory->quantity);
+                        if(ci(ply, plx) && ci(ply, plx)->gold > 0) {
+                                player->inventory->gold += ci(ply, plx)->gold;
+                                ci(ply, plx)->gold -= ci(ply, plx)->gold;
+                                youc(COLOR_INFO, "now have %d gold pieces.", player->inventory->gold);
                         }
 
-                        if(ci(ply, plx) && ci(ply, plx)->next) {
-                                pick_up(ci(ply, plx)->next, player);
+                        if(ci(ply, plx) && ci(ply, plx)->object[0]) {
+                                pick_up(ci(ply, plx)->object[0], player);
+                                ci(ply, plx)->object[0] = NULL;
                         }
                         player->ticks -= TICKS_MOVEMENT;
                         break;
@@ -752,14 +753,14 @@ void look()
                         gtprintf("There is a staircase leading up here.");
         }
 
-        if(ci(ply, plx) && ci(ply, plx)->type == OT_GOLD && ci(ply, plx)->quantity > 0)
-                gtprintf("There is %d gold %s here.", ci(ply, plx)->quantity, (ci(ply, plx)->quantity > 1) ? "pieces" : "piece");
+        if(ci(ply, plx) && ci(ply, plx)->gold)
+                gtprintf("There is %d gold %s here.", ci(ply, plx)->gold, (ci(ply, plx)->gold > 1) ? "pieces" : "piece");
 
-        if(ci(ply, plx) && ci(ply, plx)->next) {
-                if(is_pair(ci(ply, plx)->next))
-                        gtprintf("There is a pair of %s here.", ci(ply, plx)->next->fullname);
+        if(ci(ply, plx) && ci(ply, plx)->object[0]) {
+                if(is_pair(ci(ply, plx)->object[0]))
+                        gtprintf("There is a pair of %s here.", ci(ply, plx)->object[0]->fullname);
                 else
-                        gtprintf("There is %s here.", a_an(ci(ply, plx)->next->fullname));
+                        gtprintf("There is %s here.", a_an(ci(ply, plx)->object[0]->fullname));
         }
 }
 
@@ -878,12 +879,12 @@ int main(int argc, char *argv[])
                         case CMD_SE:    queue(ACTION_PLAYER_MOVE_SE); break;
                         case CMD_WIELDWEAR:
                                        l = ask_char("Which item would you like to wield/wear?");
-                                       actiondata = (void *) get_object_from_letter(l);
+                                       actiondata = (void *) get_object_from_letter(l, player->inventory);
                                        queue(ACTION_WIELDWEAR);
                                        break;
                         case CMD_UNWIELDWEAR:
                                        l = ask_char("Which item would you like to remove/unwield?");
-                                       actiondata = (void *) get_object_from_letter(l);
+                                       actiondata = (void *) get_object_from_letter(l, player->inventory);
                                        queue(ACTION_UNWIELDWEAR);
                                        break;
                         case CMD_LONGDOWN:

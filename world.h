@@ -59,7 +59,7 @@ typedef struct {                 // cell_t
         short      color;
         bool       visible;
         monster_t *monster;
-        obj_t     *inventory;
+        inv_t     *inventory;
 } cell_t;
 
 struct levelstruct {

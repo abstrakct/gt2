@@ -45,18 +45,18 @@ void dump_monsters(monster_t *list)
         }
 }
 
-void dump_objects(obj_t *i)
+void dump_objects(inv_t *i)
 {
-        obj_t *o, *n;
+        obj_t *o;
+        int j;
 
         if(!i) {
                 gtprintf("No objects here!");
                 return;
         }
 
-        n = i;
-        while(n) {
-                o = n;
+        for(j = 0; j < 52; j++) {
+                o = i->object[j];
                 gtprintf("\n");
                 gtprintf("OID:      %d\tBasename: %s\tType:     %s", o->oid, o->basename, otypestrings[o->type]);
                 if(o->type == OT_GOLD)
@@ -70,7 +70,6 @@ void dump_objects(obj_t *i)
                         gtprintf("Damage:   %dd%d\n", o->dice, o->sides);
                 
                 gtprintf("\n");
-                n = o->next;
         }
 
 }

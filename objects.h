@@ -45,12 +45,14 @@ struct object {
 
 typedef struct object obj_t;
 
-typedef struct inventory {
-        short num_alloced;
+typedef struct {
         short num_used;
-
-        obj_t **object;
+        int   gold;
+        obj_t *object[52];
 } inv_t;
+
+// in inv_t:
+// long long used;                   // use a bitfield/bitmap to note which slots are used? Worth it?
 
 #define add_effect(a, b) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects] = b; a->effects++; }
 
@@ -152,31 +154,36 @@ extern int mats_amulets[MATERIALS];
 // Prototypes
 //
 
-void spawn_objects(int num, void *p);
-bool spawn_object_at(int y, int x, int n, obj_t *head, void *level);
-void unspawn_object(obj_t *m);
-bool spawn_object(int n, obj_t *head, void *level);
-bool place_object_at(int y, int x, obj_t *obj, void *l);
+void   spawn_objects(int num, void *p);
+bool   spawn_object_at(int y, int x, int n, void *level);
+void   unspawn_object(obj_t *m);
+obj_t *spawn_object(int n, void *level);
+bool   place_object_at(obj_t *obj, int y, int x, void *p);
 
-obj_t get_objdef(int n);
-int get_objdef_by_name(char *wanted);
+obj_t  get_objdef(int n);
+int    get_objdef_by_name(char *wanted);
 obj_t *get_object_by_oid(obj_t *i, int oid);
-bool is_pair(obj_t *o);
-bool is_worn(obj_t *o);      // worn by player, that is..
 
-bool move_to_inventory(obj_t *o, obj_t *i);
-void pick_up(obj_t *o, void *a);
-void wieldwear(obj_t *o);
-void wield(obj_t *o);
-void unwieldwear(obj_t *o);
-void unwield(obj_t *o);
-void unwear(obj_t *o);
-void puton(int slot, obj_t *o);
+bool   is_pair(obj_t *o);
+bool   is_worn(obj_t *o);      // worn by player, that is..
 
-obj_t *init_inventory();
-void spawn_golds(int num, int max, void *p);
+bool   move_to_inventory(obj_t *o, inv_t *i);
+void   pick_up(obj_t *o, void *a);
+void   wieldwear(obj_t *o);
+void   wield(obj_t *o);
+void   unwieldwear(obj_t *o);
+void   unwield(obj_t *o);
+void   unwear(obj_t *o);
+void   puton(int slot, obj_t *o);
 
-void init_objects();
+inv_t *init_inventory();
+void   spawn_golds(int num, int max, void *p);
+
+void   init_objects();
+
+
+
+
 //void init_materials();
 //char *get_def_name(obj_t object);
 //char *a_an(char *s);

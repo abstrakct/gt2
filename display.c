@@ -293,18 +293,16 @@ void draw_world(level_t *level)
 
                                         if(level->c[j][i].inventory) {
                                                 wattroff(wmap, A_BOLD);
-                                                if(level->c[j][i].inventory->quantity > 0) {
+                                                if(level->c[j][i].inventory->gold > 0) {
                                                         wattron(wmap, A_BOLD);
                                                         gtmapaddch(dy, dx, COLOR_YELLOW, objchars[OT_GOLD]);
                                                         wattroff(wmap, A_BOLD);
                                                 } else {                                                         // TODO ADD OBJECT COLORS!!!
-                                                        if(level->c[j][i].inventory->next) {
-                                                                gtmapaddch(dy, dx, COLOR_BLUE, objchars[level->c[j][i].inventory->next->type]);
+                                                        if(level->c[j][i].inventory->object[0]) {
+                                                                gtmapaddch(dy, dx, COLOR_BLUE, objchars[level->c[j][i].inventory->object[0]->type]);
                                                         }
                                                 }
                                         }
-
-                                        
 
                                         if(hasbit(level->c[j][i].flags, CF_HAS_DOOR_CLOSED))
                                                 gtmapaddch(dy, dx, color, '+');
@@ -373,18 +371,19 @@ void draw_wstat()
 
 
         mvwprintw(wstat, 1, 1, "== INVENTORY ==");
-        mvwprintw(wstat, 2, 1, "Gold: %d", player->inventory->quantity);
+        mvwprintw(wstat, 2, 1, "Gold: %d", player->inventory->gold);
         
         i = 3;
         for(j = 0; j < 52; j++) {
-                if(objlet[j]) {
-                        o = get_object_from_letter(slot_to_letter(j));
+                if(player->inventory->object[j]) {
+                        //o = get_object_from_letter(slot_to_letter(j), player->inventory);
+                        o = player->inventory->object[j];
                         if(is_worn(o)) {
                                 wattron(wstat, COLOR_PAIR(COLOR_GREEN));
-                                mvwprintw(wstat, i, 1, "%c) %s %s", o->slot, a_an(o->fullname), is_ring(o) ? (o == pw_leftring ? "[<]" : "[>]") : "\0");
+                                mvwprintw(wstat, i, 1, "%c) %s %s", slot_to_letter(j), a_an(o->fullname), is_ring(o) ? (o == pw_leftring ? "[<]" : "[>]") : "\0");
                                 wattroff(wstat, COLOR_PAIR(COLOR_GREEN));
                         } else {
-                                mvwprintw(wstat, i, 1, "%c) %s", o->slot, a_an(o->fullname));
+                                mvwprintw(wstat, i, 1, "%c) %s", slot_to_letter(j), a_an(o->fullname));
                         }
                         i++;
                 }

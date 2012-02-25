@@ -234,7 +234,6 @@ void generate_savefilename(char *filename)
 
 bool save_game(char *filename)
 {
-//        char filename[255];
         char cmd[260];
         int i;
         FILE *f;

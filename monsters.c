@@ -436,10 +436,14 @@ bool place_monster_at(int y, int x, monster_t *monster, level_t *l)
 void spawn_monster(int n, monster_t *head, int maxlevel)
 {
         monster_t *tmp;
+        int hpadj;
 
         tmp = head->next;
         head->next = gtmalloc(sizeof(monster_t));
         *head->next = get_monsterdef(n);
+        hpadj = head->next->level * 2;
+        head->next->maxhp += ri((-(hpadj/2)), hpadj);
+        head->next->hp = head->next->maxhp;
 
         head->next->next = tmp;
         head->next->prev = head;

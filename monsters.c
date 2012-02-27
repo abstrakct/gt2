@@ -115,9 +115,9 @@ int simpleoutdoorpathfinder(actor_t *m)
         oy = m->y;
         ox = m->x;
 
-        if(m->y <= 1)
+        if(m->y <= 2)
                 return true;
-        if(m->x <= 1)
+        if(m->x <= 2)
                 return true;
 
         if(!m->goalx || !m->goaly || m->x == m->goalx || m->y == m->goaly) {
@@ -190,15 +190,16 @@ int simpleoutdoorpathfinder(actor_t *m)
         //m->y += c.y;
         //m->x += c.x;
 
-        if(!monster_passable(world->curlevel, m->y, m->x)) {
+        if(monster_passable(world->curlevel, m->y, m->x)) {
+                world->cmap[oy][ox].monster = NULL;
+                world->cmap[m->y][m->x].monster = m;
+                return true;
+        } else {
                 m->y = oy;
                 m->x = ox;
                 return false;
         }
 
-        world->cmap[oy][ox].monster = NULL;
-        world->cmap[m->y][m->x].monster = m;
-        return true;
 }
 
 void simpleai(monster_t *m)
@@ -247,18 +248,12 @@ void simpleai(monster_t *m)
                 attack(m, player);
         }
 
-        if(!monster_passable(world->curlevel, m->y, m->x)) {
+        if(monster_passable(world->curlevel, m->y, m->x)) {
+                world->cmap[oy][ox].monster = NULL;
+                world->cmap[m->y][m->x].monster = m;
+        } else {
                 m->x = ox; m->y = oy;
-                return;
         }
-
-        world->cmap[oy][ox].monster = NULL;
-        world->cmap[m->y][m->x].monster = m;
-/*        if(m->x < 0)
-                m->x = 0;
-        if(m->y < 0)
-                m->y = 0;*/
-
 }
 
 void advancedai(monster_t *m)
@@ -352,11 +347,12 @@ void hostile_ai(actor_t *m)
         if(actor_in_lineofsight(m, player)) {
                 c = get_next_step(m->y, m->x);
 
-                m->y += c.y;
-                m->x += c.x;
-
-                world->cmap[oy][ox].monster = NULL;
-                world->cmap[m->y][m->x].monster = m;
+                if(monster_passable(world->curlevel, m->y + c.y, m->x + c.x)) {
+                        m->y += c.y;
+                        m->x += c.x;
+                        world->cmap[oy][ox].monster = NULL;
+                        world->cmap[m->y][m->x].monster = m;
+                }
         } else {
                 m->attacker = NULL;
                 while(!simpleoutdoorpathfinder(m));
@@ -387,21 +383,21 @@ void move_monsters()
                 //
 
                 if(m && !hasbit(m->flags, MF_SLEEPING)) {
-                        if(m->attacker) {
+                        //if(m->attacker) {
                                 m->ticks += (int) (m->speed*1000);
 
                                 while(m->ticks >= 1000) {
                                         hostile_ai(m);
                                         m->ticks -= 1000;
                                 }
-                        } else {
+                        /*} else {
                                 m->ticks += (int) (m->speed*1000);
                                 while(m->ticks >= 1000) {
                                         if(m->ai)
                                                 m->ai(m);
                                         m->ticks -= 1000;
                                 }
-                        }
+                        }*/
                 }
         }
 }

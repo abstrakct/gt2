@@ -795,6 +795,9 @@ bool monster_passable(level_t *l, int y, int x)
 { 
         int type;
 
+        if(l->c[y][x].monster)
+                return false;
+        
         if(y < 0)
                 return false;
         if(x < 0)
@@ -909,7 +912,7 @@ void meta_generate_dungeon(int type, int d)
                 int num_monsters, mino, maxo;
 
                 if(type == 3) {
-                        world->dng[d].ysize = ri(75, 175);
+                        world->dng[d].ysize = ri(100, 200);
                         world->dng[d].xsize = ri(150, 250);
                 } else {
                         world->dng[d].xsize = (ri(50, 100));  // let's start within reasonable sizes!
@@ -1000,8 +1003,17 @@ void generate_world()
         spawn_objects(ri(world->out->xsize/2, world->out->ysize/2), world->out);
 
 
-        for(i = 1; i <= 10; i++)
-                meta_generate_dungeon(ri(1, 1), i);
+        for(i = 1; i <= 25; i++) {
+                int p;
+
+                p = ri(1,100);
+                if(p <= 66)
+                        meta_generate_dungeon(1, i);
+                if(p > 66 && p < 82)
+                        meta_generate_dungeon(2, i);
+                if(p >= 82)
+                        meta_generate_dungeon(3, i);
+        }
 
         generate_stairs();
 

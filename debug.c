@@ -57,19 +57,21 @@ void dump_objects(inv_t *i)
 
         for(j = 0; j < 52; j++) {
                 o = i->object[j];
-                gtprintf("\n");
-                gtprintf("OID:      %d\tBasename: %s\tType:     %s", o->oid, o->basename, otypestrings[o->type]);
-                if(o->type == OT_GOLD)
-                        gtprintf("Amount:   %d\n", o->quantity);
-                if(is_armor(o))
-                        gtprintf("AC:       %d\n", o->ac);
-                gtprintf("Attack modifier:%s%d\n", (o->attackmod >= 0 ? " +" : " "), o->attackmod);
-                gtprintf("Damage modifier:%s%d\n", (o->damagemod >= 0 ? " +" : " "), o->damagemod);
-                gtprintf("Unique:   %s\n", is_unique(o) ? "yes" : "no");
-                if(is_weapon(o))
-                        gtprintf("Damage:   %dd%d\n", o->dice, o->sides);
-                
-                gtprintf("\n");
+                if(o) {
+                        gtprintf("\n");
+                        gtprintf("OID:      %d\tBasename: %s\tType:     %s", o->oid, o->basename, otypestrings[o->type]);
+                        if(o->type == OT_GOLD)
+                                gtprintf("Amount:   %d\n", o->quantity);
+                        if(is_armor(o))
+                                gtprintf("AC:       %d\n", o->ac);
+                        gtprintf("Attack modifier:%s%d\n", (o->attackmod >= 0 ? " +" : " "), o->attackmod);
+                        gtprintf("Damage modifier:%s%d\n", (o->damagemod >= 0 ? " +" : " "), o->damagemod);
+                        gtprintf("Unique:   %s\n", is_unique(o) ? "yes" : "no");
+                        if(is_weapon(o))
+                                gtprintf("Damage:   %dd%d\n", o->dice, o->sides);
+
+                        gtprintf("\n");
+                }
         }
 
 }

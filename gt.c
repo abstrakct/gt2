@@ -35,13 +35,16 @@
 #include "gt.h"
 
 char *otypestrings[50] = {
+        "",
+        "Gold",
         "Weapon",
         "Armor",
         "Ring",
+        "Amulet",
         "Card",
         "Wand",
-        "Thing",
-        "Gold",
+        "Potion",
+        "",
         "",
         "",
         "",
@@ -596,7 +599,14 @@ bool do_action(int action)
 
                         player->ticks -= TICKS_WIELDWEAR;
                         break;
-                                
+                case ACTION_DROP:
+                        o = (obj_t *) actiondata;
+                        if(o)
+                                drop(o, player);
+                        else
+                                gtprintf("Drop what?");
+                        player->ticks -= TICKS_WIELDWEAR;
+                        break;  
                 case ACTION_FIX_VIEW:
                         fixview();
                         break;
@@ -753,14 +763,39 @@ void look()
                         gtprintf("There is a staircase leading up here.");
         }
 
-        if(ci(ply, plx) && ci(ply, plx)->gold)
-                gtprintf("There is %d gold %s here.", ci(ply, plx)->gold, (ci(ply, plx)->gold > 1) ? "pieces" : "piece");
+        if(ci(ply, plx)) {
+                if(ci(ply, plx) && ci(ply, plx)->gold)
+                        gtprintf("There is %d gold %s here.", ci(ply, plx)->gold, (ci(ply, plx)->gold > 1) ? "pieces" : "piece");
 
-        if(ci(ply, plx) && ci(ply, plx)->object[0]) {
-                if(is_pair(ci(ply, plx)->object[0]))
-                        gtprintf("There is a pair of %s here.", ci(ply, plx)->object[0]->fullname);
-                else
-                        gtprintf("There is %s here.", a_an(ci(ply, plx)->object[0]->fullname));
+                if(ci(ply, plx)->num_used > 0) {
+                        if(ci(ply, plx)->num_used == 1) {
+                                int slot;
+                                slot = get_first_used_slot(ci(ply, plx));
+                                if(slot < 0)
+                                        return;
+
+                                if(is_pair(ci(ply, plx)->object[slot]))
+                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->object[slot]->fullname);
+                                else
+                                        gtprintf("There is %s here.", a_an(ci(ply, plx)->object[slot]->fullname));
+                        }
+
+                        if(ci(ply, plx)->num_used == 2) {
+                                int slot, slot2;
+
+                                slot  = get_first_used_slot(ci(ply, plx));
+                                slot2 = get_next_used_slot_after(slot, ci(ply, plx));
+                                if(slot < 0)
+                                        return;
+                                if(slot2 < 0)
+                                        return;
+
+                                /*if(is_pair(ci(ply, plx)->object[slot]))
+                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->object[slot]->fullname);
+                                else*/
+                                        gtprintf("There is %s and %s here.", a_an(ci(ply, plx)->object[slot]->fullname), a_an(ci(ply, plx)->object[slot2]->fullname));
+                        }
+                }
         }
 }
 
@@ -775,7 +810,8 @@ void do_turn(int do_all)
         if(game->currentlevel)
                 queue(ACTION_MAKE_DISTANCEMAP);
         queue(ACTION_MOVE_MONSTERS);
-        queue(ACTION_HEAL_PLAYER);
+        if(game->turn % 2)                      // TODO: Better condition... based on physique etc.
+                queue(ACTION_HEAL_PLAYER);
         i = aq->num;
 
         while(i) {
@@ -886,6 +922,11 @@ int main(int argc, char *argv[])
                                        l = ask_char("Which item would you like to remove/unwield?");
                                        actiondata = (void *) get_object_from_letter(l, player->inventory);
                                        queue(ACTION_UNWIELDWEAR);
+                                       break;
+                        case CMD_DROP:
+                                       l = ask_char("Which item would you like to drop?");
+                                       actiondata = (void *) get_object_from_letter(l, player->inventory);
+                                       queue(ACTION_DROP);
                                        break;
                         case CMD_LONGDOWN:
                                 queuex(20, ACTION_PLAYER_MOVE_DOWN);

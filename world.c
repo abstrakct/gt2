@@ -534,7 +534,7 @@ void generate_forest2(int number)
         int i, j, x, y, q, r, num;
         level_t *l;
 
-        l = &world->out;
+        l = world->out;
         q = ri(2, MAXFORESTSIZE);
         r = ri(2, MAXFORESTSIZE);
 
@@ -929,7 +929,7 @@ void meta_generate_dungeon(int type, int d)
                 if(type == 3)
                         generate_dungeon_type_3(d);
 
-                num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 25;
+                num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 20;
                 mino = (world->dng[d].ysize + world->dng[d].xsize) / 40;
                 maxo = (world->dng[d].ysize + world->dng[d].xsize) / 20;
 

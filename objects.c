@@ -122,7 +122,6 @@ void add_to_master_object_list(obj_t *o)
         }
 }
 
-
 void remove_from_master_object_list(obj_t *o)
 {
         int i;
@@ -673,6 +672,31 @@ int get_first_free_slot_in_inventory(inv_t *i)
         return j;
 }
 
+int get_first_used_slot(inv_t *i)
+{
+        int j;
+
+        for(j = 0; j < 52; j++) {
+                if(i->object[j])
+                        return j;
+        }
+
+        return -1;
+}
+
+int get_next_used_slot_after(int n, inv_t *i)
+{
+        int j;
+
+        for(j = (n+1); j < 52; j++) {
+                if(i->object[j])
+                        return j;
+        }
+
+        return -1;
+}
+
+
 void pick_up(obj_t *o, void *p)
 {
         actor_t *a;
@@ -685,9 +709,36 @@ void pick_up(obj_t *o, void *p)
 
         slot = get_first_free_slot_in_inventory(a->inventory);
         a->inventory->object[slot] = o;
+        a->inventory->num_used++;
 
         //assign_free_slot(o);
         gtprintfc(COLOR_INFO, "%c - %s", slot_to_letter(slot), a_an(o->fullname));
+}
+
+void place_object_in_cell(obj_t *o, cell_t *c)
+{
+        int slot;
+
+        if(!c->inventory)
+               c->inventory = init_inventory();
+
+        slot = get_first_free_slot_in_inventory(c->inventory);
+        c->inventory->object[slot] = o;
+        c->inventory->num_used++;
+}
+
+void drop(obj_t *o, void *actor)
+{
+        int slot;
+        actor_t *a;
+
+        a = (actor_t *) actor;
+
+        place_object_in_cell(o, &world->curlevel->c[a->y][a->x]);
+
+        slot = object_to_slot(o, a->inventory);
+        a->inventory->object[slot] = NULL;
+        a->inventory->num_used--;
 }
 
 /*
@@ -704,6 +755,7 @@ bool move_to_inventory(obj_t *o, inv_t *i)
 
                 x = get_first_free_slot_in_inventory(i);
                 i->object[x] = o;
+                i->num_used++;
 
                 return true;
         }

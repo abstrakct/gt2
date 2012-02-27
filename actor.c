@@ -93,18 +93,18 @@ obj_t *get_object_from_letter(char c, inv_t *i)
         return i->object[letter_to_slot(c)];
 }
 
-int object_to_slot(obj_t *o)
+int object_to_slot(obj_t *o, inv_t *inv)
 {
         int i;
 
         for(i = 0; i < 52; i++) {
-                if(objlet[i] == o)
+                if(inv->object[i] == o)
                         return i;
         }
 
         return -1;
 }
-
+/*
 void assign_free_slot(obj_t *o)
 {
         char c;
@@ -119,6 +119,7 @@ void unassign_object(obj_t *o)
         objlet[object_to_slot(o)] = NULL;
         o->slot = 0;
 }
+*/
 
 void assign_letter(char c, obj_t *o)
 {

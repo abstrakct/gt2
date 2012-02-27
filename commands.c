@@ -60,6 +60,7 @@ cmd_t outsidecommands[] = {
         { '.',       CMD_REST,        "Rest one turn" },
         { '<',       CMD_ASCEND,      "Go up stairs" },
         { '>',       CMD_DESCEND,     "Go down stairs" },
+        { 'd',       CMD_DROP,        "Drop an object" },
 #ifdef DEVELOPMENT_MODE
         { KEY_F(1),  CMD_WIZARDMODE,  "Toggle wizard mode" },
         { '+',       CMD_INCFOV,      "Increase FOV" },

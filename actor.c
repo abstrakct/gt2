@@ -21,12 +21,31 @@
 #include "display.h"
 #include "gt.h"
 
+// TODO FIX!
 obj_t *objlet[52];    // 52 pointers to objects, a-z & A-Z
 
 
 //                            x   1   2   3   4   5   6   7   8  9 10 11 12 13 14 15 16 17 18 19 20
 //int strength_modifier[20] = { 0, -5, -4, -3, -3, -2, -2, -1, -1, 0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 4, 5 };
 
+int level_table[] = {
+            0,          // level "0"
+            0,          // level 1
+          100,          // level 2
+          200,          // etc
+          400,
+          800,
+         1600,
+         3200,
+         6400,
+        12800,
+        25600,          // FIX Later: are these numbers reasonable?
+        38400,
+        51200,
+       102400, 
+};
+
+#define MAX_PLAYER_LEVEL ((sizeof(level_table) / sizeof(int)) - 1)
 
 
 // object-to-letter and vise versa 
@@ -212,6 +231,37 @@ int ability_modifier(int ab)
         return ((ab / 2) - 5);
 }
 
+bool player_leveled_up()
+{
+        if(player->level == MAX_PLAYER_LEVEL)
+                return false;
+        else if(player->xp < level_table[player->level + 1])
+                return false;
+        else if(player->xp >= level_table[player->level + 1])        // we'll deal with multiple levels in one go later
+                return true;
+
+        return false;
+}
+
+void level_up_player()
+{
+        player->level++;
+        gtprintfc(COLOR_GREEN, "Congratulations! You've reached level %d!", player->level);
+
+        // TODO: Add level up effects here!
+}
+
+void award_xp(actor_t *defender)
+{
+        if(defender->maxhp / 10 < 1)
+                player->xp += defender->maxhp * 2;                        // or * 1? or?
+        else
+                player->xp += (defender->maxhp * (defender->maxhp / 10));
+
+        if(player_leveled_up())
+                level_up_player();
+}
+
 /*
  * ATTACK!
  */
@@ -263,10 +313,7 @@ void attack(actor_t *attacker, actor_t *defender)
                         } else {
                                 youc(C_BLACK_GREEN, "kill the %s!", defender->name);
                                 kill_monster(defender);
-                                if(defender->maxhp / 10 < 1)
-                                        player->xp += defender->maxhp * 2;                        // or * 1? or?
-                                else
-                                        player->xp += (defender->maxhp * (defender->maxhp / 10));
+                                award_xp(defender);
                         }
                 }
         } else {

@@ -362,13 +362,14 @@ void draw_wstat()
         mvwprintw(wleft, 7, 1, "Player level: %d", player->level);
         mvwprintw(wleft, 8, 1, "AC: %d", player->ac);
         mvwprintw(wleft, 9, 1, "Dungeon level: %d (out of %d)", game->currentlevel, game->createddungeons);
-        mvwprintw(wleft, 10, 1, "STR: %d", player->attr.str);
-        mvwprintw(wleft, 11, 1, "DEX: %d", player->attr.dex);
-        mvwprintw(wleft, 12, 1, "PHY: %d", player->attr.phy);
-        mvwprintw(wleft, 13, 1, "INT: %d", player->attr.intl);
-        mvwprintw(wleft, 14, 1, "WIS: %d", player->attr.wis);
-        mvwprintw(wleft, 15, 1, "CHA: %d", player->attr.cha);
-        mvwprintw(wleft, 16, 1, "XP:  %d", player->xp);
+        mvwprintw(wleft, 10, 1, "STR:   %d", player->attr.str);
+        mvwprintw(wleft, 11, 1, "DEX:   %d", player->attr.dex);
+        mvwprintw(wleft, 12, 1, "PHY:   %d", player->attr.phy);
+        mvwprintw(wleft, 13, 1, "INT:   %d", player->attr.intl);
+        mvwprintw(wleft, 14, 1, "WIS:   %d", player->attr.wis);
+        mvwprintw(wleft, 15, 1, "CHA:   %d", player->attr.cha);
+        mvwprintw(wleft, 16, 1, "XP:    %d", player->xp);
+        mvwprintw(wleft, 17, 1, "Level: %d", player->level);
 
 
         mvwprintw(wstat, 1, 1, "== INVENTORY ==");

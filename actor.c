@@ -263,6 +263,10 @@ void attack(actor_t *attacker, actor_t *defender)
                         } else {
                                 youc(C_BLACK_GREEN, "kill the %s!", defender->name);
                                 kill_monster(defender);
+                                if(defender->maxhp / 10 < 1)
+                                        player->xp += defender->maxhp * 2;                        // or * 1? or?
+                                else
+                                        player->xp += (defender->maxhp * (defender->maxhp / 10));
                         }
                 }
         } else {

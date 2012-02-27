@@ -368,6 +368,7 @@ void draw_wstat()
         mvwprintw(wleft, 13, 1, "INT: %d", player->attr.intl);
         mvwprintw(wleft, 14, 1, "WIS: %d", player->attr.wis);
         mvwprintw(wleft, 15, 1, "CHA: %d", player->attr.cha);
+        mvwprintw(wleft, 16, 1, "XP:  %d", player->xp);
 
 
         mvwprintw(wstat, 1, 1, "== INVENTORY ==");
@@ -379,11 +380,12 @@ void draw_wstat()
                         //o = get_object_from_letter(slot_to_letter(j), player->inventory);
                         o = player->inventory->object[j];
                         if(is_worn(o)) {
+                                mvwprintw(wstat, i, 1, "%c)   %s %s", slot_to_letter(j), a_an(o->fullname), is_ring(o) ? (o == pw_leftring ? "[<]" : "[>]") : "\0");
                                 wattron(wstat, COLOR_PAIR(COLOR_GREEN));
-                                mvwprintw(wstat, i, 1, "%c) %s %s", slot_to_letter(j), a_an(o->fullname), is_ring(o) ? (o == pw_leftring ? "[<]" : "[>]") : "\0");
+                                mvwprintw(wstat, i, 4, "*"); 
                                 wattroff(wstat, COLOR_PAIR(COLOR_GREEN));
                         } else {
-                                mvwprintw(wstat, i, 1, "%c) %s", slot_to_letter(j), a_an(o->fullname));
+                                mvwprintw(wstat, i, 1, "%c)   %s", slot_to_letter(j), a_an(o->fullname));
                         }
                         i++;
                 }

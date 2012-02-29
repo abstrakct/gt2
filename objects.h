@@ -159,10 +159,12 @@ bool   spawn_object_at(int y, int x, int n, void *level);
 void   unspawn_object(obj_t *m);
 obj_t *spawn_object(int n, void *level);
 bool   place_object_at(obj_t *obj, int y, int x, void *p);
+void   add_to_master_object_list(obj_t *o);
+void   clear_master_object_list();
 
 obj_t  get_objdef(int n);
 int    get_objdef_by_name(char *wanted);
-obj_t *get_object_by_oid(obj_t *i, int oid);
+obj_t *get_object_by_oid(inv_t *i, int oid);
 
 bool   is_pair(obj_t *o);
 bool   is_worn(obj_t *o);      // worn by player, that is..
@@ -189,10 +191,6 @@ void   init_objects();
 
 
 //void init_materials();
-//char *get_def_name(obj_t object);
-//char *a_an(char *s);
-//void uppercase(char *s);
-//void moveobject(obj_t *src, obj_t *dest);
 //int wieldable(obj_t *obj);
 //int wearable(obj_t *obj);
 

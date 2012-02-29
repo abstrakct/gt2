@@ -60,16 +60,13 @@ obj_t get_objdef(int n)
         return *tmp;
 }
 
-obj_t *get_object_by_oid(obj_t *i, int oid)
+obj_t *get_object_by_oid(inv_t *i, int oid)
 {
-        obj_t *tmp;
+        int j;
 
-        tmp = i->next;
-        while(tmp) {
-                if(tmp->oid == oid)
-                        return tmp;
-
-                tmp = tmp->next;
+        for(j = 0; j < 52; j++) {
+                if(i->object[j]->oid == oid)
+                        return i->object[j];;
         }
 
         return 0;
@@ -133,6 +130,14 @@ void remove_from_master_object_list(obj_t *o)
                         return;
                 }
         }
+}
+
+void clear_master_object_list()
+{
+        int i;
+
+        for(i = 0; i < 2000; i++)
+                game->objects[i] = NULL;
 }
 
 void unspawn_object(obj_t *m)

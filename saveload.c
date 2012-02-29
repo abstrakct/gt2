@@ -28,33 +28,27 @@
  */
 void save_object(obj_t *o, FILE *f)
 {
-        fwrite("OBJECT", sizeof(char), 6, f);
-        fwrite(o, sizeof(obj_t), 1, f);
+        if(o) {
+                fwrite(" OBJECT", sizeof(char), 7, f);
+                fwrite(o, sizeof(obj_t), 1, f);
+        } else {
+                fwrite("NOBJECT", sizeof(char), 7, f);
+        }
 }
 
 /*
  * write one list of objects
  */
-void save_inventory(obj_t *i, FILE *f)
+void save_inventory(inv_t *i, FILE *f)
 {
-        obj_t *o;
-        int num;
+        int j;
 
-        num = 0;
         fwrite("INVENTORY", sizeof(char), 9, f);
+        fwrite(&i->num_used, sizeof(short), 1, f);
+        fwrite(&i->gold, sizeof(int), 1, f);
 
-        o = i;
-        while(o) {
-                num++;
-                o = o->next;
-        }
-
-        fwrite(&num, sizeof(int), 1, f);
-        o = i;
-        while(o) {
-                save_object(o, f);
-                o = o->next;
-        }
+        for(j = 0; j < 52; j++)
+                save_object(i->object[j], f);
 }
 
 /* 
@@ -221,7 +215,7 @@ void generate_savefilename(char *filename)
 }
 
 /*
- * Structure of the save file:
+ * Rough structure of the save file:
  *
  * - header struct
  * - gtconfig struct
@@ -299,23 +293,23 @@ obj_t *load_object(FILE *f)
         char str[6];
         obj_t *o;
 
-        fread(str, sizeof(char), 6, f);
-        if(strncmp(str, "OBJECT", 6)) {
-                printf("Object not where expected!");
-                return false;
+        fread(str, sizeof(char), 7, f);
+        if(!strncmp(str, " OBJECT", 7)) {
+                o = gtmalloc(sizeof(obj_t));
+                fread(o, sizeof(obj_t), 1, f);
+                add_to_master_object_list(o); 
+        } else if(!strncmp(str, "NOBJECT", 7)) {
+                o = NULL;
         }
-
-        o = gtmalloc(sizeof(obj_t));
-        fread(o, sizeof(obj_t), 1, f);
 
         return o;
 }
 
-obj_t *load_inventory(FILE *f)
+inv_t *load_inventory(FILE *f)
 {
         char str[9];
-        obj_t *head, *i;
-        int c, j;
+        inv_t *i;
+        int j;
 
         fread(str, sizeof(char), 9, f);
         if(strncmp(str, "INVENTORY", 9)) {
@@ -325,8 +319,13 @@ obj_t *load_inventory(FILE *f)
 
         i = init_inventory();
 
-        fread(&c, sizeof(int), 1, f);
-        i = load_object(f);
+        fread(&i->num_used, sizeof(short), 1, f);
+        fread(&i->gold, sizeof(int), 1, f);
+
+        for(j = 0; j < 52; j++)
+                i->object[j] = load_object(f);
+
+/*      i = load_object(f);
         head = i;
 
         for(j = 1; j < c; j++) {
@@ -342,7 +341,7 @@ obj_t *load_inventory(FILE *f)
         }
 
         i = head;
-
+*/
         return i;
 }
 
@@ -528,6 +527,7 @@ bool load_objdef(obj_t *o, FILE *f)
         return true;
 }
 
+/*
 void load_set_objlets(actor_t *p)
 {
         obj_t *o;
@@ -539,6 +539,7 @@ void load_set_objlets(actor_t *p)
                 o = o->next;
         }
 }
+*/
 
 bool load_player(actor_t *p, FILE *f)
 {
@@ -607,7 +608,7 @@ bool load_player(actor_t *p, FILE *f)
                 }
         }
 
-        load_set_objlets(p);
+        //load_set_objlets(p);
         printf("loadplayerend\n");
         return true;
 }
@@ -645,6 +646,8 @@ bool load_game(char *filename, int ingame)
 
         fread(&gtconfig, sizeof(gt_config_t), 1, f);
         fread(game, sizeof(game_t), 1, f);
+        clear_master_object_list();
+        game->num_objects = 0;
 
         /* player */
         if(!load_player(player, f)) {

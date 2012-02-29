@@ -454,9 +454,8 @@ void spawn_monster(int n, monster_t *head, int maxlevel)
 
 void kill_monster(monster_t *m)
 {
-        // sanity check, can't possibly fail, can it?
         if(world->curlevel->c[m->y][m->x].monster == m) {
-                // we probably should free/remove dead monsters, but something keeps going wrong, there cheap cop-out:
+                // we probably should free/remove dead monsters, but something keeps going wrong, cheap cop-out:
                 setbit(world->curlevel->c[m->y][m->x].monster->flags, MF_ISDEAD);
                 world->curlevel->c[m->y][m->x].monster = NULL;
 

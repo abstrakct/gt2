@@ -262,7 +262,7 @@ void FOVlight(actor_t *a, level_t *l)
 
 void draw_world(level_t *level)
 {
-        int i,j;
+        int i,j, slot;
         int dx, dy;  // coordinates on screen!
         int color;
 
@@ -298,8 +298,9 @@ void draw_world(level_t *level)
                                                         gtmapaddch(dy, dx, COLOR_YELLOW, objchars[OT_GOLD]);
                                                         wattroff(wmap, A_BOLD);
                                                 } else {                                                         // TODO ADD OBJECT COLORS!!!
-                                                        if(level->c[j][i].inventory->object[0]) {
-                                                                gtmapaddch(dy, dx, COLOR_BLUE, objchars[level->c[j][i].inventory->object[0]->type]);
+                                                        slot = get_first_used_slot(level->c[j][i].inventory);
+                                                        if(level->c[j][i].inventory->num_used > 0 && slot >= 0 && level->c[j][i].inventory->object[slot]) {
+                                                                gtmapaddch(dy, dx, COLOR_BLUE, objchars[level->c[j][i].inventory->object[slot]->type]);
                                                         }
                                                 }
                                         }
@@ -483,11 +484,157 @@ void messc(int color, char *message)
         domess();
 }
 
-
-
-
-
 #else
+
+void setup_color_pairs()
+{
+}
+
+bool blocks_light(int y, int x)
+{
+        level_t *l = world->curlevel;
+
+        if(hasbit(l->c[y][x].flags, CF_HAS_DOOR_CLOSED))
+                return true;
+
+        if(l->c[y][x].type == AREA_FOREST || l->c[y][x].type == AREA_CITY || l->c[y][x].type == AREA_VILLAGE) {    // trees and houses can be "see through" (e.g. if they are small)
+                if(perc(20))
+                        return false;
+                else
+                        return true;
+        }
+
+        switch(l->c[y][x].type) {
+                case AREA_NOTHING:
+                case AREA_MOUNTAIN:
+                //case AREA_CITY:
+                //case AREA_VILLAGE:
+                case AREA_WALL:
+                case DNG_WALL:
+                       return true;
+                default:       
+                       return false;
+        }
+
+        // shouldn't be reached...
+        return false;
+}
+
+void clear_map_to_invisible(level_t *l)
+{
+        int x, y;
+
+        for(y = ppy; y < (ppy+game->maph); y++) {
+                for(x = ppx; x < (ppx+game->mapw); x++) {
+                        if(x >= 0 && y >= 0 && x < l->xsize && y < l->ysize)
+                                l->c[y][x].visible = 0;
+                }
+        }
+}
+
+void clear_map_to_unlit(level_t *l)
+{
+        int x, y;
+
+        for(y = 0; y < l->ysize; y++) {
+                for(x = 0; x < l->xsize; x++) {
+                        clearbit(l->c[y][x].flags, CF_LIT);
+                }
+        }
+}
+
+/*
+ * The next two functions are about FOV.
+ * Stolen/adapted from http://roguebasin.roguelikedevelopment.org/index.php/Eligloscode
+ */
+
+void dofov(actor_t *actor, level_t *l, float x, float y)
+{
+        int i;
+        float ox, oy;
+
+        ox = (float) actor->x + 0.5f;
+        oy = (float) actor->y + 0.5f;
+
+        for(i = 0; i < actor->viewradius; i++) {
+                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
+                        l->c[(int)oy][(int)ox].visible = 1;
+                        setbit(l->c[(int)oy][(int)ox].flags, CF_VISITED);
+                        if(blocks_light((int) oy, (int) ox)) {
+                                return;
+                        }/* else {  //SCARY MODE! 
+                                if(perc((100-actor->viewradius)/3))
+                                        return;
+                        }*/
+
+
+                        ox += x;
+                        oy += y;
+                }
+        }
+}
+
+void FOV(actor_t *a, level_t *l)
+{
+        float x, y;
+        int i;
+        //signed int tmpx,tmpy;
+
+        // if dark dungeon
+        clear_map_to_invisible(l);
+
+        for(i = 0; i < 360; i++) {
+                x = cos((float) i * 0.01745f);
+                y = sin((float) i * 0.01745f);
+                dofov(a, l, x, y);
+        }
+}
+
+void dofovlight(actor_t *actor, level_t *l, float x, float y)
+{
+        int i;
+        float ox, oy;
+
+        ox = (float) actor->x + 0.5f;
+        oy = (float) actor->y + 0.5f;
+
+
+        //gtprintf("\tentering dofovlight");
+        for(i = 0; i < (actor->viewradius/2); i++) {       // TODO: add a lightradius in actor_t, calculate it based on stuff
+                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
+                        //gtprintf("\t\tchecking cell %d,%d", (int)oy, (int)ox);
+                        if(hasbit(l->c[(int)oy][(int)ox].flags, CF_LIT))
+                                return;
+
+                        if(l->c[(int)oy][(int)ox].type == DNG_WALL) {
+                                setbit(l->c[(int)oy][(int)ox].flags, CF_LIT);
+                        }
+
+                        if(blocks_light((int) oy, (int) ox)) {
+                                //gtprintf("cell %d,%d blocks light", (int)oy, (int)ox);
+                                return;
+                        }
+
+                        ox += x;
+                        oy += y;
+                }
+        }
+}
+
+void FOVlight(actor_t *a, level_t *l)
+{
+        float x, y;
+        int i;
+
+        //gtprintf("entering FOVlight..");
+        clear_map_to_unlit(l);
+        for(i = 0; i < 360; i++) {
+                x = cos((float) i * 0.01745f);
+                y = sin((float) i * 0.01745f);
+                //fprintf(stderr, "DEBUG: %s:%d - now going to dofovlight i = %d y = %.4f x = %.4f\n", __FILE__, __LINE__, i, y, x);
+                dofovlight(a, l, x, y);
+        }
+}
 
 void init_display()
 {
@@ -499,7 +646,7 @@ void shutdown_display()
         printf("Shutting down dummy display driver!\n");
 }
 
-void draw_world()
+void draw_world(level_t *level)
 {
         printf("Imagine a beautiful landscape... Trees, mountains, birds...\n");
 }
@@ -519,9 +666,9 @@ void update_screen()
         printf("%s:%d - update_screen\n", __FILE__, __LINE__);
 }
 
-char gtgetch()
+int gtgetch()
 {
-        return (char) ri(97,122);
+        return ri(97,122);
 }
 
 void domess()

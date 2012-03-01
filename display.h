@@ -93,21 +93,21 @@ bool blocks_light(int y, int x);
 #define C_WHITE_WHITE           63
 
 
-#define COLOR_PLAIN    0
-#define COLOR_FOREST   2
-#define COLOR_CITY     3
+#define COLOR_PLAIN    C_BLACK_WHITE
+#define COLOR_FOREST   C_BLACK_GREEN
+#define COLOR_CITY     C_BLACK_YELLOW
 #define COLOR_VILLAGE  COLOR_CITY
 #define COLOR_DUNGEON  COLOR_CITY
-#define COLOR_MOUNTAIN 3
-#define COLOR_LAKE     4
+#define COLOR_MOUNTAIN C_BLACK_YELLOW
+#define COLOR_LAKE     C_BLACK_BLUE
 #define COLOR_PLAYER   56
 
-#define COLOR_WARNING 10
-#define COLOR_BAD     COLOR_WARNING
-#define COLOR_GOOD    1               // Green
-#define COLOR_NORMAL  COLOR_PLAIN     // White
+#define COLOR_WARNING C_BLACK_RED
+#define COLOR_BAD     C_BLACK_RED
+#define COLOR_GOOD    C_BLACK_GREEN
+#define COLOR_NORMAL  C_BLACK_WHITE
 #define COLOR_INFO    C_BLACK_YELLOW
-#define COLOR_VISIBLE COLOR_CITY
+#define COLOR_VISIBLE C_BLACK_YELLOW
 
 #define COLOR_SHADE   63
 #define COLOR_LIGHT   62

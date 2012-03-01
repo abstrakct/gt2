@@ -45,7 +45,9 @@ void youc(int color, char *fmt, ...);
 void yousee(char *fmt, ...);
 void gtprintf(char *fmt, ...);
 void gtprintfc(int color, char *fmt, ...);
+#ifdef GT_USE_NCURSES
 void gtprintfwc(WINDOW *win, int color, char *fmt, ...);
+#endif
 char ask_char(char *question);
 char ask_for_hand();
 bool yesno(char *fmt, ...);

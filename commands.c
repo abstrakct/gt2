@@ -79,12 +79,8 @@ cmd_t outsidecommands[] = {
         { 'c',       CMD_DUMPCOLORS, "" },
         { 'p',       CMD_PATHFINDER, "" },
 #endif
-        //{ , CMD_WIELD, "Wield/wear" },
         //{ , CMD_IDENTIFYALL, "Identify everything" },
-        //{ , CMD_DROP, "Drop something" },
-        //{ , CMD_LOAD, "Load" },
         //{ , CMD_SKILLSCREEN, "Show skills" },
-        //{ , CMD_QUIT, "Quit" },
 };
 
 int get_command()

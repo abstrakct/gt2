@@ -8,13 +8,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <unistd.h>
+#include <string.h>
 #include <locale.h>
 #include <time.h>
 #include <signal.h>
 #include <libconfig.h>
-#include <stdbool.h>
 #include <getopt.h>
 
 #ifdef GT_USE_NCURSES
@@ -520,9 +521,12 @@ bool do_action(int action)
                                 youc(COLOR_INFO, "now have %d gold pieces.", player->inventory->gold);
                         }
 
-                        if(ci(ply, plx) && ci(ply, plx)->object[0]) {
-                                pick_up(ci(ply, plx)->object[0], player);
-                                ci(ply, plx)->object[0] = NULL;
+                        if(ci(ply, plx) && ci(ply, plx)->num_used > 0) {
+                                int slot;
+                                slot = get_first_used_slot(ci(ply, plx));
+                                pick_up(ci(ply, plx)->object[slot], player);
+                                ci(ply, plx)->object[slot] = NULL;
+                                ci(ply, plx)->num_used--;
                         }
                         player->ticks -= TICKS_MOVEMENT;
                         break;
@@ -719,6 +723,7 @@ bool do_next_thing_in_queue() // needs a better name..
         struct actionqueue *tmp;
 
         tmp = aq->next;
+        ret = false;
 
         if(tmp) {
                 ret = do_action(tmp->action);
@@ -736,6 +741,7 @@ bool do_all_things_in_queue() // needs a better name..
         bool ret;
 
         tmp = aq->next;
+        ret = false;
 
         while(tmp) {
                 ret = do_next_thing_in_queue();
@@ -795,6 +801,16 @@ void look()
                                 else*/
                                         gtprintf("There is %s and %s here.", a_an(ci(ply, plx)->object[slot]->fullname), a_an(ci(ply, plx)->object[slot2]->fullname));
                         }
+
+                        if(ci(ply, plx)->num_used > 2) {
+                                int i;
+
+                                gtprintf("There are several things here:");
+                                for(i=0;i<52;i++) {
+                                        if(ci(ply, plx)->object[i])
+                                                gtprintf("%s", a_an(ci(ply, plx)->object[i]->fullname));
+                                }
+                        }
                 }
         }
 }
@@ -812,6 +828,7 @@ void do_turn(int do_all)
         queue(ACTION_MOVE_MONSTERS);
         if(game->turn % 2)                      // TODO: Better condition... based on physique etc.
                 queue(ACTION_HEAL_PLAYER);
+
         i = aq->num;
 
         while(i) {
@@ -827,7 +844,6 @@ void do_turn(int do_all)
                 draw_world(world->curlevel);
                 draw_wstat();
                 update_screen();
-
         }
 }
 
@@ -983,10 +999,10 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_DUMPCOLORS:
                                 for(x = 0;  x < 64; x++) {
-                                        gtprintfwc(wstat, x, "This is color %d  ", x);
+                                        /*gtprintfwc(wstat, x, "This is color %d  ", x);
                                         wattron(wstat, A_BOLD);
                                         gtprintfwc(wstat, x, "This is BOLD color %d  ", x);
-                                        wattroff(wstat, A_BOLD);
+                                        wattroff(wstat, A_BOLD);*/
                                 }
                                 queue(ACTION_NOTHING);
                                 break;

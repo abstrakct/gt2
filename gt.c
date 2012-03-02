@@ -805,7 +805,7 @@ void look()
                         if(ci(ply, plx)->num_used > 2) {
                                 int i;
 
-                                gtprintf("There are several things here:");
+                                gtprintfc(COLOR_INFO, "There are several things here:");
                                 for(i=0;i<52;i++) {
                                         if(ci(ply, plx)->object[i])
                                                 gtprintf("%s", a_an(ci(ply, plx)->object[i]->fullname));

@@ -37,22 +37,22 @@ typedef struct { // uattr_t
 #define pdex player->attr.dex
 #define pcha player->attr.cha
 
-#define SLOT_HEAD      0
-#define SLOT_BODY      1
-#define SLOT_GLOVES    2
-#define SLOT_FOOTWEAR  3
-#define SLOT_CLOAK     4
-#define SLOT_AMULET    5
-#define SLOT_LEFTRING  6
-#define SLOT_RIGHTRING 7
-#define pw_headgear  player->w[SLOT_HEAD]
-#define pw_body      player->w[SLOT_BODY]
-#define pw_gloves    player->w[SLOT_GLOVES]
-#define pw_footwear  player->w[SLOT_FOOTWEAR]
-#define pw_cloak     player->w[SLOT_CLOAK]
-#define pw_amulet    player->w[SLOT_AMULET]
-#define pw_leftring  player->w[SLOT_LEFTRING]
-#define pw_rightring player->w[SLOT_RIGHTRING]
+#define SLOT_HEAD          0
+#define SLOT_BODY          1
+#define SLOT_GLOVES        2
+#define SLOT_FOOTWEAR      3
+#define SLOT_CLOAK         4
+#define SLOT_AMULET        5
+#define SLOT_LEFTBRACELET  6
+#define SLOT_RIGHTBRACELET 7
+#define pw_headgear      player->w[SLOT_HEAD]
+#define pw_body          player->w[SLOT_BODY]
+#define pw_gloves        player->w[SLOT_GLOVES]
+#define pw_footwear      player->w[SLOT_FOOTWEAR]
+#define pw_cloak         player->w[SLOT_CLOAK]
+#define pw_amulet        player->w[SLOT_AMULET]
+#define pw_leftbracelet  player->w[SLOT_LEFTBRACELET]
+#define pw_rightbracelet player->w[SLOT_RIGHTBRACELET]
 
 #define WEAR_SLOTS             8
 

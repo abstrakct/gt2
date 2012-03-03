@@ -358,7 +358,7 @@ void draw_wstat()
                 color = COLOR_PAIR(COLOR_RED);
         mvwprintw(wleft, 6, 1, "HP:");
         wattron(wleft, color);
-        mvwprintw(wleft, 6, 5, "%d (%.1f%%)", player->hp, ((float)(100/(float)player->maxhp) * (float)player->hp));
+        mvwprintw(wleft, 6, 5, "%d/%d (%.1f%%)", player->hp, player->maxhp, ((float)(100/(float)player->maxhp) * (float)player->hp));
         wattroff(wleft, color);
         mvwprintw(wleft, 7, 1, "Player level: %d", player->level);
         mvwprintw(wleft, 8, 1, "AC: %d", player->ac);
@@ -382,7 +382,7 @@ void draw_wstat()
                         //o = get_object_from_letter(slot_to_letter(j), player->inventory);
                         o = player->inventory->object[j];
                         if(is_worn(o)) {
-                                mvwprintw(wstat, i, 1, "%c)   %s %s", slot_to_letter(j), a_an(o->fullname), is_ring(o) ? (o == pw_leftring ? "[<]" : "[>]") : "\0");
+                                mvwprintw(wstat, i, 1, "%c)   %s %s", slot_to_letter(j), a_an(o->fullname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
                                 wattron(wstat, COLOR_PAIR(COLOR_GREEN));
                                 mvwprintw(wstat, i, 4, "*"); 
                                 wattroff(wstat, COLOR_PAIR(COLOR_GREEN));

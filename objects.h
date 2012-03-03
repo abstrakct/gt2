@@ -59,7 +59,7 @@ typedef struct {
 #define OT_GOLD       1
 #define OT_WEAPON     2
 #define OT_ARMOR      3
-#define OT_RING       4
+#define OT_BRACELET       4
 #define OT_AMULET     5
 #define OT_CARD       6
 #define OT_WAND       7
@@ -70,7 +70,7 @@ extern char *otypestrings[];
 
 #define OF_MAGIC      0x00000001
 #define OF_EATABLE    0x00000002
-#define OF_ID_MOD     0x00000004      // set if modifier is known (e.g. if player knows that this is a +1 ring of whatever, not just a ring of whatever
+#define OF_ID_MOD     0x00000004      // set if modifier is known (e.g. if player knows that this is a +1 bracelet of whatever, not just a bracelet of whatever
 #define OF_IDENTIFIED 0x00000008
 #define OF_BAD        0x00000010
 #define OF_GOOD       0x00000020
@@ -122,7 +122,7 @@ extern char *otypestrings[];
 #define MAT_BLOODWOOD 15
 
 #define MATERIALS     15
-extern int mats_rings[MATERIALS];
+extern int mats_bracelets[MATERIALS];
 extern int mats_amulets[MATERIALS];
 
 // defines so that we can easily use fields in obj_t for various stuff
@@ -131,7 +131,7 @@ extern int mats_amulets[MATERIALS];
 // and some nice macros
 #define is_armor(a)         (a->type  == OT_ARMOR)
 #define is_weapon(a)        (a->type  == OT_WEAPON)
-#define is_ring(a)          (a->type  == OT_RING)
+#define is_bracelet(a)          (a->type  == OT_BRACELET)
 #define is_amulet(a)        (a->type  == OT_AMULET)
 
 #define do_identify(a)      (a->flags|= OF_IDENTIFIED)
@@ -220,7 +220,7 @@ typedef struct obj_list obj_l;
 #define MAGIC_ARMOR(flags, base, unid, ac, mod) OBJ(OT_ARMOR, OF_MAGIC | flags, 0, base, unid, mod, 0, ac, 0)
 #define CARD(flags, base, unid) OBJ(OT_CARD, OF_MAGIC | flags, 1, base, unid, 0, 0, 0, 0)
 #define WAND(flags, base) OBJ(OT_WAND, OF_MAGIC | flags, 0, base, "wand", 0, 0, 0, 0)
-#define RING(flags, base, mod) OBJ(OT_RING, OF_MAGIC | flags, 0, base, "ring", mod, 0, 0, 0)
+#define BRACELET(flags, base, mod) OBJ(OT_BRACELET, OF_MAGIC | flags, 0, base, "bracelet", mod, 0, 0, 0)
 #define THING(flags, base, unid) OBJ(OT_THING, flags, 0, base, unid, 0, 0, 0, 0)
 
 #define END_OBJECTS };

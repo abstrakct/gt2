@@ -361,16 +361,16 @@ int parse_amulet()
 }
 
 
-int parse_ring()
+int parse_bracelet()
 {
         config_setting_t *cfg;
         int i, j, material;
         char sname[100];
         const char *value;
 
-        cfg = config_lookup(cf, "ring");
+        cfg = config_lookup(cf, "bracelet");
         i = config_setting_length(cfg);
-        printf("Parsing jewelry file... We have %d rings", i);
+        printf("Parsing jewelry file... We have %d bracelets", i);
         material = 1;
         for(j = 0; j < i; j++) {
                 obj_t *o;
@@ -378,14 +378,14 @@ int parse_ring()
 
                 o = (obj_t *) gtmalloc(sizeof(obj_t));
 
-                sprintf(sname, "ring.[%d].name", j);
+                sprintf(sname, "bracelet.[%d].name", j);
                 config_lookup_string(cf, sname, &value);
                 strcpy(o->basename, value);
                 
-                sprintf(sname, "ring.[%d].brand", j);
+                sprintf(sname, "bracelet.[%d].brand", j);
                 config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "stat")) {                     // This means this ring modifies a stat
-                        sprintf(sname, "ring.[%d].stat", j);
+                if(!strcmp(value, "stat")) {                     // This means this bracelet modifies a stat
+                        sprintf(sname, "bracelet.[%d].stat", j);
                         config_lookup_string(cf, sname, &value);
 
                         if(!strcmp(value, "strength")) 
@@ -402,27 +402,27 @@ int parse_ring()
                                 add_effect(o, OE_CHARISMA);
                 }
 
-                sprintf(sname, "ring.[%d].unique", j);
+                sprintf(sname, "bracelet.[%d].unique", j);
                 config_lookup_bool(cf, sname, &x);
                 if(x)
                         setbit(o->flags, OF_UNIQUE);
 
                 x = 0;
-                sprintf(sname, "ring.[%d].obvious", j);
+                sprintf(sname, "bracelet.[%d].obvious", j);
                 config_lookup_bool(cf, sname, &x);
                 if(x)
                         setbit(o->flags, OF_OBVIOUS);
 
                 x = 0;
-                sprintf(sname, "ring.[%d].mod", j);
+                sprintf(sname, "bracelet.[%d].mod", j);
                 config_lookup_int(cf, sname, &x);
                 o->attackmod = o->damagemod = x;
 
-                o->type = OT_RING;
+                o->type = OT_BRACELET;
                 o->id = objid; objid++;
                 clearbit(o->flags, OF_IDENTIFIED);
 
-                o->material = mats_rings[material];
+                o->material = mats_bracelets[material];
                 material++;
                 if(material > MATERIALS)
                         die("whoa! we ran out of material!");
@@ -445,7 +445,7 @@ int parse_jewelry()
 {
         int ret;
 
-        ret = parse_ring();
+        ret = parse_bracelet();
         ret = parse_amulet();
 
         return ret;

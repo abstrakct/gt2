@@ -24,7 +24,7 @@
 
 // statistical debug stuff
 int pluses, minuses;
-int mats_rings[MATERIALS];
+int mats_bracelets[MATERIALS];
 int mats_amulets[MATERIALS];
 
 unsigned int oid_counter;
@@ -33,7 +33,7 @@ char objchars[] = {
         '$',               // gold
         ')',               // weapon
         '[',               // armor
-        '=',               // ring
+        'o',               // bracelet
         '"',               // amulet  (evt. 186!)
         '*',               // card    (evt. 246!)
         '/',               // wand
@@ -200,7 +200,7 @@ void generate_fullname(obj_t *o)
                         sprintf(n,  "%d ", o->attackmod);
 
                 strcat(n, o->basename); 
-        } else if(o->type == OT_RING) {
+        } else if(o->type == OT_BRACELET) {
                 if(is_identified(o) && is_id_mod(o)) {
                         if(o->attackmod > 0)
                                 sprintf(n, "+%d ", o->attackmod);
@@ -210,7 +210,7 @@ void generate_fullname(obj_t *o)
                 } else if(is_identified(o) && !is_id_mod(o)) {
                         sprintf(n, "%s", o->basename);
                 } else if(!is_identified(o)) {
-                        sprintf(n, "%s ring", materialstring[(int)o->material]);
+                        sprintf(n, "%s bracelet", materialstring[(int)o->material]);
                 }
         } else if(o->type == OT_AMULET) {
                 if(is_identified(o)) {
@@ -273,13 +273,13 @@ obj_t *spawn_object(int n, void *level)
         // maybe this object is magical?
         // TODO: move this to separate function(s)!!!!
 
-        if(!is_unique(new) && (is_weapon(new) || is_armor(new) || is_ring(new))) {
-                if(new->type == OT_RING)
+        if(!is_unique(new) && (is_weapon(new) || is_armor(new) || is_bracelet(new))) {
+                if(new->type == OT_BRACELET)
                         while(!new->attackmod)
                                 new->attackmod = ri(-1, 1);
 
                 if(perc(50+(player->level*2))) {
-                        if(perc(40)) {                // a ring must be at least +/- 1 (or 0 for malfunctioning rings!)
+                        if(perc(40)) {                // a bracelet must be at least +/- 1 (or 0 for malfunctioning bracelets!)
                                 if(perc(66))
                                         new->attackmod = ri(0, 1);
                                 else
@@ -513,7 +513,7 @@ void puton(int slot, obj_t *o)
 
 void wear(obj_t *o)
 {
-        if(is_ring(o)) {
+        if(is_bracelet(o)) {
                 char c;
 
                 c = ask_for_hand();
@@ -522,28 +522,28 @@ void wear(obj_t *o)
                         return;
                 }
                 if(c == 'l') {
-                        if(pw_leftring) {
-                                if(!yesno("Do you want to remove your %s", pw_leftring->fullname)) {
+                        if(pw_leftbracelet) {
+                                if(!yesno("Do you want to remove your %s", pw_leftbracelet->fullname)) {
                                         gtprintf("OK then.");
                                         return;
                                 } else {
-                                        unwear(pw_leftring);
-                                        puton(SLOT_LEFTRING, o);
+                                        unwear(pw_leftbracelet);
+                                        puton(SLOT_LEFTBRACELET, o);
                                 }
                         } else {
-                                puton(SLOT_LEFTRING, o);
+                                puton(SLOT_LEFTBRACELET, o);
                         }
                 } else if(c == 'r') {
-                        if(pw_rightring) {
-                                if(!yesno("Do you want to remove your %s", pw_rightring->fullname)) {
+                        if(pw_rightbracelet) {
+                                if(!yesno("Do you want to remove your %s", pw_rightbracelet->fullname)) {
                                         gtprintf("OK then.");
                                         return;
                                 } else {
-                                        unwear(pw_rightring);
-                                        puton(SLOT_RIGHTRING, o);
+                                        unwear(pw_rightbracelet);
+                                        puton(SLOT_RIGHTBRACELET, o);
                                 }
                         } else {
-                                puton(SLOT_RIGHTRING, o);
+                                puton(SLOT_RIGHTBRACELET, o);
                         }
                 }
 
@@ -772,13 +772,13 @@ void init_objects()
 {
         int i, j;
 
-        mats_rings[0] = mats_amulets[0] = 0;
+        mats_bracelets[0] = mats_amulets[0] = 0;
 
         for(i = 0; i <= MATERIALS; i++) {
                 j = ri(1, MATERIALS);
-                while(mats_rings[j] != 0)
+                while(mats_bracelets[j] != 0)
                         j = ri(1, MATERIALS);
-                mats_rings[j] = i;
+                mats_bracelets[j] = i;
         }
 
         for(i = 0; i <= MATERIALS; i++) {

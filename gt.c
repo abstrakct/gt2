@@ -40,7 +40,7 @@ char *otypestrings[50] = {
         "Gold",
         "Weapon",
         "Armor",
-        "Ring",
+        "Bracelet",
         "Amulet",
         "Card",
         "Wand",

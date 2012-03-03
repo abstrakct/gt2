@@ -23,6 +23,48 @@
 config_t *cf;
 int objid;             // to keep track of all parsed objects, to give each a unique ID
 
+int parse_roomdef_file(char *filename)
+{
+        FILE *f;
+        int y, x, i, j;
+        char c;
+        roomdef_t r;
+
+        f = fopen(filename, "r");
+        if(!f)
+                return 1;
+        fscanf(f, "%d,%d\n", &y, &x);
+        r.y = y;
+        r.x = x;
+        r.c = (cell_t **) gtmalloc2d(y, x, sizeof(cell_t));
+
+        for(i = 0; i < y; i++) {
+                for(j = 0; j < x; j++) {
+                        fscanf(f, "%c", &c);
+                        r.c[i][j].type = c;
+                        printf("%c", r.c[i][j].type);
+                        switch(c) {
+                                case '#': r.c[i][j].type = DNG_WALL; break;
+                                case '.': r.c[i][j].type = DNG_FLOOR; break;
+                                case '+': r.c[i][j].type = DNG_FLOOR; 
+                                          setbit(r.c[i][j].flags, CF_HAS_DOOR_CLOSED); break;
+                                case 't': break;
+                                case 'm': break;
+                                default: break;
+                        }
+                }
+                fscanf(f, "\n");
+                printf("\n");
+        }
+
+        return 0;
+}
+
+int parse_roomdef_files()
+{
+        return parse_roomdef_file("data/room/despair.1.room");
+}
+
 int parse_monsters()
 {
         config_setting_t *cfg_monsters;
@@ -360,7 +402,6 @@ int parse_amulet()
         return 0;
 }
 
-
 int parse_bracelet()
 {
         config_setting_t *cfg;
@@ -533,5 +574,8 @@ int parse_data_files(int option)
         ret = parse_monsters();
 
         config_destroy(cf);
+
+        ret = parse_roomdef_files();
+
         return ret;
 }

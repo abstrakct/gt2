@@ -11,8 +11,8 @@
 #endif
 
 #define clearbit(a, b) ((a) &= ~(b))
-#define setbit(a, b)   ((a) |=  (b))
-#define hasbit(a, b)   ((a) &   (b))
+#define   setbit(a, b) ((a) |=  (b))
+#define   hasbit(a, b) ((a) &   (b))
 
 #define SGN(a) (((a)<0) ? -1 : 1)
 

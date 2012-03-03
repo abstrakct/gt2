@@ -95,6 +95,12 @@ typedef struct {
         short    forests, cforest;
 } world_t;
 
+typedef struct {
+        int    y, x;
+        cell_t **c;
+} roomdef_t;
+
+
 // CELLFLAGS
 
 #define CF_HAS_STAIRS_DOWN (1<<0)

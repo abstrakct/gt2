@@ -381,8 +381,8 @@ void generate_dungeon_type_3(int d)
         level_t *l;
 
         l = &world->dng[d];
-        q = ri(80, 230);
-        r = ri(80, 230);
+        q = ri(80, l->ysize);
+        r = ri(100, l->xsize);
 
         for(i = 2; i < q; i++) {
                 x = l->xsize / 2;
@@ -947,9 +947,9 @@ void meta_generate_dungeon(int type, int d)
 
                 if(type == 3) {
                         world->dng[d].ysize = ri(100, 200);
-                        world->dng[d].xsize = ri(150, 250);
+                        world->dng[d].xsize = ri(200, 300);
                 } else {
-                        world->dng[d].xsize = (ri(50, 100));  // let's start within reasonable sizes!
+                        world->dng[d].xsize = (ri(70, 120));  // let's start within reasonable sizes!
                         world->dng[d].ysize = (ri(50, 100));
                 }
 
@@ -966,12 +966,18 @@ void meta_generate_dungeon(int type, int d)
                 if(type == 3)
                         generate_dungeon_type_3(d);
 
-                num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 20;
-                mino = (world->dng[d].ysize + world->dng[d].xsize) / 40;
-                maxo = (world->dng[d].ysize + world->dng[d].xsize) / 20;
+                if(type == 3) {
+                        num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 100;
+                        mino = (world->dng[d].ysize + world->dng[d].xsize) / 80;
+                        maxo = (world->dng[d].ysize + world->dng[d].xsize) / 60;
+                } else {
+                        num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 20;
+                        mino = (world->dng[d].ysize + world->dng[d].xsize) / 40;
+                        maxo = (world->dng[d].ysize + world->dng[d].xsize) / 20;
+                }
 
                 spawn_monsters(num_monsters, d+2, &world->dng[d]);
-                spawn_golds((int) ri(10, 10+world->dng[d].xsize / 15), (player->level+1) * 35, &world->dng[d]);
+                spawn_golds((int) ri(5, 15), 45, &world->dng[d]);
                 spawn_objects(ri(mino, maxo), &world->dng[d]);
 
                 game->createddungeons++;

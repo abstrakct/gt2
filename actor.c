@@ -266,10 +266,29 @@ void level_up_player()
 
 void award_xp(actor_t *defender)
 {
+        int ret;
+
+        ret = 0;
+
+        if(defender->attr.str >= 15)
+                ret += defender->attr.str - 13;
+        if(defender->attr.phy >= 15)
+                ret += defender->attr.phy - 13;
+        if(defender->attr.intl >= 15)
+                ret += defender->attr.intl - 13;
+        if(defender->attr.wis >= 15)
+                ret += defender->attr.wis - 13;
+        if(defender->attr.dex >= 15)
+                ret += defender->attr.dex - 13;
+        if(defender->attr.cha >= 15)
+                ret += defender->attr.cha - 13;
+
         if(defender->maxhp / 10 < 1)
-                player->xp += defender->maxhp * 2;                        // or * 1? or?
+                ret += defender->maxhp * 2;                        // or * 1? or?
         else
-                player->xp += (defender->maxhp * (defender->maxhp / 10));
+                ret += (defender->maxhp * (defender->maxhp / 10));
+
+        player->xp += ret;
 
         if(player_leveled_up())
                 level_up_player();

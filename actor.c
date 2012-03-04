@@ -31,18 +31,19 @@ obj_t *objlet[52];    // 52 pointers to objects, a-z & A-Z
 int level_table[] = {
             0,          // level "0"
             0,          // level 1
-          100,          // level 2
-          200,          // etc
-          400,
-          800,
-         1600,
-         3200,
-         6400,
-        12800,
-        25600,          // FIX Later: are these numbers reasonable?
-        38400,
-        51200,
-       102400, 
+           50,          // level 2
+           80,          // level 3
+          160,          // etc
+          320,
+          577,
+          666,
+         1000,
+         2000,
+         4000,
+         8000,          // FIX Later: are these numbers reasonable?
+        16384,
+        32768,
+        50000, 
 };
 
 #define MAX_PLAYER_LEVEL ((sizeof(level_table) / sizeof(int)) - 1)
@@ -306,12 +307,12 @@ void attack(actor_t *attacker, actor_t *defender)
         if(attack >= defense) {  // it's a hit!
                 if(attacker == player) {
                         if(damage <= 0)
-                                youc(COLOR_INFO, "You hit the %s, but do no damage!", defender->name);
+                                youc(C_BLACK_WHITE, "You hit the %s, but do no damage!", defender->name);
                         else
-                                youc(C_BLACK_GREEN, "hit the %s with a %s for %d damage!", defender->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                                youc(C_BLACK_RED, "hit the %s with a %s for %d damage!", defender->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
                 } else {
                         if(damage <= 0)
-                                gtprintfc(COLOR_INFO, "The %s hits you, but does no damage!", attacker->name);
+                                gtprintfc(C_BLACK_WHITE, "The %s hits you, but does no damage!", attacker->name);
                         else
                                 gtprintfc(C_BLACK_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
                 }
@@ -323,16 +324,16 @@ void attack(actor_t *attacker, actor_t *defender)
                         if(defender == player) {
                                 you("die!!!");
                         } else {
-                                youc(C_BLACK_GREEN, "kill the %s!", defender->name);
+                                youc(C_BLACK_RED, "kill the %s!", defender->name);
                                 kill_monster(world->curlevel, defender);
                                 award_xp(defender);
                         }
                 }
         } else {
                 if(attacker == player)
-                        youc(C_BLACK_RED, "miss the %s!", defender->name);
+                        youc(C_BLACK_WHITE, "miss the %s!", defender->name);
                 else
-                        gtprintfc(C_BLACK_GREEN, "The %s tries to hit you, but fails!", attacker->name);
+                        gtprintfc(C_BLACK_WHITE, "The %s tries to hit you, but fails!", attacker->name);
         }
 
         if(attacker == player)

@@ -89,8 +89,7 @@ void clear_area(level_t *l, int y1, int x1, int y2, int x2)
 }
 
 /*
- * this function cleans the dungeon for stuff
- * made by the dungeon generator which shouldn't be there.
+ * this function cleans the dungeon for stuff made by the dungeon generator which shouldn't be there.
  */
 void cleanup_dungeon(level_t *l)
 {

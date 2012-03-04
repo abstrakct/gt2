@@ -121,9 +121,6 @@ int parse_monsters()
                 sprintf(sname, "monsters.[%d].speed", j);
                 config_lookup_float(cf, sname, &(m->speed));
 
-                sprintf(sname, "monsters.[%d].thac0", j);
-                config_lookup_int(cf, sname, &(m->thac0));
-
                 sprintf(sname, "monsters.[%d].havegold", j);
                 if(config_lookup_bool(cf, sname, &boolval))
                         if(boolval)

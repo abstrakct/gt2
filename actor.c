@@ -31,8 +31,8 @@ obj_t *objlet[52];    // 52 pointers to objects, a-z & A-Z
 int level_table[] = {
             0,          // level "0"
             0,          // level 1
-           50,          // level 2
-           80,          // level 3
+           40,          // level 2
+           90,          // level 3
           160,          // etc
           320,
           577,

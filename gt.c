@@ -132,8 +132,6 @@ void init_variables()
 * *******************************************/
 void init_player()
 {
-        int i;
-
         // TODO: Character generation!!
         plx = game->mapw / 2;
         ply = game->maph / 2;
@@ -151,14 +149,8 @@ void init_player()
         player->attr.cha  = dice(3, 6, 0);
         player->attr.intl = dice(3, 6, 0);
 
-        // TODO: Starting HP - FIX?
-        player->hp = player->maxhp = (d(2, 6)) + (player->attr.phy/2);
-
-        // TODO: FIXXX!!!!!
-        player->thac0 = (player->attr.dex / 2) + (player->attr.str / 2);
-
-        for(i=0;i<52;i++)
-                objlet[i] = NULL;
+        // TODO: Starting HP - FIX according to race etc.
+        player->hp = player->maxhp = (dice(1, 10, 7)) + ability_modifier(player->attr.phy);
 }
 
 void shutdown_gt()

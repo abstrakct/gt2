@@ -134,7 +134,6 @@ void save_monsterdef(monster_t *m, FILE *f)
         s.level = m->level;
         s.hp = m->hp;
         s.speed = m->speed;
-        s.thac0 = m->thac0;
         s.flags = m->flags;
         s.aitableindex = m->mid;
         s.viewradius = m->viewradius;
@@ -391,7 +390,6 @@ bool load_monster(monster_t *m, level_t *l, FILE *f)
         m->flags = mdef.flags;
         m->c = mdef.c;
         m->speed = mdef.speed;
-        m->thac0 = mdef.thac0;
         m->ai = mdef.ai;
 
         l->c[m->y][m->x].monster = m;
@@ -486,7 +484,6 @@ bool load_monsterdef(monster_t *m, FILE *f)
         m->level = s.level;
         m->hp = s.hp;
         m->speed = s.speed;
-        m->thac0 = s.thac0;
         m->flags = s.flags;
         m->ai = aitable[s.aitableindex];
         m->viewradius = s.viewradius;

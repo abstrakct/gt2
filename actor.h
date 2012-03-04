@@ -83,10 +83,9 @@ typedef struct actorstruct {            // actor_t
         double       speed;
         double       movement;
         long long    ticks;
-         int          thac0;
         float        skill[MAX_SKILLS];
-        //char         wvfactor;
-        //short        worldview;
+        char         wvfactor;
+        short        worldview;
 
         /* monster specific stuff */
         void               (*ai)(struct actorstruct *);      // artificial intelligence handler!!
@@ -114,5 +113,6 @@ void attack(actor_t *attacker, actor_t *victim);
 void increase_hp(actor_t *a, int amount);
 void move_player_to_stairs_down(int d);
 void move_player_to_stairs_up(int d);
+int ability_modifier(int ab);
 
 #endif

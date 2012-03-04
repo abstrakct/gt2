@@ -27,7 +27,7 @@ void dump_monsterdefs()
         for(i=0;i<monsterdefs->head->x;i++) {
                 m = n->next;
                 gtprintf("%s\t%c\nstr\t%d\tphy\t%d\tintl\t%d\twis\t%d\tdex\t%d\tcha\t%d\n", m->name, m->c, m->attr.str, m->attr.phy, m->attr.intl, m->attr.wis, m->attr.dex, m->attr.cha);
-                gtprintf("hp\t%d\tthac0\t%d\tlevel\t%d\tspeed\t%.1f\n", m->hp, m->thac0, m->level, m->speed);
+                gtprintf("hp\t%d\t\tlevel\t%d\tspeed\t%.1f\n", m->hp, m->level, m->speed);
                 gtprintf("Can use weapon: %s\tCan use armor: %s\tCan have gold: %s\n", m->flags & MF_CANUSEWEAPON ? "Yes" : "No", m->flags & MF_CANUSEARMOR ? "Yes" : "No", m->flags & MF_CANHAVEGOLD ? "Yes" : "No");
                 gtprintf("\n");
                 n = m;

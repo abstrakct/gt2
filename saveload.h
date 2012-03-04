@@ -22,7 +22,6 @@ struct monsterdef_save_struct {
         int     level;
         int     hp;                 // == maxhp
         float   speed;
-        int     thac0;
         long    flags;
         int     aitableindex;       // == the field mid
         short   viewradius;
@@ -63,7 +62,6 @@ struct player_save_struct {
         long    flags;
         double  speed;
         double  movement;
-        int     thac0;
         float   skill[MAX_SKILLS];
 };
 

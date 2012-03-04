@@ -62,6 +62,8 @@ struct player_save_struct {
         long    flags;
         double  speed;
         double  movement;
+        char    wvfactor;
+        short   worldview;
         float   skill[MAX_SKILLS];
 };
 

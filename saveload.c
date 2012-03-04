@@ -194,6 +194,8 @@ void save_player(actor_t *p, FILE *f)
         s.flags = p->flags;
         s.speed = p->speed;
         s.movement = p->movement;
+        s.wvfactor = p->wvfactor;
+        s.worldview = p->worldview;
         s.weapon = (p->weapon ? p->weapon->oid : 0);
 
         for(i = 0; i < WEAR_SLOTS; i++)
@@ -324,23 +326,6 @@ inv_t *load_inventory(FILE *f)
         for(j = 0; j < 52; j++)
                 i->object[j] = load_object(f);
 
-/*      i = load_object(f);
-        head = i;
-
-        for(j = 1; j < c; j++) {
-                i->head = head;
-                //i->next = i->prev = NULL;
-                i->next = load_object(f);
-                if(!i->next) {
-                        printf("load_object failed!\n");
-                        return false;
-                }
-                i = i->next;
-                //printf("loaded object %s (oid %d)\n", i->basename, i->oid);
-        }
-
-        i = head;
-*/
         return i;
 }
 
@@ -524,20 +509,6 @@ bool load_objdef(obj_t *o, FILE *f)
         return true;
 }
 
-/*
-void load_set_objlets(actor_t *p)
-{
-        obj_t *o;
-
-        o = p->inventory;
-        while(o) {
-                if(o->type != OT_GOLD)
-                        assign_letter(o->slot, o);
-                o = o->next;
-        }
-}
-*/
-
 bool load_player(actor_t *p, FILE *f)
 {
         struct player_save_struct s;
@@ -572,6 +543,8 @@ bool load_player(actor_t *p, FILE *f)
         p->flags = s.flags;
         p->speed = s.speed;
         p->movement = s.movement;
+        p->worldview = s.worldview;
+        p->wvfactor  = s.wvfactor;
         for(i = 0; i < MAX_SKILLS; i++)
                 p->skill[i] = s.skill[i];
                 

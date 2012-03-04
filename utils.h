@@ -51,6 +51,7 @@ void gtprintfwc(WINDOW *win, int color, char *fmt, ...);
 char ask_char(char *question);
 char ask_for_hand();
 bool yesno(char *fmt, ...);
+void more();
 
 char *a_an(char *s);
 char *Upper(char *s);

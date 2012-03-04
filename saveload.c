@@ -313,7 +313,7 @@ inv_t *load_inventory(FILE *f)
 
         fread(str, sizeof(char), 9, f);
         if(strncmp(str, "INVENTORY", 9)) {
-                gtprintf("Inventory not where expected! This won't end well!");
+                fprintf(stderr, "Inventory not where expected! This won't end well!");
                 return false;
         }
 
@@ -353,8 +353,8 @@ bool load_monster(monster_t *m, level_t *l, FILE *f)
 
         fread(str, sizeof(char), 7, f);
         if(strncmp(str, "MONSTER", 7)) {
-                gtprintf("NO THIS IS NOT A MONSTER");
-                gtprintf("load_monster! STR=%s", str);
+                fprintf(stderr, "NO THIS IS NOT A MONSTER");
+                fprintf(stderr, "load_monster! STR=%s", str);
                 return false;
         }
 
@@ -461,7 +461,7 @@ bool load_level(level_t *l, FILE *f)
                                 return false;
                         }
 
-        gtprintf("loaded level!");
+        printf("loaded level!");
         return true;
 }
 
@@ -622,7 +622,7 @@ bool load_game(char *filename, int ingame)
         int i;
         char cmd[100];
 
-        gtprintf("Loading game from %s", filename);
+        printf("Loading game from %s", filename);
         
         if(filename[strlen(filename)-1] == 'z' && filename[strlen(filename)-2] == 'x') {               // it's pretty likely to be compressed with xz!
                 sprintf(cmd, "xz -d %s", filename);
@@ -638,11 +638,11 @@ bool load_game(char *filename, int ingame)
 
         fread(&header, sizeof(struct savefile_header), 1, f);
         if(header.magic != GT_SAVEFILE_MAGIC) {
-                gtprintf("This doesn't look like a GT savefile to me!");
+                fprintf(stderr, "This doesn't look like a GT savefile to me!");
                 return false;
         }
         if(header.version.major != GT_VERSION_MAJ || header.version.minor != GT_VERSION_MIN || header.version.revision != GT_VERSION_REV)
-                gtprintf("Warning: Save file doesn't match current version number. This may or may not work...!");
+                fprintf(stderr, "Warning: Save file doesn't match current version number. This may or may not work...!");
 
         fread(&gtconfig, sizeof(gt_config_t), 1, f);
         fread(game, sizeof(game_t), 1, f);
@@ -706,6 +706,6 @@ bool load_game(char *filename, int ingame)
         }
 
         fclose(f);
-        gtprintf("Loading successful!");
+        printf("Loading successful!");
         return true;
 }

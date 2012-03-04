@@ -267,6 +267,20 @@ bool yesno(char *fmt, ...)
         return false;
 }
 
+void more()
+{
+        char c;
+
+        gtprintfc(COLOR_WHITE, "-- more --");
+        while(1) {
+                c = gtgetch();
+                if(c == 13 || c == 32) {
+                        delete_last_message();
+                        return;
+                }
+        }
+}
+
 #ifdef GT_USE_NCURSES
 void gtprintfwc(WINDOW *win, int color, char *fmt, ...)
 {

@@ -620,8 +620,7 @@ bool do_action(int action)
                                 i = 1;
 
                         if(game->turn % i) {
-                                if(player->hp != player->maxhp)
-                                        player->hp++;
+                                increase_hp(player, 1);
                         }
 
                         fullturn = false;
@@ -825,7 +824,9 @@ void do_turn(int do_all)
 
         if(game->currentlevel)
                 queue(ACTION_MAKE_DISTANCEMAP);
+
         queue(ACTION_MOVE_MONSTERS);
+        
         if(game->turn % 2)                      // TODO: Better condition... based on physique etc.
                 queue(ACTION_HEAL_PLAYER);
 
@@ -857,8 +858,6 @@ int main(int argc, char *argv[])
 
         init_variables();
 
-        sprintf(messagefilename, "%s/messages.%d.gtsave", SAVE_DIRECTORY, game->seed);
-        messagefile = fopen(messagefilename, "w");
         get_version_string(game->version);
         printf("Gullible's Travails v%s\n", game->version);
 
@@ -877,14 +876,21 @@ int main(int argc, char *argv[])
                 parse_data_files(ONLY_CONFIG);
                 if(!load_game(game->savefile, 0))
                         die("Couldn't open file %s\n", game->savefile);
+
+                sprintf(messagefilename, "%s/messages.%d.gtsave", SAVE_DIRECTORY, game->seed);
+                messagefile = fopen(messagefilename, "a");
+                
                 init_display();
-                // these next should be loaded by load_game
+                
+                // these next should be loaded by load_game?!
                 world->cmap = world->dng[game->currentlevel].c;
                 world->curlevel = &world->dng[game->currentlevel];
         } else {
                 init_level(world->out);
                 generate_world();
 
+                sprintf(messagefilename, "%s/messages.%d.gtsave", SAVE_DIRECTORY, game->seed);
+                messagefile = fopen(messagefilename, "a");
 
                 init_display();
                 init_player();

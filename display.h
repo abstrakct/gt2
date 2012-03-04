@@ -23,6 +23,7 @@ void domess();
 void scrollmessages();
 void mess(char *message);
 void messc(int color, char *message);
+void delete_last_message();
 
 bool blocks_light(int y, int x);
 

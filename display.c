@@ -310,9 +310,9 @@ void draw_world(level_t *level)
                                         else if(hasbit(level->c[j][i].flags, CF_HAS_DOOR_OPEN))
                                                 gtmapaddch(dy, dx, color, '\'');
                                         else if(hasbit(level->c[j][i].flags, CF_HAS_STAIRS_DOWN))
-                                                gtmapaddch(dy, dx, color, '>');
+                                                gtmapaddch(dy, dx, COLOR_WHITE, '>');
                                         else if(hasbit(level->c[j][i].flags, CF_HAS_STAIRS_UP))
-                                                gtmapaddch(dy, dx, color, '<');
+                                                gtmapaddch(dy, dx, COLOR_WHITE, '<');
                                 }
 
 
@@ -471,6 +471,13 @@ void mess(char *message)
         scrollmessages();
         messages[currmess].color = COLOR_NORMAL;
         strcpy(messages[currmess].text, message);
+        domess();
+}
+
+void delete_last_message()
+{
+        messages[currmess-1].color = COLOR_NORMAL;
+        messages[currmess-1].text[0] = '\0';
         domess();
 }
 

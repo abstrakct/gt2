@@ -111,5 +111,6 @@ bool in_lineofsight(actor_t *src, int goaly, int goalx);
 bool actor_in_lineofsight(actor_t *src, actor_t *dest);
 bool next_to(actor_t *a, actor_t *b);
 void attack(actor_t *attacker, actor_t *victim);
+void increase_hp(actor_t *a, int amount);
 
 #endif

@@ -232,6 +232,13 @@ int ability_modifier(int ab)
         return ((ab / 2) - 5);
 }
 
+void increase_hp(actor_t *a, int amount)
+{
+        a->hp += amount;
+        if(a->hp > a->maxhp)
+                a->hp = a->maxhp;
+}
+
 bool player_leveled_up()
 {
         if(player->level == MAX_PLAYER_LEVEL)
@@ -247,9 +254,13 @@ bool player_leveled_up()
 void level_up_player()
 {
         player->level++;
-        gtprintfc(COLOR_GREEN, "Congratulations! You've reached level %d!", player->level);
+        player->maxhp += ri(pphy/2, pphy);
+        increase_hp(player, d(1, player->level));
 
-        // TODO: Add level up effects here!
+        gtprintfc(COLOR_GREEN, "Congratulations! You've reached level %d!", player->level);
+        more();
+
+        // TODO: Add other level up effects here!
 }
 
 void award_xp(actor_t *defender)

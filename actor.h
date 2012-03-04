@@ -112,5 +112,7 @@ bool actor_in_lineofsight(actor_t *src, actor_t *dest);
 bool next_to(actor_t *a, actor_t *b);
 void attack(actor_t *attacker, actor_t *victim);
 void increase_hp(actor_t *a, int amount);
+void move_player_to_stairs_down(int d);
+void move_player_to_stairs_up(int d);
 
 #endif

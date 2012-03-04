@@ -16,19 +16,19 @@
 #include "actor.h"
 #include "monsters.h"
 #include "utils.h"
-#include "datafiles.h"
 #include "world.h"
+#include "datafiles.h"
 #include "gt.h"
 
 config_t *cf;
 int objid;             // to keep track of all parsed objects, to give each a unique ID
+roomdef_t r;
 
 int parse_roomdef_file(char *filename)
 {
         FILE *f;
         int y, x, i, j;
         char c;
-        roomdef_t r;
 
         f = fopen(filename, "r");
         if(!f)

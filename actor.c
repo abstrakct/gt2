@@ -16,8 +16,8 @@
 #include "actor.h"
 #include "monsters.h"
 #include "utils.h"
-#include "datafiles.h"
 #include "world.h"
+#include "datafiles.h"
 #include "display.h"
 #include "gt.h"
 
@@ -324,7 +324,7 @@ void attack(actor_t *attacker, actor_t *defender)
                                 you("die!!!");
                         } else {
                                 youc(C_BLACK_GREEN, "kill the %s!", defender->name);
-                                kill_monster(defender);
+                                kill_monster(world->curlevel, defender);
                                 award_xp(defender);
                         }
                 }
@@ -339,4 +339,38 @@ void attack(actor_t *attacker, actor_t *defender)
                 player->ticks -= TICKS_ATTACK;
         else
                 attacker->ticks -= TICKS_ATTACK;
+}
+
+void move_player_to_stairs_up(int d)
+{
+        level_t *l;
+        int x, y;
+
+        l = &world->dng[d];
+        while(1) {
+                y = ri(1, l->ysize-1);      // kinda stupid way to do it... TODO: record location of stairs on each level!
+                x = ri(1, l->xsize-1);
+                if(hasbit(l->c[y][x].flags, CF_HAS_STAIRS_UP)) {
+                        player->y = y;
+                        player->x = x;
+                        return;
+                }
+        }
+}
+
+void move_player_to_stairs_down(int d)
+{
+        level_t *l;
+        int x, y;
+
+        l = &world->dng[d];
+        while(1) {
+                y = ri(1, l->ysize-1);      // kinda stupid way to do it... TODO: record location of stairs on each level!
+                x = ri(1, l->xsize-1);
+                if(hasbit(l->c[y][x].flags, CF_HAS_STAIRS_DOWN)) {
+                        player->y = y;
+                        player->x = x;
+                        return;
+                }
+        }
 }

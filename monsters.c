@@ -14,8 +14,8 @@
 #include "actor.h"
 #include "monsters.h"
 #include "utils.h"
-#include "datafiles.h"
 #include "world.h"
+#include "datafiles.h"
 #include "display.h"
 #include "gt.h"
 
@@ -324,7 +324,6 @@ bool newpathfinder(actor_t *m)
         return true;
 }
 
-
 void hostile_ai(actor_t *m)
 {
         int oy, ox;
@@ -452,16 +451,16 @@ void spawn_monster(int n, monster_t *head, int maxlevel)
         game->num_monsters++;
 }
 
-void kill_monster(monster_t *m)
+void kill_monster(void *level, monster_t *m)
 {
-        if(world->curlevel->c[m->y][m->x].monster == m) {
-                // we probably should free/remove dead monsters, but something keeps going wrong, cheap cop-out:
-                setbit(world->curlevel->c[m->y][m->x].monster->flags, MF_ISDEAD);
-                world->curlevel->c[m->y][m->x].monster = NULL;
+        level_t *l;
+        l = (level_t *) level;
 
-                /*world->curlevel->c[m->y][m->x].monster->prev->next = world->curlevel->c[m->y][m->x].monster->next;
-                world->curlevel->c[m->y][m->x].monster->next->prev = world->curlevel->c[m->y][m->x].monster->prev;
-                gtfree(m);*/
+        if(l->c[m->y][m->x].monster == m) {
+                // we probably should free/remove dead monsters, but something keeps going wrong, cheap cop-out:
+                // also, this has it's advantages later (can be used for listing killed monsters).
+                setbit(l->c[m->y][m->x].monster->flags, MF_ISDEAD);
+                l->c[m->y][m->x].monster = NULL;
         } else {
                 gtprintf("monster's x&y doesn't correspond to cell?");
         }

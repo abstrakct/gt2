@@ -16,8 +16,8 @@
 #include "actor.h"
 #include "monsters.h"
 #include "utils.h"
-#include "datafiles.h"
 #include "world.h"
+#include "datafiles.h"
 #include "display.h"
 #include "gt.h"
 
@@ -74,6 +74,20 @@ void zero_level(level_t *l)
         }
 }
 
+void clear_area(level_t *l, int y1, int x1, int y2, int x2)
+{
+        int i, j;
+
+        for(i = 0; i < (y2-y1); i++) {
+                for(j = 0; j < (x2-x1); j++) {
+                        l->c[y1+i][x1+j].type = DNG_WALL;
+                        l->c[y1+i][x1+j].flags = 0;
+                        if(l->c[y1+i][x1+j].monster)
+                                kill_monster(l, l->c[y1+i][x1+j].monster);
+                }
+        }
+}
+
 /*
  * this function cleans the dungeon for stuff
  * made by the dungeon generator which shouldn't be there.
@@ -99,6 +113,28 @@ void cleanup_dungeon(level_t *l)
         }
 }
 
+void insert_roomdef_at(level_t *l, int y, int x)
+{
+        int i, j;
+
+        for(i = 0; i < r.y; i++) {
+                for(j = 0; j < r.x; j++) {
+                        switch(r.c[i][j].type) {
+                                case DNG_WALL:
+                                        addwall(l, y+i, x+j);
+                                        break;
+                                case DNG_FLOOR: 
+                                        addfloor(l, y+i, x+j); 
+                                        if(hasbit(r.c[i][j].flags, CF_HAS_DOOR_CLOSED))
+                                                adddoor(l, y+i, x+j, false);
+                                        break;
+                                default:
+                                        break;
+                        }
+                }
+        }
+}
+
 void generate_dungeon_type_1(int d)
 {
         struct room **r;        
@@ -111,13 +147,13 @@ void generate_dungeon_type_1(int d)
         l = &world->dng[d];
 
 
-        minroomsizey = 5;
-        minroomsizex = 5;
+        minroomsizey = 3;
+        minroomsizex = 4;
         maxroomsizey = 10;
         maxroomsizex = 20;
 
-        nrx = l->xsize / maxroomsizex;
         nry = l->ysize / maxroomsizey;
+        nrx = l->xsize / maxroomsizex;
         numrooms = nrx * nry;
 
         r = (struct room **) gtmalloc2d(nry+1, nrx+1, sizeof(struct room));
@@ -129,7 +165,7 @@ void generate_dungeon_type_1(int d)
                         do {
                                 y1 = ((j-1) * maxroomsizey) + ri(0,5);
                                 x1 = ((i-1) * maxroomsizex) + ri(0,5);
-                                sy = ri(minroomsizey,  maxroomsizey);
+                                sy = ri(minroomsizey, maxroomsizey);
                                 sx = ri(minroomsizex, maxroomsizex);
                                 y2 = y1 + sy;
                                 x2 = x1 + sx;
@@ -148,7 +184,7 @@ void generate_dungeon_type_1(int d)
                         r[j][i].y2 = y2;
                         r[j][i].x2 = x2;
                 }
-        }
+         }
 
         for(i = 1; i < nrx; i++) {
                 for(j = 1; j < nry; j++) {
@@ -247,7 +283,7 @@ void generate_dungeon_type_1(int d)
 * Author - RK
 * Date - Dec 12 2011
 * *******************************************/
-void generate_dungeon_labyrinthine(int d)
+void generate_dungeon_type_2(int d)
 {
         int tx, ty, xsize, ysize; 
         int fx, fy;
@@ -264,7 +300,7 @@ void generate_dungeon_labyrinthine(int d)
         xsize = world->dng[d].xsize;  // total size X
         ysize = world->dng[d].ysize;  // total size Y - rather uneccessary these two, eh?
 
-        fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, __LINE__, tx, ty, xsize, ysize);
+        //fprintf(stderr, "DEBUG: %s:%d - tx,ty = %d,%d xsize,ysize = %d,%d\n", __FILE__, __LINE__, tx, ty, xsize, ysize);
         // let's not go over the edge
         if(tx+xsize >= XSIZE)
                 xsize = XSIZE-tx;
@@ -554,7 +590,6 @@ void generate_forest2(int number)
                 }
         }
 }
-
 
 /*********************************************
 * Description - Wrapper function for generating %num cities
@@ -928,7 +963,7 @@ void meta_generate_dungeon(int type, int d)
                 if(type == 1)
                         generate_dungeon_type_1(d);
                 if(type == 2)
-                        generate_dungeon_labyrinthine(d);
+                        generate_dungeon_type_2(d);   // "labyrinthine"
                 if(type == 3)
                         generate_dungeon_type_3(d);
 
@@ -999,11 +1034,12 @@ void generate_world()
 
         spawn_monsters(ri(75,125), 3, world->out); 
         spawn_golds(ri(75,125), 100, world->out);
-        //spawn_objects(ri(world->out->xsize/8, world->out->ysize/4), world->out);
-        spawn_objects(ri(world->out->xsize/2, world->out->ysize/2), world->out);
+        spawn_objects(ri(world->out->xsize/4, world->out->ysize/4), world->out);
 
-
-        for(i = 1; i <= 25; i++) {
+        meta_generate_dungeon(1, 1);
+        clear_area(&world->dng[1], 6, 6, r.y+6, r.x+6);
+        insert_roomdef_at(&world->dng[1], 6, 6);
+        for(i = 2; i <= 25; i++) {
                 int p;
 
                 p = ri(1,100);

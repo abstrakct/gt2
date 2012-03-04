@@ -10,6 +10,8 @@
 
 #define ONLY_CONFIG 1
 
+extern roomdef_t r;
+
 int parse_data_files(int option);
 
 #endif

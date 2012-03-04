@@ -27,8 +27,8 @@
 #include "actor.h"
 #include "monsters.h"
 #include "utils.h"
-#include "datafiles.h"
 #include "world.h"
+#include "datafiles.h"
 #include "display.h"
 #include "debug.h"
 #include "saveload.h"
@@ -141,7 +141,7 @@ void init_player()
         ppy = ply - game->maph / 2;
         game->mapcx = game->mapw + 2;
         game->mapcy = game->maph + 2;
-        player->viewradius = 50;
+        player->viewradius = 16;
         player->level = 1;
 
         player->attr.str  = dice(3, 6, 0);
@@ -554,12 +554,6 @@ bool do_action(int action)
                                 if(game->currentlevel > 0)
                                         game->context = CONTEXT_DUNGEON;
 
-                                /*ply = 0; plx = 0;
-                                while(!passable(world->curlevel, ply, plx)) {
-                                        ply = ri(0, world->curlevel->ysize-5);
-                                        plx = ri(0, world->curlevel->xsize-5);
-                                }*/
-
                                 ply = tmpy;
                                 plx = tmpx;
 
@@ -814,7 +808,7 @@ void look()
         }
 }
 
-void do_turn(int do_all)
+void do_turn()
 {
        // bool fullturn;
         int i, ret;
@@ -900,27 +894,24 @@ int main(int argc, char *argv[])
                 world->curlevel = world->out;
                 game->context = CONTEXT_OUTSIDE;
 
-                //world->cmap = world->dng[1].c;
-                //world->curlevel = &world->dng[1];
-                //game->context = CONTEXT_DUNGEON;
+                // then move down a level...
+                move_player_to_stairs_down(0);
+                do_action(ACTION_GO_DOWN_STAIRS);
+                fixview();
         }
 
         init_commands();
+
         draw_world(world->curlevel);
         draw_wstat();
         initial_update_screen();
 
-        //updatescreen = true;
         do {
-                // IDE: Save spillet som en log som kan avspilles igjen??!
-
                 c = get_command();
 
                 mapchanged = false;
-                bool do_all = false;
                 player->oldx = plx;
                 player->oldy = ply;
-                //updatescreen = true;
 
                 switch(c) {
                         case CMD_QUIT:
@@ -952,19 +943,15 @@ int main(int argc, char *argv[])
                                        break;
                         case CMD_LONGDOWN:
                                 queuex(20, ACTION_PLAYER_MOVE_DOWN);
-                                do_all = true;
                                 break;
                         case CMD_LONGUP:
                                 queuex(20, ACTION_PLAYER_MOVE_UP);
-                                do_all = true;
                                 break;
                         case CMD_LONGLEFT:
                                 queuex(20, ACTION_PLAYER_MOVE_LEFT);
-                                do_all = true;
                                 break;
                         case CMD_LONGRIGHT:
                                 queuex(20, ACTION_PLAYER_MOVE_RIGHT);
-                                do_all = true;
                                 break;
                         case CMD_TOGGLEFOV:
                                 gtprintf("Setting all cells to visible.");
@@ -1061,7 +1048,7 @@ int main(int argc, char *argv[])
                                 break;
                 }
 
-                do_turn(do_all);
+                do_turn();
         } while(!game->dead);
 
         shutdown_display();

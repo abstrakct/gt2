@@ -151,13 +151,14 @@ void init_player()
 
         // TODO: Starting HP - FIX according to race etc.
         player->hp = player->maxhp = (dice(1, 10, 7)) + ability_modifier(player->attr.phy);
+
+        strcpy(player->name, "Whiskeyjack");
 }
 
 void shutdown_gt()
 {
         int i;
 
-        printf("Shutting down...\n");
         i = garbageindex;
         while(i >= 0) {
                i--;
@@ -601,12 +602,13 @@ bool do_action(int action)
                         fixview();
                         break;
                 case ACTION_HEAL_PLAYER:
-                        i = 20 - pphy;
+                        i = 25 - pphy;
                         if(i < 0)
                                 i = 1;
 
                         if(game->turn % i) {
-                                increase_hp(player, 1);
+                                if(perc(40+pphy))
+                                        increase_hp(player, 1);
                         }
 
                         fullturn = false;
@@ -813,7 +815,7 @@ void do_turn()
 
         queue(ACTION_MOVE_MONSTERS);
         
-        if(game->turn % 2)                      // TODO: Better condition... based on physique etc.
+        if(game->turn % 5)                      // TODO: Better condition... based on physique etc.
                 queue(ACTION_HEAL_PLAYER);
 
         i = aq->num;

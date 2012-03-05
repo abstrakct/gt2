@@ -83,7 +83,7 @@ void clear_area(level_t *l, int y1, int x1, int y2, int x2)
                         l->c[y1+i][x1+j].type = DNG_WALL;
                         l->c[y1+i][x1+j].flags = 0;
                         if(l->c[y1+i][x1+j].monster)
-                                kill_monster(l, l->c[y1+i][x1+j].monster);
+                                kill_monster(l, l->c[y1+i][x1+j].monster, 0);
                 }
         }
 }
@@ -940,7 +940,7 @@ void create_stairs(int num, int s, int d)
         }
 }
 
-void meta_generate_dungeon(int type, int d)
+void meta_generate_dungeon(int d, int type)
 {
         if(type && type <= 3) {
                 int num_monsters, mino, maxo;
@@ -967,7 +967,7 @@ void meta_generate_dungeon(int type, int d)
                         generate_dungeon_type_3(d);
 
                 if(type == 3) {
-                        num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 100;
+                        num_monsters = ((world->dng[d].xsize + world->dng[d].ysize) / 100) * d;
                         mino = (world->dng[d].ysize + world->dng[d].xsize) / 80;
                         maxo = (world->dng[d].ysize + world->dng[d].xsize) / 60;
                 } else {
@@ -1044,16 +1044,17 @@ void generate_world()
         meta_generate_dungeon(1, 1);
         clear_area(&world->dng[1], 6, 6, r.y+6, r.x+6);
         insert_roomdef_at(&world->dng[1], 6, 6);
+
         for(i = 2; i <= 25; i++) {
                 int p;
 
                 p = ri(1,100);
                 if(p <= 66)
-                        meta_generate_dungeon(1, i);
+                        meta_generate_dungeon(i, 1);
                 if(p > 66 && p < 82)
-                        meta_generate_dungeon(2, i);
+                        meta_generate_dungeon(i, 2);
                 if(p >= 82)
-                        meta_generate_dungeon(3, i);
+                        meta_generate_dungeon(i, 3);
         }
 
         generate_stairs();

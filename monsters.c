@@ -358,6 +358,12 @@ void hostile_ai(actor_t *m)
         }
 }
 
+void heal_monster(actor_t *m, int num)
+{
+        increase_hp(m, num);
+        gtprintf("The %s looks a bit healthier! (%d)", m->name, num);
+}
+
 void move_monsters()
 {
         monster_t *m;
@@ -383,20 +389,31 @@ void move_monsters()
 
                 if(m && !hasbit(m->flags, MF_SLEEPING)) {
                         //if(m->attacker) {
-                                m->ticks += (int) (m->speed*1000);
+                        m->ticks += (int) (m->speed*1000);
 
-                                while(m->ticks >= 1000) {
-                                        hostile_ai(m);
-                                        m->ticks -= 1000;
+                        while(m->ticks >= 1000) {
+                                hostile_ai(m);
+                                m->ticks -= 1000;
+                                if(m->hp < m->maxhp) {
+                                        if(game->turn % 3)
+                                                if(perc(40+m->attr.phy)) {
+                                                        int i;
+
+                                                        i = ability_modifier(m->attr.phy);
+                                                        if(i <= 0)
+                                                                i = 1;
+                                                        heal_monster(m, ri(1, i));
+                                                }
                                 }
+                        }
                         /*} else {
-                                m->ticks += (int) (m->speed*1000);
-                                while(m->ticks >= 1000) {
-                                        if(m->ai)
-                                                m->ai(m);
-                                        m->ticks -= 1000;
-                                }
-                        }*/
+                          m->ticks += (int) (m->speed*1000);
+                          while(m->ticks >= 1000) {
+                          if(m->ai)
+                          m->ai(m);
+                          m->ticks -= 1000;
+                          }
+                          }*/
                 }
         }
 }
@@ -451,7 +468,7 @@ void spawn_monster(int n, monster_t *head, int maxlevel)
         game->num_monsters++;
 }
 
-void kill_monster(void *level, monster_t *m)
+void kill_monster(void *level, monster_t *m, actor_t *killer)
 {
         level_t *l;
         l = (level_t *) level;
@@ -461,6 +478,9 @@ void kill_monster(void *level, monster_t *m)
                 // also, this has it's advantages later (can be used for listing killed monsters).
                 setbit(l->c[m->y][m->x].monster->flags, MF_ISDEAD);
                 l->c[m->y][m->x].monster = NULL;
+                if(killer == player) {
+                        player->kills++;
+                }
         } else {
                 gtprintf("monster's x&y doesn't correspond to cell?");
         }

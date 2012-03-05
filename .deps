@@ -1,25 +1,26 @@
-actor.o: actor.c objects.h actor.h monsters.h utils.h datafiles.h world.h \
+actor.o: actor.c objects.h actor.h monsters.h utils.h world.h datafiles.h \
  display.h gt.h
 cards.o: cards.c cards.h
-commands.o: commands.c objects.h actor.h monsters.h utils.h datafiles.h \
- world.h display.h debug.h saveload.h commands.h gt.h
+commands.o: commands.c objects.h actor.h monsters.h utils.h world.h \
+ datafiles.h display.h debug.h saveload.h commands.h gt.h
 datafiles.o: datafiles.c objects.h o_effects.h actor.h monsters.h utils.h \
- datafiles.h world.h gt.h
-debug.o: debug.c objects.h actor.h monsters.h utils.h datafiles.h world.h \
+ world.h datafiles.h gt.h
+debug.o: debug.c objects.h actor.h monsters.h utils.h world.h datafiles.h \
  display.h debug.h gt.h
-display.o: display.c objects.h actor.h monsters.h utils.h datafiles.h \
- world.h display.h gt.h
-gt.o: gt.c cards.h objects.h actor.h monsters.h utils.h datafiles.h \
- world.h display.h debug.h saveload.h commands.h gt.h
-monsters.o: monsters.c objects.h actor.h monsters.h utils.h datafiles.h \
- world.h display.h gt.h
+display.o: display.c objects.h actor.h monsters.h utils.h world.h \
+ datafiles.h display.h gt.h
+fractmod.o: fractmod.c fractmod.h
+gt.o: gt.c cards.h objects.h actor.h monsters.h utils.h world.h \
+ datafiles.h display.h debug.h saveload.h commands.h gt.h
+monsters.o: monsters.c objects.h actor.h monsters.h utils.h world.h \
+ datafiles.h display.h gt.h
 objects.o: objects.c objects.h o_effects.h actor.h monsters.h utils.h \
- datafiles.h world.h display.h gt.h
+ world.h datafiles.h display.h gt.h
 o_effects.o: o_effects.c objects.h o_effects.h actor.h monsters.h utils.h \
- datafiles.h world.h display.h debug.h gt.h
-saveload.o: saveload.c objects.h actor.h monsters.h utils.h datafiles.h \
- world.h display.h debug.h saveload.h gt.h
+ world.h datafiles.h display.h debug.h gt.h
+saveload.o: saveload.c objects.h actor.h monsters.h utils.h world.h \
+ datafiles.h display.h debug.h saveload.h gt.h
 utils.o: utils.c objects.h actor.h monsters.h utils.h world.h display.h \
  gt.h
-world.o: world.c objects.h actor.h monsters.h utils.h datafiles.h world.h \
+world.o: world.c objects.h actor.h monsters.h utils.h world.h datafiles.h \
  display.h gt.h

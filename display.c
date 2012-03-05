@@ -466,7 +466,8 @@ void scrollmessages()
 
 void mess(char *message)
 {
-        /* optionally insert check for duplicate messages here! */
+        //if(!strcmp(message, messages[currmess-1].text))
+                //return;
 
         scrollmessages();
         messages[currmess].color = COLOR_NORMAL;
@@ -483,7 +484,8 @@ void delete_last_message()
 
 void messc(int color, char *message)
 {
-        /* optionally insert check for duplicate messages here! */
+        //if(!strcmp(message, messages[currmess-1].text))
+                //return;
 
         scrollmessages();
         messages[currmess].color = color;

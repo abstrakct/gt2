@@ -105,27 +105,6 @@ int object_to_slot(obj_t *o, inv_t *inv)
 
         return -1;
 }
-/*
-void assign_free_slot(obj_t *o)
-{
-        char c;
-
-        c = get_first_free_letter();
-        o->slot = c;
-        objlet[letter_to_slot(c)] = o;
-}
-
-void unassign_object(obj_t *o)
-{
-        objlet[object_to_slot(o)] = NULL;
-        o->slot = 0;
-}
-*/
-
-void assign_letter(char c, obj_t *o)
-{
-        objlet[letter_to_slot(c)] = o;
-}
 
 bool actor_in_lineofsight(actor_t *src, actor_t *dest)
 {
@@ -294,6 +273,48 @@ void award_xp(actor_t *defender)
                 level_up_player();
 }
 
+int calculate_final_score()
+{
+        int score;
+
+        score  = player->xp;
+        score += player->kills * player->maxhp;
+        score += (player->inventory->gold/2);
+
+        return score;
+}
+
+void player_die(actor_t *killer)
+{
+        if(game->wizardmode) {
+                youc(COLOR_RED, "You die! Fortunately, you're in wizard mode! 10 HP for you!");
+                player->hp += 10;
+                return;
+        }
+
+        gtprintf(" ");
+        youc(COLOR_WHITE, "die...");
+        more();
+        shutdown_display();
+
+        printf("\n\n\t\t\t * %s *\n", player->name);
+        if(!killer->weapon)
+                printf("\t\tWas beaten to death by %s,\n", a_an(killer->name));
+        else
+                printf("\t\tWas killed by %s, using %s,\n", a_an(killer->name), a_an(killer->weapon->fullname));
+
+        if(game->context == CONTEXT_DUNGEON)
+                printf("\t\tat level %d of the dungeon.\n", game->currentlevel);
+        if(game->context == CONTEXT_OUTSIDE)
+                printf("\t\twhile outside the dungeon.\n");
+
+        printf("\t\tYou killed a total of %d monsters.\n", player->kills);
+        printf("\t\tYou got a total of %d experience points.\n\t\tYou got a final score of %d points.\n\n\n\n\n\n", player->xp, calculate_final_score());
+
+        shutdown_gt();
+        exit(0);
+}
+
 /*
  * ATTACK!
  */
@@ -341,10 +362,10 @@ void attack(actor_t *attacker, actor_t *defender)
 
                 if(defender->hp <= 0) {
                         if(defender == player) {
-                                you("die!!!");
+                                player_die(attacker);
                         } else {
                                 youc(C_BLACK_RED, "kill the %s!", defender->name);
-                                kill_monster(world->curlevel, defender);
+                                kill_monster(world->curlevel, defender, attacker);
                                 award_xp(defender);
                         }
                 }

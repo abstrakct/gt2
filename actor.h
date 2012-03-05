@@ -73,8 +73,8 @@ typedef struct actorstruct {            // actor_t
         uattr_t      attr;
         int          level;
         short        race, cla;
-        obj_t        *weapon;           // currently wielded weapon
         inv_t        *inventory;
+        obj_t        *weapon;           // currently wielded weapon
         obj_t        *w[WEAR_SLOTS];     // array rather than struct makes things easier!
         short        prot[PROTECTIONS];
         long         flags;
@@ -86,6 +86,7 @@ typedef struct actorstruct {            // actor_t
         float        skill[MAX_SKILLS];
         char         wvfactor;
         short        worldview;
+        short        kills;
 
         /* monster specific stuff */
         void               (*ai)(struct actorstruct *);      // artificial intelligence handler!!

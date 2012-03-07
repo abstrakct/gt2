@@ -24,6 +24,8 @@
 
 // statistical debug stuff
 int pluses, minuses;
+
+// materials
 int mats_bracelets[MATERIALS];
 int mats_amulets[MATERIALS];
 
@@ -81,6 +83,37 @@ int get_objdef_by_name(char *wanted)
                 o = o->next;
 
         return o->id;
+}
+
+bool shall_autopickup(int type)
+{
+        int i, j;
+
+        j = strlen(gtconfig.autopickup);
+        for(i=0;i<j;i++)
+                if(gtconfig.autopickup[i] == objchars[type])
+                        return true;
+
+        return false;
+}
+
+void start_autopickup()
+{
+        int i;
+
+        for(i = 1; i <= OBJECT_TYPES; i++) {
+                if(shall_autopickup(i))
+                        gtconfig.ap[i] = true;
+        }
+}
+
+void stop_autopickup()
+{
+        int i;
+
+        for(i = 1; i <= OBJECT_TYPES; i++) {
+                gtconfig.ap[i] = false;
+        }
 }
 
 bool is_pair(obj_t *o)

@@ -57,6 +57,7 @@ typedef struct {                 // cell_t
         int        flags;
         short      desty, destx;       // for stairs and portals; destination y,x
         short      color;
+        short      litcolor;
         bool       visible;
         monster_t *monster;
         inv_t     *inventory;

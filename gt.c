@@ -755,8 +755,12 @@ void look()
         }
 
         if(ci(ply, plx)) {
-                if(ci(ply, plx) && ci(ply, plx)->gold)
-                        gtprintf("There is %d gold %s here.", ci(ply, plx)->gold, (ci(ply, plx)->gold > 1) ? "pieces" : "piece");
+                if(ci(ply, plx) && ci(ply, plx)->gold) {
+                        if(gtconfig.ap[OT_GOLD])
+                                do_action(ACTION_PICKUP);
+                        else
+                                gtprintf("There is %d gold %s here.", ci(ply, plx)->gold, (ci(ply, plx)->gold > 1) ? "pieces" : "piece");
+                }
 
                 if(ci(ply, plx)->num_used > 0) {
                         if(ci(ply, plx)->num_used == 1) {
@@ -855,6 +859,7 @@ int main(int argc, char *argv[])
                 printf("Reading data files...\n");
                 if(parse_data_files(0))
                         die("Couldn't parse data files.");
+                start_autopickup();
         }
 
         if(loadgame) {

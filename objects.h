@@ -23,7 +23,7 @@ struct object {
         struct object *next;
         int           id;                   // objdef-id
         int           oid;                  // unique id
-        int           color;                // color!
+        short         color;                // color!
         short         type;                 // see OT_defines below
         long          flags;                // 4 bytes = 32 bits/flags, see OF_defines below - CONSIDER CHANGE TO LONG LONG
         signed short  attackmod;            // +/- on attack; for armor: acmodifier
@@ -59,11 +59,13 @@ typedef struct {
 #define OT_GOLD       1
 #define OT_WEAPON     2
 #define OT_ARMOR      3
-#define OT_BRACELET       4
+#define OT_BRACELET   4
 #define OT_AMULET     5
 #define OT_CARD       6
 #define OT_WAND       7
 #define OT_POTION     8
+
+#define OBJECT_TYPES  8
 
 extern char objchars[];
 extern char *otypestrings[];
@@ -187,7 +189,10 @@ void   spawn_golds(int num, int max, void *p);
 
 void   init_objects();
 
-
+// Autopickup!
+void start_autopickup();
+void stop_autopickup();
+bool shall_autopickup(int type);
 
 
 //void init_materials();

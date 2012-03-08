@@ -757,8 +757,12 @@ void look()
         }
 
         if(ci(ply, plx)) {
-                if(ci(ply, plx) && ci(ply, plx)->gold)
-                        gtprintf("There is %d gold %s here.", ci(ply, plx)->gold, (ci(ply, plx)->gold > 1) ? "pieces" : "piece");
+                if(ci(ply, plx) && ci(ply, plx)->gold) {
+                        if(gtconfig.ap[OT_GOLD])
+                                do_action(ACTION_PICKUP);
+                        else
+                                gtprintf("There is %d gold %s here.", ci(ply, plx)->gold, (ci(ply, plx)->gold > 1) ? "pieces" : "piece");
+                }
 
                 if(ci(ply, plx)->num_used > 0) {
                         if(ci(ply, plx)->num_used == 1) {
@@ -767,10 +771,14 @@ void look()
                                 if(slot < 0)
                                         return;
 
-                                if(is_pair(ci(ply, plx)->object[slot]))
-                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->object[slot]->fullname);
-                                else
-                                        gtprintf("There is %s here.", a_an(ci(ply, plx)->object[slot]->fullname));
+                                if(gtconfig.ap[ci(ply, plx)->object[slot]->type]) {
+                                        do_action(ACTION_PICKUP);
+                                } else {
+                                        if(is_pair(ci(ply, plx)->object[slot]))
+                                                gtprintf("There is a pair of %s here.", ci(ply, plx)->object[slot]->fullname);
+                                        else
+                                                gtprintf("There is %s here.", a_an(ci(ply, plx)->object[slot]->fullname));
+                                }
                         }
 
                         if(ci(ply, plx)->num_used == 2) {
@@ -857,6 +865,7 @@ int main(int argc, char *argv[])
                 printf("Reading data files...\n");
                 if(parse_data_files(0))
                         die("Couldn't parse data files.");
+                start_autopickup();
         }
 
         if(loadgame) {

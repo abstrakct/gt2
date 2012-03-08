@@ -15,12 +15,14 @@
 #define DEVELOPMENT_MODE
 
 typedef struct {                              // gt_config_t
-        int minf, maxf;
-        int minc, maxc;
-        int minv, maxv;
-        int mind, maxd;
-        int dxsize, dysize;
-        int compress_savefile;                // compress the savefile?
+        int  minf, maxf;
+        int  minc, maxc;
+        int  minv, maxv;
+        int  mind, maxd;
+        int  dxsize, dysize;
+        int  compress_savefile;                // compress the savefile?
+        char autopickup[10];
+        bool ap[10];                          // adjust later, match object type
 } gt_config_t;
 
 typedef struct {                              // game_t

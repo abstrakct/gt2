@@ -683,6 +683,7 @@ void addfloor(level_t *l, float y, float x)
         if(l->c[(int)y][(int)x].type == DNG_WALL) {
                 l->c[(int)y][(int)x].type = DNG_FLOOR;
                 l->c[(int)y][(int)x].color = COLOR_SHADE;
+                l->c[(int)y][(int)x].litcolor = COLOR_SHADE;
         }
 }
 
@@ -690,6 +691,7 @@ void addwall(level_t *l, int y, int x)
 {
         l->c[y][x].type  = DNG_WALL;
         l->c[y][x].color = COLOR_SHADE;
+        l->c[y][x].litcolor = COLOR_YELLOW;
 }
 
 void adddoor(level_t *l, int y, int x, bool secret)

@@ -286,7 +286,7 @@ void draw_world(level_t *level)
 
                                         if(hasbit(level->c[j][i].flags, CF_LIT)) {
                                                 wattroff(wmap, A_BOLD);
-                                                color = COLOR_CITY;
+                                                color = level->c[j][i].litcolor;
                                         }
 
                                         gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
@@ -300,7 +300,8 @@ void draw_world(level_t *level)
                                                 } else {                                                         // TODO ADD OBJECT COLORS!!!
                                                         slot = get_first_used_slot(level->c[j][i].inventory);
                                                         if(level->c[j][i].inventory->num_used > 0 && slot >= 0 && level->c[j][i].inventory->object[slot]) {
-                                                                gtmapaddch(dy, dx, COLOR_BLUE, objchars[level->c[j][i].inventory->object[slot]->type]);
+                                                                color = level->c[j][i].inventory->object[slot]->color;
+                                                                gtmapaddch(dy, dx, color, objchars[level->c[j][i].inventory->object[slot]->type]);
                                                         }
                                                 }
                                         }

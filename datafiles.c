@@ -243,6 +243,7 @@ int parse_armor()
                 o->ac = x;
 
                 o->id = objid; objid++;
+                o->color = COLOR_WHITE;
 
                 o->head = objdefs->head;
                 objdefs->next = o;
@@ -314,6 +315,7 @@ int parse_weapons()
                 o->attackmod = o->damagemod = x;
 
                 o->id = objid; objid++;
+                o->color = COLOR_WHITE;
 
                 o->head = objdefs->head;
                 objdefs->next = o;
@@ -379,6 +381,7 @@ int parse_amulet()
 
                 o->type = OT_AMULET;
                 o->id = objid; objid++;
+                o->color = COLOR_WHITE;
 
                 o->material = mats_amulets[material];
                 material++;
@@ -458,6 +461,7 @@ int parse_bracelet()
 
                 o->type = OT_BRACELET;
                 o->id = objid; objid++;
+                o->color = COLOR_WHITE;
                 clearbit(o->flags, OF_IDENTIFIED);
 
                 o->material = mats_bracelets[material];
@@ -505,6 +509,7 @@ int parse_configfile()
         config_setting_t *cfg;
         int i;
         char sname[100];
+        const char *value;
 
         cfg = config_lookup(cf, "config");
         i = config_setting_length(cfg);
@@ -532,6 +537,10 @@ int parse_configfile()
         config_lookup_int(cf, sname, &gtconfig.dysize);
         sprintf(sname, "config.[0].compress_savefile");
         config_lookup_bool(cf, sname, &gtconfig.compress_savefile);
+        sprintf(sname, "config.[0].autopickup");
+        config_lookup_string(cf, sname, &value);
+
+        strcpy(gtconfig.autopickup, value);
 
         printf(" OK\n");
         

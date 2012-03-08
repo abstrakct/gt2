@@ -36,7 +36,7 @@ char objchars[] = {
         ')',               // weapon
         '[',               // armor
         'o',               // bracelet
-        '"',               // amulet  (evt. 186!)
+        186,               // amulet  (evt. 186!)
         '*',               // card    (evt. 246!)
         '/',               // wand
         191,               // potion

@@ -769,10 +769,14 @@ void look()
                                 if(slot < 0)
                                         return;
 
-                                if(is_pair(ci(ply, plx)->object[slot]))
-                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->object[slot]->fullname);
-                                else
-                                        gtprintf("There is %s here.", a_an(ci(ply, plx)->object[slot]->fullname));
+                                if(gtconfig.ap[ci(ply, plx)->object[slot]->type]) {
+                                        do_action(ACTION_PICKUP);
+                                } else {
+                                        if(is_pair(ci(ply, plx)->object[slot]))
+                                                gtprintf("There is a pair of %s here.", ci(ply, plx)->object[slot]->fullname);
+                                        else
+                                                gtprintf("There is %s here.", a_an(ci(ply, plx)->object[slot]->fullname));
+                                }
                         }
 
                         if(ci(ply, plx)->num_used == 2) {

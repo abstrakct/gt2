@@ -668,6 +668,7 @@ void draw2DFractArrayAsTriangles (float *fa, int size)
     }
 }
 */
+/*
 void main()
 {
         float *f;
@@ -677,4 +678,4 @@ void main()
         dump2DFractArray(f, 128);
 
         return;
-}
+}*/

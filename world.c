@@ -21,6 +21,8 @@
 #include "display.h"
 #include "gt.h"
 
+#include "fractmod.h"
+
 #define MAXFORESTSIZE 70
 #define LARGECITYSIZE 50
 #define VILLAGESIZE   20
@@ -28,7 +30,7 @@
 char mapchars[50] = {
         ' ',  //nothing
         '.',  //plain
-        '~',  //mountain
+        '^',  //mountain
         'T',  //forest
         '#',  //city/house
         'o',  //village
@@ -401,6 +403,31 @@ void generate_dungeon_type_3(int d)
         }
 }
 
+/*
+ * Check if a rectangular area is OK for generating
+ * a forest, city or village.
+ * It is OK if it has no mountain or lake.
+ * Only works on outside world so far.
+ */
+bool area_is_ok(int y1, int x1, int y2, int x2)
+{
+        int i, j;
+
+        if(y1 == 0 || y2 == 0 || x1 == 0 || x2 == 0)
+                return false;
+
+        for(i = y1; i < y2; i++) {
+                for(j = x1; j < x2; j++) {
+                        if(world->out->c[i][j].type == AREA_LAKE)
+                                return false;
+                        if(world->out->c[i][j].type == AREA_MOUNTAIN)
+                                return false;
+                }
+        }
+
+        return true;
+}
+
 /*********************************************
 * Description - Generate an area
 * i = index into array
@@ -420,10 +447,14 @@ void generate_area(int i, int type, int modifier, int maxsize)
         int edgex, edgey;
         //int color;
 
-        tx = ri(0, XSIZE-1);  // starting X
-        ty = ri(0, YSIZE-1);  // starting y
-        xsize = ri(modifier, maxsize-1+modifier);  // total size X
-        ysize = ri(modifier, maxsize-1+modifier);  // total size Y
+        tx = ty = xsize = ysize = 0;
+
+        while(!area_is_ok(ty, tx, ty+ysize, tx+xsize)) {
+                tx = ri(1, world->out->xsize - maxsize - 5);  // starting X
+                ty = ri(1, world->out->ysize - maxsize - 5);  // starting y
+                xsize = ri(modifier, maxsize-1+modifier);  // total size X
+                ysize = ri(modifier, maxsize-1+modifier);  // total size Y
+        }
 
         // let's not go over the edge
         if(tx+xsize >= XSIZE)
@@ -819,6 +850,8 @@ bool passable(level_t *l, int y, int x)
                 return false;
         if(type == AREA_LAKE)
                 return false;
+        if(type == AREA_MOUNTAIN)
+                return false;
         if(type == AREA_WALL)
                 return false;
         if(type == AREA_NOTHING)
@@ -861,6 +894,10 @@ bool monster_passable(level_t *l, int y, int x)
                 return false;
         if(type == AREA_NOTHING)
                 return false;
+        if(type == AREA_MOUNTAIN)
+                return false;
+        if(type == AREA_LAKE)
+                return false;
 
         return true;
 }
@@ -890,13 +927,16 @@ void generate_stairs_outside()
                 }
 
                 setbit(world->dng[1].c[d[i].y][d[i].x].flags, CF_HAS_STAIRS_UP);
-//fprintf(stderr, "DEBUG: %s:%d - OK, we have stair %d at %d,%d\n", __FILE__, __LINE__, i, d[i].y, d[i].x);
         }
 
         s = ri(35, 70);
         for(i = 0; i < s; i++) {
                 sy = ri(5, world->out->ysize-5);
                 sx = ri(5, world->out->xsize-5);
+                while(!passable(world->out, sy, sx)) {
+                        sy = ri(5, world->out->ysize-5);
+                        sx = ri(5, world->out->xsize-5);
+                }
                 j  = ri(0, 2);
 
                 setbit(world->dng[0].c[sy][sx].flags, CF_HAS_STAIRS_DOWN);
@@ -974,8 +1014,8 @@ void meta_generate_dungeon(int d, int type)
                         maxo = (world->dng[d].ysize + world->dng[d].xsize) / 60;
                 } else {
                         num_monsters = (world->dng[d].xsize + world->dng[d].ysize) / 20;
-                        mino = (world->dng[d].ysize + world->dng[d].xsize) / 40;
-                        maxo = (world->dng[d].ysize + world->dng[d].xsize) / 20;
+                        mino = (world->dng[d].ysize + world->dng[d].xsize) / 20;
+                        maxo = (world->dng[d].ysize + world->dng[d].xsize) / 10;
                 }
 
                 spawn_monsters(num_monsters, d+2, &world->dng[d]);
@@ -999,6 +1039,61 @@ void generate_stairs()
         }
 }
 
+void generate_heightmap()
+{
+        float *f;
+        int y, x;
+
+        f = alloc2DFractArray(XSIZE);
+        fill2DFractArray(f, XSIZE, game->seed, 1.0, 0.9);
+        for(y = 0; y < YSIZE; y++) {
+                for(x = 0; x < XSIZE; x++) {
+                        float h;
+                        h = f[y*YSIZE + x] * 100.0f;
+                        world->out->c[y][x].height = (int) h;
+                        world->out->zero += world->out->c[y][x].height;
+                        //fprintf(stderr, "DEBUG: %s:%d - cellheight set to %d\n", __FILE__, __LINE__, world->out->c[y][x].height);
+                }
+        }
+
+        world->out->zero /= (YSIZE*XSIZE);
+        
+fprintf(stderr, "DEBUG: %s:%d - zero is defined as %d !\n", __FILE__, __LINE__, world->out->zero);
+}
+        
+void generate_terrain(int visible)
+{
+        int y, x;
+        for(x = 0; x < world->out->xsize; x++) {
+                for(y = 0; y < world->out->ysize; y++) {
+                        if(world->out->c[y][x].height >= world->out->zero - world->out->lakelimit && world->out->c[y][x].height <= world->out->zero + world->out->lakelimit) {
+                                world->out->c[y][x].type = AREA_PLAIN;
+                                //world->out->c[y][x].flags = 0;
+                                world->out->c[y][x].color = COLOR_PLAIN;
+                                world->out->c[y][x].monster = NULL;
+                                world->out->c[y][x].inventory = NULL;
+                                world->out->c[y][x].visible = visible;
+                        }
+                        if(world->out->c[y][x].height < world->out->zero - world->out->lakelimit) {
+                                world->out->c[y][x].type = AREA_LAKE;
+                                //world->out->c[y][x].flags = 0;
+                                world->out->c[y][x].color = COLOR_BLUE;
+                                world->out->c[y][x].monster = NULL;
+                                world->out->c[y][x].inventory = NULL;
+                                world->out->c[y][x].visible = visible;
+                        }
+                        if(world->out->c[y][x].height > world->out->zero + world->out->lakelimit) {
+                                world->out->c[y][x].type = AREA_MOUNTAIN;
+                                //world->out->c[y][x].flags = 0;
+                                world->out->c[y][x].color = C_BLACK_RED;
+                                world->out->c[y][x].monster = NULL;
+                                world->out->c[y][x].inventory = NULL;
+                                world->out->c[y][x].visible = visible;
+                        }
+                }
+        }
+}
+
 /*********************************************
 * Description - One big function which should
 * take care of all world generation stuff.
@@ -1012,16 +1107,10 @@ void generate_world()
         /*
          * Generate the outside world first.
          */
-        for(x = 0; x < world->out->xsize; x++) {
-                for(y = 0; y < world->out->ysize; y++) {
-                        world->out->c[y][x].type = AREA_PLAIN;
-                        world->out->c[y][x].flags = 0;
-                        world->out->c[y][x].color = COLOR_PLAIN;
-                        world->out->c[y][x].monster = NULL;
-                        world->out->c[y][x].inventory = NULL;
-                        world->out->c[y][x].visible = 0;
-                }
-        }
+
+        generate_heightmap();
+        world->out->lakelimit = 4;
+        generate_terrain(0);
 
         world->forests  = ri(gtconfig.minf, gtconfig.maxf);
         world->cities   = ri(gtconfig.minc, gtconfig.maxc);
@@ -1038,6 +1127,8 @@ void generate_world()
         //fprintf(stderr, "DEBUG: %s:%d - Generating %d cities\n", __FILE__, __LINE__, world->cities);
         world->city = gtcalloc((size_t)world->cities, sizeof(city_t));
         generate_city(world->cities);
+
+
 
         spawn_monsters(ri(75,125), 3, world->out); 
         spawn_golds(ri(75,125), 100, world->out);
@@ -1066,14 +1157,14 @@ void generate_world()
         for(x=0; x<world->out->xsize; x++) {
                 world->out->c[1][x].type   = AREA_WALL;
                 world->out->c[2][x].type   = AREA_WALL;
-                world->out->c[794][x].type = AREA_WALL;
-                world->out->c[795][x].type = AREA_WALL;
+                world->out->c[XSIZE-6][x].type = AREA_WALL;
+                world->out->c[XSIZE-5][x].type = AREA_WALL;
         }
         for(y=0; y<world->out->ysize; y++) {
                 world->out->c[y][1].type   = AREA_WALL;
                 world->out->c[y][2].type   = AREA_WALL;
-                world->out->c[y][794].type = AREA_WALL;
-                world->out->c[y][795].type = AREA_WALL;
+                world->out->c[y][YSIZE-6].type = AREA_WALL;
+                world->out->c[y][YSIZE-5].type = AREA_WALL;
         }
 
 

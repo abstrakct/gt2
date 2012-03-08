@@ -20,7 +20,7 @@
 #include "gt.h"
 
 unsigned int mid_counter;
-int distancemap[800][800];
+int distancemap[YSIZE][XSIZE];
 
 aifunction aitable[] = {
         simpleai,
@@ -465,7 +465,6 @@ void spawn_monster(int n, monster_t *head, int maxlevel)
         
         mid_counter++;
         head->next->mid = mid_counter;
-        game->num_monsters++;
 }
 
 void kill_monster(void *level, monster_t *m, actor_t *killer)
@@ -535,6 +534,7 @@ void spawn_monsters(int num, int max_level, void *p)
                 }
 
                 i++;
+                game->num_monsters++;
         }
         //fprintf(stderr, "DEBUG: %s:%d - spawn_monsters spawned %d monsters (should spawn %d)\n", __FILE__, __LINE__, i, num);
 }

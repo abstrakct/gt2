@@ -990,10 +990,16 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_INCFOV:
                                 player->viewradius++;
+                                //world->out->lakelimit++;
+                                //generate_terrain(1);
+                                //gtprintf("lakelimit = %d", world->out->lakelimit);
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_DECFOV:
                                 player->viewradius--;
+                                //world->out->lakelimit--;
+                                //generate_terrain(1);
+                                //gtprintf("lakelimit = %d", world->out->lakelimit);
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_DUMPCOLORS:

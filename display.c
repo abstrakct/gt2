@@ -128,9 +128,6 @@ bool blocks_light(int y, int x)
 
         switch(l->c[y][x].type) {
                 case AREA_NOTHING:
-                case AREA_MOUNTAIN:
-                //case AREA_CITY:
-                //case AREA_VILLAGE:
                 case AREA_WALL:
                 case DNG_WALL:
                        return true;
@@ -265,6 +262,7 @@ void draw_world(level_t *level)
         int i,j, slot;
         int dx, dy;  // coordinates on screen!
         int color;
+        char c;
 
         werase(wmap);
         FOV(player, level);
@@ -290,6 +288,18 @@ void draw_world(level_t *level)
                                         }
 
                                         gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
+
+                                        /*
+                                        if(level->c[j][i].height < 0) {
+                                                color = COLOR_RED;
+                                                c = 48+(0 - level->c[j][i].height);
+                                        } else {
+                                                color = COLOR_BLUE;
+                                                c = 48+level->c[j][i].height;
+                                        }
+
+                                        gtmapaddch(dy, dx, color, c);
+                                        */
 
                                         if(level->c[j][i].inventory) {
                                                 wattroff(wmap, A_BOLD);

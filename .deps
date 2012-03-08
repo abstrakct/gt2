@@ -23,4 +23,4 @@ saveload.o: saveload.c objects.h actor.h monsters.h utils.h world.h \
 utils.o: utils.c objects.h actor.h monsters.h utils.h world.h display.h \
  gt.h
 world.o: world.c objects.h actor.h monsters.h utils.h world.h datafiles.h \
- display.h gt.h
+ display.h gt.h fractmod.h

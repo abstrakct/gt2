@@ -19,7 +19,6 @@
 #define AREA_VILLAGE_NOHOUSE 8
 #define AREA_FOREST_NOTREE   9
 #define AREA_LAKE           10
-#define AREA_LAKE_NOWATER   11
 
 #define DNG_FLOOR           12
 #define DNG_WALL            13
@@ -28,8 +27,8 @@
 
 #define AREA_WALL           100
 
-#define YSIZE 800
-#define XSIZE 800
+#define YSIZE 1024
+#define XSIZE 1024
 #define DUNGEON_SIZE 200
 
 #define cc(a,b) world->curlevel->c[a][b].color
@@ -59,6 +58,7 @@ typedef struct {                 // cell_t
         short      color;
         short      litcolor;
         bool       visible;
+        signed int height;
         monster_t *monster;
         inv_t     *inventory;
 } cell_t;
@@ -66,6 +66,8 @@ typedef struct {                 // cell_t
 struct levelstruct {
         short      xsize, ysize;
         short      level, type;
+        int        zero;           // for defining the "zero" level of a heightmap (i.e. the mean value)
+        int        lakelimit;
         cell_t     **c;
         monster_t  *monsters;      // point to head of linked lists of monsters on this level
         obj_t      *objects;
@@ -129,6 +131,8 @@ void paint_room(level_t *l, int y, int x, int sy, int sx, int join_overlapping);
 void paint_corridor(level_t *l, int y1, int x1, int y2, int x2);
 void paint_corridor_vertical(level_t *l, int y1, int y2, int x);
 void paint_corridor_horizontal(level_t *l, int y, int x1, int x2);
+
+void generate_terrain(int visible);
 
 extern char mapchars[];
 

@@ -97,7 +97,7 @@ extern char *otypestrings[];
 #define OF_TWOHANDED  0x00800000
 
 #define OF_OBVIOUS    0x01000000     // Effect is obvious -> identification!
-//#define OF_UNUSED3    0x02000000
+#define OF_DONOTAP    0x02000000     // Do not autopickup this item!
 //#define OF_UNUSED4    0x04000000
 //#define OF_UNUSED5    0x08000000
 //#define OF_UNUSED6    0x10000000

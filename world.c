@@ -1044,8 +1044,8 @@ void generate_world()
         spawn_objects(ri(world->out->xsize/4, world->out->ysize/4), world->out);
 
         meta_generate_dungeon(1, 1);
-        clear_area(&world->dng[1], 6, 6, r.y+6, r.x+6);
-        insert_roomdef_at(&world->dng[1], 6, 6);
+        //clear_area(&world->dng[1], 6, 6, r.y+6, r.x+6);
+        //insert_roomdef_at(&world->dng[1], 6, 6);
 
         for(i = 2; i <= 25; i++) {
                 int p;

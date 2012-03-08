@@ -734,7 +734,6 @@ int get_next_used_slot_after(int n, inv_t *i)
         return -1;
 }
 
-
 void pick_up(obj_t *o, void *p)
 {
         actor_t *a;
@@ -773,6 +772,7 @@ void drop(obj_t *o, void *actor)
         a = (actor_t *) actor;
 
         place_object_in_cell(o, &world->curlevel->c[a->y][a->x]);
+        setbit(o->flags, OF_DONOTAP);   // Don't autopickup a dropped item. TODO: Make this configurable?!
 
         slot = object_to_slot(o, a->inventory);
         a->inventory->object[slot] = NULL;

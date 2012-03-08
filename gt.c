@@ -767,17 +767,20 @@ void look()
                 if(ci(ply, plx)->num_used > 0) {
                         if(ci(ply, plx)->num_used == 1) {
                                 int slot;
+                                obj_t *ob;
+
                                 slot = get_first_used_slot(ci(ply, plx));
                                 if(slot < 0)
                                         return;
 
-                                if(gtconfig.ap[ci(ply, plx)->object[slot]->type]) {
+                                ob = ci(ply, plx)->object[slot];
+                                if(gtconfig.ap[ob->type] && !hasbit(ob->flags, OF_DONOTAP)) {
                                         do_action(ACTION_PICKUP);
                                 } else {
-                                        if(is_pair(ci(ply, plx)->object[slot]))
-                                                gtprintf("There is a pair of %s here.", ci(ply, plx)->object[slot]->fullname);
+                                        if(is_pair(ob))
+                                                gtprintf("There is a pair of %s here.", ob->fullname);
                                         else
-                                                gtprintf("There is %s here.", a_an(ci(ply, plx)->object[slot]->fullname));
+                                                gtprintf("There is %s here.", a_an(ob->fullname));
                                 }
                         }
 

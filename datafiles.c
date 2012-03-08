@@ -416,6 +416,7 @@ int parse_bracelet()
         for(j = 0; j < i; j++) {
                 obj_t *o;
                 int x;
+                int y;
 
                 o = (obj_t *) gtmalloc(sizeof(obj_t));
 
@@ -423,24 +424,26 @@ int parse_bracelet()
                 config_lookup_string(cf, sname, &value);
                 strcpy(o->basename, value);
                 
-                sprintf(sname, "bracelet.[%d].brand", j);
-                config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "stat")) {                     // This means this bracelet modifies a stat
-                        sprintf(sname, "bracelet.[%d].stat", j);
+                for(y = 0; y < 10; y++) {
+                        sprintf(sname, "bracelet.[%d].effect.[%d].brand", j, y);
                         config_lookup_string(cf, sname, &value);
+                        if(!strcmp(value, "stat")) {                     // This means this bracelet modifies a stat
+                                sprintf(sname, "bracelet.[%d].effect.[%d].stat", j, y);
+                                config_lookup_string(cf, sname, &value);
 
-                        if(!strcmp(value, "strength")) 
-                                add_effect(o, OE_STRENGTH);
-                        if(!strcmp(value, "physique"))
-                                add_effect(o, OE_PHYSIQUE);
-                        if(!strcmp(value, "intelligence"))
-                                add_effect(o, OE_INTELLIGENCE);
-                        if(!strcmp(value, "wisdom"))
-                                add_effect(o, OE_WISDOM);
-                        if(!strcmp(value, "dexterity"))
-                                add_effect(o, OE_DEXTERITY);
-                        if(!strcmp(value, "charisma"))
-                                add_effect(o, OE_CHARISMA);
+                                if(!strcmp(value, "strength")) 
+                                        add_effect(o, OE_STRENGTH);
+                                if(!strcmp(value, "physique"))
+                                        add_effect(o, OE_PHYSIQUE);
+                                if(!strcmp(value, "intelligence"))
+                                        add_effect(o, OE_INTELLIGENCE);
+                                if(!strcmp(value, "wisdom"))
+                                        add_effect(o, OE_WISDOM);
+                                if(!strcmp(value, "dexterity"))
+                                        add_effect(o, OE_DEXTERITY);
+                                if(!strcmp(value, "charisma"))
+                                        add_effect(o, OE_CHARISMA);
+                        }
                 }
 
                 sprintf(sname, "bracelet.[%d].unique", j);

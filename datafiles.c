@@ -282,18 +282,25 @@ int parse_weapons()
 
                 sprintf(sname, "weapon.[%d].type", j);
                 config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "sword"))
+                if(!strcmp(value, "sword")) {
                         o->flags |= OF_SWORD;
-                if(!strcmp(value, "axe"))
+                        o->skill  = SKILL_SWORD;
+                } else if(!strcmp(value, "axe")) {
                         o->flags |= OF_AXE;
-                if(!strcmp(value, "knife"))
+                        o->skill  = SKILL_AXE;
+                } else if(!strcmp(value, "knife")) {
                         o->flags |= OF_KNIFE;
-                if(!strcmp(value, "stick"))
+                        o->skill  = SKILL_KNIFE;
+                } else if(!strcmp(value, "stick")) {
                         o->flags |= OF_STICK;
-                if(!strcmp(value, "mace"))
+                        o->skill  = SKILL_STICK;
+                } else if(!strcmp(value, "mace")) {
                         o->flags |= OF_MACE;
-                if(!strcmp(value, "hammer"))
+                        o->skill  = SKILL_MACE;
+                } if(!strcmp(value, "hammer")) {
                         o->flags |= OF_HAMMER;
+                        o->skill  = SKILL_MACE;
+                }
 
                 o->type   = OT_WEAPON;
 

@@ -10,6 +10,7 @@ debug.o: debug.c objects.h actor.h monsters.h utils.h world.h datafiles.h \
 display.o: display.c objects.h actor.h monsters.h utils.h world.h \
  datafiles.h display.h gt.h
 fractmod.o: fractmod.c fractmod.h
+fracttest.o: fracttest.c fractmod.h
 gt.o: gt.c cards.h objects.h actor.h monsters.h utils.h world.h \
  datafiles.h display.h debug.h saveload.h commands.h gt.h
 monsters.o: monsters.c objects.h actor.h monsters.h utils.h world.h \

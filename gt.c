@@ -606,7 +606,7 @@ bool do_action(int action)
                         if(i < 0)
                                 i = 1;
 
-                        if(game->turn % i) {
+                        if(!(game->turn % i)) {
                                 if(perc(40+pphy))
                                         increase_hp(player, 1);
                         }

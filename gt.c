@@ -590,6 +590,14 @@ bool do_action(int action)
 
                         player->ticks -= TICKS_WIELDWEAR;
                         break;
+                case ACTION_QUAFF:
+                        o = (obj_t *) actiondata;
+                        if(o)
+                                quaff(o, player);
+                        else
+                                gtprintf("Huh? I don't understand.");
+                        player->ticks -= TICKS_MOVEMENT;
+                        break;
                 case ACTION_DROP:
                         o = (obj_t *) actiondata;
                         if(o)
@@ -1028,6 +1036,11 @@ int main(int argc, char *argv[])
                                 break;
                         case CMD_PICKUP:
                                 queue(ACTION_PICKUP);
+                                break;
+                        case CMD_QUAFF:
+                                l = ask_char("Which potion would you like to drink?");
+                                actiondata = (void *) get_object_from_letter(l, player->inventory);
+                                queue(ACTION_QUAFF);
                                 break;
                         case CMD_DESCEND:
                                 if(hasbit(cf(ply,plx), CF_HAS_STAIRS_DOWN)) {

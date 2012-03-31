@@ -493,6 +493,113 @@ int parse_bracelet()
         return 0;
 }
 
+int parse_potions()
+{
+        config_setting_t *cfg;
+        int i, j, material, d, s;
+        char sname[100];
+        const char *value;
+
+        cfg = config_lookup(cf, "potion");
+        i = config_setting_length(cfg);
+        printf("Parsing potions file... We have %d potions", i);
+        material = 1;
+        for(j = 0; j < i; j++) {
+                obj_t *o;
+                int x;
+                int y;
+
+                o = (obj_t *) gtmalloc(sizeof(obj_t));
+
+                sprintf(sname, "potion.[%d].name", j);
+                config_lookup_string(cf, sname, &value);
+                strcpy(o->basename, value);
+                
+                for(y = 0; y < 10; y++) {
+                        sprintf(sname, "potion.[%d].effect.[%d].brand", j, y);
+                        config_lookup_string(cf, sname, &value);
+
+                        if(!strcmp(value, "healing")) {
+                                x = 0;
+                                sprintf(sname, "potion.[%d].effect.[%d].sides", j, y);
+                                config_lookup_int(cf, sname, &x);
+                                s = x;
+
+                                x = 0;
+                                sprintf(sname, "potion.[%d].effect.[%d].dice", j, y);
+                                config_lookup_int(cf, sname, &x);
+                                d = x;
+
+                                if(d && s) {
+                                        o->dice = d;
+                                        o->sides = s;
+                                        add_effect(o, OE_HEAL_NOW);
+                                }
+                        } else if(!strcmp(value, "stat")) {                     // This means this potion modifies a stat
+                                sprintf(sname, "potion.[%d].effect.[%d].stat", j, y);
+                                config_lookup_string(cf, sname, &value);
+
+                                if(!strcmp(value, "strength")) 
+                                        add_effect(o, OE_STRENGTH);
+                                if(!strcmp(value, "physique"))
+                                        add_effect(o, OE_PHYSIQUE);
+                                if(!strcmp(value, "intelligence"))
+                                        add_effect(o, OE_INTELLIGENCE);
+                                if(!strcmp(value, "wisdom"))
+                                        add_effect(o, OE_WISDOM);
+                                if(!strcmp(value, "dexterity"))
+                                        add_effect(o, OE_DEXTERITY);
+                                if(!strcmp(value, "charisma"))
+                                        add_effect(o, OE_CHARISMA);
+                        }
+                }
+
+                sprintf(sname, "potion.[%d].unique", j);
+                config_lookup_bool(cf, sname, &x);
+                if(x)
+                        setbit(o->flags, OF_UNIQUE);
+
+                x = 0;
+                sprintf(sname, "potion.[%d].obvious", j);
+                config_lookup_bool(cf, sname, &x);
+                if(x)
+                        setbit(o->flags, OF_OBVIOUS);
+
+                o->type = OT_POTION;
+                o->id = objid; objid++;
+
+                clearbit(o->flags, OF_IDENTIFIED);
+
+                o->material = mats_potions[material];
+                material++;
+                if(material > POTS)
+                        die("whoa! we ran out of material!");
+
+                switch(o->material) {
+                        case POT_RED: o->color = COLOR_RED; break;
+                        case POT_GREEN: o->color = COLOR_GREEN; break;
+                        case POT_SPARKLING: o->color = COLOR_WHITE; break;
+                        case POT_BLUE: o->color = COLOR_BLUE; break;
+                        case POT_CLEAR: o->color = COLOR_WHITE; break;
+                        case POT_YELLOW: o->color = COLOR_YELLOW; break;
+                        case POT_PINK: o->color = COLOR_MAGENTA; break;
+                        default: o->color = COLOR_WHITE; break;
+                };
+
+                o->head = objdefs->head;
+                objdefs->next = o;
+                o->next = NULL;
+                objdefs = o;
+
+                game->objdefs++;
+                printf(".");
+        }
+
+        printf(" OK\n");
+
+        return 0;
+}
+
 int parse_jewelry()
 {
         int ret;
@@ -510,6 +617,7 @@ int parse_objects()
         ret = parse_armor();
         ret = parse_weapons();
         ret = parse_jewelry();
+        ret = parse_potions();
 
         return ret;
 }

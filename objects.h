@@ -127,6 +127,18 @@ extern char *otypestrings[];
 extern int mats_bracelets[MATERIALS];
 extern int mats_amulets[MATERIALS];
 
+#define POT_RED        1
+#define POT_GREEN      2
+#define POT_SPARKLING  3
+#define POT_BLUE       4
+#define POT_CLEAR      5
+#define POT_YELLOW     6
+#define POT_PINK       7
+
+#define POTS           7
+
+extern int mats_potions[POTS];
+
 // defines so that we can easily use fields in obj_t for various stuff
 #define ac sides
 
@@ -135,6 +147,7 @@ extern int mats_amulets[MATERIALS];
 #define is_weapon(a)        (a->type  == OT_WEAPON)
 #define is_bracelet(a)          (a->type  == OT_BRACELET)
 #define is_amulet(a)        (a->type  == OT_AMULET)
+#define is_potion(a)        (a->type  == OT_POTION)
 
 #define do_identify(a)      (a->flags|= OF_IDENTIFIED)
 #define is_identified(a)    (a->flags & OF_IDENTIFIED)
@@ -183,6 +196,7 @@ void   unwield(obj_t *o);
 void   unwear(obj_t *o);
 void   puton(int slot, obj_t *o);
 void   drop(obj_t *o, void *actor);
+void quaff(obj_t *o, void *actor);
 
 inv_t *init_inventory();
 void   spawn_golds(int num, int max, void *p);

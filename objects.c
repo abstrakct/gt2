@@ -28,6 +28,7 @@ int pluses, minuses;
 // materials
 int mats_bracelets[MATERIALS];
 int mats_amulets[MATERIALS];
+int mats_potions[POTS];
 
 unsigned int oid_counter;
 char objchars[] = {
@@ -36,14 +37,18 @@ char objchars[] = {
         ')',               // weapon
         '[',               // armor
         'o',               // bracelet
-        186,               // amulet  (evt. 186!)
+        '"',               // amulet  (evt. 186!)
         '*',               // card    (evt. 246!)
         '/',               // wand
-        191,               // potion
+        '!',               // potion  (evt. 191)
 };
 
 char *materialstring[] = {
         0, "gold", "silver", "bronze", "copper", "wooden", "iron", "marble", "glass", "bone", "platinum", "steel", "blackwood", "brass", "ebony", "bloodwood"
+};
+
+char *potionstring[] = {
+        0, "red", "green", "sparkling", "blue", "clear", "yellow", "pink"
 };
 
 obj_t get_objdef(int n)
@@ -250,6 +255,12 @@ void generate_fullname(obj_t *o)
                         sprintf(n, "%s", o->basename);
                 } else {
                         sprintf(n, "%s amulet", materialstring[(int)o->material]);
+                }
+        } else if(o->type == OT_POTION) {
+                if(is_identified(o)) {
+                        sprintf(n, "%s", o->basename);
+                } else {
+                        sprintf(n, "%s potion", potionstring[(int)o->material]);
                 }
         } else {
                 strcat(n, o->basename);
@@ -544,6 +555,30 @@ void puton(int slot, obj_t *o)
         }
 }
 
+void quaff(obj_t *o, void *actor)
+{
+        int slot;
+        actor_t *a;
+
+        a = (actor_t *) actor;
+
+        if(is_potion(o)) {
+                apply_effects(o);
+
+                if(!hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
+                        setbit(o->flags, OF_IDENTIFIED);
+                        do_identify_all(o);
+                        generate_fullname(o);
+                        gtprintfc(COLOR_INFO, "That was %s!", a_an(o->fullname));
+                }
+
+                slot = object_to_slot(o, a->inventory);
+                a->inventory->object[slot] = NULL;
+                a->inventory->num_used--;
+                unspawn_object(o);
+        }
+}
+
 void wear(obj_t *o)
 {
         if(is_bracelet(o)) {
@@ -805,7 +840,7 @@ void init_objects()
 {
         int i, j;
 
-        mats_bracelets[0] = mats_amulets[0] = 0;
+        mats_bracelets[0] = mats_amulets[0] = mats_potions[0] = 0;
 
         for(i = 0; i <= MATERIALS; i++) {
                 j = ri(1, MATERIALS);
@@ -820,5 +855,12 @@ void init_objects()
                         j = ri(1, MATERIALS);
                 mats_amulets[j] = i;
 
+        }
+
+        for(i = 0; i <= POTS; i++) {
+                j = ri(1, POTS);
+                while(mats_potions[j] != 0)
+                        j = ri(1, POTS);
+                mats_potions[j] = i;
         }
 }

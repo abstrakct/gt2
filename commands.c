@@ -50,10 +50,11 @@ cmd_t outsidecommands[] = {
         { 49,        CMD_SW,          "Move down-left" },
         { 'n',       CMD_SE,          "Move down-right" },
         { 51,        CMD_SE,          "Move down-right" },
-        { 'q',       CMD_QUIT,        "Quit" },
+        { 27,        CMD_QUIT,        "Quit" },
         { 'i',       CMD_INVENTORY,   "Show inventory" },
         { 'w',       CMD_WIELDWEAR,   "Wield or wear an item" },
         { 'r',       CMD_UNWIELDWEAR, "Remove or unwield an item" },
+        { 'q',       CMD_QUAFF,       "Drink a potion" },
         { KEY_F(5),  CMD_SAVE,        "Save" },
         { KEY_F(6),  CMD_LOAD,        "Load" },
         { ',',       CMD_PICKUP,      "Pick up something" },
@@ -88,7 +89,7 @@ int get_command()
         int key, i;
 
         key = gtgetch();
-        if(key == 'q')
+        if(key == 27)
                 return CMD_QUIT;       // easy exit even if C&C breaks down!
 
         for(i=0; i<numcommands; i++) {

@@ -24,6 +24,8 @@
 
 typedef void (*effectfunctionpointer)(void *data);
 
+/* TODO: actor!!! */
+
 effectfunctionpointer effecttable[] = {
         0,
         oe_strength,
@@ -33,8 +35,23 @@ effectfunctionpointer effecttable[] = {
         oe_dexterity,
         oe_charisma,
         oe_protection_life,
-        oe_protection_fire
+        oe_protection_fire,
+        oe_heal_now
 };
+
+void oe_heal_now(void *data)
+{
+        int heal;
+        obj_t *o;
+
+        o = (obj_t *) data;
+        heal = dice(o->dice, o->sides, 0);
+        player->hp += heal;
+        if(player->hp > player->maxhp)
+                player->hp = player->maxhp;
+
+        youc(COLOR_INFO, "feel healed!");
+}
 
 void oe_protection_life(void *data)
 {

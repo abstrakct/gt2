@@ -17,7 +17,9 @@
 #define OE_PROTECTION_LIFE         7
 #define OE_PROTECTION_FIRE         8
 
-#define OE_LAST                    9
+#define OE_HEAL_NOW                9
+
+#define OE_LAST                    10
 
 void apply_effects(obj_t *o);
 void apply_effect(int effect, void *data);
@@ -30,5 +32,6 @@ void oe_dexterity(void *data);
 void oe_charisma(void *data);
 void oe_protection_life(void *data);
 void oe_protection_fire(void *data);
+void oe_heal_now(void *data);
 
 #endif

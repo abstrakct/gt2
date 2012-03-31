@@ -84,6 +84,7 @@ typedef struct coord {
 #define ACTION_HEAL_PLAYER       18
 #define ACTION_MAKE_DISTANCEMAP  19
 #define ACTION_DROP              20
+#define ACTION_QUAFF             21
 
 #define TICKS_MOVEMENT  1000
 #define TICKS_ATTACK    1000

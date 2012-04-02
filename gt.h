@@ -105,7 +105,7 @@ typedef struct coord {
 #define ppy player->py
 #define pyxt world->cmap[player->y][player->x].type
 
-
+#define round(x) ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
 
 // global variables
 extern world_t *world;

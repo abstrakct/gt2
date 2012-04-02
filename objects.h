@@ -41,6 +41,7 @@ struct object {
         char          skill;                       // a particular skill needed to use this weapon?
         char          effects;
         short         effect[MAX_EFFECTS];
+        short         rarity;
 };
 
 typedef struct object obj_t;
@@ -138,6 +139,13 @@ extern int mats_amulets[MATERIALS];
 #define POTS           7
 
 extern int mats_potions[POTS];
+
+// defines for rarity - the numbers are for % chance of spawning this object in a totally random spawn
+#define COMMON   50
+#define UNCOMMON 30
+#define RARE     15
+#define VERYRARE 5
+#define UNIQUE   1000
 
 // defines so that we can easily use fields in obj_t for various stuff
 #define ac sides

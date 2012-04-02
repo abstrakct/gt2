@@ -67,6 +67,31 @@ obj_t get_objdef(int n)
         return *tmp;
 }
 
+obj_t get_random_objdef_with_rarity(int rarity)
+{
+        obj_t *tmp;
+        int i, j, foundone;
+
+        foundone = false;
+
+        while(!foundone) {
+                j = 0;
+                i = ri(0, game->objdefs);           // choose a random object
+
+                tmp = objdefs->head->next;
+                while(j != i) {                     // move up to that object  (should perhaps be a function of it's own, to look up objdef #x
+                        if(tmp->next)
+                                tmp = tmp->next;
+                        j++;
+                }
+
+                if(tmp->rarity == rarity)           // if it has the requested rarity,
+                        foundone = true;            // then we've found one, and can return it.
+        }
+
+        return *tmp;
+}
+
 obj_t *get_object_by_oid(inv_t *i, int oid)
 {
         int j;
@@ -401,6 +426,113 @@ obj_t *spawn_object(int n, void *level)
         return new;
 }
 
+obj_t *spawn_object_with_rarity(int rarity, void *level)
+{
+        obj_t *new;
+        level_t *l;
+        int lev;
+
+        l = (level_t *) level;
+        if(l)
+                lev = l->level;
+        else
+                lev = 1;
+
+        new = gtmalloc(sizeof(obj_t));
+        if(!new)
+                return false;
+        
+        *new = get_random_objdef_with_rarity(rarity);
+
+        oid_counter++;
+        new->oid = oid_counter;
+
+        // maybe this object is magical?
+        // TODO: move this to separate function(s)!!!!
+
+        if(!is_unique(new) && (is_weapon(new) || is_armor(new) || is_bracelet(new))) {
+                if(new->type == OT_BRACELET)
+                        while(!new->attackmod)
+                                new->attackmod = ri(-1, 1);
+
+                if(perc(50+(player->level*2))) {
+                        if(perc(40)) {                // a bracelet must be at least +/- 1 (or 0 for malfunctioning bracelets!)
+                                if(perc(66))
+                                        new->attackmod = ri(0, 1);
+                                else
+                                        new->attackmod = ri(-1, 0);
+                        }
+                        if(perc(30 + (lev*3)) && !new->attackmod) {
+                                if(perc(66))
+                                        new->attackmod = ri(1, 2);
+                                else
+                                        new->attackmod = ri(-2, 1);
+                        }
+                        if(perc(20 + (lev*3)) && !new->attackmod) {
+                                if(perc(66))
+                                        new->attackmod = ri(1, 3);
+                                else
+                                        new->attackmod = ri(-3, 1);
+                        }
+                        if(perc(10 + (lev*3)) && !new->attackmod) {
+                                if(perc(50 + (lev*2))) {
+                                        if(perc(66))
+                                                new->attackmod = ri(1, 4);
+                                        else
+                                                new->attackmod = ri(-4, 1);
+                                } else {
+                                        if(perc(66))
+                                                new->attackmod = ri(1, 5);
+                                        else
+                                                new->attackmod = ri(-5, 1);
+                                }
+                        }
+                }
+
+        }
+
+        if(!is_unique(new) && is_weapon(new)) {
+                if(perc(60+(player->level*2))) {
+                        if(perc(40)) {
+                                if(perc(66))
+                                        new->damagemod = ri(0, 1);
+                                else
+                                        new->damagemod = ri(-1, 0);
+                        }
+                        if(perc(30 + (lev*3)) && !new->damagemod) {
+                                if(perc(66))
+                                        new->damagemod = ri(0, 2);
+                                else
+                                        new->damagemod = ri(-2, 0);
+                        }
+                        if(perc(20 + (lev*3)) && !new->damagemod) {
+                                if(perc(66))
+                                        new->damagemod = ri(0, 3);
+                                else
+                                        new->damagemod = ri(-3, 0);
+                        }
+                        if(perc(10 + (lev*3)) && !new->damagemod) {
+                                if(perc(50 + (lev*2))) {
+                                        if(perc(66))
+                                                new->damagemod = ri(0, 4);
+                                        else
+                                                new->damagemod = ri(-4, 0);
+                                } else {
+                                        if(perc(66))
+                                                new->damagemod = ri(0, 5);
+                                        else
+                                                new->damagemod = ri(-5, 0);
+                                }
+                        }
+                }
+
+        }
+
+        generate_fullname(new);  // TODO displayname vs fullname etc.
+        add_to_master_object_list(new);
+
+        return new;
+}
 /*
  * spawn an object (objdef n) and place it at (y,x) on level
  */
@@ -417,13 +549,21 @@ bool spawn_object_at(int y, int x, int n, void *level)
                 return false;
         }
 
-        /*if(i->next->attackmod || i->next->damagemod || (i->next->attackmod && i->next->damagemod))
-                fprintf(stderr, "DEBUG: %s:%d - Spawned a %s\n", __FILE__, __LINE__, i->next->fullname);
+        return true;
+}
 
-        if(i->next->modifier > 0)
-                pluses++;
-        if(i->next->modifier < 0)
-                minuses++;*/
+bool spawn_object_with_rarity_at(int y, int x, int rarity, void *level)
+{
+        obj_t *o;
+
+        o = spawn_object_with_rarity(rarity, level);
+        if(!o)
+                return false;
+
+        if(!place_object_at(o, y, x, level)) {
+                unspawn_object(o);
+                return false;
+        }
 
         return true;
 }
@@ -433,29 +573,64 @@ bool spawn_object_at(int y, int x, int n, void *level)
  */
 void spawn_objects(int num, void *p)
 {
-        int i, x, y, o;
+        int i, x, y;
+        double f;
+        int common, uncommon, rare, veryrare;
         level_t *l;
-        //double mp, pp, np, tot;
+
+        /* 
+         * To deal with rarity we'll try this:
+         * COMMON % of num will be, well, COMMON
+         * UNCOMMON % uncommon
+         * etc.
+         */
+
+        f = (double) ((float)num / 100.0f) * (float)COMMON;
+        common = round(f);
+        f = (double) ((float)num / 100.0f) * (float)UNCOMMON;
+        uncommon = round(f);
+        f = (double) ((float)num / 100.0f) * (float)RARE;
+        rare = round(f);
+        f = (double) ((float)num / 100.0f) * (float)VERYRARE;
+        veryrare = round(f);
+
+        //printf("Spawning %d objects:\n%d common\n%d uncommon\n%d rare\n%d very rare\ntotal %d\n", num, common, uncommon, rare, veryrare, common + uncommon + rare + veryrare);
 
         i = 0;
         l = (level_t *) p;
-        //minuses = 0; pluses = 0;
+        common = uncommon = rare = veryrare = 0;
+
         while(i < num) {
+                int p, rarity;
+
                 x = ri(1, l->xsize-1);
                 y = ri(1, l->ysize-1);
-                o = ri(1, game->objdefs);
-                if (spawn_object_at(y, x, o, l))
+
+                p = ri(1, 100);
+                if(p <= VERYRARE)
+                        rarity = VERYRARE;
+                else if(p > VERYRARE && p <= (VERYRARE + RARE))
+                        rarity = RARE;
+                else if(p > (VERYRARE + RARE) && p <= (VERYRARE + RARE + UNCOMMON))
+                        rarity = UNCOMMON;
+                else if(p > (VERYRARE + RARE + UNCOMMON) && p <= (VERYRARE + RARE + UNCOMMON + COMMON))
+                        rarity = COMMON;
+                
+                if (spawn_object_with_rarity_at(y, x, rarity, l)) {
                         i++;
+                        switch(rarity) {
+                                case COMMON: common++; break;
+                                case UNCOMMON: uncommon++; break;
+                                case RARE: rare++; break;
+                                case VERYRARE: veryrare++;
+                        };
+                }
+                        
         }
 
-        /*tot = (double) i;
-        mp = (100 / tot) * (double) minuses;
-        pp = (100 / tot) * (double) pluses;
-        np = (100 / tot) * (double) (tot - minuses - pluses);
-
-        fprintf(stderr, "\nDEBUG: %s:%d - Spawned %d objects    %.1f %% with +    %.1f %% with -     %.1f %% neutral.\n", __FILE__, __LINE__, i, pp, mp, np);
-        fprintf(stderr, "\nDEBUG: %s:%d - spawn_objects spawned %d objects (should spawn %d)\n\n", __FILE__, __LINE__, i, num);*/
+        printf("Generated:\n\ttotal:\t%d\n\tcommon:\t%d\n\tuncommon:\t%d\n\trare:\t%d\n\tveryrare:\t%d\n\n", i, common, uncommon, rare, veryrare);
 }
+
 
 void spawn_gold(int n, inv_t *i)
 {

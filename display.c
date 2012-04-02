@@ -262,7 +262,6 @@ void draw_world(level_t *level)
         int i,j, slot;
         int dx, dy;  // coordinates on screen!
         int color;
-        char c;
 
         werase(wmap);
         FOV(player, level);

@@ -242,6 +242,23 @@ int parse_armor()
                 config_lookup_int(cf, sname, &x);
                 o->ac = x;
 
+                sprintf(sname, "armor.[%d].rarity", j);
+                config_lookup_string(cf, sname, &value);
+                if(!strcmp(value, "common"))
+                        o->rarity = COMMON;
+                else if(!strcmp(value, "uncommon"))
+                        o->rarity = UNCOMMON;
+                else if(!strcmp(value, "rare"))
+                        o->rarity = RARE;
+                else if(!strcmp(value, "very rare"))
+                        o->rarity = VERYRARE;
+                else {                                          // assume it's common if nothing else is specified
+                        if(!hasbit(o->flags, OF_UNIQUE))
+                                o->rarity = COMMON;
+                        else
+                                o->rarity = UNIQUE;
+                }
+
                 o->id = objid; objid++;
                 o->color = COLOR_WHITE;
 
@@ -314,7 +331,24 @@ int parse_weapons()
                 sprintf(sname, "weapon.[%d].unique", j);
                 config_lookup_bool(cf, sname, &x);
                 if(x)
-                        o->flags |= OF_UNIQUE;
+                        setbit(o->flags, OF_UNIQUE);
+
+                sprintf(sname, "weapon.[%d].rarity", j);
+                config_lookup_string(cf, sname, &value);
+                if(!strcmp(value, "common"))
+                        o->rarity = COMMON;
+                else if(!strcmp(value, "uncommon"))
+                        o->rarity = UNCOMMON;
+                else if(!strcmp(value, "rare"))
+                        o->rarity = RARE;
+                else if(!strcmp(value, "very rare"))
+                        o->rarity = VERYRARE;
+                else {                                          // assume it's common if nothing else is specified
+                        if(!hasbit(o->flags, OF_UNIQUE))
+                                o->rarity = COMMON;
+                        else
+                                o->rarity = UNIQUE;
+                }
 
                 x = 0;
                 sprintf(sname, "weapon.[%d].mod", j);
@@ -380,6 +414,23 @@ int parse_amulet()
                 config_lookup_bool(cf, sname, &x);
                 if(x)
                         setbit(o->flags, OF_OBVIOUS);
+
+                sprintf(sname, "amulet.[%d].rarity", j);
+                config_lookup_string(cf, sname, &value);
+                if(!strcmp(value, "common"))
+                        o->rarity = COMMON;
+                else if(!strcmp(value, "uncommon"))
+                        o->rarity = UNCOMMON;
+                else if(!strcmp(value, "rare"))
+                        o->rarity = RARE;
+                else if(!strcmp(value, "very rare"))
+                        o->rarity = VERYRARE;
+                else {                                          // assume it's common if nothing else is specified
+                        if(!hasbit(o->flags, OF_UNIQUE))
+                                o->rarity = COMMON;
+                        else
+                                o->rarity = UNIQUE;
+                }
 
                 x = 0;
                 /*sprintf(sname, "amulet.[%d].mod", j);
@@ -464,6 +515,23 @@ int parse_bracelet()
                 if(x)
                         setbit(o->flags, OF_OBVIOUS);
 
+                sprintf(sname, "bracelet.[%d].rarity", j);
+                config_lookup_string(cf, sname, &value);
+                if(!strcmp(value, "common"))
+                        o->rarity = COMMON;
+                else if(!strcmp(value, "uncommon"))
+                        o->rarity = UNCOMMON;
+                else if(!strcmp(value, "rare"))
+                        o->rarity = RARE;
+                else if(!strcmp(value, "very rare"))
+                        o->rarity = VERYRARE;
+                else {                                          // assume it's common if nothing else is specified
+                        if(!hasbit(o->flags, OF_UNIQUE))
+                                o->rarity = COMMON;
+                        else
+                                o->rarity = UNIQUE;
+                }
+
                 x = 0;
                 sprintf(sname, "bracelet.[%d].mod", j);
                 config_lookup_int(cf, sname, &x);
@@ -491,6 +559,16 @@ int parse_bracelet()
         printf(" OK\n");
 
         return 0;
+}
+
+int parse_jewelry()
+{
+        int ret;
+
+        ret = parse_bracelet();
+        ret = parse_amulet();
+
+        return ret;
 }
 
 int parse_potions()
@@ -565,6 +643,23 @@ int parse_potions()
                 if(x)
                         setbit(o->flags, OF_OBVIOUS);
 
+                sprintf(sname, "potion.[%d].rarity", j);
+                config_lookup_string(cf, sname, &value);
+                if(!strcmp(value, "common"))
+                        o->rarity = COMMON;
+                else if(!strcmp(value, "uncommon"))
+                        o->rarity = UNCOMMON;
+                else if(!strcmp(value, "rare"))
+                        o->rarity = RARE;
+                else if(!strcmp(value, "very rare"))
+                        o->rarity = VERYRARE;
+                else {                                          // assume it's common if nothing else is specified
+                        if(!hasbit(o->flags, OF_UNIQUE))
+                                o->rarity = COMMON;
+                        else
+                                o->rarity = UNIQUE;
+                }
+
                 o->type = OT_POTION;
                 o->id = objid; objid++;
 
@@ -598,16 +693,6 @@ int parse_potions()
         printf(" OK\n");
 
         return 0;
-}
-
-int parse_jewelry()
-{
-        int ret;
-
-        ret = parse_bracelet();
-        ret = parse_amulet();
-
-        return ret;
 }
 
 int parse_objects()

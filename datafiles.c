@@ -613,7 +613,9 @@ int parse_potions()
                                         o->sides = s;
                                         add_effect(o, OE_HEAL_NOW);
                                 }
-                        } else if(!strcmp(value, "stat")) {                     // This means this potion modifies a stat
+                        }
+                        
+                        if(!strcmp(value, "stat")) {                     // This means this potion modifies a stat
                                 sprintf(sname, "potion.[%d].effect.[%d].stat", j, y);
                                 config_lookup_string(cf, sname, &value);
 

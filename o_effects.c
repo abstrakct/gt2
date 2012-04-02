@@ -101,7 +101,9 @@ void oe_strength(void *data)
         o = (obj_t *) data;
         x = player->attr.str;
 
-        if(is_worn(o)) {
+        if(is_potion(o))
+                player->attr.str++;
+        else if(is_worn(o)) {
                 player->attr.str += o->attackmod;
         } else {
                 player->attr.str -= o->attackmod;
@@ -121,7 +123,9 @@ void oe_wisdom(void *data)
         o = (obj_t *) data;
         x = player->attr.wis;
 
-        if(is_worn(o)) {
+        if(is_potion(o))
+                player->attr.wis++;
+        else if(is_worn(o)) {
                 player->attr.wis += o->attackmod;
         } else {
                 player->attr.wis -= o->attackmod;
@@ -141,7 +145,9 @@ void oe_physique(void *data)
         o = (obj_t *) data;
         x = player->attr.phy;
 
-        if(is_worn(o)) {
+        if(is_potion(o))
+                player->attr.phy++;
+        else if(is_worn(o)) {
                 player->attr.phy += o->attackmod;
         } else {
                 player->attr.phy -= o->attackmod;
@@ -161,7 +167,9 @@ void oe_intelligence(void *data)
         o = (obj_t *) data;
         x = player->attr.intl;
 
-        if(is_worn(o)) {
+        if(is_potion(o))
+                player->attr.intl++;
+        else if(is_worn(o)) {
                 player->attr.intl += o->attackmod;
         } else {
                 player->attr.intl -= o->attackmod;
@@ -181,7 +189,9 @@ void oe_dexterity(void *data)
         o = (obj_t *) data;
         x = player->attr.dex;
 
-        if(is_worn(o)) {
+        if(is_potion(o))
+                player->attr.dex++;
+        else if(is_worn(o)) {
                 player->attr.dex += o->attackmod;
         } else {
                 player->attr.dex -= o->attackmod;
@@ -201,7 +211,9 @@ void oe_charisma(void *data)
         o = (obj_t *) data;
         x = player->attr.cha;
 
-        if(is_worn(o)) {
+        if(is_potion(o))
+                player->attr.cha++;
+        else if(is_worn(o)) {
                 player->attr.cha += o->attackmod;
         } else {
                 player->attr.cha -= o->attackmod;

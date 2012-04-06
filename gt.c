@@ -576,7 +576,7 @@ bool do_action(int action)
                 case ACTION_WIELDWEAR:
                         o = (obj_t *) actiondata;
                         if(o)
-                                wieldwear(o);
+                                wieldwear(player, o);
                         else
                                 gtprintf("HUH????????????????????");
                         player->ticks -= TICKS_WIELDWEAR;
@@ -584,7 +584,7 @@ bool do_action(int action)
                 case ACTION_UNWIELDWEAR:
                         o = (obj_t *) actiondata;
                         if(o)
-                                unwieldwear(o);
+                                unwieldwear(player, o);
                         else
                                 gtprintf("HUH????????????????????");
 
@@ -593,7 +593,7 @@ bool do_action(int action)
                 case ACTION_QUAFF:
                         o = (obj_t *) actiondata;
                         if(o)
-                                quaff(o, player);
+                                quaff(player, o);
                         else
                                 gtprintf("Huh? I don't understand.");
                         player->ticks -= TICKS_MOVEMENT;
@@ -601,7 +601,7 @@ bool do_action(int action)
                 case ACTION_DROP:
                         o = (obj_t *) actiondata;
                         if(o)
-                                drop(o, player);
+                                drop(player, o);
                         else
                                 gtprintf("Drop what?");
                         player->ticks -= TICKS_WIELDWEAR;

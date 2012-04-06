@@ -197,14 +197,14 @@ int    get_first_used_slot(inv_t *i);
 int    get_next_used_slot_after(int n, inv_t *i);
 
 void   pick_up(obj_t *o, void *a);
-void   wieldwear(obj_t *o);
-void   wield(obj_t *o);
-void   unwieldwear(obj_t *o);
-void   unwield(obj_t *o);
-void   unwear(obj_t *o);
-void   puton(int slot, obj_t *o);
-void   drop(obj_t *o, void *actor);
-void quaff(obj_t *o, void *actor);
+void   wieldwear(void *a, obj_t *o);
+void   wield(void *a, obj_t *o);
+void   unwieldwear(void *a, obj_t *o);
+void   unwield(void *a, obj_t *o);
+void   unwear(void *a, obj_t *o);
+void   puton(void *actor, int slot, obj_t *o);
+void   drop(void *a, obj_t *o);
+void   quaff(void *a, obj_t *o);
 
 inv_t *init_inventory();
 void   spawn_golds(int num, int max, void *p);

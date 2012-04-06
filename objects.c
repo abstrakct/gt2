@@ -705,194 +705,223 @@ inv_t *init_inventory()
         return i;
 }
 
-void puton(int slot, obj_t *o)
+void puton(void *a, int slot, obj_t *o)
 {
-        player->w[slot] = o;
-        apply_effects(o);
+        actor_t *actor;
+
+        actor = (actor_t *) a;
+
+        actor->w[slot] = o;
+        apply_effects(actor, o);
 
         if(is_armor(o)) {
-                player->ac += o->ac;
-                player->ac += o->attackmod;
+                actor->ac += o->ac;
+                actor->ac += o->attackmod;
         }
         
-        if(hasbit(o->flags, OF_IDENTIFIED)) {
-                setbit(o->flags, OF_ID_MOD);
-                generate_fullname(o);
-        }
+        if(actor == player) {
+                if(hasbit(o->flags, OF_IDENTIFIED)) {
+                        setbit(o->flags, OF_ID_MOD);
+                        generate_fullname(o);
+                }
 
-        if(!hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
-                setbit(o->flags, OF_IDENTIFIED);
-                setbit(o->flags, OF_ID_MOD);
-                do_identify_all(o);
-                generate_fullname(o);
-                gtprintfc(COLOR_INFO, "This is %s!", a_an(o->fullname));
+                if(!hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
+                        setbit(o->flags, OF_IDENTIFIED);
+                        setbit(o->flags, OF_ID_MOD);
+                        do_identify_all(o);
+                        generate_fullname(o);
+                        gtprintfc(COLOR_INFO, "This is %s!", a_an(o->fullname));
+                }
         }
 }
 
-void quaff(obj_t *o, void *actor)
+void quaff(void *a, obj_t *o)
 {
         int slot;
-        actor_t *a;
+        actor_t *actor;
 
-        a = (actor_t *) actor;
+        actor = (actor_t *) a;
 
         if(is_potion(o)) {
-                apply_effects(o);
+                apply_effects(actor, o);
 
-                if(!hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
+                if((actor == player) && !hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
                         setbit(o->flags, OF_IDENTIFIED);
                         do_identify_all(o);
                         generate_fullname(o);
                         gtprintfc(COLOR_INFO, "That was %s!", a_an(o->fullname));
                 }
 
-                slot = object_to_slot(o, a->inventory);
-                a->inventory->object[slot] = NULL;
-                a->inventory->num_used--;
+                slot = object_to_slot(o, actor->inventory);
+                actor->inventory->object[slot] = NULL;
+                actor->inventory->num_used--;
                 unspawn_object(o);
         }
 }
 
-void wear(obj_t *o)
+void wear(void *a, obj_t *o)
 {
-        if(is_bracelet(o)) {
-                char c;
+        actor_t *actor;
 
-                c = ask_for_hand();
-                if(!c) {
-                        gtprintf("Alright then.");
-                        return;
-                }
-                if(c == 'l') {
-                        if(pw_leftbracelet) {
-                                if(!yesno("Do you want to remove your %s", pw_leftbracelet->fullname)) {
-                                        gtprintf("OK then.");
-                                        return;
-                                } else {
-                                        unwear(pw_leftbracelet);
-                                        puton(SLOT_LEFTBRACELET, o);
-                                }
-                        } else {
-                                puton(SLOT_LEFTBRACELET, o);
-                        }
-                } else if(c == 'r') {
-                        if(pw_rightbracelet) {
-                                if(!yesno("Do you want to remove your %s", pw_rightbracelet->fullname)) {
-                                        gtprintf("OK then.");
-                                        return;
-                                } else {
-                                        unwear(pw_rightbracelet);
-                                        puton(SLOT_RIGHTBRACELET, o);
-                                }
-                        } else {
-                                puton(SLOT_RIGHTBRACELET, o);
-                        }
-                }
+        actor = (actor_t *) a;
 
-                if(!o->attackmod)
-                        gtprintfc(COLOR_INFO, "The %s seems to be malfunctioning!", o->fullname);      // change this when we implement the identification system!
+        if(actor == player) {
+                if(is_bracelet(o)) {
+                        char c;
 
-        }
-
-        if(is_amulet(o)) {
-                if(pw_amulet) {
-                        if(!yesno("Do you want to remove your %s", pw_amulet->fullname)) {
-                                gtprintf("OK then.");
+                        c = ask_for_hand();
+                        if(!c) {
+                                gtprintf("Alright then.");
                                 return;
-                        } else {
-                                unwear(pw_amulet);
-                                puton(SLOT_AMULET, o);
                         }
-                } else {
-                        puton(SLOT_AMULET, o);
-                }
-        }
+                        if(c == 'l') {
+                                if(pw_leftbracelet) {
+                                        if(!yesno("Do you want to remove your %s", pw_leftbracelet->fullname)) {
+                                                gtprintf("OK then.");
+                                                return;
+                                        } else {
+                                                unwear(actor, pw_leftbracelet);
+                                                puton(actor, SLOT_LEFTBRACELET, o);
+                                        }
+                                } else {
+                                        puton(actor, SLOT_LEFTBRACELET, o);
+                                }
+                        } else if(c == 'r') {
+                                if(pw_rightbracelet) {
+                                        if(!yesno("Do you want to remove your %s", pw_rightbracelet->fullname)) {
+                                                gtprintf("OK then.");
+                                                return;
+                                        } else {
+                                                unwear(actor, pw_rightbracelet);
+                                                puton(actor, SLOT_RIGHTBRACELET, o);
+                                        }
+                                } else {
+                                        puton(actor, SLOT_RIGHTBRACELET, o);
+                                }
+                        }
 
-        if(is_armor(o)) {
-                if(is_bodyarmor(o)) {
-                        if(pw_body) {
-                                if(!yesno("Do you want to remove your %s", pw_body->fullname)) {
+                        if(!o->attackmod)
+                                gtprintfc(COLOR_INFO, "The %s seems to be malfunctioning!", o->fullname);      // change this when we implement the identification system!
+
+                }
+
+                if(is_amulet(o)) {
+                        if(pw_amulet) {
+                                if(!yesno("Do you want to remove your %s", pw_amulet->fullname)) {
                                         gtprintf("OK then.");
                                         return;
                                 } else {
-                                        unwear(pw_body);
-                                        puton(SLOT_BODY, o);
+                                        unwear(actor, pw_amulet);
+                                        puton(actor, SLOT_AMULET, o);
                                 }
                         } else {
-                                puton(SLOT_BODY, o);
+                                puton(actor, SLOT_AMULET, o);
                         }
                 }
-        }
 
-        if(is_armor(o)) {
-                if(is_headgear(o)) {
-                        if(pw_headgear) {
-                                if(!yesno("Do you want to remove your %s", pw_headgear->fullname)) {
-                                        gtprintf("OK then.");
-                                        return;
+                if(is_armor(o)) {
+                        if(is_bodyarmor(o)) {
+                                if(pw_body) {
+                                        if(!yesno("Do you want to remove your %s", pw_body->fullname)) {
+                                                gtprintf("OK then.");
+                                                return;
+                                        } else {
+                                                unwear(actor, pw_body);
+                                                puton(actor, SLOT_BODY, o);
+                                        }
                                 } else {
-                                        unwear(pw_headgear);
-                                        puton(SLOT_HEAD, o);
+                                        puton(actor, SLOT_BODY, o);
                                 }
-                        } else {
-                                puton(SLOT_HEAD, o);
+                        }
+                }
+
+                if(is_armor(o)) {
+                        if(is_headgear(o)) {
+                                if(pw_headgear) {
+                                        if(!yesno("Do you want to remove your %s", pw_headgear->fullname)) {
+                                                gtprintf("OK then.");
+                                                return;
+                                        } else {
+                                                unwear(actor, pw_headgear);
+                                                puton(actor, SLOT_HEAD, o);
+                                        }
+                                } else {
+                                        puton(actor, SLOT_HEAD, o);
+                                }
                         }
                 }
         }
 }
 
-void wield(obj_t *o)
+void wield(void *a, obj_t *o)
 {
+        actor_t *actor;
+
+        actor = (actor_t *) a;
         player->weapon = o;
-        apply_effects(o);
+        apply_effects(actor, o);
 }
 
-void wieldwear(obj_t *o)
+void wieldwear(void *a, obj_t *o)
 {
+        actor_t *actor;
+
+        actor = (actor_t *) a;
         if(!o)
                 return;
 
-        if(is_worn(o)) {
-                if(is_weapon(o))
-                        youc(COLOR_INFO, "are already wielding that!");
-                else
-                        youc(COLOR_INFO, "are already wearing that!");
-                return;
-        }
+        if(actor == player) {
+                if(is_worn(o)) {
+                        if(is_weapon(o))
+                                youc(COLOR_INFO, "are already wielding that!");
+                        else
+                                youc(COLOR_INFO, "are already wearing that!");
+                        return;
+                }
 
-        if(is_weapon(o)) {
-                wield(o);
-                youc(COLOR_INFO, "are now wielding a %s.", o->fullname);
-        } else {
-                wear(o);
+                if(is_weapon(o)) {
+                        wield(actor, o);
+                        youc(COLOR_INFO, "are now wielding a %s.", o->fullname);
+                } else {
+                        wear(actor, o);
+                }
         }
 }
 
-void unwear(obj_t *o)
+void unwear(void *a, obj_t *o)
 {
         int i;
+        actor_t *actor;
+
+        actor = (actor_t *) a;
 
         for(i = 0; i < WEAR_SLOTS; i++) {
-                if(player->w[i] == o) {
-                        player->w[i] = NULL;
-                        unapply_effects(o);
+                if(actor->w[i] == o) {
+                        actor->w[i] = NULL;
+                        unapply_effects(actor, o);
                         if(is_armor(o)) {
-                                player->ac -= o->ac;
-                                player->ac -= o->attackmod;
+                                actor->ac -= o->ac;
+                                actor->ac -= o->attackmod;
                         }
                 }
         }
 }
 
-void unwield(obj_t *o)
+void unwield(void *a, obj_t *o)
 {
-        player->weapon = NULL;
-        unapply_effects(o);
+        actor_t *actor;
+
+        actor = (actor_t *) a;
+        actor->weapon = NULL;
+        unapply_effects(actor, o);
 }
 
-void unwieldwear(obj_t *o)
+void unwieldwear(void *a, obj_t *o)
 {
-        if(!is_worn(o)) {
+        actor_t *actor;
+
+        actor = (actor_t *) a;
+        if(!is_worn(o) && (actor == player)) {
                 if(is_weapon(o))
                         youc(COLOR_INFO, "aren't wielding that!");
                 else
@@ -901,10 +930,10 @@ void unwieldwear(obj_t *o)
         }
 
         if(is_weapon(o)) {
-                unwield(o);
+                unwield(actor, o);
                 youc(COLOR_INFO, "unwield the %s.", o->fullname);
         } else {
-                unwear(o);
+                unwear(actor, o);
         }
 }
 
@@ -973,7 +1002,7 @@ void place_object_in_cell(obj_t *o, cell_t *c)
         c->inventory->num_used++;
 }
 
-void drop(obj_t *o, void *actor)
+void drop(void *actor, obj_t *o)
 {
         int slot;
         actor_t *a;

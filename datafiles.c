@@ -12,8 +12,8 @@
 #include <stdbool.h>
 
 #include "objects.h"
-#include "o_effects.h"
 #include "actor.h"
+#include "o_effects.h"
 #include "monsters.h"
 #include "utils.h"
 #include "world.h"

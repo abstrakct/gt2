@@ -1,6 +1,6 @@
 CC = gcc 
 CFLAGS = -Wall -g -ggdb3 -I. -DGT_USE_NCURSES
-#DEFINES = -DGT_USE_DUMMY
+DEFINES = #-DGT_USE_DUMMY
 LIBS = -lm -lconfig -lncursesw
 LDFLAGS = -Wl $(LIBS)  # ,-rpath=lib 
  
@@ -14,12 +14,6 @@ gt: $(OBJS)
 gt.: $(SOURCES) $(HEADERS)
 	$(CC) $(CFLAGS) $(DEFINES) -o $@ $(SOURCES)
 
-#makeobjdefs: $(MKOBJS) $(MKHDRS) $(MKSRCS) 
-#	$(CC) -o $@ $(MKOBJS) 
-#	./makeobjdefs
-
-#makeobjdefs.: $(MKSRCS) $(MKHDRS)
-
 clean:
 	rm -f *.o gt core 
 
@@ -27,6 +21,5 @@ depend:
 	gcc -MM *.c > .deps
 
 all: gt
-#makeobjdefs
 
 include .deps

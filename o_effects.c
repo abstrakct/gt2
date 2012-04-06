@@ -22,7 +22,7 @@
 #include "debug.h"
 #include "gt.h"
 
-typedef void (*effectfunctionpointer)(void *data);
+typedef void (*effectfunctionpointer)(actor_t *actor, void *data);
 
 /* TODO: actor!!! */
 
@@ -39,206 +39,224 @@ effectfunctionpointer effecttable[] = {
         oe_heal_now
 };
 
-void oe_heal_now(void *data)
+void oe_heal_now(actor_t *actor, void *data)
 {
         int heal;
         obj_t *o;
 
         o = (obj_t *) data;
         heal = dice(o->dice, o->sides, 0);
-        player->hp += heal;
-        if(player->hp > player->maxhp)
-                player->hp = player->maxhp;
+        actor->hp += heal;
+        if(actor->hp > actor->maxhp)
+                actor->hp = actor->maxhp;
 
-        youc(COLOR_INFO, "feel healed!");
+        if(actor == player)
+                youc(COLOR_INFO, "feel healed!");
 }
 
-void oe_protection_life(void *data)
+void oe_protection_life(actor_t *actor, void *data)
 {
         obj_t *o;
 
         o = (obj_t *)data;
-        if(is_worn(o)) {
-                pr_life++;
-                youc(COLOR_INFO, "feel protected.");
-        } else {
-                pr_life--;
-                youc(COLOR_INFO, "feel less protected.");
+        
+        if(actor == player) {
+                if(is_worn(o)) {
+                        pr_life++;
+                        youc(COLOR_INFO, "feel protected.");
+                } else {
+                        pr_life--;
+                        youc(COLOR_INFO, "feel less protected.");
+                }
         }
 }
 
-void oe_protection_fire(void *data)
+void oe_protection_fire(actor_t *actor, void *data)
 {
         obj_t *o;
 
         o = (obj_t *)data;
-        if(is_worn(o))
-                pr_fire++;
-        else
-                pr_fire--;
+        if(actor == player) {
+                if(is_worn(o))
+                        pr_fire++;
+                else
+                        pr_fire--;
 
-        switch(pr_fire) {
-                case 1:
-                        youc(COLOR_INFO, "feel a bit resistant to fire.");
-                        break;
-                case 2:
-                        youc(COLOR_INFO, "feel rather resistant to fire.");
-                        break;
-                case 3:
-                        youc(COLOR_INFO, "feel quite resistant to fire.");
-                        break;
-                case 4:
-                        pr_fire = 3;
-                        break;
+                switch(pr_fire) {
+                        case 1:
+                                youc(COLOR_INFO, "feel a bit resistant to fire.");
+                                break;
+                        case 2:
+                                youc(COLOR_INFO, "feel rather resistant to fire.");
+                                break;
+                        case 3:
+                                youc(COLOR_INFO, "feel quite resistant to fire.");
+                                break;
+                        case 4:
+                                pr_fire = 3;
+                                break;
+                }
         }
 }
 
-void oe_strength(void *data)
+void oe_strength(actor_t *actor, void *data)
 {
         obj_t *o;
         int x;
 
         o = (obj_t *) data;
-        x = player->attr.str;
+        x = actor->attr.str;
 
         if(is_potion(o))
-                player->attr.str++;
+                actor->attr.str++;
         else if(is_worn(o)) {
-                player->attr.str += o->attackmod;
+                actor->attr.str += o->attackmod;
         } else {
-                player->attr.str -= o->attackmod;
+                actor->attr.str -= o->attackmod;
         }
 
-        if(x > player->attr.str)
-                youc(COLOR_INFO, "feel weaker.");
-        else if(x < player->attr.str)
-                youc(COLOR_INFO, "feel stronger!");
+        if(actor == player) {
+                if(x > actor->attr.str)
+                        youc(COLOR_INFO, "feel weaker.");
+                else if(x < actor->attr.str)
+                        youc(COLOR_INFO, "feel stronger!");
+        }
 }
 
-void oe_wisdom(void *data)
+void oe_wisdom(actor_t *actor, void *data)
 {
         obj_t *o;
         int x;
 
         o = (obj_t *) data;
-        x = player->attr.wis;
+        x = actor->attr.wis;
 
         if(is_potion(o))
-                player->attr.wis++;
+                actor->attr.wis++;
         else if(is_worn(o)) {
-                player->attr.wis += o->attackmod;
+                actor->attr.wis += o->attackmod;
         } else {
-                player->attr.wis -= o->attackmod;
+                actor->attr.wis -= o->attackmod;
         }
 
-        if(x > player->attr.wis)
-                youc(COLOR_INFO, "feel more ignorant.");
-        else if(x < player->attr.wis)
-                youc(COLOR_INFO, "feel wiser!");
+        if(actor == player) {
+                if(x > actor->attr.wis)
+                        youc(COLOR_INFO, "feel more ignorant.");
+                else if(x < actor->attr.wis)
+                        youc(COLOR_INFO, "feel wiser!");
+        }
 }
 
-void oe_physique(void *data)
+void oe_physique(actor_t *actor, void *data)
 {
         obj_t *o;
         int x;
 
         o = (obj_t *) data;
-        x = player->attr.phy;
+        x = actor->attr.phy;
 
         if(is_potion(o))
-                player->attr.phy++;
+                actor->attr.phy++;
         else if(is_worn(o)) {
-                player->attr.phy += o->attackmod;
+                actor->attr.phy += o->attackmod;
         } else {
-                player->attr.phy -= o->attackmod;
+                actor->attr.phy -= o->attackmod;
         }
 
-        if(x > player->attr.phy)
-                youc(COLOR_INFO, "feel small and fragile.");
-        else if(x < player->attr.phy)
-                youc(COLOR_INFO, "feel more able to perform physically challenging tasks!");
+        if(actor == player) {
+                if(x > actor->attr.phy)
+                        youc(COLOR_INFO, "feel small and fragile.");
+                else if(x < actor->attr.phy)
+                        youc(COLOR_INFO, "feel more able to perform physically challenging tasks!");
+        }
 }
 
-void oe_intelligence(void *data)
+void oe_intelligence(actor_t *actor, void *data)
 {
         obj_t *o;
         int x;
 
         o = (obj_t *) data;
-        x = player->attr.intl;
+        x = actor->attr.intl;
 
         if(is_potion(o))
-                player->attr.intl++;
+                actor->attr.intl++;
         else if(is_worn(o)) {
-                player->attr.intl += o->attackmod;
+                actor->attr.intl += o->attackmod;
         } else {
-                player->attr.intl -= o->attackmod;
+                actor->attr.intl -= o->attackmod;
         }
 
-        if(x > player->attr.intl)
-                youc(COLOR_INFO, "feel stupider.");
-        else if(x < player->attr.intl)
-                youc(COLOR_INFO, "feel smarter!");
+        if(actor == player) {
+                if(x > actor->attr.intl)
+                        youc(COLOR_INFO, "feel stupider.");
+                else if(x < actor->attr.intl)
+                        youc(COLOR_INFO, "feel smarter!");
+        }
 }
 
-void oe_dexterity(void *data)
+void oe_dexterity(actor_t *actor, void *data)
 {
         obj_t *o;
         int x;
 
         o = (obj_t *) data;
-        x = player->attr.dex;
+        x = actor->attr.dex;
 
         if(is_potion(o))
-                player->attr.dex++;
+                actor->attr.dex++;
         else if(is_worn(o)) {
-                player->attr.dex += o->attackmod;
+                actor->attr.dex += o->attackmod;
         } else {
-                player->attr.dex -= o->attackmod;
+                actor->attr.dex -= o->attackmod;
         }
 
-        if(x > player->attr.dex)
-                youc(COLOR_INFO, "feel less agile.");
-        else if(x < player->attr.dex)
-                youc(COLOR_INFO, "feel more agile!");
+        if(actor == player) {
+                if(x > actor->attr.dex)
+                        youc(COLOR_INFO, "feel less agile.");
+                else if(x < actor->attr.dex)
+                        youc(COLOR_INFO, "feel more agile!");
+        }
 }
 
-void oe_charisma(void *data)
+void oe_charisma(actor_t *actor, void *data)
 {
         obj_t *o;
         int x;
 
         o = (obj_t *) data;
-        x = player->attr.cha;
+        x = actor->attr.cha;
 
         if(is_potion(o))
-                player->attr.cha++;
+                actor->attr.cha++;
         else if(is_worn(o)) {
-                player->attr.cha += o->attackmod;
+                actor->attr.cha += o->attackmod;
         } else {
-                player->attr.cha -= o->attackmod;
+                actor->attr.cha -= o->attackmod;
         }
 
-        if(x > player->attr.cha)
-                youc(COLOR_INFO, "feel a bit more unattractive.");
-        else if(x < player->attr.cha)
-                youc(COLOR_INFO, "feel more attractive!");
+        if(actor == player) {
+                if(x > actor->attr.cha)
+                        youc(COLOR_INFO, "feel a bit more unattractive.");
+                else if(x < actor->attr.cha)
+                        youc(COLOR_INFO, "feel more attractive!");
+        }
 }
 
-void apply_effect(int effect, void *data)
+void apply_effect(int effect, actor_t *actor, void *data)
 {
         if(!effect)
                 return;
 
         if(effect < OE_LAST)
-                effecttable[effect](data);
+                effecttable[effect](actor, data);
 }
 
-void apply_effects(obj_t *o)
+void apply_effects(actor_t *actor, obj_t *o)
 {
         int i;
 
         for(i = 0; i < o->effects; i++)
                 if(o->effect[i])
-                        apply_effect(o->effect[i], o);
+                        apply_effect(o->effect[i], actor, o);
 }

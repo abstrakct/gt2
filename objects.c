@@ -19,7 +19,7 @@
 #include "utils.h"
 #include "world.h"
 #include "datafiles.h"
-#include "display.h"
+#include "io.h"
 #include "gt.h"
 
 // statistical debug stuff
@@ -628,7 +628,7 @@ void spawn_objects(int num, void *p)
                         
         }
 
-        printf("Generated:\n\ttotal:\t%d\n\tcommon:\t%d\n\tuncommon:\t%d\n\trare:\t%d\n\tveryrare:\t%d\n\n", i, common, uncommon, rare, veryrare);
+        //printf("Generated:\n\ttotal:\t%d\n\tcommon:\t%d\n\tuncommon:\t%d\n\trare:\t%d\n\tveryrare:\t%d\n\n", i, common, uncommon, rare, veryrare);
 }
 
 void spawn_gold(int n, inv_t *i)

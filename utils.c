@@ -12,16 +12,16 @@
 #include <math.h>
 #include <stdbool.h>
 
-#ifdef GT_USE_NCURSES
+//#ifdef GT_USE_NCURSES
 #include <curses.h>
-#endif
+//#endif
 
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
 #include "utils.h"
 #include "world.h"
-#include "display.h"
+#include "io.h"
 #include "gt.h"
 
 
@@ -339,3 +339,4 @@ char *a_an(char *s)
         sprintf(test, "%s %s", ret, s);
         return test;
 }
+// vim: fdm=syntax guifont=Terminus\ 8

@@ -3,9 +3,10 @@
  *
  * Copyright 2011 Rolf Klausen
  */
-#ifndef _DISPALY_H
-#define _DISPALY_H
+#ifndef _IOLIBTCOD_H
+#define _IOLIBTCOD_H
 
+#include <curses.h>
 
 // Prototypes
 void init_display();
@@ -26,6 +27,10 @@ void messc(int color, char *message);
 void delete_last_message();
 
 bool blocks_light(int y, int x);
+
+#define MESSAGE_LINES   5
+#define COLS  119                          // x
+#define ROWS  (45 + MESSAGE_LINES)         // y
 
 // Color definitions
 #define C_BLACK_BLACK           0
@@ -116,3 +121,4 @@ bool blocks_light(int y, int x);
 #define COLOR_INVISIBLE 63
 
 #endif
+// vim: fdm=syntax guifont=Terminus\ 8

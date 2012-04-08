@@ -20,7 +20,7 @@
 #include "utils.h"
 #include "world.h"
 #include "datafiles.h"
-#include "display.h"
+#include "io.h"
 #include "debug.h"
 #include "saveload.h"
 #include "commands.h"

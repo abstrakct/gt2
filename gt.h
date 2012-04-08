@@ -10,9 +10,15 @@
 #define GT_VERSION_MIN 0
 #define GT_VERSION_REV 2
 
+#define GAME_NAME "Gullible's Travails"
+
 #define MAIN_DATA_FILE "data/data.cfg"
 
 #define DEVELOPMENT_MODE
+
+#ifdef GT_USE_LIBTCOD
+#include <libtcod/libtcod.h>
+#endif
 
 typedef struct {                              // gt_config_t
         int  minf, maxf;
@@ -23,7 +29,15 @@ typedef struct {                              // gt_config_t
         int  compress_savefile;                // compress the savefile?
         char autopickup[10];
         bool ap[10];                          // adjust later, match object type
+        int  rows, cols;
 } gt_config_t;
+
+#ifdef GT_USE_LIBTCOD
+typedef struct {
+        int x, y, w, h;
+        TCOD_console_t c;
+} win_t;
+#endif
 
 typedef struct {                              // game_t
         char         version[20];
@@ -44,6 +58,9 @@ typedef struct {                              // game_t
         bool         wizardmode;              // yay!
         char         savefile[255];           // filename of the save file for this game
         obj_t       *objects[2000];
+#ifdef GT_USE_LIBTCOD
+        win_t        map, messages, left, right;
+#endif
 } game_t;
 
 typedef struct {                              // message_t

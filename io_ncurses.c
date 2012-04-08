@@ -19,17 +19,17 @@
 #include "utils.h"
 #include "world.h"
 #include "datafiles.h"
-#include "display.h"
+#include "io.h"
 #include "gt.h"
 
 #ifdef GT_USE_NCURSES
 #include <curses.h>
 
-extern WINDOW *wall;
-extern WINDOW *wstat;
-extern WINDOW *winfo;
-extern WINDOW *wmap;
-extern WINDOW *wleft;
+WINDOW *wall;
+WINDOW *wstat;
+WINDOW *winfo;
+WINDOW *wmap;
+WINDOW *wleft;
 
 extern int maxmess;
 

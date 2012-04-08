@@ -59,3 +59,4 @@ char *Upper(char *s);
 extern int garbageindex;
 extern void *garbage[MAX_GARBAGE];
 #endif
+// vim: fdm=syntax guifont=Terminus\ 8

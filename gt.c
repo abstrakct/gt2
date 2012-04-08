@@ -22,6 +22,10 @@
 #include <curses.h>
 #endif
 
+#ifdef GT_USE_LIBTCOD
+#include <libtcod/libtcod.h>
+#endif
+
 #include "cards.h"
 #include "objects.h"
 #include "actor.h"
@@ -29,7 +33,7 @@
 #include "utils.h"
 #include "world.h"
 #include "datafiles.h"
-#include "display.h"
+#include "io.h"
 #include "debug.h"
 #include "saveload.h"
 #include "commands.h"
@@ -72,15 +76,6 @@ actor_t *a_attacker, *a_victim;
 // Messages
 message_t messages[500];
 int currmess, maxmess;
-
-#ifdef GT_USE_NCURSES
-// Ncurses stuff
-WINDOW *wall;
-WINDOW *wstat;
-WINDOW *winfo;
-WINDOW *wmap;
-WINDOW *wleft;
-#endif
 
 struct option gt_options[] = {
         { "seed",    1,   0, 's' },

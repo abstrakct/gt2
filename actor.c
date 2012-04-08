@@ -18,7 +18,7 @@
 #include "utils.h"
 #include "world.h"
 #include "datafiles.h"
-#include "display.h"
+#include "io.h"
 #include "gt.h"
 
 // TODO FIX!

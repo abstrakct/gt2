@@ -18,6 +18,7 @@
 #include "utils.h"
 #include "world.h"
 #include "datafiles.h"
+#include "io.h"
 #include "gt.h"
 
 config_t *cf;
@@ -42,7 +43,7 @@ int parse_roomdef_file(char *filename)
                 for(j = 0; j < x; j++) {
                         fscanf(f, "%c", &c);
                         r.c[i][j].type = c;
-                        printf("%c", r.c[i][j].type);
+                        //printf("%c", r.c[i][j].type);
                         switch(c) {
                                 case '#': r.c[i][j].type = DNG_WALL; break;
                                 case '.': r.c[i][j].type = DNG_FLOOR; break;
@@ -54,7 +55,7 @@ int parse_roomdef_file(char *filename)
                         }
                 }
                 fscanf(f, "\n");
-                printf("\n");
+                //printf("\n");
         }
 
         return 0;

@@ -245,7 +245,9 @@ int parse_armor()
 
                 sprintf(sname, "armor.[%d].rarity", j);
                 config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "common"))
+                if(!strcmp(value, "very common"))
+                        o->rarity = VERYCOMMON;
+                else if(!strcmp(value, "common"))
                         o->rarity = COMMON;
                 else if(!strcmp(value, "uncommon"))
                         o->rarity = UNCOMMON;
@@ -336,7 +338,9 @@ int parse_weapons()
 
                 sprintf(sname, "weapon.[%d].rarity", j);
                 config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "common"))
+                if(!strcmp(value, "very common"))
+                        o->rarity = VERYCOMMON;
+                else if(!strcmp(value, "common"))
                         o->rarity = COMMON;
                 else if(!strcmp(value, "uncommon"))
                         o->rarity = UNCOMMON;
@@ -418,7 +422,9 @@ int parse_amulet()
 
                 sprintf(sname, "amulet.[%d].rarity", j);
                 config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "common"))
+                if(!strcmp(value, "very common"))
+                        o->rarity = VERYCOMMON;
+                else if(!strcmp(value, "common"))
                         o->rarity = COMMON;
                 else if(!strcmp(value, "uncommon"))
                         o->rarity = UNCOMMON;
@@ -518,7 +524,9 @@ int parse_bracelet()
 
                 sprintf(sname, "bracelet.[%d].rarity", j);
                 config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "common"))
+                if(!strcmp(value, "very common"))
+                        o->rarity = VERYCOMMON;
+                else if(!strcmp(value, "common"))
                         o->rarity = COMMON;
                 else if(!strcmp(value, "uncommon"))
                         o->rarity = UNCOMMON;
@@ -648,7 +656,9 @@ int parse_potions()
 
                 sprintf(sname, "potion.[%d].rarity", j);
                 config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "common"))
+                if(!strcmp(value, "very common"))
+                        o->rarity = VERYCOMMON;
+                else if(!strcmp(value, "common"))
                         o->rarity = COMMON;
                 else if(!strcmp(value, "uncommon"))
                         o->rarity = UNCOMMON;

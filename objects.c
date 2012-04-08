@@ -575,7 +575,7 @@ void spawn_objects(int num, void *p)
 {
         int i, x, y;
         double f;
-        int common, uncommon, rare, veryrare;
+        int verycommon, common, uncommon, rare, veryrare;
         level_t *l;
 
         /* 
@@ -585,6 +585,8 @@ void spawn_objects(int num, void *p)
          * etc.
          */
 
+        f = (double) ((float)num / 100.0f) * (float)VERYCOMMON;
+        verycommon = round(f);
         f = (double) ((float)num / 100.0f) * (float)COMMON;
         common = round(f);
         f = (double) ((float)num / 100.0f) * (float)UNCOMMON;
@@ -594,14 +596,14 @@ void spawn_objects(int num, void *p)
         f = (double) ((float)num / 100.0f) * (float)VERYRARE;
         veryrare = round(f);
 
-        //printf("Spawning %d objects:\n%d common\n%d uncommon\n%d rare\n%d very rare\ntotal %d\n", num, common, uncommon, rare, veryrare, common + uncommon + rare + veryrare);
+        printf("Spawning %d objects:\n%d very common\n%d common\n%d uncommon\n%d rare\n%d very rare\ntotal %d\n", num, verycommon, common, uncommon, rare, veryrare, common + uncommon + rare + veryrare);
 
         i = 0;
         l = (level_t *) p;
-        common = uncommon = rare = veryrare = 0;
+        verycommon = common = uncommon = rare = veryrare = 0;
 
         while(i < num) {
-                int p, rarity;
+                int p, rarity, type;
 
                 x = ri(1, l->xsize-1);
                 y = ri(1, l->ysize-1);
@@ -615,10 +617,13 @@ void spawn_objects(int num, void *p)
                         rarity = UNCOMMON;
                 else if(p > (VERYRARE + RARE + UNCOMMON) && p <= (VERYRARE + RARE + UNCOMMON + COMMON))
                         rarity = COMMON;
+                else if(p > (VERYRARE + RARE + UNCOMMON + COMMON) && p <= (VERYRARE + RARE + UNCOMMON + COMMON + VERYCOMMON))
+                        rarity = VERYCOMMON;
                 
                 if (spawn_object_with_rarity_at(y, x, rarity, l)) {
                         i++;
                         switch(rarity) {
+                                case VERYCOMMON: verycommon++;
                                 case COMMON: common++; break;
                                 case UNCOMMON: uncommon++; break;
                                 case RARE: rare++; break;
@@ -628,7 +633,7 @@ void spawn_objects(int num, void *p)
                         
         }
 
-        //printf("Generated:\n\ttotal:\t%d\n\tcommon:\t%d\n\tuncommon:\t%d\n\trare:\t%d\n\tveryrare:\t%d\n\n", i, common, uncommon, rare, veryrare);
+        printf("Generated:\n\ttotal:\t%d\n\tvery common:\t%d\n\tcommon:\t%d\n\tuncommon:\t%d\n\trare:\t%d\n\tveryrare:\t%d\n\n", i, verycommon, common, uncommon, rare, veryrare);
 }
 
 void spawn_gold(int n, inv_t *i)
@@ -717,6 +722,7 @@ void puton(void *a, int slot, obj_t *o)
         if(is_armor(o)) {
                 actor->ac += o->ac;
                 actor->ac += o->attackmod;
+                youc(COLOR_INFO, "put on %s.", a_an(o->fullname));
         }
         
         if(actor == player) {
@@ -897,6 +903,7 @@ void unwear(void *a, obj_t *o)
 
         for(i = 0; i < WEAR_SLOTS; i++) {
                 if(actor->w[i] == o) {
+                        youc(COLOR_INFO, "remove your %s.", o->fullname);
                         actor->w[i] = NULL;
                         unapply_effects(actor, o);
                         if(is_armor(o)) {

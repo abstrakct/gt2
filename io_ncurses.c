@@ -397,7 +397,7 @@ void draw_wstat()
                                 mvwprintw(wstat, i, 4, "*"); 
                                 wattroff(wstat, COLOR_PAIR(COLOR_GREEN));
                         } else {
-                                mvwprintw(wstat, i, 1, "%c)   %s", slot_to_letter(j), a_an(o->fullname));
+                                mvwprintw(wstat, i, 1, "%c) - %s", slot_to_letter(j), a_an(o->fullname));
                         }
                         i++;
                 }

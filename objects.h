@@ -141,11 +141,24 @@ extern int mats_amulets[MATERIALS];
 extern int mats_potions[POTS];
 
 // defines for rarity - the numbers are for % chance of spawning this object in a totally random spawn
-#define COMMON   50
-#define UNCOMMON 30
-#define RARE     15
-#define VERYRARE 5
+
+#define VERYCOMMON 50
+#define COMMON     25
+#define UNCOMMON   15
+#define RARE        7
+#define VERYRARE    3
+
 #define UNIQUE   1000
+
+// We also need to define how common a type of object is - e.g. you will find a potion more often than, say, a bracelet.
+// Adjust these later when we have more object types!
+// Also, must add up to 100 until I come up with a better way
+
+#define RARITY_POTION   30
+#define RARITY_WEAPON   30
+#define RARITY_ARMOR    20
+#define RARITY_AMULET   15
+#define RARITY_BRACELET 5
 
 // defines so that we can easily use fields in obj_t for various stuff
 #define ac sides

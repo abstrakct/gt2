@@ -13,11 +13,11 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
-#include "utils.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"
 #include "gt.h"
+#include "utils.h"
 
 unsigned int mid_counter;
 int distancemap[YSIZE][XSIZE];

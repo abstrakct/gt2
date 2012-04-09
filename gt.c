@@ -30,7 +30,6 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
-#include "utils.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"
@@ -38,6 +37,7 @@
 #include "saveload.h"
 #include "commands.h"
 #include "gt.h"
+#include "utils.h"
 
 char *otypestrings[50] = {
         "",
@@ -57,21 +57,20 @@ char *otypestrings[50] = {
 };
 
 // Important global variables
-monster_t *monsterdefs;
-obj_t     *objdefs;
-game_t    *game;
-world_t   *world;
-actor_t   *player;
+monster_t          *monsterdefs;
+obj_t              *objdefs;
+game_t             *game;
+world_t            *world;
+actor_t            *player;
 struct actionqueue *aq;
-gt_config_t gtconfig;
-long actionnum;
-FILE *messagefile;
-bool mapchanged;
-int tempxsize, tempysize;
-bool loadgame;
-void *actiondata;
-
-actor_t *a_attacker, *a_victim;
+gt_config_t         gtconfig;
+long                actionnum;
+FILE               *messagefile;
+bool                mapchanged;
+int                 tempxsize, tempysize;
+bool                loadgame;
+void               *actiondata;
+actor_t            *a_attacker, *a_victim;
 
 // Messages
 message_t messages[500];
@@ -1003,15 +1002,6 @@ int main(int argc, char *argv[])
                                 //world->out->lakelimit--;
                                 //generate_terrain(1);
                                 //gtprintf("lakelimit = %d", world->out->lakelimit);
-                                queue(ACTION_NOTHING);
-                                break;
-                        case CMD_DUMPCOLORS:
-                                for(x = 0;  x < 64; x++) {
-                                        /*gtprintfwc(wstat, x, "This is color %d  ", x);
-                                        wattron(wstat, A_BOLD);
-                                        gtprintfwc(wstat, x, "This is BOLD color %d  ", x);
-                                        wattroff(wstat, A_BOLD);*/
-                                }
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_FLOODFILL:

@@ -15,14 +15,14 @@ extern WINDOW *wleft;
 // Prototypes
 void init_display();
 void shutdown_display();
-void draw_world(level_t *level);
+void draw_world();
 void draw_wstat();
 
 void gtmapaddch(int y, int x, int color, char c);
 void update_screen();
 void update_player();
 void initial_update_screen();
-int  gtgetch();
+gtkey gtgetch();
 
 void domess();
 void scrollmessages();
@@ -31,6 +31,13 @@ void messc(int color, char *message);
 void delete_last_message();
 
 bool blocks_light(int y, int x);
+
+int get_command();
+void init_commands();
+char ask_char(char *question);
+char ask_for_hand();
+bool yesno(char *fmt, ...);
+void more();
 
 // Color definitions
 #define C_BLACK_BLACK           0

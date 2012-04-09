@@ -1,28 +1,29 @@
-actor.o: actor.c objects.h actor.h monsters.h utils.h world.h datafiles.h \
- io.h io_libtcod.h gt.h
+actor.o: actor.c objects.h actor.h monsters.h world.h datafiles.h io.h \
+ io_libtcod.h gt.h utils.h
 cards.o: cards.c cards.h
-commands.o: commands.c objects.h actor.h monsters.h utils.h world.h \
- datafiles.h io.h io_libtcod.h debug.h saveload.h commands.h gt.h
-datafiles.o: datafiles.c objects.h actor.h o_effects.h monsters.h utils.h \
- world.h datafiles.h io.h io_libtcod.h gt.h
-debug.o: debug.c objects.h actor.h monsters.h utils.h world.h datafiles.h \
- io.h io_libtcod.h debug.h gt.h
+commands.o: commands.c objects.h actor.h monsters.h world.h datafiles.h \
+ io.h io_libtcod.h debug.h saveload.h commands.h gt.h utils.h
+datafiles.o: datafiles.c objects.h actor.h o_effects.h monsters.h world.h \
+ datafiles.h io.h io_libtcod.h gt.h utils.h
+debug.o: debug.c objects.h actor.h monsters.h world.h datafiles.h io.h \
+ io_libtcod.h debug.h gt.h utils.h
 fractmod.o: fractmod.c fractmod.h
-gt.o: gt.c cards.h objects.h actor.h monsters.h utils.h world.h \
- datafiles.h io.h io_libtcod.h debug.h saveload.h commands.h gt.h
-io_libtcod.o: io_libtcod.c objects.h actor.h monsters.h utils.h world.h \
- datafiles.h io.h io_libtcod.h gt.h
-io_ncurses.o: io_ncurses.c objects.h actor.h monsters.h utils.h world.h \
- datafiles.h io.h io_libtcod.h gt.h
-monsters.o: monsters.c objects.h actor.h monsters.h utils.h world.h \
- datafiles.h io.h io_libtcod.h gt.h
-objects.o: objects.c objects.h o_effects.h actor.h monsters.h utils.h \
- world.h datafiles.h io.h io_libtcod.h gt.h
-o_effects.o: o_effects.c objects.h o_effects.h actor.h monsters.h utils.h \
- world.h datafiles.h io.h io_libtcod.h debug.h gt.h
-saveload.o: saveload.c objects.h actor.h monsters.h utils.h world.h \
- datafiles.h io.h io_libtcod.h debug.h saveload.h gt.h
-utils.o: utils.c objects.h actor.h monsters.h utils.h world.h io.h \
- io_libtcod.h gt.h
-world.o: world.c objects.h actor.h monsters.h utils.h world.h datafiles.h \
- io.h io_libtcod.h gt.h fractmod.h
+fracttest.o: fracttest.c fractmod.h
+gt.o: gt.c cards.h objects.h actor.h monsters.h world.h datafiles.h io.h \
+ io_libtcod.h debug.h saveload.h commands.h gt.h utils.h
+io_libtcod.o: io_libtcod.c objects.h actor.h monsters.h world.h \
+ datafiles.h io.h io_libtcod.h gt.h utils.h
+io_ncurses.o: io_ncurses.c objects.h actor.h monsters.h world.h \
+ datafiles.h io.h io_libtcod.h commands.h gt.h utils.h
+monsters.o: monsters.c objects.h actor.h monsters.h world.h datafiles.h \
+ io.h io_libtcod.h gt.h utils.h
+objects.o: objects.c objects.h o_effects.h actor.h monsters.h world.h \
+ datafiles.h io.h io_libtcod.h gt.h utils.h
+o_effects.o: o_effects.c objects.h o_effects.h actor.h monsters.h world.h \
+ datafiles.h io.h io_libtcod.h debug.h gt.h utils.h
+saveload.o: saveload.c objects.h actor.h monsters.h world.h datafiles.h \
+ io.h io_libtcod.h debug.h saveload.h gt.h utils.h
+utils.o: utils.c objects.h actor.h monsters.h world.h io.h io_libtcod.h \
+ gt.h utils.h
+world.o: world.c objects.h actor.h monsters.h world.h datafiles.h io.h \
+ io_libtcod.h gt.h utils.h fractmod.h

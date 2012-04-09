@@ -15,12 +15,12 @@
 #include "o_effects.h"
 #include "actor.h"
 #include "monsters.h"
-#include "utils.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"
 #include "debug.h"
 #include "gt.h"
+#include "utils.h"
 
 typedef void (*effectfunctionpointer)(actor_t *actor, void *data);
 

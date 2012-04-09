@@ -15,11 +15,11 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
-#include "utils.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"
 #include "gt.h"
+#include "utils.h"
 
 #include "fractmod.h"
 
@@ -844,8 +844,8 @@ bool passable(level_t *l, int y, int x)
 
         type = l->c[y][x].type;
 
-        if(type == DNG_WALL && l->c[y][x].color == COLOR_LAKE)
-                return true;
+        /*if(type == DNG_WALL && l->c[y][x].color == COLOR_LAKE)
+                return true;*/
         if(type == DNG_WALL)
                 return false;
         if(type == AREA_LAKE)
@@ -1085,7 +1085,7 @@ void generate_terrain(int visible)
                         if(world->out->c[y][x].height > world->out->zero + world->out->lakelimit) {
                                 world->out->c[y][x].type = AREA_MOUNTAIN;
                                 //world->out->c[y][x].flags = 0;
-                                world->out->c[y][x].color = C_BLACK_RED;
+                                world->out->c[y][x].color = COLOR_MOUNTAIN;
                                 world->out->c[y][x].monster = NULL;
                                 world->out->c[y][x].inventory = NULL;
                                 world->out->c[y][x].visible = visible;

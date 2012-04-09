@@ -15,13 +15,13 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
-#include "utils.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"
 #include "debug.h"
 #include "saveload.h"
 #include "gt.h"
+#include "utils.h"
 
 /*
  * write one object

@@ -41,17 +41,11 @@ int perc(int i);
 int ri(int a, int b);
 
 void you(char *fmt, ...);
-void youc(int color, char *fmt, ...);
+void youc(gtcolor_t color, char *fmt, ...);
 void yousee(char *fmt, ...);
 void gtprintf(char *fmt, ...);
-void gtprintfc(int color, char *fmt, ...);
-#ifdef GT_USE_NCURSES
-void gtprintfwc(WINDOW *win, int color, char *fmt, ...);
-#endif
-char ask_char(char *question);
-char ask_for_hand();
-bool yesno(char *fmt, ...);
-void more();
+void gtprintfc(gtcolor_t color, char *fmt, ...);
+//void gtprintfwc(WINDOW *win, int color, char *fmt, ...);
 
 char *a_an(char *s);
 char *Upper(char *s);

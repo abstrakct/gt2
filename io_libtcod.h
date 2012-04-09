@@ -6,27 +6,35 @@
 #ifndef _IOLIBTCOD_H
 #define _IOLIBTCOD_H
 
-#include <curses.h>
-
 // Prototypes
 void init_display();
 void shutdown_display();
-void draw_world(level_t *level);
+void draw_world();
 void draw_wstat();
 
-void gtmapaddch(int y, int x, int color, char c);
+void gtmapaddch(int y, int x, gtcolor_t color, char c);
 void update_screen();
 void update_player();
 void initial_update_screen();
-int  gtgetch();
+gtkey gtgetch();
 
 void domess();
 void scrollmessages();
 void mess(char *message);
-void messc(int color, char *message);
+void messc(gtcolor_t color, char *message);
 void delete_last_message();
 
 bool blocks_light(int y, int x);
+
+int get_command();
+void init_commands();
+bool cmp_keystruct(gtkey a, gtkey b);
+char ask_char(char *question);
+char ask_for_hand();
+bool yesno(char *fmt, ...);
+void more();
+
+extern  gtcolor_t colors[];
 
 #define MESSAGE_LINES   5
 #define COLS  119                          // x
@@ -41,6 +49,16 @@ bool blocks_light(int y, int x);
 #define C_BLACK_MAGENTA         5
 #define C_BLACK_CYAN            6
 #define C_BLACK_WHITE           7
+#define C_WHITE_BLACK           8
+#define C_WHITE_RED             9
+#define C_WHITE_GREEN           10
+#define C_WHITE_YELLOW          11
+#define C_WHITE_BLUE            12
+#define C_WHITE_MAGENTA         13
+#define C_WHITE_CYAN            14
+#define C_WHITE_WHITE           15
+
+
 #define C_RED_BLACK             8
 #define C_RED_RED               9
 #define C_RED_GREEN             10
@@ -89,34 +107,32 @@ bool blocks_light(int y, int x);
 #define C_CYAN_MAGENTA          53
 #define C_CYAN_CYAN             54
 #define C_CYAN_WHITE            55
-#define C_WHITE_BLACK           56
-#define C_WHITE_RED             57
-#define C_WHITE_GREEN           58
-#define C_WHITE_YELLOW          59
-#define C_WHITE_BLUE            60
-#define C_WHITE_MAGENTA         61
-#define C_WHITE_CYAN            62
-#define C_WHITE_WHITE           63
 
 
-#define COLOR_PLAIN    C_BLACK_WHITE
-#define COLOR_FOREST   C_BLACK_GREEN
-#define COLOR_CITY     C_BLACK_YELLOW
-#define COLOR_VILLAGE  COLOR_CITY
-#define COLOR_DUNGEON  COLOR_CITY
-#define COLOR_MOUNTAIN C_BLACK_YELLOW
-#define COLOR_LAKE     C_BLACK_BLUE
-#define COLOR_PLAYER   56
+#define COLOR_PLAIN    colors[C_BLACK_WHITE]
+#define COLOR_FOREST   colors[C_BLACK_GREEN]
+#define COLOR_CITY     colors[C_BLACK_YELLOW]
+#define COLOR_VILLAGE  colors[C_BLACK_YELLOW]
+#define COLOR_DUNGEON  colors[C_BLACK_YELLOW]
+#define COLOR_MOUNTAIN colors[C_BLACK_RED]
+#define COLOR_LAKE     colors[C_BLACK_BLUE]
+#define COLOR_PLAYER   colors[C_WHITE_BLACK]
 
-#define COLOR_WARNING C_BLACK_RED
-#define COLOR_BAD     C_BLACK_RED
-#define COLOR_GOOD    C_BLACK_GREEN
-#define COLOR_NORMAL  C_BLACK_WHITE
-#define COLOR_INFO    C_BLACK_YELLOW
-#define COLOR_VISIBLE C_BLACK_YELLOW
+#define COLOR_YELLOW   colors[C_BLACK_YELLOW]
+#define COLOR_BLUE     colors[C_BLACK_BLUE]
+#define COLOR_GREEN    colors[C_BLACK_GREEN]
+#define COLOR_RED      colors[C_BLACK_RED]
+#define COLOR_WHITE    colors[C_BLACK_WHITE]
 
-#define COLOR_SHADE   63
-#define COLOR_LIGHT   62
+#define COLOR_WARNING  colors[C_BLACK_RED]
+#define COLOR_BAD      colors[C_BLACK_RED]
+#define COLOR_GOOD     colors[C_BLACK_GREEN]
+#define COLOR_NORMAL   colors[C_BLACK_WHITE]
+#define COLOR_INFO     colors[C_BLACK_YELLOW]
+#define COLOR_VISIBLE  colors[C_BLACK_YELLOW]
+
+#define COLOR_SHADE    colors[C_BLACK_BLACK]
+#define COLOR_LIGHT    colors[C_BLACK_YELLOW]
 
 #define COLOR_INVISIBLE 63
 

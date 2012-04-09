@@ -31,7 +31,7 @@ struct monsterdef_save_struct {
 /* This one must match obj_t when it comes to variable types etc.! */
 struct objdef_save_struct {
        int          id;
-       int          color;
+       gtcolor_t    color;
        short        type;
        long         flags;
        signed short attackmod;

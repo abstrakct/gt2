@@ -7,6 +7,7 @@
 #define _WORLD_H
 
 #include <stdbool.h>
+#include "io.h"
 
 #define AREA_NOTHING         0
 #define AREA_PLAIN	     1
@@ -55,8 +56,8 @@ typedef struct {                 // cell_t
         char       type;
         int        flags;
         short      desty, destx;       // for stairs and portals; destination y,x
-        short      color;
-        short      litcolor;
+        gtcolor_t  color;
+        gtcolor_t  litcolor;
         bool       visible;
         signed int height;
         monster_t *monster;

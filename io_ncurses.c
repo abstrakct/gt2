@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #include <unistd.h>
 #include <math.h>
 #include <stdbool.h>
@@ -16,13 +17,13 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
-#include "utils.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"
+#include "commands.h"
 #include "gt.h"
+#include "utils.h"
 
-#ifdef GT_USE_NCURSES
 #include <curses.h>
 
 WINDOW *wall;
@@ -32,6 +33,156 @@ WINDOW *wmap;
 WINDOW *wleft;
 
 extern int maxmess;
+
+int numcommands;
+cmd_t *curcommands;
+
+cmd_t outsidecommands[] = {
+        { 'j',       CMD_DOWN,        "Move down" },
+        { 'k',       CMD_UP,          "Move up" },
+        { 'h',       CMD_LEFT,        "Move left" },
+        { 'l',       CMD_RIGHT,       "Move right" },
+        { 56,        CMD_UP,          "Move up" },
+        { 50,        CMD_DOWN,        "Move down" },
+        { 52,        CMD_LEFT,        "Move left" },
+        { 54,        CMD_RIGHT,       "Move right" },
+        { KEY_UP,    CMD_UP,          "Move up" },
+        { KEY_DOWN,  CMD_DOWN,        "Move down" },
+        { KEY_LEFT,  CMD_LEFT,        "Move left" },
+        { KEY_RIGHT, CMD_RIGHT,       "Move right" },
+        { 'y',       CMD_NW,          "Move up-left" },
+        { 55,        CMD_NW,          "Move up-left" },
+        { 'u',       CMD_NE,          "Move up-right" },
+        { 57,        CMD_NE,          "Move up-right" },
+        { 'b',       CMD_SW,          "Move down-left" },
+        { 49,        CMD_SW,          "Move down-left" },
+        { 'n',       CMD_SE,          "Move down-right" },
+        { 51,        CMD_SE,          "Move down-right" },
+        { 27,        CMD_QUIT,        "Quit" },
+        { 'i',       CMD_INVENTORY,   "Show inventory" },
+        { 'w',       CMD_WIELDWEAR,   "Wield or wear an item" },
+        { 'r',       CMD_UNWIELDWEAR, "Remove or unwield an item" },
+        { 'q',       CMD_QUAFF,       "Drink a potion" },
+        { KEY_F(5),  CMD_SAVE,        "Save" },
+        { KEY_F(6),  CMD_LOAD,        "Load" },
+        { ',',       CMD_PICKUP,      "Pick up something" },
+        { '.',       CMD_REST,        "Rest one turn" },
+        { '<',       CMD_ASCEND,      "Go up stairs" },
+        { '>',       CMD_DESCEND,     "Go down stairs" },
+        { 'd',       CMD_DROP,        "Drop an object" },
+#ifdef DEVELOPMENT_MODE
+        { KEY_F(1),  CMD_WIZARDMODE,  "Toggle wizard mode" },
+        { '+',       CMD_INCFOV,      "Increase FOV" },
+        { '-',       CMD_DECFOV,      "Decrease FOV" },
+        { 'f',       CMD_FLOODFILL,   "Floodfill (debug)" },
+        { 's',       CMD_SPAWNMONSTER,"Spawn monster" },
+        { KEY_NPAGE, CMD_LONGDOWN,    "" },
+        { KEY_PPAGE, CMD_LONGUP,      "" },
+        { 'K',       CMD_LONGUP,      "" },
+        { 'J',       CMD_LONGDOWN,    "" },
+        { 'H',       CMD_LONGLEFT,    "" },
+        { 'L',       CMD_LONGRIGHT,   "" },
+        { 'v',       CMD_TOGGLEFOV,   "Toggle FOV" },
+        { KEY_F(4),  CMD_DUMPOBJECTS, "Dump objects" },
+        { 'o',       CMD_DUMPOBJECTS, "" },
+        { 'c',       CMD_DUMPCOLORS, "" },
+        { 'p',       CMD_PATHFINDER, "" },
+#endif
+        //{ , CMD_IDENTIFYALL, "Identify everything" },
+        //{ , CMD_SKILLSCREEN, "Show skills" },
+};
+
+int get_command()
+{
+        int key, i;
+
+        key = gtgetch();
+        if(key == 27)
+                return CMD_QUIT;       // easy exit even if C&C breaks down!
+
+        for(i=0; i<numcommands; i++) {
+                if(curcommands[i].key == key)
+                        return curcommands[i].cmd;
+        }
+
+        gtprintf("unknown key: %d", key);
+
+        return 0;
+}
+
+void init_commands()
+{
+        curcommands = outsidecommands;
+        numcommands = (sizeof(outsidecommands) / sizeof(cmd_t));
+}
+
+char ask_char(char *question)
+{
+        gtkey c;
+
+        gtprintf(question);
+        update_screen();
+        c = gtgetch();
+        return c;
+}
+
+char ask_for_hand()
+{
+        char c;
+        
+        c = 0;
+
+        while(1) {
+                gtprintf("Which hand - (l)eft or (r)ight?");
+                update_screen();
+                c = gtgetch();
+//fprintf(stderr, "DEBUG: %s:%d - you pressed key with decimal value %d\n", __FILE__, __LINE__, c);
+                if(c == 13 || c == 27)         // ENTER or ESCAPE
+                        return 0;
+                else if(c == 'l' || c == 'r')
+                        return c;
+                else
+                        gtprintf("Only (l)eft or (r)ight, please.");
+        }
+
+}
+
+bool yesno(char *fmt, ...)
+{
+        va_list argp;
+        char s[1000];
+        char c;
+
+        va_start(argp, fmt);
+        vsprintf(s, fmt, argp);
+        va_end(argp);
+
+        strcat(s, " (y/n)?");
+        mess(s);
+
+        update_screen();
+        c = gtgetch();
+        if(c == 'y' || c == 'Y')
+                return true;
+        if(c == 'n' || c == 'N')
+                return false;
+
+        return false;
+}
+
+void more()
+{
+        gtkey c;
+
+        gtprintfc(C_BLACK_WHITE, "-- more --");
+        while(1) {
+                c = gtgetch();
+                if(c == 13 || c == 32) {
+                        delete_last_message();
+                        return;
+                }
+        }
+}
 
 // Stolen from DCSS!
 void setup_color_pairs()
@@ -257,11 +408,14 @@ void FOVlight(actor_t *a, level_t *l)
 
 // The actual drawing on screen
 
-void draw_world(level_t *level)
+void draw_world()
 {
         int i,j, slot;
         int dx, dy;  // coordinates on screen!
         int color;
+        level_t *level;
+
+        level = world->curlevel;             // make sure world->curlevel is correct!
 
         werase(wmap);
         FOV(player, level);
@@ -435,9 +589,9 @@ void initial_update_screen()
 
 // Input and messages
 
-int gtgetch()
+gtkey gtgetch()
 {
-        int c;
+        gtkey c;
         c = wgetch(wmap);
         return c;
 }
@@ -492,7 +646,7 @@ void delete_last_message()
         domess();
 }
 
-void messc(int color, char *message)
+void messc(gtcolor_t color, char *message)
 {
         //if(!strcmp(message, messages[currmess-1].text))
                 //return;
@@ -502,212 +656,3 @@ void messc(int color, char *message)
         strcpy(messages[currmess].text, message);
         domess();
 }
-
-#else
-
-void setup_color_pairs()
-{
-}
-
-bool blocks_light(int y, int x)
-{
-        level_t *l = world->curlevel;
-
-        if(hasbit(l->c[y][x].flags, CF_HAS_DOOR_CLOSED))
-                return true;
-
-        if(l->c[y][x].type == AREA_FOREST || l->c[y][x].type == AREA_CITY || l->c[y][x].type == AREA_VILLAGE) {    // trees and houses can be "see through" (e.g. if they are small)
-                if(perc(20))
-                        return false;
-                else
-                        return true;
-        }
-
-        switch(l->c[y][x].type) {
-                case AREA_NOTHING:
-                case AREA_MOUNTAIN:
-                //case AREA_CITY:
-                //case AREA_VILLAGE:
-                case AREA_WALL:
-                case DNG_WALL:
-                       return true;
-                default:       
-                       return false;
-        }
-
-        // shouldn't be reached...
-        return false;
-}
-
-void clear_map_to_invisible(level_t *l)
-{
-        int x, y;
-
-        for(y = ppy; y < (ppy+game->maph); y++) {
-                for(x = ppx; x < (ppx+game->mapw); x++) {
-                        if(x >= 0 && y >= 0 && x < l->xsize && y < l->ysize)
-                                l->c[y][x].visible = 0;
-                }
-        }
-}
-
-void clear_map_to_unlit(level_t *l)
-{
-        int x, y;
-
-        for(y = 0; y < l->ysize; y++) {
-                for(x = 0; x < l->xsize; x++) {
-                        clearbit(l->c[y][x].flags, CF_LIT);
-                }
-        }
-}
-
-/*
- * The next two functions are about FOV.
- * Stolen/adapted from http://roguebasin.roguelikedevelopment.org/index.php/Eligloscode
- */
-
-void dofov(actor_t *actor, level_t *l, float x, float y)
-{
-        int i;
-        float ox, oy;
-
-        ox = (float) actor->x + 0.5f;
-        oy = (float) actor->y + 0.5f;
-
-        for(i = 0; i < actor->viewradius; i++) {
-                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
-                        l->c[(int)oy][(int)ox].visible = 1;
-                        setbit(l->c[(int)oy][(int)ox].flags, CF_VISITED);
-                        if(blocks_light((int) oy, (int) ox)) {
-                                return;
-                        }/* else {  //SCARY MODE! 
-                                if(perc((100-actor->viewradius)/3))
-                                        return;
-                        }*/
-
-
-                        ox += x;
-                        oy += y;
-                }
-        }
-}
-
-void FOV(actor_t *a, level_t *l)
-{
-        float x, y;
-        int i;
-        //signed int tmpx,tmpy;
-
-        // if dark dungeon
-        clear_map_to_invisible(l);
-
-        for(i = 0; i < 360; i++) {
-                x = cos((float) i * 0.01745f);
-                y = sin((float) i * 0.01745f);
-                dofov(a, l, x, y);
-        }
-}
-
-void dofovlight(actor_t *actor, level_t *l, float x, float y)
-{
-        int i;
-        float ox, oy;
-
-        ox = (float) actor->x + 0.5f;
-        oy = (float) actor->y + 0.5f;
-
-
-        //gtprintf("\tentering dofovlight");
-        for(i = 0; i < (actor->viewradius/2); i++) {       // TODO: add a lightradius in actor_t, calculate it based on stuff
-                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
-                        //gtprintf("\t\tchecking cell %d,%d", (int)oy, (int)ox);
-                        if(hasbit(l->c[(int)oy][(int)ox].flags, CF_LIT))
-                                return;
-
-                        if(l->c[(int)oy][(int)ox].type == DNG_WALL) {
-                                setbit(l->c[(int)oy][(int)ox].flags, CF_LIT);
-                        }
-
-                        if(blocks_light((int) oy, (int) ox)) {
-                                //gtprintf("cell %d,%d blocks light", (int)oy, (int)ox);
-                                return;
-                        }
-
-                        ox += x;
-                        oy += y;
-                }
-        }
-}
-
-void FOVlight(actor_t *a, level_t *l)
-{
-        float x, y;
-        int i;
-
-        //gtprintf("entering FOVlight..");
-        clear_map_to_unlit(l);
-        for(i = 0; i < 360; i++) {
-                x = cos((float) i * 0.01745f);
-                y = sin((float) i * 0.01745f);
-                //fprintf(stderr, "DEBUG: %s:%d - now going to dofovlight i = %d y = %.4f x = %.4f\n", __FILE__, __LINE__, i, y, x);
-                dofovlight(a, l, x, y);
-        }
-}
-
-void init_display()
-{
-        printf("Dummy display driver reporting for duty!\n");
-}
-
-void shutdown_display()
-{
-        printf("Shutting down dummy display driver!\n");
-}
-
-void draw_world(level_t *level)
-{
-        printf("Imagine a beautiful landscape... Trees, mountains, birds...\n");
-}
-
-void gtmapaddch(int y, int x, int color, char c)
-{
-        printf("%c", c);
-}
-
-void initial_update_screen()
-{
-        printf("%s:%d - initial_update_screen\n", __FILE__, __LINE__);
-}
-
-void update_screen()
-{
-        printf("%s:%d - update_screen\n", __FILE__, __LINE__);
-}
-
-int gtgetch()
-{
-        return ri(97,122);
-}
-
-void domess()
-{
-        printf("%s:%d - domess\n", __FILE__, __LINE__);
-}
-
-void scrollmessages()
-{
-        printf("%s:%d - scrollmessages\n", __FILE__, __LINE__);
-}
-
-void mess(char *message)
-{
-        printf("%s:%d - %s\n", __FILE__, __LINE__, message);
-}
-
-void messc(int color, char *message)
-{
-        printf("%s:%d - %s\n", __FILE__, __LINE__, message);
-}
-
-#endif

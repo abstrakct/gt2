@@ -6,13 +6,15 @@
 #ifndef _COMMANDS_H
 #define _COMMANDS_H
 
-//#ifdef GT_USE_NCURSES
 typedef struct {
+#ifdef GT_USE_NCURSES
         int key;
+#else
+        TCOD_key_t key;
+#endif
         int cmd;
         char desc[50];
 } cmd_t;
-//#endif
 
 #define CMD_LEFT           1
 #define CMD_RIGHT          2
@@ -56,7 +58,5 @@ typedef struct {
 
 // prototypes
 
-int get_command();
-void init_commands();
 
 #endif

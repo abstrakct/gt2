@@ -63,8 +63,9 @@ typedef struct {                              // game_t
 #endif
 } game_t;
 
+
 typedef struct {                              // message_t
-        int color;
+        gtcolor_t color;
         char text[250];
 } message_t;
 
@@ -125,25 +126,18 @@ typedef struct coord {
 #define round(x) ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
 
 // global variables
-extern world_t *world;
-extern monster_t *monsterdefs;
-extern obj_t *objdefs;
-extern game_t *game;
-extern monster_t *monsterdefs;
-extern obj_t *objdefs;
-extern actor_t *player;
-extern int mapcx, mapcy;
-extern FILE *messagefile;
-extern message_t messages[500];
-extern int currmess, maxmess;
+extern world_t            *world;
+extern game_t             *game;
+extern monster_t          *monsterdefs;
+extern obj_t              *objdefs;
+extern actor_t            *player;
+extern int                 mapcx, mapcy;
+extern FILE               *messagefile;
+extern message_t           messages[500];
+extern int                 currmess, maxmess;
 extern struct actionqueue *aq;
-extern gt_config_t gtconfig;
-extern int tempxsize, tempysize;
-
-/*extern WINDOW *wall;
-extern WINDOW *wstat;
-extern WINDOW *winfo;
-extern WINDOW *wmap;*/
+extern gt_config_t         gtconfig;
+extern int                 tempxsize, tempysize;
 
 
 /* function prototypes */

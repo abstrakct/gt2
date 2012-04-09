@@ -15,11 +15,11 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
-#include "utils.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"
 #include "gt.h"
+#include "utils.h"
 
 // TODO FIX!
 obj_t *objlet[52];    // 52 pointers to objects, a-z & A-Z
@@ -347,14 +347,14 @@ void attack(actor_t *attacker, actor_t *defender)
         if(attack >= defense) {  // it's a hit!
                 if(attacker == player) {
                         if(damage <= 0)
-                                youc(C_BLACK_WHITE, "You hit the %s, but do no damage!", defender->name);
+                                youc(COLOR_WHITE, "You hit the %s, but do no damage!", defender->name);
                         else
-                                youc(C_BLACK_RED, "hit the %s with a %s for %d damage!", defender->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                                youc(COLOR_RED, "hit the %s with a %s for %d damage!", defender->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
                 } else {
                         if(damage <= 0)
-                                gtprintfc(C_BLACK_WHITE, "The %s hits you, but does no damage!", attacker->name);
+                                gtprintfc(COLOR_WHITE, "The %s hits you, but does no damage!", attacker->name);
                         else
-                                gtprintfc(C_BLACK_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                                gtprintfc(COLOR_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
                 }
 
                 if(damage > 0)
@@ -364,16 +364,16 @@ void attack(actor_t *attacker, actor_t *defender)
                         if(defender == player) {
                                 player_die(attacker);
                         } else {
-                                youc(C_BLACK_RED, "kill the %s!", defender->name);
+                                youc(COLOR_RED, "kill the %s!", defender->name);
                                 kill_monster(world->curlevel, defender, attacker);
                                 award_xp(defender);
                         }
                 }
         } else {
                 if(attacker == player)
-                        youc(C_BLACK_WHITE, "miss the %s!", defender->name);
+                        youc(COLOR_WHITE, "miss the %s!", defender->name);
                 else
-                        gtprintfc(C_BLACK_WHITE, "The %s tries to hit you, but fails!", attacker->name);
+                        gtprintfc(COLOR_WHITE, "The %s tries to hit you, but fails!", attacker->name);
         }
 
         if(attacker == player)

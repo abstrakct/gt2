@@ -6,8 +6,9 @@
 #
 # Uncomment the appropriate line to compile with ncurses or libtcod
 #
-#DISPLAY = libtcod
-DISPLAY = ncurses
+
+DISPLAY = libtcod
+#DISPLAY = ncurses
 
 ifeq ($(DISPLAY),ncurses)
 CFLAGS = -Wall -g -ggdb3 -I. -DGT_USE_NCURSES
@@ -21,10 +22,10 @@ CC = gcc
 DEFINES = #-DGT_USE_DUMMY
 LDFLAGS = -Wl $(LIBS)  # ,-rpath=lib 
 
-SOURCES   = gt.c utils.c monsters.c datafiles.c world.c io_ncurses.c io_libtcod.c debug.c saveload.c commands.c actor.c objects.c o_effects.c cards.c fractmod.c
-HEADERS   = gt.h utils.h monsters.h datafiles.h world.h io_ncurses.h io_libtcod.h debug.h saveload.h commands.h actor.h objects.h o_effects.h cards.h fractmod.h
-NCOBJS    = gt.o utils.o monsters.o datafiles.o world.o io_ncurses.o debug.o saveload.o commands.o actor.o objects.o o_effects.o cards.o fractmod.o
-TCOBJS    = gt.o utils.o monsters.o datafiles.o world.o io_libtcod.o debug.o saveload.o commands.o actor.o objects.o o_effects.o cards.o fractmod.o
+SOURCES   = gt.c utils.c monsters.c datafiles.c world.c debug.c saveload.c actor.c objects.c o_effects.c cards.c fractmod.c io_ncurses.c io_libtcod.c 
+HEADERS   = gt.h utils.h monsters.h datafiles.h world.h debug.h saveload.h actor.h objects.h o_effects.h cards.h fractmod.h io_ncurses.h io_libtcod.h commands.h
+NCOBJS    = gt.o utils.o monsters.o datafiles.o world.o debug.o saveload.o actor.o objects.o o_effects.o cards.o fractmod.o io_ncurses.o 
+TCOBJS    = gt.o utils.o monsters.o datafiles.o world.o debug.o saveload.o actor.o objects.o o_effects.o cards.o fractmod.o io_libtcod.o 
 
 #gt: $(OBJS)
 #	$(CC) $(LDFLAGS) -o $@ $(OBJS)

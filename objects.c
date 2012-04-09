@@ -16,11 +16,11 @@
 #include "o_effects.h"
 #include "actor.h"
 #include "monsters.h"
-#include "utils.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"
 #include "gt.h"
+#include "utils.h"
 
 // statistical debug stuff
 int pluses, minuses;
@@ -603,7 +603,7 @@ void spawn_objects(int num, void *p)
         verycommon = common = uncommon = rare = veryrare = 0;
 
         while(i < num) {
-                int p, rarity, type;
+                int p, rarity;
 
                 x = ri(1, l->xsize-1);
                 y = ri(1, l->ysize-1);

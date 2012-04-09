@@ -12,17 +12,17 @@
 #include <math.h>
 #include <stdbool.h>
 
-//#ifdef GT_USE_NCURSES
+#ifdef GT_USE_NCURSES
 #include <curses.h>
-//#endif
+#endif
 
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
-#include "utils.h"
 #include "world.h"
 #include "io.h"
 #include "gt.h"
+#include "utils.h"
 
 
 void *garbage[MAX_GARBAGE];
@@ -157,7 +157,7 @@ void you(char *fmt, ...)
         mess(s2);
 }
 
-void youc(int color, char *fmt, ...)
+void youc(gtcolor_t color, char *fmt, ...)
 {
         va_list argp;
         char s[1000];
@@ -201,7 +201,7 @@ void gtprintf(char *fmt, ...)
         mess(s);
 }
 
-void gtprintfc(int color, char *fmt, ...)
+void gtprintfc(gtcolor_t color, char *fmt, ...)
 {
         va_list argp;
         char s[1000];
@@ -212,92 +212,6 @@ void gtprintfc(int color, char *fmt, ...)
 
         messc(color, s);
 }
-
-char ask_char(char *question)
-{
-        char c;
-
-        gtprintf(question);
-        update_screen();
-        c = gtgetch();
-        return c;
-}
-
-char ask_for_hand()
-{
-        char c;
-        
-        c = 0;
-
-        while(1) {
-                gtprintf("Which hand - (l)eft or (r)ight?");
-                update_screen();
-                c = gtgetch();
-//fprintf(stderr, "DEBUG: %s:%d - you pressed key with decimal value %d\n", __FILE__, __LINE__, c);
-                if(c == 13 || c == 27)         // ENTER or ESCAPE
-                        return 0;
-                else if(c == 'l' || c == 'r')
-                        return c;
-                else
-                        gtprintf("Only (l)eft or (r)ight, please.");
-        }
-
-}
-
-bool yesno(char *fmt, ...)
-{
-        va_list argp;
-        char s[1000];
-        char c;
-
-        va_start(argp, fmt);
-        vsprintf(s, fmt, argp);
-        va_end(argp);
-
-        strcat(s, " (y/n)?");
-        mess(s);
-
-        update_screen();
-        c = gtgetch();
-        if(c == 'y' || c == 'Y')
-                return true;
-        if(c == 'n' || c == 'N')
-                return false;
-
-        return false;
-}
-
-void more()
-{
-        char c;
-
-        gtprintfc(COLOR_WHITE, "-- more --");
-        while(1) {
-                c = gtgetch();
-                if(c == 13 || c == 32) {
-                        delete_last_message();
-                        return;
-                }
-        }
-}
-
-#ifdef GT_USE_NCURSES
-void gtprintfwc(WINDOW *win, int color, char *fmt, ...)
-{
-        va_list argp;
-        char s[1000];
-
-        va_start(argp, fmt);
-        vsprintf(s, fmt, argp);
-        va_end(argp);
-
-        wattron(win, COLOR_PAIR(color));
-        wprintw(win, s);
-        wattroff(win, COLOR_PAIR(color));
-
-        //messc(color, s);
-}
-#endif
 
 void uppercase(char *s)
 {

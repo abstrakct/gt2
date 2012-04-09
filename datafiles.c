@@ -263,7 +263,7 @@ int parse_armor()
                 }
 
                 o->id = objid; objid++;
-                o->color = colors[C_BLACK_WHITE];
+                o->color = COLOR_WHITE;
 
                 o->head = objdefs->head;
                 objdefs->next = o;
@@ -361,7 +361,7 @@ int parse_weapons()
                 o->attackmod = o->damagemod = x;
 
                 o->id = objid; objid++;
-                o->color = colors[C_BLACK_WHITE];
+                o->color = COLOR_WHITE;
 
                 o->head = objdefs->head;
                 objdefs->next = o;
@@ -446,7 +446,7 @@ int parse_amulet()
 
                 o->type = OT_AMULET;
                 o->id = objid; objid++;
-                o->color = colors[C_BLACK_WHITE];
+                o->color = COLOR_WHITE;
 
                 o->material = mats_amulets[material];
                 material++;
@@ -548,7 +548,7 @@ int parse_bracelet()
 
                 o->type = OT_BRACELET;
                 o->id = objid; objid++;
-                o->color = colors[C_BLACK_WHITE];
+                o->color = COLOR_WHITE;
                 clearbit(o->flags, OF_IDENTIFIED);
 
                 o->material = mats_bracelets[material];
@@ -684,14 +684,14 @@ int parse_potions()
                         die("whoa! we ran out of material!");
 
                 switch(o->material) {
-                        case POT_RED: o->color = colors[C_BLACK_RED]; break;
-                        case POT_GREEN: o->color = colors[C_BLACK_GREEN]; break;
-                        case POT_SPARKLING: o->color = colors[C_BLACK_WHITE]; break;
-                        case POT_BLUE: o->color = colors[C_BLACK_BLUE]; break;
-                        case POT_CLEAR: o->color = colors[C_BLACK_WHITE]; break;
-                        case POT_YELLOW: o->color = colors[C_BLACK_YELLOW]; break;
-                        case POT_PINK: o->color = colors[C_BLACK_MAGENTA]; break;
-                        default: o->color = colors[C_BLACK_WHITE]; break;
+                        case POT_RED: o->color = COLOR_RED; break;
+                        case POT_GREEN: o->color = COLOR_GREEN; break;
+                        case POT_SPARKLING: o->color = COLOR_WHITE; break;
+                        case POT_BLUE: o->color = COLOR_BLUE; break;
+                        case POT_CLEAR: o->color = COLOR_WHITE; break;
+                        case POT_YELLOW: o->color = COLOR_YELLOW; break;
+                        case POT_PINK: o->color = COLOR_MAGENTA; break;
+                        default: o->color = COLOR_WHITE; break;
                 };
 
                 o->head = objdefs->head;

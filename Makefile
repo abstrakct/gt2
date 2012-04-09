@@ -7,8 +7,8 @@
 # Uncomment the appropriate line to compile with ncurses or libtcod
 #
 
-DISPLAY = libtcod
-#DISPLAY = ncurses
+#DISPLAY = libtcod
+DISPLAY = ncurses
 
 ifeq ($(DISPLAY),ncurses)
 CFLAGS = -Wall -g -ggdb3 -I. -DGT_USE_NCURSES

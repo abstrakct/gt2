@@ -604,7 +604,7 @@ bool do_action(int action)
                         fixview();
                         break;
                 case ACTION_HEAL_PLAYER:
-                        i = 25 - pphy;
+                        i = 20 - pphy;
                         if(i < 0)
                                 i = 1;
 

@@ -133,7 +133,7 @@ void init_player()
         ppy = ply - game->map.h / 2;
         game->mapcx = game->map.w - 2;
         game->mapcy = game->map.h - 2;
-        player->viewradius = 16;
+        player->viewradius = 6;
         player->level = 1;
 
         player->attr.str  = dice(3, 6, 0);
@@ -545,9 +545,9 @@ bool do_action(int action)
                                 plx = tmpx;
 
                                 if(world->curlevel->type == 1)
-                                        player->viewradius = 16;
+                                        player->viewradius = 6;
                                 else
-                                        player->viewradius = 8;
+                                        player->viewradius = 6;
                         }
                         player->ticks -= TICKS_MOVEMENT;
                         break;

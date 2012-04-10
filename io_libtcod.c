@@ -255,6 +255,7 @@ void init_display()
                 sprintf(font, "fonts/df.png");
 
 	//sprintf(font, "fonts/font-%i.png", fontsize);
+	sprintf(font, "fonts/terminal16x16_gs_ro.png");
         TCOD_console_set_custom_font(font, /*TCOD_FONT_TYPE_GREYSCALE |*/ TCOD_FONT_LAYOUT_ASCII_INROW, 16, 16);
 
         TCOD_console_init_root(gtconfig.cols, gtconfig.rows, GAME_NAME, false, TCOD_RENDERER_SDL);
@@ -350,7 +351,7 @@ void clear_map_to_unlit(level_t *l)
 
 void donewfov(actor_t *a, level_t *l)
 {
-        TCOD_map_compute_fov(l->map, a->x, a->y, 16, true, FOV_SHADOW);
+        TCOD_map_compute_fov(l->map, a->x, a->y, a->viewradius, true, FOV_SHADOW);
 
 }
 

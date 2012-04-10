@@ -275,7 +275,6 @@ void newpathfinder_chaseplayer(actor_t *m)
         m->x += dx;
 }
 
-
 bool newpathfinder(actor_t *m)
 {
         int oy, ox, dx, dy, dist, newdist, newdx, newdy;
@@ -361,7 +360,7 @@ void hostile_ai(actor_t *m)
 void heal_monster(actor_t *m, int num)
 {
         increase_hp(m, num);
-        gtprintf("The %s looks a bit healthier! (%d)", m->name, num);
+        gtprintf("The %s looks a bit healthier!", m->name);
 }
 
 void move_monsters()

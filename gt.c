@@ -127,8 +127,8 @@ void init_variables()
 void init_player()
 {
         // TODO: Character generation!!
-        plx = game->map.w / 2;
-        ply = game->map.h / 2;
+        //plx = game->map.w / 2;
+        //ply = game->map.h / 2;
         ppx = plx - game->map.w / 2;
         ppy = ply - game->map.h / 2;
         game->mapcx = game->map.w - 2;
@@ -191,8 +191,8 @@ void parse_commandline(int argc, char **argv)
 
 void fixview()
 {
-        ppx = plx - (game->mapw / 2);
-        ppy = ply - (game->maph / 2);
+        ppx = plx - (game->map.w / 2);
+        ppy = ply - (game->map.h / 2);
 
         if(plx < 0)
                 plx = 0;
@@ -215,6 +215,59 @@ void fixview()
                 ppy = world->curlevel->ysize - game->mapcy - 1;
         if(ppy < 0)
                 ppy = 0;
+}
+
+/*! \brief Open a door
+ *  \param x The X coordinate
+ *  \param y The Y coordinate
+ */
+void open_door(int y, int x)
+{
+        clearbit(cf(y, x), CF_HAS_DOOR_CLOSED);
+        setbit(cf(y, x), CF_HAS_DOOR_OPEN);
+        TCOD_map_set_properties(world->curlevel->map, x, y, true, true);
+
+        if(hasbit(cf(y+1,x), CF_HAS_DOOR_CLOSED))
+                open_door(y+1,x);
+        if(hasbit(cf(y-1,x), CF_HAS_DOOR_CLOSED))
+                open_door(y-1,x);
+        if(hasbit(cf(y,x+1), CF_HAS_DOOR_CLOSED))
+                open_door(y,x+1);
+        if(hasbit(cf(y,x-1), CF_HAS_DOOR_CLOSED))
+                open_door(y,x-1);
+}
+
+/*! \brief Clear the actionqueue */
+void clear_aq()
+{
+        struct actionqueue *tmp;
+
+        while(aq->num) {
+                tmp = aq->next;
+                aq->next = tmp->next;
+                gtfree(tmp);
+                aq->num--;
+        }
+}
+
+/**
+ * @brief Do the steps necessary to move monsters.
+ * A kind of wrapper function I guess.
+ */
+void monsters_move()
+{
+        do_action(ACTION_MAKE_DISTANCEMAP);
+        do_action(ACTION_MOVE_MONSTERS);
+}
+
+/*! \brief Setup attack
+ * Actually perform an attack.
+ */
+void setup_attack()
+{
+        do_action(ACTION_ATTACK);
+        monsters_move();
+        do_action(ACTION_HEAL_PLAYER);
 }
 
 /*********************************************
@@ -240,7 +293,7 @@ bool do_action(int action)
                                         //gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply+1][plx].monster;
-                                        queue(ACTION_ATTACK);
+                                        setup_attack();
                                         fullturn = false;
                                         break;
                                 } else
@@ -261,6 +314,7 @@ bool do_action(int action)
                         if(ppy < 0)
                                 ppy = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_UP:
                         if(passable(world->curlevel, ply-1,plx)) {
@@ -268,7 +322,7 @@ bool do_action(int action)
                                         //gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply-1][plx].monster;
-                                        queue(ACTION_ATTACK);
+                                        setup_attack();
                                         fullturn = false;
                                         break;
                                 } else
@@ -287,6 +341,7 @@ bool do_action(int action)
                         if(ppy < 0)
                                 ppy = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
                         if(passable(world->curlevel, ply, plx-1)) {
@@ -294,7 +349,7 @@ bool do_action(int action)
                                         //gtprintf("You attack the %s!", world->curlevel->c[ply][plx-1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply][plx-1].monster;
-                                        queue(ACTION_ATTACK);
+                                        setup_attack();
                                         fullturn = false;
                                         break;
                                 } else
@@ -313,6 +368,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
                         if(passable(world->curlevel, ply,plx+1)) {
@@ -320,7 +376,7 @@ bool do_action(int action)
                                         //gtprintf("You attack the %s!", world->curlevel->c[ply][plx+1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply][plx+1].monster;
-                                        queue(ACTION_ATTACK);
+                                        setup_attack();
                                         fullturn = false;
                                         break;
                                 } else
@@ -341,6 +397,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_NW:
                         if(passable(world->curlevel, ply-1,plx-1)) {
@@ -348,7 +405,7 @@ bool do_action(int action)
                                         //gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx-1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply-1][plx-1].monster;
-                                        queue(ACTION_ATTACK);
+                                        setup_attack();
                                         fullturn = false;
                                         break;
                                 } else {
@@ -378,6 +435,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_NE:
                         if(passable(world->curlevel, ply-1,plx+1)) {
@@ -385,7 +443,7 @@ bool do_action(int action)
                                         //gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx+1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply-1][plx+1].monster;
-                                        queue(ACTION_ATTACK);
+                                        setup_attack();
                                         fullturn = false;
                                         break;
                                 } else {
@@ -418,6 +476,7 @@ bool do_action(int action)
                         if(ppy < 0)
                                 ppy = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_SW:
                         if(passable(world->curlevel, ply+1, plx-1)) {
@@ -425,7 +484,7 @@ bool do_action(int action)
                                         //gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx-1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply+1][plx-1].monster;
-                                        queue(ACTION_ATTACK);
+                                        setup_attack();
                                         fullturn = false;
                                         break;
                                 } else {
@@ -456,6 +515,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_SE:
                         if(passable(world->curlevel, ply+1, plx+1)) {
@@ -463,7 +523,7 @@ bool do_action(int action)
                                         //gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx+1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply+1][plx+1].monster;
-                                        queue(ACTION_ATTACK);
+                                        setup_attack();
                                         fullturn = false;
                                         break;
                                 } else {
@@ -500,6 +560,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        monsters_move();
                         break;
                 case ACTION_PICKUP:
                         if(ci(ply, plx) && ci(ply, plx)->gold > 0) {
@@ -631,13 +692,10 @@ bool do_action(int action)
         }
 
         if(cf(ply, plx) & CF_HAS_DOOR_CLOSED) {
-                clearbit(cf(ply, plx), CF_HAS_DOOR_CLOSED);       // move to its own funtcion?!"¤&¤%"%
-                setbit(cf(ply, plx), CF_HAS_DOOR_OPEN);
+                open_door(ply, plx);
                 you("open the door!");
                 ply = oldy; plx = oldx;
-                fov_updatemap(world->curlevel);
         }
-
 
         return fullturn;
 }
@@ -821,30 +879,23 @@ void do_turn()
        // bool fullturn;
         int i, ret;
 
-        player->ticks += 1000;
-
-
         if(game->currentlevel)
                 queue(ACTION_MAKE_DISTANCEMAP);
 
-        queue(ACTION_MOVE_MONSTERS);
-        
-        if(game->turn % 5)                      // TODO: Better condition... based on physique etc.
-                queue(ACTION_HEAL_PLAYER);
-
+        player->ticks += 1000;
         i = aq->num;
 
         while(i) {
-                i = aq->num;
-
                 ret = do_next_thing_in_queue();
                         
                 if(ret) {
+                        queue(ACTION_HEAL_PLAYER);
                         game->turn++;
                         look();
                 }
 
                 update_screen();
+                i = aq->num;
         }
 }
 

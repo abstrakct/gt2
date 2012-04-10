@@ -145,5 +145,7 @@ extern int                 tempxsize, tempysize;
 bool do_next_thing_in_queue();
 void queue(int action);
 void shutdown_gt();
+bool do_action(int action);
+
 
 #endif

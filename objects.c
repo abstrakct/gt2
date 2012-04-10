@@ -596,7 +596,7 @@ void spawn_objects(int num, void *p)
         f = (double) ((float)num / 100.0f) * (float)VERYRARE;
         veryrare = round(f);
 
-        printf("Spawning %d objects:\n%d very common\n%d common\n%d uncommon\n%d rare\n%d very rare\ntotal %d\n", num, verycommon, common, uncommon, rare, veryrare, common + uncommon + rare + veryrare);
+        //printf("Spawning %d objects:\n%d very common\n%d common\n%d uncommon\n%d rare\n%d very rare\ntotal %d\n", num, verycommon, common, uncommon, rare, veryrare, common + uncommon + rare + veryrare);
 
         i = 0;
         l = (level_t *) p;
@@ -633,7 +633,7 @@ void spawn_objects(int num, void *p)
                         
         }
 
-        printf("Generated:\n\ttotal:\t%d\n\tvery common:\t%d\n\tcommon:\t%d\n\tuncommon:\t%d\n\trare:\t%d\n\tveryrare:\t%d\n\n", i, verycommon, common, uncommon, rare, veryrare);
+        //printf("Generated:\n\ttotal:\t%d\n\tvery common:\t%d\n\tcommon:\t%d\n\tuncommon:\t%d\n\trare:\t%d\n\tveryrare:\t%d\n\n", i, verycommon, common, uncommon, rare, veryrare);
 }
 
 void spawn_gold(int n, inv_t *i)

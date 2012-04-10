@@ -9,8 +9,6 @@
 // Prototypes
 void init_display();
 void shutdown_display();
-void draw_world();
-void draw_wstat();
 
 void gtmapaddch(int y, int x, gtcolor_t color, char c);
 void update_screen();
@@ -24,7 +22,8 @@ void mess(char *message);
 void messc(gtcolor_t color, char *message);
 void delete_last_message();
 
-bool blocks_light(int y, int x);
+bool blocks_light(void *l, int y, int x);
+void fov_initmap(void *l);
 
 int get_command();
 void init_commands();
@@ -57,6 +56,7 @@ extern  gtcolor_t colors[];
 #define C_WHITE_MAGENTA         13
 #define C_WHITE_CYAN            14
 #define C_WHITE_WHITE           15
+#define C_BLACK_DARKERGREY      16
 
 
 #define C_RED_BLACK             8
@@ -123,6 +123,7 @@ extern  gtcolor_t colors[];
 #define COLOR_GREEN    colors[C_BLACK_GREEN]
 #define COLOR_RED      colors[C_BLACK_RED]
 #define COLOR_WHITE    colors[C_BLACK_WHITE]
+#define COLOR_MAGENTA  colors[C_BLACK_MAGENTA]
 
 #define COLOR_WARNING  colors[C_BLACK_RED]
 #define COLOR_BAD      colors[C_BLACK_RED]
@@ -131,7 +132,7 @@ extern  gtcolor_t colors[];
 #define COLOR_INFO     colors[C_BLACK_YELLOW]
 #define COLOR_VISIBLE  colors[C_BLACK_YELLOW]
 
-#define COLOR_SHADE    colors[C_BLACK_BLACK]
+#define COLOR_SHADE    colors[C_BLACK_DARKERGREY]
 #define COLOR_LIGHT    colors[C_BLACK_YELLOW]
 
 #define COLOR_INVISIBLE 63

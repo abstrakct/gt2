@@ -127,13 +127,13 @@ void init_variables()
 void init_player()
 {
         // TODO: Character generation!!
-        plx = game->mapw / 2;
-        ply = game->maph / 2;
-        ppx = plx - game->mapw / 2;
-        ppy = ply - game->maph / 2;
-        game->mapcx = game->mapw + 2;
-        game->mapcy = game->maph + 2;
-        player->viewradius = 16;
+        plx = game->map.w / 2;
+        ply = game->map.h / 2;
+        ppx = plx - game->map.w / 2;
+        ppy = ply - game->map.h / 2;
+        game->mapcx = game->map.w - 2;
+        game->mapcy = game->map.h - 2;
+        player->viewradius = 42;
         player->level = 1;
 
         player->attr.str  = dice(3, 6, 0);
@@ -604,7 +604,7 @@ bool do_action(int action)
                         fixview();
                         break;
                 case ACTION_HEAL_PLAYER:
-                        i = 20 - pphy;
+                        i = 17 - pphy;
                         if(i < 0)
                                 i = 1;
 
@@ -843,8 +843,6 @@ void do_turn()
                         look();
                 }
 
-                draw_world(world->curlevel);
-                draw_wstat();
                 update_screen();
         }
 }
@@ -910,8 +908,6 @@ int main(int argc, char *argv[])
 
         init_commands();
 
-        draw_world(world->curlevel);
-        draw_wstat();
         initial_update_screen();
 
         do {

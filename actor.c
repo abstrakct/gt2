@@ -162,7 +162,7 @@ bool in_lineofsight(actor_t *src, int goaly, int goalx)
                         if(x == goalx && y == goaly) {
                                 return true;
                         }
-                } while(!blocks_light(y, x));
+                } while(!blocks_light(world->curlevel, y, x));
 
                 return false;
         } else {
@@ -178,7 +178,7 @@ bool in_lineofsight(actor_t *src, int goaly, int goalx)
                         if(x == goalx && y == goaly) {
                                 return true;
                         }
-                } while(!blocks_light(y, x));
+                } while(!blocks_light(world->curlevel, y, x));
 
                 return false;
         }

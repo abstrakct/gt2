@@ -65,13 +65,14 @@ typedef struct {                 // cell_t
 } cell_t;
 
 struct levelstruct {
-        short      xsize, ysize;
-        short      level, type;
-        int        zero;           // for defining the "zero" level of a heightmap (i.e. the mean value)
-        int        lakelimit;
+        short        xsize, ysize;
+        short        level, type;
+        int          zero;           // for defining the "zero" level of a heightmap (i.e. the mean value)
+        int          lakelimit;
         cell_t     **c;
-        monster_t  *monsters;      // point to head of linked lists of monsters on this level
-        obj_t      *objects;
+        monster_t   *monsters;      // point to head of linked lists of monsters on this level
+        obj_t       *objects;
+        TCOD_map_t   map;
 };
 
 struct room {

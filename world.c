@@ -1023,6 +1023,7 @@ void meta_generate_dungeon(int d, int type)
                 spawn_objects(ri(mino, maxo), &world->dng[d]);
 
                 game->createddungeons++;
+                fov_initmap(&world->dng[d]);
         } else {
                 die("trying to generate dungeon of unknown type!");
         }
@@ -1128,11 +1129,11 @@ void generate_world()
         world->city = gtcalloc((size_t)world->cities, sizeof(city_t));
         generate_city(world->cities);
 
-
-
         spawn_monsters(ri(75,125), 3, world->out); 
         spawn_golds(ri(75,125), 100, world->out);
         spawn_objects(ri(world->out->xsize/4, world->out->ysize/4), world->out);
+
+        fov_initmap(world->out);
 
         meta_generate_dungeon(1, 1);
         //clear_area(&world->dng[1], 6, 6, r.y+6, r.x+6);

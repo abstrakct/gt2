@@ -406,6 +406,10 @@ void FOVlight(actor_t *a, level_t *l)
         }
 }
 
+void fov_initmap(level_t *l)
+{
+}
+
 // The actual drawing on screen
 
 void draw_world()

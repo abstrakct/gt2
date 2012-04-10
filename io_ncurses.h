@@ -31,6 +31,7 @@ void messc(int color, char *message);
 void delete_last_message();
 
 bool blocks_light(int y, int x);
+void fov_initmap(level_t *l);
 
 int get_command();
 void init_commands();

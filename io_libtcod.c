@@ -34,6 +34,7 @@
 #define RGB_YELLOW {255,255,0}
 #define RGB_MAGENTA {255,0,191}
 #define RGB_CYAN {0,255,255}
+#define RGB_DARKER_GREY {63,63,63}
 
 gtcolor_t colors[] = { 
         { RGB_BLACK,    RGB_BLACK },
@@ -51,7 +52,8 @@ gtcolor_t colors[] = {
         { RGB_BLUE,     RGB_WHITE },
         { RGB_MAGENTA,  RGB_WHITE },
         { RGB_CYAN,     RGB_WHITE },
-        { RGB_WHITE,    RGB_WHITE }
+        { RGB_WHITE,    RGB_WHITE },
+        { RGB_DARKER_GREY, RGB_BLACK }
 };
 
 
@@ -291,9 +293,10 @@ void shutdown_display()
         printf("Shutting down!\n");
 }
 
-bool blocks_light(int y, int x)
+bool blocks_light(void *level, int y, int x)
 {
-        level_t *l = world->curlevel;
+        level_t *l;
+        l = (level_t *)level;
 
         if(hasbit(l->c[y][x].flags, CF_HAS_DOOR_CLOSED))
                 return true;
@@ -341,106 +344,192 @@ void clear_map_to_unlit(level_t *l)
         }
 }
 
-/*
- * The next two functions are about FOV.
- * Stolen/adapted from http://roguebasin.roguelikedevelopment.org/index.php/Eligloscode
- */
-
-void dofov(actor_t *actor, level_t *l, float x, float y)
+void donewfov(actor_t *a, level_t *l)
 {
-        int i;
-        float ox, oy;
+        TCOD_map_compute_fov(l->map, a->x, a->y, 16, true, FOV_SHADOW);
 
-        ox = (float) actor->x + 0.5f;
-        oy = (float) actor->y + 0.5f;
+}
 
-        for(i = 0; i < actor->viewradius; i++) {
-                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
-                        l->c[(int)oy][(int)ox].visible = 1;
-                        setbit(l->c[(int)oy][(int)ox].flags, CF_VISITED);
-                        if(blocks_light((int) oy, (int) ox)) {
-                                return;
-                        }/* else {  //SCARY MODE! 
-                                if(perc((100-actor->viewradius)/3))
-                                        return;
-                        }*/
+void newfov_updatemap(level_t *l)
+{
+        int x, y;
+        bool trans, walk;
+
+        for(x = 1; x < l->xsize; x++) {
+                for(y = 1; y < l->ysize; y++) {
+                        if(blocks_light(l, y, x))
+                                trans = false;
+                        else
+                                trans = true;
+
+                        if(passable(l, y, x))
+                                walk = true;
+                        else
+                                walk = false;
 
 
-                        ox += x;
-                        oy += y;
+                        TCOD_map_set_properties(l->map, x, y, trans, walk);
                 }
         }
 }
 
-void FOV(actor_t *a, level_t *l)
+void fov_initmap(void *level)
 {
-        float x, y;
-        int i;
-        //signed int tmpx,tmpy;
+        level_t *l;
 
-        // if dark dungeon
-        clear_map_to_invisible(l);
+        l = (level_t *)level;
 
-        for(i = 0; i < 360; i++) {
-                x = cos((float) i * 0.01745f);
-                y = sin((float) i * 0.01745f);
-                dofov(a, l, x, y);
-        }
-}
-
-void dofovlight(actor_t *actor, level_t *l, float x, float y)
-{
-        int i;
-        float ox, oy;
-
-        ox = (float) actor->x + 0.5f;
-        oy = (float) actor->y + 0.5f;
-
-
-        //gtprintf("\tentering dofovlight");
-        for(i = 0; i < (actor->viewradius/2); i++) {       // TODO: add a lightradius in actor_t, calculate it based on stuff
-                if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
-                        //gtprintf("\t\tchecking cell %d,%d", (int)oy, (int)ox);
-                        if(hasbit(l->c[(int)oy][(int)ox].flags, CF_LIT))
-                                return;
-
-                        if(l->c[(int)oy][(int)ox].type == DNG_WALL) {
-                                setbit(l->c[(int)oy][(int)ox].flags, CF_LIT);
-                        }
-
-                        if(blocks_light((int) oy, (int) ox)) {
-                                //gtprintf("cell %d,%d blocks light", (int)oy, (int)ox);
-                                return;
-                        }
-
-                        ox += x;
-                        oy += y;
-                }
-        }
-}
-
-void FOVlight(actor_t *a, level_t *l)
-{
-        float x, y;
-        int i;
-
-        //gtprintf("entering FOVlight..");
-        clear_map_to_unlit(l);
-        for(i = 0; i < 360; i++) {
-                x = cos((float) i * 0.01745f);
-                y = sin((float) i * 0.01745f);
-                //fprintf(stderr, "DEBUG: %s:%d - now going to dofovlight i = %d y = %.4f x = %.4f\n", __FILE__, __LINE__, i, y, x);
-                dofovlight(a, l, x, y);
-        }
+        l->map = TCOD_map_new(l->xsize, l->ysize);
+        newfov_updatemap(l);
 }
 
 // The actual drawing on screen
 
-void draw_world()
+void draw_map()
 {
+        int i,j, slot;
+        int dx, dy;  // coordinates on screen!
+        gtcolor_t color;
+        level_t *level;
+
+        level = world->curlevel;
+
+        donewfov(player, level);
+
+        /*
+         * in this function, (j,i) are the coordinates on the map,
+         * dx,dy = coordinates on screen.
+         * so, player->py/px describes the upper left corner of the map
+         */
+        for(i = ppx, dx = 1; i < (ppx + game->map.w - 2); i++, dx++) {
+                for(j = ppy, dy = 1; j < (ppy + game->map.h - 2); j++, dy++) {
+                        if(j < level->ysize && i < level->xsize) {
+                                if(TCOD_map_is_in_fov(level->map, i, j))
+                                        setbit(level->c[j][i].flags, CF_VISITED);
+
+                                if(hasbit(level->c[j][i].flags, CF_VISITED)) {
+                                        if(TCOD_map_is_in_fov(level->map, i, j)) {
+                                                if(ct(j, i) == DNG_WALL)
+                                                        color = COLOR_YELLOW;
+                                                else if(ct(j, i) == DNG_FLOOR)
+                                                        color = COLOR_SHADE;
+                                        } else {
+                                                color = COLOR_SHADE;
+                                        }
+                                }
+
+                                if(hasbit(level->c[j][i].flags, CF_VISITED)) {
+                                        gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
+
+                                        if(level->c[j][i].inventory) {
+                                                if(level->c[j][i].inventory->gold > 0) {
+                                                        gtmapaddch(dy, dx, COLOR_YELLOW, objchars[OT_GOLD]);
+                                                } else {                                                         // TODO ADD OBJECT COLORS!!!
+                                                        slot = get_first_used_slot(level->c[j][i].inventory);
+                                                        if(level->c[j][i].inventory->num_used > 0 && slot >= 0 && level->c[j][i].inventory->object[slot]) {
+                                                                color = level->c[j][i].inventory->object[slot]->color;
+                                                                gtmapaddch(dy, dx, color, objchars[level->c[j][i].inventory->object[slot]->type]);
+                                                        }
+                                                }
+                                        }
+
+                                        if(hasbit(level->c[j][i].flags, CF_HAS_DOOR_CLOSED)) {
+                                                //dsprintf("closed door at %d,%d", dx, dy);
+                                                gtmapaddch(dy, dx, color, '+');
+                                        }
+                                        if(hasbit(level->c[j][i].flags, CF_HAS_DOOR_OPEN)) {
+                                                //dsprintf("open door at %d,%d", dx, dy);
+                                                gtmapaddch(dy, dx, color, '\'');
+                                        }
+                                        
+                                        if(hasbit(level->c[j][i].flags, CF_HAS_STAIRS_DOWN))
+                                                gtmapaddch(dy, dx, COLOR_WHITE, '>');
+                                        if(hasbit(level->c[j][i].flags, CF_HAS_STAIRS_UP))
+                                                gtmapaddch(dy, dx, COLOR_WHITE, '<');
+                                        if(TCOD_map_is_in_fov(level->map, i, j) && level->c[j][i].monster /*&& actor_in_lineofsight(player, level->c[j][i].monster)*/)
+                                                gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
+
+                                        if(j == ply && i == plx)
+                                                gtmapaddch(dy, dx, COLOR_PLAYER, '@');
+                                }
+                        }
+                }
+        }
+}
+void draw_map_old()
+{
+        int i,j, slot;
+        int dx, dy;  // coordinates on screen!
+        gtcolor_t color;
+        level_t *level;
+
+        level = world->curlevel;             // make sure world->curlevel is correct!
+
+        /*
+         * in this function, (j,i) are the coordinates on the map,
+         * dx,dy = coordinates on screen.
+         * so, player->py/px describes the upper left corner of the map
+         */
+        for(i = ppx, dx = 0; i <= (ppx + game->mapw - 2); i++, dx++) {
+                for(j = ppy, dy = 0; j <= (ppy + game->maph - 2); j++, dy++) {
+                        if(j < level->ysize && i < level->xsize) {
+                                if(hasbit(level->c[j][i].flags, CF_VISITED)) {
+                                        color = cc(j,i);
+
+                                        if(hasbit(level->c[j][i].flags, CF_LIT))
+                                                color = level->c[j][i].litcolor;
+
+                                        gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
+
+                                        /*
+                                        if(level->c[j][i].height < 0) {
+                                                color = COLOR_RED;
+                                                c = 48+(0 - level->c[j][i].height);
+                                        } else {
+                                                color = COLOR_BLUE;
+                                                c = 48+level->c[j][i].height;
+                                        }
+
+                                        gtmapaddch(dy, dx, color, c);
+                                        */
+
+                                        if(level->c[j][i].inventory) {
+                                                if(level->c[j][i].inventory->gold > 0) {
+                                                        gtmapaddch(dy, dx, COLOR_YELLOW, objchars[OT_GOLD]);
+                                                } else {                                                         // TODO ADD OBJECT COLORS!!!
+                                                        slot = get_first_used_slot(level->c[j][i].inventory);
+                                                        if(level->c[j][i].inventory->num_used > 0 && slot >= 0 && level->c[j][i].inventory->object[slot]) {
+                                                                color = level->c[j][i].inventory->object[slot]->color;
+                                                                gtmapaddch(dy, dx, color, objchars[level->c[j][i].inventory->object[slot]->type]);
+                                                        }
+                                                }
+                                        }
+
+                                        if(hasbit(level->c[j][i].flags, CF_HAS_DOOR_CLOSED))
+                                                gtmapaddch(dy, dx, color, '+');
+                                        else if(hasbit(level->c[j][i].flags, CF_HAS_DOOR_OPEN))
+                                                gtmapaddch(dy, dx, color, '\'');
+                                        else if(hasbit(level->c[j][i].flags, CF_HAS_STAIRS_DOWN))
+                                                gtmapaddch(dy, dx, COLOR_WHITE, '>');
+                                        else if(hasbit(level->c[j][i].flags, CF_HAS_STAIRS_UP))
+                                                gtmapaddch(dy, dx, COLOR_WHITE, '<');
+                                }
+
+
+                                if(level->c[j][i].visible && level->c[j][i].monster /*&& actor_in_lineofsight(player, level->c[j][i].monster)*/)
+                                        gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
+
+                                if(level->c[j][i].type == AREA_WALL) {
+                                        gtmapaddch(dy, dx, COLOR_PLAIN, mapchars[DNG_WALL]);
+                                }
+                        if(j == ply && i == plx)
+                                gtmapaddch(dy, dx, COLOR_PLAYER, '@');
+                        }
+                }
+        }
 }
 
-void draw_wstat()
+void draw_left()
 {
 /*        obj_t *o;
         int i, j;
@@ -514,10 +603,31 @@ void gtmapaddch(int y, int x, gtcolor_t color, char c)
 
 void update_screen()
 {
+        TCOD_console_clear(game->map.c);
+        TCOD_console_clear(game->left.c);
+        TCOD_console_clear(game->right.c);
+
+        //TCOD_console_rect(game->map.c, game->map.x, game->map.y, game->map.w, game->map.h, true, TCOD_BKGND_NONE);
+        /*TCOD_console_print_frame(game->map.c, 0, 0, game->map.w, game->map.h, true, TCOD_BKGND_NONE, "Map");
+        TCOD_console_print_frame(game->left.c, 0, 0, game->left.w, game->left.h, true, TCOD_BKGND_NONE, "You");
+        TCOD_console_print_frame(game->right.c, 0, 0, game->right.w - 2, game->right.h, true, TCOD_BKGND_NONE, "Inventory");*/
+
+        draw_map();
+        draw_left();
+        //draw_right();
+
+        TCOD_console_blit(game->map.c, 0, 0, game->map.w, game->map.h, NULL, game->map.x, game->map.y, 1.0, 1.0);
+        TCOD_console_blit(game->messages.c, 0, 0, game->messages.w, game->messages.h, NULL, game->messages.x, game->messages.y, 1.0, 1.0);
+        TCOD_console_blit(game->left.c, 0, 0, game->left.w, game->left.h, NULL, game->left.x, game->left.y, 1.0, 1.0);
+        TCOD_console_blit(game->right.c, 0, 0, game->right.w, game->right.h, NULL, game->right.x, game->right.y, 1.0, 1.0);
+
+        TCOD_console_flush();
 }
 
 void initial_update_screen()
 {
+        gtprintf("Welcome to %s v%s!", GAME_NAME, game->version);
+        update_screen();
 }
 
 // Input and messages

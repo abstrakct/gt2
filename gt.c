@@ -133,7 +133,7 @@ void init_player()
         ppy = ply - game->map.h / 2;
         game->mapcx = game->map.w - 2;
         game->mapcy = game->map.h - 2;
-        player->viewradius = 42;
+        player->viewradius = 16;
         player->level = 1;
 
         player->attr.str  = dice(3, 6, 0);
@@ -635,6 +635,7 @@ bool do_action(int action)
                 setbit(cf(ply, plx), CF_HAS_DOOR_OPEN);
                 you("open the door!");
                 ply = oldy; plx = oldx;
+                fov_updatemap(world->curlevel);
         }
 
 

@@ -35,6 +35,8 @@
 #define RGB_MAGENTA {255,0,191}
 #define RGB_CYAN {0,255,255}
 #define RGB_DARKER_GREY {63,63,63}
+#define RGB_GOLD {221,191,0}
+#define RGB_AMBER {255,191,0}
 
 gtcolor_t colors[] = { 
         { RGB_BLACK,    RGB_BLACK },
@@ -53,7 +55,9 @@ gtcolor_t colors[] = {
         { RGB_MAGENTA,  RGB_WHITE },
         { RGB_CYAN,     RGB_WHITE },
         { RGB_WHITE,    RGB_WHITE },
-        { RGB_DARKER_GREY, RGB_BLACK }
+        { RGB_DARKER_GREY, RGB_BLACK },
+        { RGB_GOLD, RGB_BLACK },
+        { RGB_AMBER, RGB_BLACK },
 };
 
 
@@ -350,10 +354,13 @@ void donewfov(actor_t *a, level_t *l)
 
 }
 
-void newfov_updatemap(level_t *l)
+void fov_updatemap(void *level)
 {
         int x, y;
         bool trans, walk;
+        level_t *l;
+
+        l = (level_t *)level;
 
         for(x = 1; x < l->xsize; x++) {
                 for(y = 1; y < l->ysize; y++) {
@@ -380,7 +387,7 @@ void fov_initmap(void *level)
         l = (level_t *)level;
 
         l->map = TCOD_map_new(l->xsize, l->ysize);
-        newfov_updatemap(l);
+        fov_updatemap(l);
 }
 
 // The actual drawing on screen
@@ -410,7 +417,7 @@ void draw_map()
                                 if(hasbit(level->c[j][i].flags, CF_VISITED)) {
                                         if(TCOD_map_is_in_fov(level->map, i, j)) {
                                                 if(ct(j, i) == DNG_WALL)
-                                                        color = COLOR_YELLOW;
+                                                        color = COLOR_LIT_WALL;
                                                 else if(ct(j, i) == DNG_FLOOR)
                                                         color = COLOR_SHADE;
                                         } else {
@@ -423,7 +430,7 @@ void draw_map()
 
                                         if(level->c[j][i].inventory) {
                                                 if(level->c[j][i].inventory->gold > 0) {
-                                                        gtmapaddch(dy, dx, COLOR_YELLOW, objchars[OT_GOLD]);
+                                                        gtmapaddch(dy, dx, COLOR_GOLD, objchars[OT_GOLD]);
                                                 } else {                                                         // TODO ADD OBJECT COLORS!!!
                                                         slot = get_first_used_slot(level->c[j][i].inventory);
                                                         if(level->c[j][i].inventory->num_used > 0 && slot >= 0 && level->c[j][i].inventory->object[slot]) {
@@ -456,6 +463,7 @@ void draw_map()
                 }
         }
 }
+
 void draw_map_old()
 {
         int i,j, slot;
@@ -531,6 +539,46 @@ void draw_map_old()
 
 void draw_left()
 {
+        int i;
+        TCOD_color_t color;
+
+        i = 0;
+
+        //TCOD_console_set_alignment(game->left.c, TCOD_CENTER);
+        TCOD_console_set_default_foreground(game->left.c, TCOD_light_blue);
+        TCOD_console_print(game->left.c, (game->left.w/2)-(strlen(player->name)/2), i+1, "* %s *", player->name);
+
+        i++;
+        TCOD_console_set_default_foreground(game->left.c, TCOD_white);
+        TCOD_console_print(game->left.c, 1, i+3, "Weapon: %s", player->weapon ? player->weapon->fullname : "bare hands");
+        //TCOD_console_print(game->left.c, 1, i+4, "viewradius: %d", player->viewradius);
+        
+        /* Hitpoints */
+        if(player->hp >= (player->maxhp/4*3))
+                color = TCOD_green;
+        else if(player->hp >= (player->maxhp/4) && player->hp < (player->maxhp/4*3))
+                color = TCOD_yellow;
+        else if(player->hp < (player->maxhp/4))
+                color = TCOD_red;
+
+        TCOD_console_print(game->left.c, 1, i+4, "HP:");
+        TCOD_console_set_default_foreground(game->left.c, color);
+        TCOD_console_print(game->left.c, 5, i+4, "%d/%d (%.1f%%)", player->hp, player->maxhp, ((float)(100/(float)player->maxhp) * (float)player->hp));
+
+        TCOD_console_set_default_foreground(game->left.c, TCOD_white);
+        TCOD_console_print(game->left.c, 1, i+6,  "AC:    %d", player->ac);
+        TCOD_console_print(game->left.c, 1, i+7,  "STR:   %d", player->attr.str);
+        TCOD_console_print(game->left.c, 1, i+8,  "DEX:   %d", player->attr.dex);
+        TCOD_console_print(game->left.c, 1, i+9,  "PHY:   %d", player->attr.phy);
+        TCOD_console_print(game->left.c, 1, i+10, "INT:   %d", player->attr.intl);
+        TCOD_console_print(game->left.c, 1, i+11, "WIS:   %d", player->attr.wis);
+        TCOD_console_print(game->left.c, 1, i+12, "CHA:   %d", player->attr.cha);
+        TCOD_console_print(game->left.c, 1, i+13, "XP:    %d", player->xp);
+        TCOD_console_print(game->left.c, 1, i+14, "Level: %d", player->level);
+        
+        //TCOD_console_print(game->left.c, 1, i+9, 1, "Dungeon level: %d (out of %d)", game->currentlevel, game->createdareas);
+        //mvwprintw(wleft, 3, 1, "y,x     %d,%d", ply, plx);
+        //mvwprintw(wleft, 4, 1, "(py,px) (%d,%d)", ppy, ppx);
 /*        obj_t *o;
         int i, j;
         int color;
@@ -590,6 +638,43 @@ void draw_left()
         }*/
 }
 
+void draw_right()
+{
+        obj_t *o;
+        int i, j;
+
+        TCOD_console_set_default_foreground(game->right.c, TCOD_light_blue);
+        TCOD_console_print(game->right.c, (game->right.w/2)-7, 1, "* INVENTORY *");
+
+        TCOD_console_set_default_foreground(game->right.c, TCOD_gold);
+        TCOD_console_print(game->right.c, 1, 3, "Gold: %d", player->inventory->gold);
+
+
+        TCOD_console_set_default_foreground(game->right.c, TCOD_white);
+        
+        i = 4;
+        for(j = 0; j < 52; j++) {
+                if(player->inventory->object[j]) {
+                        //o = get_object_from_letter(slot_to_letter(j), player->inventory);
+                        o = player->inventory->object[j];
+                        if(is_worn(o)) {
+                                if(is_pair(o))
+                                        TCOD_console_print(game->right.c, 1, i, "%c   a pair of %s %s", slot_to_letter(j), o->fullname, is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                else
+                                        TCOD_console_print(game->right.c, 1, i, "%c   %s %s", slot_to_letter(j), a_an(o->fullname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                TCOD_console_put_char_ex(game->right.c, 3, i, '*', TCOD_light_green, TCOD_black);
+                        } else {
+                                if(is_pair(o))
+                                        TCOD_console_print(game->right.c, 1, i, "%c   a pair of %s", slot_to_letter(j), o->fullname);
+                                else
+                                        TCOD_console_print(game->right.c, 1, i, "%c   %s", slot_to_letter(j), a_an(o->fullname));
+                                TCOD_console_put_char_ex(game->right.c, 3, i, '-', TCOD_white, TCOD_black);
+                        }
+                        i++;
+                }
+        }
+}
+
 void update_player()
 {
         gtmapaddch(player->oldy, player->oldx, cc(player->oldy, player->oldx), mapchars[(int) ct(player->oldy, player->oldx)]);
@@ -614,7 +699,7 @@ void update_screen()
 
         draw_map();
         draw_left();
-        //draw_right();
+        draw_right();
 
         TCOD_console_blit(game->map.c, 0, 0, game->map.w, game->map.h, NULL, game->map.x, game->map.y, 1.0, 1.0);
         TCOD_console_blit(game->messages.c, 0, 0, game->messages.w, game->messages.h, NULL, game->messages.x, game->messages.y, 1.0, 1.0);

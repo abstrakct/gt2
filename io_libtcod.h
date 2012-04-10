@@ -24,6 +24,7 @@ void delete_last_message();
 
 bool blocks_light(void *l, int y, int x);
 void fov_initmap(void *l);
+void fov_updatemap(void *level);
 
 int get_command();
 void init_commands();
@@ -57,6 +58,8 @@ extern  gtcolor_t colors[];
 #define C_WHITE_CYAN            14
 #define C_WHITE_WHITE           15
 #define C_BLACK_DARKERGREY      16
+#define C_BLACK_GOLD            17
+#define C_BLACK_AMBER           18
 
 
 #define C_RED_BLACK             8
@@ -116,7 +119,7 @@ extern  gtcolor_t colors[];
 #define COLOR_DUNGEON  colors[C_BLACK_YELLOW]
 #define COLOR_MOUNTAIN colors[C_BLACK_RED]
 #define COLOR_LAKE     colors[C_BLACK_BLUE]
-#define COLOR_PLAYER   colors[C_WHITE_BLACK]
+#define COLOR_PLAYER   colors[C_BLACK_BLUE]
 
 #define COLOR_YELLOW   colors[C_BLACK_YELLOW]
 #define COLOR_BLUE     colors[C_BLACK_BLUE]
@@ -131,6 +134,8 @@ extern  gtcolor_t colors[];
 #define COLOR_NORMAL   colors[C_BLACK_WHITE]
 #define COLOR_INFO     colors[C_BLACK_YELLOW]
 #define COLOR_VISIBLE  colors[C_BLACK_YELLOW]
+#define COLOR_GOLD     colors[C_BLACK_GOLD]
+#define COLOR_LIT_WALL colors[C_BLACK_AMBER]
 
 #define COLOR_SHADE    colors[C_BLACK_DARKERGREY]
 #define COLOR_LIGHT    colors[C_BLACK_YELLOW]

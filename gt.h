@@ -63,7 +63,6 @@ typedef struct {                              // game_t
 #endif
 } game_t;
 
-
 typedef struct {                              // message_t
         gtcolor_t color;
         char text[250];

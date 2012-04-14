@@ -51,6 +51,8 @@ typedef struct { // uattr_t
 #define SLOT_AMULET        5
 #define SLOT_LEFTBRACELET  6
 #define SLOT_RIGHTBRACELET 7
+#define SLOT_SHIELD        8
+
 #define pw_headgear      player->w[SLOT_HEAD]
 #define pw_body          player->w[SLOT_BODY]
 #define pw_gloves        player->w[SLOT_GLOVES]
@@ -59,8 +61,9 @@ typedef struct { // uattr_t
 #define pw_amulet        player->w[SLOT_AMULET]
 #define pw_leftbracelet  player->w[SLOT_LEFTBRACELET]
 #define pw_rightbracelet player->w[SLOT_RIGHTBRACELET]
+#define pw_shield        player->w[SLOT_SHIELD]
 
-#define WEAR_SLOTS             8
+#define WEAR_SLOTS       10
 
 #define pr_life      player->prot[0]
 #define pr_fire      player->prot[1]

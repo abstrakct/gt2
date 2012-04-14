@@ -48,7 +48,7 @@ struct object {
 
 typedef struct object obj_t;
 
-typedef struct {
+typedef struct {  // inv_t
         short num_used;
         int   gold;
         obj_t *object[52];
@@ -223,6 +223,7 @@ void   quaff(void *a, obj_t *o);
 
 inv_t *init_inventory();
 void   spawn_golds(int num, int max, void *p);
+void   spawn_gold_with_maxtotal(int maxtotal, void *p);
 
 void   init_objects();
 

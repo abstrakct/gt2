@@ -801,3 +801,4 @@ int parse_data_files(int option)
 
         return ret;
 }
+// vim: fdm=syntax guifont=Terminus\ 8

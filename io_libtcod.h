@@ -38,7 +38,7 @@ extern  gtcolor_t colors[];
 
 #define MESSAGE_LINES   5
 #define COLS  119                          // x
-#define ROWS  (45 + MESSAGE_LINES)         // y
+#define ROWS  (65 + MESSAGE_LINES)         // y
 
 // Color definitions
 #define C_BLACK_BLACK           0

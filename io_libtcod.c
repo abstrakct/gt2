@@ -60,14 +60,13 @@ gtcolor_t colors[] = {
         { RGB_AMBER, RGB_BLACK },
 };
 
-
 extern int maxmess;
 
 int numcommands;
 cmd_t *curcommands;
 
 /*           keycode         char pressed lalt lctrl ralt rctrl shift */
-cmd_t outsidecommands[] = {
+cmd_t normalcommands[] = {
         { { TCODK_DOWN,         0,   1,     0,   0,   0,    0,    0 }, CMD_DOWN,        "Move down" },
         { { TCODK_CHAR,       'j',   1,     0,   0,   0,    0,    0 }, CMD_DOWN,        "Move down" },
         { { TCODK_UP,           0,   1,     0,   0,   0,    0,    0 }, CMD_UP,          "Move up" },
@@ -87,6 +86,7 @@ cmd_t outsidecommands[] = {
         { { TCODK_CHAR,       '<',   1,     0,   0,   0,    0,    0 }, CMD_ASCEND,      "Go up stairs" },
         { { TCODK_CHAR,       '>',   1,     0,   0,   0,    0,    1 }, CMD_DESCEND,     "Go down stairs" },
         { { TCODK_CHAR,       'd',   0,     0,   0,   0,    0,    0 }, CMD_DROP,        "Drop an object" },
+        { { TCODK_CHAR,       'q',   0,     0,   0,   0,    0,    0 }, CMD_QUAFF,       "Quaff a potion" },
         //{ { TCODK_CHAR,       'i', 1, 0, 0, 0, 0, 0 }, CMD_INVENTORY,   "Show inventory" },
         //{ TCODK_F5,  CMD_SAVE,        "Save" },
         //{ TCODK_F6,  CMD_LOAD,        "Load" },
@@ -155,8 +155,8 @@ int get_command()
 
 void init_commands()
 {
-        curcommands = outsidecommands;
-        numcommands = (sizeof(outsidecommands) / sizeof(cmd_t));
+        curcommands = normalcommands;
+        numcommands = (sizeof(normalcommands) / sizeof(cmd_t));
 }
 
 char ask_char(char *question)

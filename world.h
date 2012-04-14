@@ -39,20 +39,20 @@
 #define ct(a,b) world->curlevel->c[a][b].type
 #define cv(a,b) world->curlevel->c[a][b].visible
 
-typedef struct {
+typedef struct {   // city_t
         char  name[50];
         short x1, y1, x2, y2;     // start/end coordinates
         short alignment;          // not sure what this is for.... good/evil alignment??
         short houses;
 } city_t;
 
-typedef struct {
+typedef struct {   // forest_t
         char  name[50];
         short x1, y1, x2, y2;
         short flags;              // not sure yet what this is for...
 } forest_t;
 
-typedef struct {                 // cell_t
+typedef struct {   // cell_t
         char       type;
         int        flags;
         short      desty, destx;       // for stairs and portals; destination y,x
@@ -87,7 +87,7 @@ struct roomdef {
         map_ptr map;
 };
 
-typedef struct {
+typedef struct {   // world_t
         level_t  *out;               // shall point to dng[0]
         level_t  *dng;
         level_t  *curlevel;          // needed?
@@ -100,7 +100,7 @@ typedef struct {
         short    forests, cforest;
 } world_t;
 
-typedef struct {
+typedef struct {   // roomdef_t
         int    y, x;
         cell_t **c;
 } roomdef_t;

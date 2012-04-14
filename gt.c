@@ -133,7 +133,7 @@ void init_player()
         ppy = ply - game->map.h / 2;
         game->mapcx = game->map.w - 2;
         game->mapcy = game->map.h - 2;
-        player->viewradius = 6;
+        player->viewradius = 12;
         player->level = 1;
 
         player->attr.str  = dice(3, 6, 0);
@@ -606,9 +606,9 @@ bool do_action(int action)
                                 plx = tmpx;
 
                                 if(world->curlevel->type == 1)
-                                        player->viewradius = 6;
+                                        player->viewradius = 12;
                                 else
-                                        player->viewradius = 6;
+                                        player->viewradius = 12;
                         }
                         player->ticks -= TICKS_MOVEMENT;
                         break;
@@ -624,7 +624,7 @@ bool do_action(int action)
 
                         if(game->currentlevel == 0) {
                                 game->context = CONTEXT_OUTSIDE;
-                                player->viewradius = 45;
+                                player->viewradius = 24;
                         }
                         player->ticks -= TICKS_MOVEMENT;
                         break;
@@ -633,7 +633,7 @@ bool do_action(int action)
                         if(o)
                                 wieldwear(player, o);
                         else
-                                gtprintf("HUH????????????????????");
+                                gtprintf("You don't have that!");
                         player->ticks -= TICKS_WIELDWEAR;
                         break;
                 case ACTION_UNWIELDWEAR:
@@ -641,7 +641,7 @@ bool do_action(int action)
                         if(o)
                                 unwieldwear(player, o);
                         else
-                                gtprintf("HUH????????????????????");
+                                gtprintf("You don't have that!");
 
                         player->ticks -= TICKS_WIELDWEAR;
                         break;
@@ -650,15 +650,15 @@ bool do_action(int action)
                         if(o)
                                 quaff(player, o);
                         else
-                                gtprintf("Huh? I don't understand.");
-                        player->ticks -= TICKS_MOVEMENT;
+                                gtprintf("You don't have that!");
+                        player->ticks -= TICKS_WIELDWEAR;
                         break;
                 case ACTION_DROP:
                         o = (obj_t *) actiondata;
                         if(o)
                                 drop(player, o);
                         else
-                                gtprintf("Drop what?");
+                                gtprintf("You don't have that!");
                         player->ticks -= TICKS_WIELDWEAR;
                         break;  
                 case ACTION_FIX_VIEW:

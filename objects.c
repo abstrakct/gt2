@@ -233,7 +233,7 @@ void generate_fullname(obj_t *o)
                                 case 2: sprintf(n, "faintly glowing "); break;
                                 case 3: sprintf(n, "shimmering "); break;
                                 case 4: sprintf(n, "flickering "); break;
-                                case 5: break;
+                                case 5: o->color = COLOR_WHITE; break;
                         }
 
                         strcat(n, o->basename);
@@ -287,7 +287,7 @@ void generate_fullname(obj_t *o)
                                 case 2: sprintf(n, "faintly glowing "); break;
                                 case 3: sprintf(n, "shimmering "); break;
                                 case 4: sprintf(n, "flickering "); break;
-                                case 5: break;
+                                case 5: o->color = COLOR_WHITE; break;
                         }
                 }
                 strcat(n, o->basename); 

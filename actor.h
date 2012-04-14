@@ -96,6 +96,9 @@ typedef struct actorstruct {                               // actor_t
         char         wvfactor;
         short        worldview;
         short        kills;
+#ifdef GT_USE_LIBTCOD
+        TCOD_path_t  path;
+#endif
 
         /* monster specific stuff */
         void               (*ai)(struct actorstruct *);    // artificial intelligence handler!!

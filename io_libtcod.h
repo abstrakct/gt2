@@ -25,6 +25,7 @@ void delete_last_message();
 bool blocks_light(void *l, int y, int x);
 void fov_initmap(void *l);
 void fov_updatemap(void *level);
+void init_pathfinding(void *a);
 
 int get_command();
 void init_commands();

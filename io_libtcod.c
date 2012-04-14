@@ -159,6 +159,14 @@ void init_commands()
         numcommands = (sizeof(normalcommands) / sizeof(cmd_t));
 }
 
+void init_pathfinding(void *a)
+{
+        actor_t *actor;
+
+        actor = (actor_t*)a;
+        actor->path = TCOD_path_new_using_map(world->curlevel->map, 1.41f);
+}
+
 char ask_char(char *question)
 {
         gtkey key;

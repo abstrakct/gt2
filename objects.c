@@ -227,12 +227,13 @@ void generate_fullname(obj_t *o)
 
         if(o->type == OT_WEAPON) {
                 if(!is_identified(o) && (o->attackmod || o->damagemod || (o->damagemod && o->attackmod))) {
-                        i = dice(1, 4, 0);
+                        i = dice(1, 5, 0);
                         switch(i) {
                                 case 1: sprintf(n, "lightly sparkling "); break;
                                 case 2: sprintf(n, "faintly glowing "); break;
                                 case 3: sprintf(n, "shimmering "); break;
                                 case 4: sprintf(n, "flickering "); break;
+                                case 5: break;
                         }
 
                         strcat(n, o->basename);
@@ -280,12 +281,13 @@ void generate_fullname(obj_t *o)
                         sprintf(n,  "%d ", o->attackmod);
 
                 if(!is_identified(o) && o->attackmod) {
-                        i = dice(1, 4, 0);
+                        i = dice(1, 5, 0);
                         switch(i) {
                                 case 1: sprintf(n, "lightly sparkling "); break;
                                 case 2: sprintf(n, "faintly glowing "); break;
                                 case 3: sprintf(n, "shimmering "); break;
                                 case 4: sprintf(n, "flickering "); break;
+                                case 5: break;
                         }
                 }
                 strcat(n, o->basename); 
@@ -837,11 +839,11 @@ void wield(void *a, obj_t *o)
         actor = (actor_t *) a;
         player->weapon = o;
         apply_effects(actor, o);
-        if((actor == player) && !hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
+        if((actor == player) && !hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {             // TODO: Fix so taht identifying weapons/armor is based on e.g. experience with said type of weapon.
                 setbit(o->flags, OF_IDENTIFIED);
                 do_identify_all_of_type(o);
                 generate_fullname(o);
-                gtprintfc(COLOR_INFO, "You figure out that this is %s!", a_an(o->fullname));
+                gtprintfc(COLOR_INFO, "You believe this is %s!", a_an(o->fullname));
         }
 }
 
@@ -992,6 +994,9 @@ void drop(void *actor, obj_t *o)
         actor_t *a;
 
         a = (actor_t *) actor;
+
+        if(a == player && is_worn(o))
+                unwieldwear(a, o);
 
         place_object_in_cell(o, &world->curlevel->c[a->y][a->x]);
         setbit(o->flags, OF_DONOTAP);   // Don't autopickup a dropped item. TODO: Make this configurable?!

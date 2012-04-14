@@ -165,14 +165,13 @@ char ask_char(char *question)
 
         gtprintf(question);
         update_screen();
-        key = gtgetch();
 
-        //TCOD_console_flush();
-        //key = TCOD_console_wait_for_keypress(true);
+        TCOD_console_flush();
+        key = TCOD_console_wait_for_keypress(true);
         //key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
 
-        //if(key.shift && key.c >= 'a' && key.c <= 'z')
-        //        key.c += 'A' - 'a';
+        if(key.shift && key.c >= 'a' && key.c <= 'z')
+                key.c += 'A' - 'a';
 
         return key.c;
 }

@@ -85,7 +85,7 @@ cmd_t outsidecommands[] = {
         { { TCODK_CHAR,       ',',   1,     0,   0,   0,    0,    0 }, CMD_PICKUP,      "Pick up something" },
         { { TCODK_CHAR,       '.',   1,     0,   0,   0,    0,    0 }, CMD_REST,        "Rest one turn" },
         { { TCODK_CHAR,       '<',   1,     0,   0,   0,    0,    0 }, CMD_ASCEND,      "Go up stairs" },
-        { { TCODK_CHAR,       '>',   1,     0,   0,   0,    0,    0 }, CMD_DESCEND,     "Go down stairs" },
+        { { TCODK_CHAR,       '>',   1,     0,   0,   0,    0,    1 }, CMD_DESCEND,     "Go down stairs" },
         { { TCODK_CHAR,       'd',   0,     0,   0,   0,    0,    0 }, CMD_DROP,        "Drop an object" },
         //{ { TCODK_CHAR,       'i', 1, 0, 0, 0, 0, 0 }, CMD_INVENTORY,   "Show inventory" },
         //{ TCODK_F5,  CMD_SAVE,        "Save" },
@@ -102,10 +102,10 @@ cmd_t outsidecommands[] = {
         { { TCODK_HOME,        0,  1, 0, 0, 0, 0, 0 }, CMD_LONGLEFT,    "" },
         { { TCODK_END,         0,  1, 0, 0, 0, 0, 0 }, CMD_LONGRIGHT,   "" },
 
-        /*{ { TCODK_CHAR,       'K', 1, 0, 0, 0, 0, 0 }, CMD_LONGUP,      "" },
-        { { TCODK_CHAR,       'J', 1, 0, 0, 0, 0, 0 }, CMD_LONGDOWN,    "" },
-        { { TCODK_CHAR,       'H', 1, 0, 0, 0, 0, 0 }, CMD_LONGLEFT,    "" },
-        { { TCODK_CHAR,       'L', 1, 0, 0, 0, 0, 0 }, CMD_LONGRIGHT,   "" },*/
+        { { TCODK_CHAR,       'K', 1, 0, 0, 0, 0, 1 }, CMD_LONGUP,      "" },
+        { { TCODK_CHAR,       'J', 1, 0, 0, 0, 0, 1 }, CMD_LONGDOWN,    "" },
+        { { TCODK_CHAR,       'H', 1, 0, 0, 0, 0, 1 }, CMD_LONGLEFT,    "" },
+        { { TCODK_CHAR,       'L', 1, 0, 0, 0, 0, 1 }, CMD_LONGRIGHT,   "" },
         { { TCODK_CHAR,       'v', 1, 0, 0, 0, 0, 0 }, CMD_TOGGLEFOV,   "Toggle FOV" },
         //{ KEY_F(4),  CMD_DUMPOBJECTS, "Dump objects" },
         { { TCODK_CHAR,       'o', 1, 0, 0, 0, 0, 0 }, CMD_DUMPOBJECTS, "" },
@@ -161,12 +161,20 @@ void init_commands()
 
 char ask_char(char *question)
 {
-        gtkey c;
+        gtkey key;
 
         gtprintf(question);
         update_screen();
-        c = gtgetch();
-        return c.c;
+        key = gtgetch();
+
+        //TCOD_console_flush();
+        //key = TCOD_console_wait_for_keypress(true);
+        //key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+
+        //if(key.shift && key.c >= 'a' && key.c <= 'z')
+        //        key.c += 'A' - 'a';
+
+        return key.c;
 }
 
 char ask_for_hand()
@@ -203,10 +211,14 @@ bool yesno(char *fmt, ...)
 
         update_screen();
         c = gtgetch();
-        if(c.c == 'y' || c.c == 'Y')
-                return true;
-        if(c.c == 'n' || c.c == 'N')
-                return false;
+        while(1) { 
+                if(c.c == 'y' || c.c == 'Y')
+                        return true;
+                if(c.c == 'n' || c.c == 'N')
+                        return false;
+                
+                c = gtgetch();
+        }
 
         return false;
 }
@@ -724,8 +736,12 @@ gtkey gtgetch()
 
         TCOD_console_flush();
         key = TCOD_console_wait_for_keypress(false);
-        
         //key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+
+        if(key.shift && key.c >= 'a' && key.c <= 'z')
+                key.c += 'A' - 'a';
+        if(key.shift && key.c == '<')
+                key.c = '>';
 
         return key;
 }

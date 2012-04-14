@@ -223,45 +223,71 @@ void get_random_unused_material(short type)
 void generate_fullname(obj_t *o)
 {
         char n[200];
+        int i;
 
         if(o->type == OT_WEAPON) {
-                if(!o->attackmod && !o->damagemod) {
+                if(!is_identified(o) && (o->attackmod || o->damagemod || (o->damagemod && o->attackmod))) {
+                        i = dice(1, 4, 0);
+                        switch(i) {
+                                case 1: sprintf(n, "lightly sparkling "); break;
+                                case 2: sprintf(n, "faintly glowing "); break;
+                                case 3: sprintf(n, "shimmering "); break;
+                                case 4: sprintf(n, "flickering "); break;
+                        }
+
                         strcat(n, o->basename);
-                }
-                if(o->attackmod && !o->damagemod) {
-                        if(o->attackmod > 0)
-                                sprintf(n, "+%d,+0", o->attackmod);
-                        if(o->attackmod < 0)
-                                sprintf(n,  "%d,+0", o->attackmod);
-                        strcat(n, " ");
-                        strcat(n, o->basename);
-                }
-                if(!o->attackmod && o->damagemod) {
-                        if(o->damagemod > 0)
-                                sprintf(n, "0,+%d", o->damagemod);
-                        if(o->damagemod < 0)
-                                sprintf(n, "0,%d", o->damagemod);
-                        strcat(n, " ");
-                        strcat(n, o->basename);
-                }
-                if(o->attackmod && o->damagemod) {
-                        if(o->attackmod > 0)
-                                sprintf(n, "+%d", o->attackmod);
-                        if(o->attackmod < 0)
-                                sprintf(n,  "%d", o->attackmod);
-                        if(o->damagemod > 0)
-                                sprintf(n, "%s,+%d", n, o->damagemod);
-                        if(o->damagemod < 0)
-                                sprintf(n, "%s,%d", n, o->damagemod);
-                        strcat(n, " ");
-                        strcat(n, o->basename);
+                } else {
+                        if(!o->attackmod && !o->damagemod) {
+                                strcat(n, o->basename);
+                        }
+
+                        if(o->attackmod && !o->damagemod) {
+                                if(is_identified(o)) {
+                                        if(o->attackmod > 0)
+                                                sprintf(n, "+%d,+0", o->attackmod);
+                                        if(o->attackmod < 0)
+                                                sprintf(n,  "%d,+0", o->attackmod);
+                                } else {
+                                }
+                                strcat(n, " ");
+                                strcat(n, o->basename);
+                        }
+                        if(is_identified(o) && !o->attackmod && o->damagemod) {
+                                if(o->damagemod > 0)
+                                        sprintf(n, "0,+%d", o->damagemod);
+                                if(o->damagemod < 0)
+                                        sprintf(n, "0,%d", o->damagemod);
+                                strcat(n, " ");
+                                strcat(n, o->basename);
+                        }
+                        if(is_identified(o) && o->attackmod && o->damagemod) {
+                                if(o->attackmod > 0)
+                                        sprintf(n, "+%d", o->attackmod);
+                                if(o->attackmod < 0)
+                                        sprintf(n,  "%d", o->attackmod);
+                                if(o->damagemod > 0)
+                                        sprintf(n, "%s,+%d", n, o->damagemod);
+                                if(o->damagemod < 0)
+                                        sprintf(n, "%s,%d", n, o->damagemod);
+                                strcat(n, " ");
+                                strcat(n, o->basename);
+                        }
                 }
         } else if(o->type == OT_ARMOR) {
-                if(o->attackmod > 0)
+                if(is_identified(o) && o->attackmod > 0)
                         sprintf(n, "+%d ", o->attackmod);
-                if(o->attackmod < 0)
+                if(is_identified(o) && o->attackmod < 0)
                         sprintf(n,  "%d ", o->attackmod);
 
+                if(!is_identified(o) && o->attackmod) {
+                        i = dice(1, 4, 0);
+                        switch(i) {
+                                case 1: sprintf(n, "lightly sparkling "); break;
+                                case 2: sprintf(n, "faintly glowing "); break;
+                                case 3: sprintf(n, "shimmering "); break;
+                                case 4: sprintf(n, "flickering "); break;
+                        }
+                }
                 strcat(n, o->basename); 
         } else if(o->type == OT_BRACELET) {
                 if(is_identified(o) && is_id_mod(o)) {
@@ -318,9 +344,9 @@ bool place_object_at(obj_t *obj, int y, int x, void *p)
         return false;
 }
 
-obj_t *spawn_object(int n, void *level)
+
+void add_attackmod(obj_t *new, void *level)
 {
-        obj_t *new;
         level_t *l;
         int lev;
 
@@ -329,6 +355,111 @@ obj_t *spawn_object(int n, void *level)
                 lev = l->level;
         else
                 lev = 1;
+
+        if(!is_unique(new) && (is_weapon(new) || is_armor(new) || is_bracelet(new))) {
+                if(new->type == OT_BRACELET)
+                        while(!new->attackmod)
+                                new->attackmod = ri(-1, 1);
+
+                if(perc(50+(player->level*2))) {
+                        if(perc(40)) {                // a bracelet must be at least +/- 1 (or 0 for malfunctioning bracelets!)
+                                if(perc(66))
+                                        new->attackmod = ri(0, 1);
+                                else
+                                        new->attackmod = ri(-1, 0);
+                        }
+                        if(perc(30 + (lev*3)) && !new->attackmod) {
+                                if(perc(66))
+                                        new->attackmod = ri(1, 2);
+                                else
+                                        new->attackmod = ri(-2, -1);
+                        }
+                        if(perc(20 + (lev*3)) && !new->attackmod) {
+                                if(perc(66))
+                                        new->attackmod = ri(1, 3);
+                                else
+                                        new->attackmod = ri(-3, -1);
+                        }
+                        if(perc(10 + (lev*3)) && !new->attackmod) {
+                                if(perc(50 + (lev*2))) {
+                                        if(perc(66))
+                                                new->attackmod = ri(1, 4);
+                                        else
+                                                new->attackmod = ri(-4, -1);
+                                } else {
+                                        if(perc(66))
+                                                new->attackmod = ri(1, 5);
+                                        else
+                                                new->attackmod = ri(-5, -1);
+                                }
+                        }
+                }
+        }
+
+        if(new->attackmod && (is_weapon(new) || is_armor(new))) {
+                clearbit(new->flags, OF_IDENTIFIED);
+                setbit(new->flags, OF_OBVIOUS);                    // TODO: change to some kind of ID system for weapons! (and armor?)
+                new->color = COLOR_BLUE;
+        }
+}
+
+void add_damagemod(obj_t *new, void *level)
+{
+        level_t *l;
+        int lev;
+
+        l = (level_t *) level;
+        if(l)
+                lev = l->level;
+        else
+                lev = 1;
+
+        if(!is_unique(new) && is_weapon(new)) {
+                if(perc(60+(player->level*2))) {
+                        if(perc(40)) {
+                                if(perc(66))
+                                        new->damagemod = ri(0, 1);
+                                else
+                                        new->damagemod = ri(-1, 0);
+                        }
+                        if(perc(30 + (lev*3)) && !new->damagemod) {
+                                if(perc(66))
+                                        new->damagemod = ri(1, 2);
+                                else
+                                        new->damagemod = ri(-2, -1);
+                        }
+                        if(perc(20 + (lev*3)) && !new->damagemod) {
+                                if(perc(66))
+                                        new->damagemod = ri(1, 3);
+                                else
+                                        new->damagemod = ri(-3, -1);
+                        }
+                        if(perc(10 + (lev*3)) && !new->damagemod) {
+                                if(perc(50 + (lev*2))) {
+                                        if(perc(66))
+                                                new->damagemod = ri(1, 4);
+                                        else
+                                                new->damagemod = ri(-4, -1);
+                                } else {
+                                        if(perc(66))
+                                                new->damagemod = ri(1, 5);
+                                        else
+                                                new->damagemod = ri(-5, -1);
+                                }
+                        }
+                }
+        }
+
+        if(new->damagemod && is_weapon(new)) {
+                clearbit(new->flags, OF_IDENTIFIED);
+                setbit(new->flags, OF_OBVIOUS);
+                new->color = COLOR_BLUE;
+        }
+}
+
+obj_t *spawn_object(int n, void *level)
+{
+        obj_t *new;
 
         new = gtmalloc(sizeof(obj_t));
         if(!new)
@@ -340,85 +471,8 @@ obj_t *spawn_object(int n, void *level)
         new->oid = oid_counter;
 
         // maybe this object is magical?
-        // TODO: move this to separate function(s)!!!!
-
-        if(!is_unique(new) && (is_weapon(new) || is_armor(new) || is_bracelet(new))) {
-                if(new->type == OT_BRACELET)
-                        while(!new->attackmod)
-                                new->attackmod = ri(-1, 1);
-
-                if(perc(50+(player->level*2))) {
-                        if(perc(40)) {                // a bracelet must be at least +/- 1 (or 0 for malfunctioning bracelets!)
-                                if(perc(66))
-                                        new->attackmod = ri(0, 1);
-                                else
-                                        new->attackmod = ri(-1, 0);
-                        }
-                        if(perc(30 + (lev*3)) && !new->attackmod) {
-                                if(perc(66))
-                                        new->attackmod = ri(1, 2);
-                                else
-                                        new->attackmod = ri(-2, 1);
-                        }
-                        if(perc(20 + (lev*3)) && !new->attackmod) {
-                                if(perc(66))
-                                        new->attackmod = ri(1, 3);
-                                else
-                                        new->attackmod = ri(-3, 1);
-                        }
-                        if(perc(10 + (lev*3)) && !new->attackmod) {
-                                if(perc(50 + (lev*2))) {
-                                        if(perc(66))
-                                                new->attackmod = ri(1, 4);
-                                        else
-                                                new->attackmod = ri(-4, 1);
-                                } else {
-                                        if(perc(66))
-                                                new->attackmod = ri(1, 5);
-                                        else
-                                                new->attackmod = ri(-5, 1);
-                                }
-                        }
-                }
-
-        }
-
-        if(!is_unique(new) && is_weapon(new)) {
-                if(perc(60+(player->level*2))) {
-                        if(perc(40)) {
-                                if(perc(66))
-                                        new->damagemod = ri(0, 1);
-                                else
-                                        new->damagemod = ri(-1, 0);
-                        }
-                        if(perc(30 + (lev*3)) && !new->damagemod) {
-                                if(perc(66))
-                                        new->damagemod = ri(0, 2);
-                                else
-                                        new->damagemod = ri(-2, 0);
-                        }
-                        if(perc(20 + (lev*3)) && !new->damagemod) {
-                                if(perc(66))
-                                        new->damagemod = ri(0, 3);
-                                else
-                                        new->damagemod = ri(-3, 0);
-                        }
-                        if(perc(10 + (lev*3)) && !new->damagemod) {
-                                if(perc(50 + (lev*2))) {
-                                        if(perc(66))
-                                                new->damagemod = ri(0, 4);
-                                        else
-                                                new->damagemod = ri(-4, 0);
-                                } else {
-                                        if(perc(66))
-                                                new->damagemod = ri(0, 5);
-                                        else
-                                                new->damagemod = ri(-5, 0);
-                                }
-                        }
-                }
-
-        }
+        add_attackmod(new, level);
+        add_damagemod(new, level);
 
         generate_fullname(new);  // TODO displayname vs fullname etc.
         add_to_master_object_list(new);
@@ -429,14 +483,6 @@ obj_t *spawn_object(int n, void *level)
 obj_t *spawn_object_with_rarity(int rarity, void *level)
 {
         obj_t *new;
-        level_t *l;
-        int lev;
-
-        l = (level_t *) level;
-        if(l)
-                lev = l->level;
-        else
-                lev = 1;
 
         new = gtmalloc(sizeof(obj_t));
         if(!new)
@@ -448,85 +494,8 @@ obj_t *spawn_object_with_rarity(int rarity, void *level)
         new->oid = oid_counter;
 
         // maybe this object is magical?
-        // TODO: move this to separate function(s)!!!!
-
-        if(!is_unique(new) && (is_weapon(new) || is_armor(new) || is_bracelet(new))) {
-                if(new->type == OT_BRACELET)
-                        while(!new->attackmod)
-                                new->attackmod = ri(-1, 1);
-
-                if(perc(50+(player->level*2))) {
-                        if(perc(40)) {                // a bracelet must be at least +/- 1 (or 0 for malfunctioning bracelets!)
-                                if(perc(66))
-                                        new->attackmod = ri(0, 1);
-                                else
-                                        new->attackmod = ri(-1, 0);
-                        }
-                        if(perc(30 + (lev*3)) && !new->attackmod) {
-                                if(perc(66))
-                                        new->attackmod = ri(1, 2);
-                                else
-                                        new->attackmod = ri(-2, 1);
-                        }
-                        if(perc(20 + (lev*3)) && !new->attackmod) {
-                                if(perc(66))
-                                        new->attackmod = ri(1, 3);
-                                else
-                                        new->attackmod = ri(-3, 1);
-                        }
-                        if(perc(10 + (lev*3)) && !new->attackmod) {
-                                if(perc(50 + (lev*2))) {
-                                        if(perc(66))
-                                                new->attackmod = ri(1, 4);
-                                        else
-                                                new->attackmod = ri(-4, 1);
-                                } else {
-                                        if(perc(66))
-                                                new->attackmod = ri(1, 5);
-                                        else
-                                                new->attackmod = ri(-5, 1);
-                                }
-                        }
-                }
-
-        }
-
-        if(!is_unique(new) && is_weapon(new)) {
-                if(perc(60+(player->level*2))) {
-                        if(perc(40)) {
-                                if(perc(66))
-                                        new->damagemod = ri(0, 1);
-                                else
-                                        new->damagemod = ri(-1, 0);
-                        }
-                        if(perc(30 + (lev*3)) && !new->damagemod) {
-                                if(perc(66))
-                                        new->damagemod = ri(0, 2);
-                                else
-                                        new->damagemod = ri(-2, 0);
-                        }
-                        if(perc(20 + (lev*3)) && !new->damagemod) {
-                                if(perc(66))
-                                        new->damagemod = ri(0, 3);
-                                else
-                                        new->damagemod = ri(-3, 0);
-                        }
-                        if(perc(10 + (lev*3)) && !new->damagemod) {
-                                if(perc(50 + (lev*2))) {
-                                        if(perc(66))
-                                                new->damagemod = ri(0, 4);
-                                        else
-                                                new->damagemod = ri(-4, 0);
-                                } else {
-                                        if(perc(66))
-                                                new->damagemod = ri(0, 5);
-                                        else
-                                                new->damagemod = ri(-5, 0);
-                                }
-                        }
-                }
-
-        }
+        add_attackmod(new, level);
+        add_damagemod(new, level);
 
         generate_fullname(new);  // TODO displayname vs fullname etc.
         add_to_master_object_list(new);
@@ -684,15 +653,17 @@ void spawn_golds(int num, int max, void *p)
 }
 
 // identify all objects which are the same material & type as o
-void do_identify_all(obj_t *o)
+void do_identify_all_of_type(obj_t *o)
 {
         int i;
 
-        for(i = 0; i < 2000; i++) {
-                if(game->objects[i]) {
-                        if((game->objects[i]->type == o->type) && (game->objects[i]->material == o->material)) {
-                                setbit(game->objects[i]->flags, OF_IDENTIFIED);
-                                generate_fullname(game->objects[i]);
+        if(!is_weapon(o) && !is_armor(o)) {
+                for(i = 0; i < 2000; i++) {
+                        if(game->objects[i]) {
+                                if((game->objects[i]->type == o->type) && (game->objects[i]->material == o->material)) {
+                                        setbit(game->objects[i]->flags, OF_IDENTIFIED);
+                                        generate_fullname(game->objects[i]);
+                                }
                         }
                 }
         }
@@ -734,7 +705,7 @@ void puton(void *a, int slot, obj_t *o)
                 if(!hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
                         setbit(o->flags, OF_IDENTIFIED);
                         setbit(o->flags, OF_ID_MOD);
-                        do_identify_all(o);
+                        do_identify_all_of_type(o);
                         generate_fullname(o);
                         gtprintfc(COLOR_INFO, "This is %s!", a_an(o->fullname));
                 }
@@ -753,7 +724,7 @@ void quaff(void *a, obj_t *o)
 
                 if((actor == player) && !hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
                         setbit(o->flags, OF_IDENTIFIED);
-                        do_identify_all(o);
+                        do_identify_all_of_type(o);
                         generate_fullname(o);
                         gtprintfc(COLOR_INFO, "That was %s!", a_an(o->fullname));
                 }
@@ -866,6 +837,12 @@ void wield(void *a, obj_t *o)
         actor = (actor_t *) a;
         player->weapon = o;
         apply_effects(actor, o);
+        if((actor == player) && !hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
+                setbit(o->flags, OF_IDENTIFIED);
+                do_identify_all_of_type(o);
+                generate_fullname(o);
+                gtprintfc(COLOR_INFO, "You figure out that this is %s!", a_an(o->fullname));
+        }
 }
 
 void wieldwear(void *a, obj_t *o)

@@ -879,9 +879,6 @@ void do_turn()
        // bool fullturn;
         int i, ret;
 
-        if(game->currentlevel)
-                queue(ACTION_MAKE_DISTANCEMAP);
-
         player->ticks += 1000;
         i = aq->num;
 
@@ -963,7 +960,9 @@ int main(int argc, char *argv[])
         initial_update_screen();
 
         do {
-                c = get_command();
+                c = 0;
+                while(!c)
+                        c = get_command();
 
                 mapchanged = false;
                 player->oldx = plx;

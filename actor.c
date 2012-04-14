@@ -21,9 +21,6 @@
 #include "gt.h"
 #include "utils.h"
 
-// TODO FIX!
-obj_t *objlet[52];    // 52 pointers to objects, a-z & A-Z
-
 
 //                            x   1   2   3   4   5   6   7   8  9 10 11 12 13 14 15 16 17 18 19 20
 //int strength_modifier[20] = { 0, -5, -4, -3, -3, -2, -2, -1, -1, 0, 0, 0, 0, 0, 1, 2, 2, 3, 3, 4, 5 };
@@ -50,18 +47,6 @@ int level_table[] = {
 
 
 // object-to-letter and vise versa 
-
-char get_first_free_letter()
-{
-        int i;
-
-        for(i = 0; i < 52; i++) {
-                if(!objlet[i])
-                        return(slot_to_letter(i));
-        }
-        
-        return 0;    // == no free slots!
-}
 
 char slot_to_letter(int i)
 {

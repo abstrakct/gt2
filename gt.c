@@ -114,6 +114,8 @@ void init_variables()
         game->createddungeons = 0;
         generate_savefilename(game->savefile);
         loadgame = false;
+        gtconfig.rows = ROWS;
+        gtconfig.cols = COLS;
 
         game->wizardmode = false;
         player = (actor_t *) gtmalloc(sizeof(actor_t));
@@ -902,7 +904,8 @@ int main(int argc, char *argv[])
 {
         int c, x, y, l, i, nx, ny;
         char messagefilename[50];
-        bool found;
+        char found;
+        bool done;
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
@@ -1098,55 +1101,63 @@ int main(int argc, char *argv[])
                         case CMD_REST:
                                 queue(ACTION_NOTHING);
                                 break;
-                        /*case CMD_PATHFINDER:
-                                pathfinder(world->curlevel, player->y, player->x, player->y + ri(-15,15), player->x + ri(-15,15));
-                                queue(ACTION_NOTHING);
-                                break;*/
                         case CMD_PATHFINDER:
                                 nx = plx; ny = ply;
 
                                 found = false;
+                                done  = false;
                                 while(!found) {
                                         player->goalx = ri(1, world->curlevel->xsize-1);
                                         player->goaly = ri(1, world->curlevel->ysize-1);
                                         if(ct(player->goaly, player->goalx) == DNG_FLOOR)
                                                 if(!hasbit(cf(player->goaly, player->goalx), CF_VISITED))
                                                         found = true;
+                                        if(check_if_all_explored(world->curlevel)) {
+                                                done = true;
+                                                break;
+                                        }
                                 }
                                 
-                                TCOD_path_compute(player->path, plx, ply, player->goalx, player->goaly);
-                                for(i = 0; i < TCOD_path_size(player->path); i++) {
-                                        TCOD_path_get(player->path, i, &x, &y);
-                                        //world->curlevel->c[y][x].backcolor = TCOD_light_blue;
-                                        // and let's move!
-                                        if(y > ny) { // moving downward
-                                                if(x > nx)
-                                                        queue(ACTION_PLAYER_MOVE_SE);
-                                                if(x < nx)
-                                                        queue(ACTION_PLAYER_MOVE_SW);
-                                                if(x == nx)
-                                                        queue(ACTION_PLAYER_MOVE_DOWN);
-                                        }
+                                if(done) {
+                                        gtprintf("You have explored the entire dungeon.");
+                                } else {
+                                        //update_path(player);
+                                        TCOD_path_compute(player->path, plx, ply, player->goalx, player->goaly);
+                                        //for(i = 0; i < TCOD_path_size(player->path); i++) {
+                                        while(!TCOD_path_is_empty(player->path)) {
+                                                //TCOD_path_get(player->path, i, &x, &y);
+                                                if(TCOD_path_walk(player->path, &x, &y, true)) {
+                                                        // let's move!
+                                                        if(y > ny) { // moving downward
+                                                                if(x > nx)
+                                                                        queue(ACTION_PLAYER_MOVE_SE);
+                                                                if(x < nx)
+                                                                        queue(ACTION_PLAYER_MOVE_SW);
+                                                                if(x == nx)
+                                                                        queue(ACTION_PLAYER_MOVE_DOWN);
+                                                        }
 
-                                        if(y < ny) {
-                                                if(x > nx)
-                                                        queue(ACTION_PLAYER_MOVE_NE);
-                                                if(x < nx)
-                                                        queue(ACTION_PLAYER_MOVE_NW);
-                                                if(x == nx)
-                                                        queue(ACTION_PLAYER_MOVE_UP);
-                                        }
+                                                        if(y < ny) {
+                                                                if(x > nx)
+                                                                        queue(ACTION_PLAYER_MOVE_NE);
+                                                                if(x < nx)
+                                                                        queue(ACTION_PLAYER_MOVE_NW);
+                                                                if(x == nx)
+                                                                        queue(ACTION_PLAYER_MOVE_UP);
+                                                        }
 
-                                        if(y == ny) {
-                                                if(x > nx)
-                                                        queue(ACTION_PLAYER_MOVE_RIGHT);
-                                                if(x < nx)
-                                                        queue(ACTION_PLAYER_MOVE_LEFT);
+                                                        if(y == ny) {
+                                                                if(x > nx)
+                                                                        queue(ACTION_PLAYER_MOVE_RIGHT);
+                                                                if(x < nx)
+                                                                        queue(ACTION_PLAYER_MOVE_LEFT);
+                                                        }
+                                                        nx = x; ny = y;
+                                                } else {
+                                                        gtprintf("Hm - you seem to be stuck!");
+                                                }
                                         }
-                                        nx = x; ny = y;
                                 }
-                                //queue(ACTION_NOTHING);
-                                //domonstermove = false;
                                 break;
                         default:
                                 queue(ACTION_NOTHING);

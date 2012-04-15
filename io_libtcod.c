@@ -135,6 +135,7 @@ int get_command()
 {
         int i;
         gtkey key;
+        bool b;
 
         TCOD_console_flush();
 
@@ -142,8 +143,11 @@ int get_command()
         if(key.vk == TCODK_NONE)
                 return 0;
 
-        if(key.vk == TCODK_ESCAPE)
-                return CMD_QUIT;       // easy exit even if C&C breaks down!
+        if(key.vk == TCODK_ESCAPE) {
+                b = yesno("Are you sure you want to quit?");
+                if(b)
+                        return CMD_QUIT;
+        }
 
         for(i=0; i<numcommands; i++) {
                 if(cmp_keystruct(curcommands[i].key, key))
@@ -260,16 +264,13 @@ void init_display()
 	screenwidth -= 6;
 	screenheight -= 48;
 
-	gtconfig.rows = ROWS;
-	gtconfig.cols = COLS;
-
 	if (fontsize < 1 || fontsize > 13) {
 		for (fontsize = 13; fontsize > 1 && (fontwidths[fontsize - 1] * gtconfig.cols / 16 >= screenwidth || fontheights[fontsize - 1] * gtconfig.rows / 16 >= screenheight); fontsize--);
 	}
 
         if(screenwidth <= 1024) {
         	sprintf(font, "fonts/ds.png");
-        	//gtconfig.rows *= 2;
+        	gtconfig.rows += 20;
         } else
                 sprintf(font, "fonts/df.png");
 

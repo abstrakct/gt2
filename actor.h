@@ -16,8 +16,6 @@
 
 #define MAX_SKILLS 10
 
-extern obj_t *objlet[52];    // 52 pointers to objects, a-z & A-Z
-
 typedef struct { // sattr_t
         signed char str;
         signed char phys;

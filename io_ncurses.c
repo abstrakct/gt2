@@ -410,6 +410,10 @@ void fov_initmap(level_t *l)
 {
 }
 
+void init_pathfinding(void *a)
+{
+}
+
 // The actual drawing on screen
 
 void draw_world()

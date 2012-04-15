@@ -32,6 +32,7 @@ void delete_last_message();
 
 bool blocks_light(int y, int x);
 void fov_initmap(level_t *l);
+void init_pathfinding(void *a);
 
 int get_command();
 void init_commands();

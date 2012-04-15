@@ -90,6 +90,33 @@ void clear_area(level_t *l, int y1, int x1, int y2, int x2)
         }
 }
 
+// rather useless actually, but we'll keep it for now.
+bool check_if_all_explored(level_t *l)
+{
+        int x, y;
+        bool result;
+        int floors, visited;
+
+        floors = visited = 0;
+        for(x = 0; x < l->xsize; x++) {
+                for(y = 0; y < l->ysize; y++) {
+                        if(ct(y, x) == DNG_FLOOR) {
+                                floors++;
+                                if(hasbit(cf(y, x), CF_VISITED))
+                                        visited++;
+                        }
+                }
+        }
+
+        if(floors == visited)
+                result = true;
+        else
+                result = false;
+
+        return result;
+}
+
+
 /*
  * this function cleans the dungeon for stuff made by the dungeon generator which shouldn't be there.
  */

@@ -124,6 +124,7 @@ bool monster_passable(level_t *l, int y, int x);
 void init_level(level_t *level);
 void set_level_visited(level_t *l);
 void pathfinder(level_t *l, int y, int x, int dy, int dx);
+bool check_if_all_explored(level_t *l);
 
 void addfloor(level_t *l, float y, float x);
 void addwall(level_t *l, int y, int x);

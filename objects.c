@@ -654,6 +654,29 @@ void spawn_golds(int num, int max, void *p)
 
 }
 
+/*
+ * Spawn a total of maxtotal gold on level p.
+ * The gold will be evenly/randomly distributed on the level.
+ */
+void spawn_gold_with_maxtotal(int maxtotal, void *p)
+{
+        int i, x, y, n;
+        level_t *l;
+
+        i = maxtotal;
+        l = (level_t *) p;
+        while(i) {
+                x = ri(1, l->xsize-1);
+                y = ri(1, l->ysize-1);
+                n = ri(1, l->level*10);
+                if(n > i)
+                        n = i;
+                if (spawn_gold_at(y, x, n, l)) {
+                        i -= n;
+                }
+        }
+}
+
 // identify all objects which are the same material & type as o
 void do_identify_all_of_type(obj_t *o)
 {
@@ -812,9 +835,7 @@ void wear(void *a, obj_t *o)
                                         puton(actor, SLOT_BODY, o);
                                 }
                         }
-                }
 
-                if(is_armor(o)) {
                         if(is_headgear(o)) {
                                 if(pw_headgear) {
                                         if(!yesno("Do you want to remove your %s", pw_headgear->fullname)) {
@@ -826,6 +847,48 @@ void wear(void *a, obj_t *o)
                                         }
                                 } else {
                                         puton(actor, SLOT_HEAD, o);
+                                }
+                        }
+
+                        if(is_footwear(o)) {
+                                if(pw_footwear) {
+                                        if(!yesno("Do you want to remove your %s", pw_footwear->fullname)) {
+                                                gtprintf("OK then.");
+                                                return;
+                                        } else {
+                                                unwear(actor, pw_footwear);
+                                                puton(actor, SLOT_FOOTWEAR, o);
+                                        }
+                                } else {
+                                        puton(actor, SLOT_FOOTWEAR, o);
+                                }
+                        }
+
+                        if(is_gloves(o)) {
+                                if(pw_gloves) {
+                                        if(!yesno("Do you want to remove your %s", pw_gloves->fullname)) {
+                                                gtprintf("OK then.");
+                                                return;
+                                        } else {
+                                                unwear(actor, pw_gloves);
+                                                puton(actor, SLOT_GLOVES, o);
+                                        }
+                                } else {
+                                        puton(actor, SLOT_GLOVES, o);
+                                }
+                        }
+
+                        if(is_shield(o)) {
+                                if(pw_shield) {
+                                        if(!yesno("Do you want to remove your %s", pw_shield->fullname)) {
+                                                gtprintf("OK then.");
+                                                return;
+                                        } else {
+                                                unwear(actor, pw_shield);
+                                                puton(actor, SLOT_SHIELD, o);
+                                        }
+                                } else {
+                                        puton(actor, SLOT_SHIELD, o);
                                 }
                         }
                 }

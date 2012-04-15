@@ -25,6 +25,7 @@ void delete_last_message();
 bool blocks_light(void *l, int y, int x);
 void fov_initmap(void *l);
 void fov_updatemap(void *level);
+void init_pathfinding(void *a);
 
 int get_command();
 void init_commands();
@@ -38,7 +39,7 @@ extern  gtcolor_t colors[];
 
 #define MESSAGE_LINES   5
 #define COLS  119                          // x
-#define ROWS  (45 + MESSAGE_LINES)         // y
+#define ROWS  (65 + MESSAGE_LINES)         // y
 
 // Color definitions
 #define C_BLACK_BLACK           0

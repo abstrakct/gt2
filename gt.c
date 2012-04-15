@@ -133,7 +133,7 @@ void init_player()
         ppy = ply - game->map.h / 2;
         game->mapcx = game->map.w - 2;
         game->mapcy = game->map.h - 2;
-        player->viewradius = 6;
+        player->viewradius = 12;
         player->level = 1;
 
         player->attr.str  = dice(3, 6, 0);
@@ -606,10 +606,11 @@ bool do_action(int action)
                                 plx = tmpx;
 
                                 if(world->curlevel->type == 1)
-                                        player->viewradius = 6;
+                                        player->viewradius = 12;
                                 else
-                                        player->viewradius = 6;
+                                        player->viewradius = 12;
                         }
+                        init_pathfinding(player);
                         player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_GO_UP_STAIRS:
@@ -624,8 +625,9 @@ bool do_action(int action)
 
                         if(game->currentlevel == 0) {
                                 game->context = CONTEXT_OUTSIDE;
-                                player->viewradius = 45;
+                                player->viewradius = 24;
                         }
+                        init_pathfinding(player);
                         player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_WIELDWEAR:
@@ -633,7 +635,7 @@ bool do_action(int action)
                         if(o)
                                 wieldwear(player, o);
                         else
-                                gtprintf("HUH????????????????????");
+                                gtprintf("You don't have that!");
                         player->ticks -= TICKS_WIELDWEAR;
                         break;
                 case ACTION_UNWIELDWEAR:
@@ -641,7 +643,7 @@ bool do_action(int action)
                         if(o)
                                 unwieldwear(player, o);
                         else
-                                gtprintf("HUH????????????????????");
+                                gtprintf("You don't have that!");
 
                         player->ticks -= TICKS_WIELDWEAR;
                         break;
@@ -650,15 +652,15 @@ bool do_action(int action)
                         if(o)
                                 quaff(player, o);
                         else
-                                gtprintf("Huh? I don't understand.");
-                        player->ticks -= TICKS_MOVEMENT;
+                                gtprintf("You don't have that!");
+                        player->ticks -= TICKS_WIELDWEAR;
                         break;
                 case ACTION_DROP:
                         o = (obj_t *) actiondata;
                         if(o)
                                 drop(player, o);
                         else
-                                gtprintf("Drop what?");
+                                gtprintf("You don't have that!");
                         player->ticks -= TICKS_WIELDWEAR;
                         break;  
                 case ACTION_FIX_VIEW:
@@ -898,8 +900,9 @@ void do_turn()
 
 int main(int argc, char *argv[])
 {
-        int c, x, y, l;
+        int c, x, y, l, i, nx, ny;
         char messagefilename[50];
+        bool found;
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
@@ -956,7 +959,7 @@ int main(int argc, char *argv[])
         }
 
         init_commands();
-
+        init_pathfinding(player);
         initial_update_screen();
 
         do {
@@ -1095,9 +1098,55 @@ int main(int argc, char *argv[])
                         case CMD_REST:
                                 queue(ACTION_NOTHING);
                                 break;
-                        case CMD_PATHFINDER:
+                        /*case CMD_PATHFINDER:
                                 pathfinder(world->curlevel, player->y, player->x, player->y + ri(-15,15), player->x + ri(-15,15));
                                 queue(ACTION_NOTHING);
+                                break;*/
+                        case CMD_PATHFINDER:
+                                nx = plx; ny = ply;
+
+                                found = false;
+                                while(!found) {
+                                        player->goalx = ri(1, world->curlevel->xsize-1);
+                                        player->goaly = ri(1, world->curlevel->ysize-1);
+                                        if(ct(player->goaly, player->goalx) == DNG_FLOOR)
+                                                if(!hasbit(cf(player->goaly, player->goalx), CF_VISITED))
+                                                        found = true;
+                                }
+                                
+                                TCOD_path_compute(player->path, plx, ply, player->goalx, player->goaly);
+                                for(i = 0; i < TCOD_path_size(player->path); i++) {
+                                        TCOD_path_get(player->path, i, &x, &y);
+                                        //world->curlevel->c[y][x].backcolor = TCOD_light_blue;
+                                        // and let's move!
+                                        if(y > ny) { // moving downward
+                                                if(x > nx)
+                                                        queue(ACTION_PLAYER_MOVE_SE);
+                                                if(x < nx)
+                                                        queue(ACTION_PLAYER_MOVE_SW);
+                                                if(x == nx)
+                                                        queue(ACTION_PLAYER_MOVE_DOWN);
+                                        }
+
+                                        if(y < ny) {
+                                                if(x > nx)
+                                                        queue(ACTION_PLAYER_MOVE_NE);
+                                                if(x < nx)
+                                                        queue(ACTION_PLAYER_MOVE_NW);
+                                                if(x == nx)
+                                                        queue(ACTION_PLAYER_MOVE_UP);
+                                        }
+
+                                        if(y == ny) {
+                                                if(x > nx)
+                                                        queue(ACTION_PLAYER_MOVE_RIGHT);
+                                                if(x < nx)
+                                                        queue(ACTION_PLAYER_MOVE_LEFT);
+                                        }
+                                        nx = x; ny = y;
+                                }
+                                //queue(ACTION_NOTHING);
+                                //domonstermove = false;
                                 break;
                         default:
                                 queue(ACTION_NOTHING);

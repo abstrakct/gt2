@@ -295,6 +295,7 @@ void generate_dungeon_type_2(int d)
         level_t *l;
         //int color;
 
+        printf("Generating dungeon type 2...\n");
         l = &world->dng[d];
         tx = 0; //ri(0, 10);  // starting X
         ty = 0; //ri(0, 10);  // starting y
@@ -382,6 +383,7 @@ void generate_dungeon_type_3(int d)
         int i, j, x, y, q, r, num;
         level_t *l;
 
+        printf("Generating dungeon type 3...\n");
         l = &world->dng[d];
         q = ri(80, l->ysize);
         r = ri(100, l->xsize);
@@ -1002,11 +1004,11 @@ void meta_generate_dungeon(int d, int type)
                 zero_level(&world->dng[d]);
 
                 if(type == 1)
-                        generate_dungeon_type_1(d);
+                        generate_dungeon_type_1(d);   // classic
                 if(type == 2)
                         generate_dungeon_type_2(d);   // "labyrinthine"
                 if(type == 3)
-                        generate_dungeon_type_3(d);
+                        generate_dungeon_type_3(d);   // "cave"
 
                 if(type == 3) {
                         num_monsters = ((world->dng[d].xsize + world->dng[d].ysize) / 100) * d;
@@ -1019,7 +1021,7 @@ void meta_generate_dungeon(int d, int type)
                 }
 
                 spawn_monsters(num_monsters, d+2, &world->dng[d]);
-                spawn_golds((int) ri(5, 15), 45, &world->dng[d]);
+                spawn_gold_with_maxtotal(75 + ri(0, d*15), &world->dng[d]);
                 spawn_objects(ri(mino, maxo), &world->dng[d]);
 
                 game->createddungeons++;
@@ -1109,6 +1111,7 @@ void generate_world()
          * Generate the outside world first.
          */
 
+        printf("Generating outside world...");
         generate_heightmap();
         world->out->lakelimit = 4;
         generate_terrain(0);
@@ -1135,11 +1138,13 @@ void generate_world()
 
         fov_initmap(world->out);
 
+        printf(" done.\n");
+
         meta_generate_dungeon(1, 1);
         //clear_area(&world->dng[1], 6, 6, r.y+6, r.x+6);
         //insert_roomdef_at(&world->dng[1], 6, 6);
 
-        for(i = 2; i <= 10; i++) {
+        for(i = 2; i <= 25; i++) {
                 int p;
 
                 p = ri(1,100);
@@ -1152,7 +1157,6 @@ void generate_world()
         }
 
         generate_stairs();
-
 
         // create the edge of the world
         for(x=0; x<world->out->xsize; x++) {

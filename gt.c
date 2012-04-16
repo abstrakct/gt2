@@ -28,6 +28,7 @@
 
 #include "cards.h"
 #include "objects.h"
+#include "o_effects.h"
 #include "actor.h"
 #include "monsters.h"
 #include "world.h"
@@ -292,11 +293,9 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_DOWN:
                         if(passable(world->curlevel, ply+1, plx)) {
                                 if(world->curlevel->c[ply+1][plx].monster) {
-                                        //gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply+1][plx].monster;
                                         setup_attack();
-                                        fullturn = false;
                                         break;
                                 } else
                                         ply++;
@@ -321,11 +320,9 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_UP:
                         if(passable(world->curlevel, ply-1,plx)) {
                                 if(world->curlevel->c[ply-1][plx].monster) {
-                                        //gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply-1][plx].monster;
                                         setup_attack();
-                                        fullturn = false;
                                         break;
                                 } else
                                         ply--;
@@ -348,11 +345,9 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_LEFT:
                         if(passable(world->curlevel, ply, plx-1)) {
                                 if(world->curlevel->c[ply][plx-1].monster) {
-                                        //gtprintf("You attack the %s!", world->curlevel->c[ply][plx-1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply][plx-1].monster;
                                         setup_attack();
-                                        fullturn = false;
                                         break;
                                 } else
                                         plx--;
@@ -375,11 +370,9 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_RIGHT:
                         if(passable(world->curlevel, ply,plx+1)) {
                                 if(world->curlevel->c[ply][plx+1].monster) {
-                                        //gtprintf("You attack the %s!", world->curlevel->c[ply][plx+1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply][plx+1].monster;
                                         setup_attack();
-                                        fullturn = false;
                                         break;
                                 } else
                                         plx++;
@@ -404,11 +397,9 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_NW:
                         if(passable(world->curlevel, ply-1,plx-1)) {
                                 if(world->curlevel->c[ply-1][plx-1].monster) {
-                                        //gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx-1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply-1][plx-1].monster;
                                         setup_attack();
-                                        fullturn = false;
                                         break;
                                 } else {
                                         ply--;
@@ -442,11 +433,9 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_NE:
                         if(passable(world->curlevel, ply-1,plx+1)) {
                                 if(world->curlevel->c[ply-1][plx+1].monster) {
-                                        //gtprintf("You attack the %s!", world->curlevel->c[ply-1][plx+1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply-1][plx+1].monster;
                                         setup_attack();
-                                        fullturn = false;
                                         break;
                                 } else {
                                         ply--; plx++;
@@ -483,11 +472,9 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_SW:
                         if(passable(world->curlevel, ply+1, plx-1)) {
                                 if(world->curlevel->c[ply+1][plx-1].monster) {
-                                        //gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx-1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply+1][plx-1].monster;
                                         setup_attack();
-                                        fullturn = false;
                                         break;
                                 } else {
                                         ply++; plx--;
@@ -522,11 +509,9 @@ bool do_action(int action)
                 case ACTION_PLAYER_MOVE_SE:
                         if(passable(world->curlevel, ply+1, plx+1)) {
                                 if(world->curlevel->c[ply+1][plx+1].monster) {
-                                        //gtprintf("You attack the %s!", world->curlevel->c[ply+1][plx+1].monster->name);
                                         a_attacker = player;
                                         a_victim = world->curlevel->c[ply+1][plx+1].monster;
                                         setup_attack();
-                                        fullturn = false;
                                         break;
                                 } else {
                                         ply++; plx++;
@@ -893,6 +878,8 @@ void do_turn()
                         queue(ACTION_HEAL_PLAYER);
                         game->turn++;
                         look();
+                        if(player->temp)
+                                process_temp_effects(player);
                 }
 
                 update_screen();
@@ -902,7 +889,7 @@ void do_turn()
 
 int main(int argc, char *argv[])
 {
-        int c, x, y, l, i, nx, ny;
+        int c, x, y, l, nx, ny;
         char messagefilename[50];
         char found;
         bool done;

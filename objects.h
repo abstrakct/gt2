@@ -12,12 +12,17 @@
 #include "io.h"
 
 #define MAX_EFFECTS  10
-/*
+
+
 typedef struct object_effect {
-        struct object_effect *next;
-        void   (*effect)(void *data);
+        short effect;
+        short gain;               // for stat effects, this is the amount of points gained (and lost when temp effect runs out)
+        short dice;
+        short sides;
+        short durd, durs;
+        short duration;           // set to -1 for permanent effects
 } oe_t;
-*/
+
 
 struct object {
         //struct object *prev;
@@ -42,7 +47,8 @@ struct object {
         short         dice, sides;                 // sides is used for AC for armor!
         char          skill;                       // a particular skill needed to use this weapon?
         char          effects;
-        short         effect[MAX_EFFECTS];
+        //short         effect[MAX_EFFECTS];
+        oe_t          effect[MAX_EFFECTS];
         short         rarity;
 };
 
@@ -57,7 +63,9 @@ typedef struct {  // inv_t
 // in inv_t:
 // long long used;                   // use a bitfield/bitmap to note which slots are used? Worth it?
 
-#define add_effect(a, b) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects] = b; a->effects++; }
+#define add_effect(a, b) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects].effect = b; a->effects++; }
+#define add_effect_with_duration(a, b, c) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects].effect = b; a->effect[(int)a->effects].duration = c; a->effects++; }
+#define add_effect_with_duration_dice_sides(a, b, c, d, e, f) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects].effect = b; a->effect[(int)a->effects].durd = c; a->effect[(int)a->effects].durs = d; a->effect[(int)a->effects].dice = e; a->effect[(int)a->effects].sides = f; a->effect[(int)a->effects].duration = 1; a->effects++; }
 
 #define OT_GOLD       1
 #define OT_WEAPON     2
@@ -228,14 +236,10 @@ void   spawn_gold_with_maxtotal(int maxtotal, void *p);
 void   init_objects();
 
 // Autopickup!
-void start_autopickup();
-void stop_autopickup();
-bool shall_autopickup(int type);
+void   start_autopickup();
+void   stop_autopickup();
+bool   shall_autopickup(int type);
 
-
-//void init_materials();
-//int wieldable(obj_t *obj);
-//int wearable(obj_t *obj);
 
 #endif
 /*

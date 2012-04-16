@@ -596,6 +596,7 @@ void draw_left()
         TCOD_console_print(game->left.c, 1, i+12, "CHA:   %d", player->attr.cha);
         TCOD_console_print(game->left.c, 1, i+13, "XP:    %d", player->xp);
         TCOD_console_print(game->left.c, 1, i+14, "Level: %d", player->level);
+        TCOD_console_print(game->left.c, 1, i+15, "Turn:  %d", game->turn);
         
         //TCOD_console_print(game->left.c, 1, i+9, 1, "Dungeon level: %d (out of %d)", game->currentlevel, game->createdareas);
         //mvwprintw(wleft, 3, 1, "y,x     %d,%d", ply, plx);

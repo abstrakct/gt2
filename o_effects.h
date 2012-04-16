@@ -16,24 +16,26 @@
 #define OE_PHYSIQUE                4
 #define OE_DEXTERITY               5
 #define OE_CHARISMA                6
-#define OE_PROTECTION_LIFE         7
-#define OE_PROTECTION_FIRE         8
 
-#define OE_HEAL_NOW                9
+#define OE_PROTECTION_LIFE         20 
+#define OE_PROTECTION_FIRE         21
 
-#define OE_LAST                    10
+#define OE_HEAL_NOW                30
+
+#define OE_LAST                    11
 
 void apply_effects(actor_t *actor, obj_t *o);
-void apply_effect(int effect, actor_t *actor, void *data);
+void apply_effect(int e, int effect, actor_t *actor, void *data);
+void process_temp_effects(actor_t *actor);
 
-void oe_strength(actor_t *actor, void *data);
-void oe_wisdom(actor_t *actor, void *data);
-void oe_intelligence(actor_t *actor, void *data);
-void oe_physique(actor_t *actor, void *data);
-void oe_dexterity(actor_t *actor, void *data);
-void oe_charisma(actor_t *actor, void *data);
-void oe_protection_life(actor_t *actor, void *data);
-void oe_protection_fire(actor_t *actor, void *data);
-void oe_heal_now(actor_t *actor, void *data);
+void oe_strength(actor_t *actor, void *data, int e);
+void oe_wisdom(actor_t *actor, void *data, int e);
+void oe_intelligence(actor_t *actor, void *data, int e);
+void oe_physique(actor_t *actor, void *data, int e);
+void oe_dexterity(actor_t *actor, void *data, int e);
+void oe_charisma(actor_t *actor, void *data, int e);
+void oe_protection_life(actor_t *actor, void *data, int e);
+void oe_protection_fire(actor_t *actor, void *data, int e);
+void oe_heal_now(actor_t *actor, void *data, int e);
 
 #endif

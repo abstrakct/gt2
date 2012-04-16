@@ -22,9 +22,7 @@
 #include "gt.h"
 #include "utils.h"
 
-typedef void (*effectfunctionpointer)(actor_t *actor, void *data);
-
-/* TODO: actor!!! */
+typedef void (*effectfunctionpointer)(actor_t *actor, void *data, int e);
 
 effectfunctionpointer effecttable[] = {
         0,
@@ -34,12 +32,33 @@ effectfunctionpointer effecttable[] = {
         oe_physique,
         oe_dexterity,
         oe_charisma,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         oe_protection_life,
         oe_protection_fire,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         oe_heal_now
 };
 
-void oe_heal_now(actor_t *actor, void *data)
+void oe_heal_now(actor_t *actor, void *data, int e)
 {
         int heal;
         obj_t *o;
@@ -54,7 +73,7 @@ void oe_heal_now(actor_t *actor, void *data)
                 youc(COLOR_INFO, "feel healed!");
 }
 
-void oe_protection_life(actor_t *actor, void *data)
+void oe_protection_life(actor_t *actor, void *data, int e)
 {
         obj_t *o;
 
@@ -71,7 +90,7 @@ void oe_protection_life(actor_t *actor, void *data)
         }
 }
 
-void oe_protection_fire(actor_t *actor, void *data)
+void oe_protection_fire(actor_t *actor, void *data, int e)
 {
         obj_t *o;
 
@@ -99,17 +118,31 @@ void oe_protection_fire(actor_t *actor, void *data)
         }
 }
 
-void oe_strength(actor_t *actor, void *data)
+void oe_strength(actor_t *actor, void *data, int e)
 {
         obj_t *o;
-        int x;
+        int x, gain, duration;
 
         o = (obj_t *) data;
         x = actor->attr.str;
 
-        if(is_potion(o))
-                actor->attr.str++;
-        else if(is_worn(o)) {
+        if(is_potion(o)) {
+                if(o->effect[e].duration == -1) {
+                        actor->attr.str++;
+                } else if(o->effect[e].duration > 0) {
+                        duration = dice(o->effect[e].durd, o->effect[e].durs, 0);
+                        gain = dice(o->effect[e].dice, o->effect[e].sides, 0);
+                        actor->attr.str += gain;
+                        if(actor == player)
+                                youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
+                        actor->temp = gtmalloc(sizeof(oe_t));
+                        *(actor->temp) = o->effect[e];
+                        actor->temp->duration = duration;
+                        actor->temp->gain = gain;
+                }
+        }
+        
+        if(is_worn(o)) {
                 actor->attr.str += o->attackmod;
         } else {
                 actor->attr.str -= o->attackmod;
@@ -123,7 +156,7 @@ void oe_strength(actor_t *actor, void *data)
         }
 }
 
-void oe_wisdom(actor_t *actor, void *data)
+void oe_wisdom(actor_t *actor, void *data, int e)
 {
         obj_t *o;
         int x;
@@ -147,7 +180,7 @@ void oe_wisdom(actor_t *actor, void *data)
         }
 }
 
-void oe_physique(actor_t *actor, void *data)
+void oe_physique(actor_t *actor, void *data, int e)
 {
         obj_t *o;
         int x;
@@ -171,7 +204,7 @@ void oe_physique(actor_t *actor, void *data)
         }
 }
 
-void oe_intelligence(actor_t *actor, void *data)
+void oe_intelligence(actor_t *actor, void *data, int e)
 {
         obj_t *o;
         int x;
@@ -195,7 +228,7 @@ void oe_intelligence(actor_t *actor, void *data)
         }
 }
 
-void oe_dexterity(actor_t *actor, void *data)
+void oe_dexterity(actor_t *actor, void *data, int e)
 {
         obj_t *o;
         int x;
@@ -219,7 +252,7 @@ void oe_dexterity(actor_t *actor, void *data)
         }
 }
 
-void oe_charisma(actor_t *actor, void *data)
+void oe_charisma(actor_t *actor, void *data, int e)
 {
         obj_t *o;
         int x;
@@ -237,19 +270,19 @@ void oe_charisma(actor_t *actor, void *data)
 
         if(actor == player) {
                 if(x > actor->attr.cha)
-                        youc(COLOR_INFO, "feel a bit more unattractive.");
+                        youc(COLOR_INFO, "feel less attractive.");
                 else if(x < actor->attr.cha)
                         youc(COLOR_INFO, "feel more attractive!");
         }
 }
 
-void apply_effect(int effect, actor_t *actor, void *data)
+void apply_effect(int e, int effect, actor_t *actor, void *data)
 {
         if(!effect)
                 return;
 
         if(effect < OE_LAST)
-                effecttable[effect](actor, data);
+                effecttable[effect](actor, data, e);
 }
 
 void apply_effects(actor_t *actor, obj_t *o)
@@ -257,6 +290,29 @@ void apply_effects(actor_t *actor, obj_t *o)
         int i;
 
         for(i = 0; i < o->effects; i++)
-                if(o->effect[i])
-                        apply_effect(o->effect[i], actor, o);
+                if(o->effect[i].effect)
+                        apply_effect(i, o->effect[i].effect, actor, o);
+}
+
+void unapply_temp_effect(actor_t *actor)
+{
+        int old;
+
+        switch(actor->temp->effect) {
+                case OE_STRENGTH:
+                        old = actor->attr.str;
+                        actor->attr.str -= actor->temp->gain;
+                        if(actor == player)
+                                youc(COLOR_INFO, "feel %s again.", (old > actor->attr.str ? "weaker" : "stronger"));
+                        gtfree(actor->temp);
+                        actor->temp = NULL;
+                        break;
+        }
+}
+
+void process_temp_effects(actor_t *actor)
+{
+        actor->temp->duration--;
+        if(actor->temp->duration == 0)
+                unapply_temp_effect(actor);
 }

@@ -322,7 +322,7 @@ void attack(actor_t *attacker, actor_t *defender)
         if(attacker->weapon) {
                 damage = dice(attacker->weapon->dice, attacker->weapon->sides, attacker->weapon->damagemod);
         } else {
-                damage = dice(1, 3, 0);
+                damage = dice(1, 3, ability_modifier(attacker->attr.str));
         }
 
         damage -= defender->ac;       // TODO: Adjust/change 

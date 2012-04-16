@@ -583,7 +583,7 @@ int parse_jewelry()
 int parse_potions()
 {
         config_setting_t *cfg;
-        int i, j, material, d, s;
+        int i, j, material, d, s, durd, durs;
         char sname[100];
         const char *value;
 
@@ -624,22 +624,51 @@ int parse_potions()
                                 }
                         }
                         
-                        if(!strcmp(value, "stat")) {                     // This means this potion modifies a stat
-                                sprintf(sname, "potion.[%d].effect.[%d].stat", j, y);
+                        if(!strcmp(value, "stat")) {
+                                sprintf(sname, "potion.[%d].effect.[%d].type", j, y);
                                 config_lookup_string(cf, sname, &value);
 
-                                if(!strcmp(value, "strength")) 
-                                        add_effect(o, OE_STRENGTH);
-                                if(!strcmp(value, "physique"))
-                                        add_effect(o, OE_PHYSIQUE);
-                                if(!strcmp(value, "intelligence"))
-                                        add_effect(o, OE_INTELLIGENCE);
-                                if(!strcmp(value, "wisdom"))
-                                        add_effect(o, OE_WISDOM);
-                                if(!strcmp(value, "dexterity"))
-                                        add_effect(o, OE_DEXTERITY);
-                                if(!strcmp(value, "charisma"))
-                                        add_effect(o, OE_CHARISMA);
+                                if(!strcmp(value, "permanent")) {
+                                        sprintf(sname, "potion.[%d].effect.[%d].stat", j, y);
+                                        config_lookup_string(cf, sname, &value);
+
+                                        if(!strcmp(value, "strength")) 
+                                                add_effect_with_duration(o, OE_STRENGTH, -1);
+                                        if(!strcmp(value, "physique"))
+                                                add_effect_with_duration(o, OE_PHYSIQUE, -1);
+                                        if(!strcmp(value, "intelligence"))
+                                                add_effect_with_duration(o, OE_INTELLIGENCE, -1);
+                                        if(!strcmp(value, "wisdom"))
+                                                add_effect_with_duration(o, OE_WISDOM, -1);
+                                        if(!strcmp(value, "dexterity"))
+                                                add_effect_with_duration(o, OE_DEXTERITY, -1);
+                                        if(!strcmp(value, "charisma"))
+                                                add_effect_with_duration(o, OE_CHARISMA, -1);
+                                }
+
+                                if(!strcmp(value, "temporary")) {
+                                        sprintf(sname, "potion.[%d].effect.[%d].stat", j, y);
+                                        config_lookup_string(cf, sname, &value);
+                                        
+                                        durd = 0;
+                                        sprintf(sname, "potion.[%d].effect.[%d].dur_d", j, y);
+                                        config_lookup_int(cf, sname, &durd);
+                                        durs = 0;
+                                        sprintf(sname, "potion.[%d].effect.[%d].dur_s", j, y);
+                                        config_lookup_int(cf, sname, &durs);
+
+                                        x = 0;
+                                        sprintf(sname, "potion.[%d].effect.[%d].dice", j, y);
+                                        config_lookup_int(cf, sname, &x);
+                                        d = x;
+                                        x = 0;
+                                        sprintf(sname, "potion.[%d].effect.[%d].sides", j, y);
+                                        config_lookup_int(cf, sname, &x);
+                                        s = x;
+
+                                        if(!strcmp(value, "strength")) 
+                                                add_effect_with_duration_dice_sides(o, OE_STRENGTH, durd, durs, d, s);
+                                }
                         }
                 }
 

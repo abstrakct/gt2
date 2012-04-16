@@ -94,6 +94,7 @@ typedef struct actorstruct {                               // actor_t
         char         wvfactor;
         short        worldview;
         short        kills;
+        oe_t         *temp;
 #ifdef GT_USE_LIBTCOD
         TCOD_path_t  path;
 #endif

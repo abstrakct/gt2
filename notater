@@ -1,9 +1,4 @@
 
-TODO NÅ:
-combat
-
-
-
 Angående vanlig combat:
 
 Player & monster må ha:
@@ -25,3 +20,13 @@ defense - hvor flink han er til å forsvare seg
     fra d20: A character’s Defense represents how hard it is for opponents to land a solid, damaging blow on the character.
     It’s the attack roll result that an opponent needs to achieve to hit the character. The average, unarmored civilian has
     a Defense of 10. A character’s Defense is equal to: 10 + Dexterity modifier + class bonus + equipment bonus + size modifier
+    
+
+
+
+OK - IDEER OG SÅNT
+=====================
+
+Magiske gjenstander:
+  * Dust/støv som kan sprinkles i luften for å gi en effekt, kan også blandes i vann for å lage potions?!
+  * Stone - magiske steiner, kan holdes i hånden? kastes, som en granat?

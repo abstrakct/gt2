@@ -447,7 +447,9 @@ bool place_monster_at(int y, int x, monster_t *monster, level_t *l)
 void spawn_monster(int n, monster_t *head, int maxlevel)
 {
         monster_t *tmp;
-        int hpadj;
+        int hpadj, x;
+        char string[50];
+        obj_t *o;
 
         tmp = head->next;
         head->next = gtmalloc(sizeof(monster_t));
@@ -460,9 +462,22 @@ void spawn_monster(int n, monster_t *head, int maxlevel)
         head->next->prev = head;
         head->next->head = head;
         setbit(head->next->flags, MF_SLEEPING);
+
+
+
         if(head->next->inventory) {
+                if(head->next->inventory->object[0]) {
+                        strcpy(string, head->next->inventory->object[0]->basename);
+                        unspawn_object(head->next->inventory->object[0]);
+
+                        x = get_objdef_by_name(string);
+                        o = spawn_object(x, 0);
+                        head->next->inventory->object[0] = o;
+                        head->next->weapon = o;
+                }
+                        
                 if(head->next->inventory->gold)
-                        head->next->inventory->gold = ri(0, head->next->inventory->gold);
+                        head->next->inventory->gold = ri(1, 1 + head->next->inventory->gold);
         }
 
         //gtprintf("spawned monster %s\n", head->next->name);
@@ -489,7 +504,7 @@ void kill_monster(void *level, monster_t *m, actor_t *killer)
 
                 // and a chance of the monster dropping some or all of its inventory
                 if(m->inventory) {
-                        //if(perc(75)) {
+                        if(perc(75)) {
                                 for(i=0;i<52;i++) {   // most likely monster won't have 52 items, but you never know...
                                         if(m->inventory->object[i]) {
                                                 drop(m, m->inventory->object[i]);
@@ -501,7 +516,7 @@ void kill_monster(void *level, monster_t *m, actor_t *killer)
                                         m->inventory->gold = 0;
                                 }
                                         
-                        //}
+                        }
                 }
         } else {
                 gtprintf("monster's x&y doesn't correspond to cell?");

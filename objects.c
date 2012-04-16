@@ -346,7 +346,6 @@ bool place_object_at(obj_t *obj, int y, int x, void *p)
         return false;
 }
 
-
 void add_attackmod(obj_t *new, void *level)
 {
         level_t *l;
@@ -1046,9 +1045,14 @@ void place_object_in_cell(obj_t *o, cell_t *c)
         if(!c->inventory)
                c->inventory = init_inventory();
 
-        slot = get_first_free_slot_in_inventory(c->inventory);
-        c->inventory->object[slot] = o;
-        c->inventory->num_used++;
+        if(o->type == OT_GOLD && o->quantity) {
+                c->inventory->gold += o->quantity;
+                o->quantity -= o->quantity;
+        } else {
+                slot = get_first_free_slot_in_inventory(c->inventory);
+                c->inventory->object[slot] = o;
+                c->inventory->num_used++;
+        }
 }
 
 void drop(void *actor, obj_t *o)
@@ -1074,6 +1078,9 @@ void drop(void *actor, obj_t *o)
  */
 bool move_to_inventory(obj_t *o, inv_t *i)
 {
+        if(!i)
+                i = init_inventory();
+
         if(o->type == OT_GOLD) {
                 i->gold += o->quantity;
                 unspawn_object(o);

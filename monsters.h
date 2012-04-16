@@ -20,7 +20,7 @@ extern aifunction aitable[];
 #define MF_CANUSEWEAPON      (1 <<  3)
 #define MF_CANUSEARMOR       (1 <<  4)
 #define MF_CANHAVEGOLD       (1 <<  5)
-#define MF_CANUSESIMPLESWORD (1 <<  6)
+#define MF_UNUSED1           (1 <<  6)
 #define MF_SLEEPING          (1 <<  7)
 #define MF_SEENBYPLAYER      (1 <<  8)
 

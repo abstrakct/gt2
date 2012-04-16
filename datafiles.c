@@ -72,6 +72,7 @@ int parse_monsters()
         int i, j, boolval, tmp, id;
         char sname[100];
         const char *value;
+        char string[50];
 
         cfg_monsters = config_lookup(cf, "monsters");
         i = config_setting_length(cfg_monsters);
@@ -137,11 +138,6 @@ int parse_monsters()
                         if(boolval)
                                 setbit(m->flags, MF_CANUSEARMOR);
 
-                sprintf(sname, "monsters.[%d].usesimplesword", j);
-                if(config_lookup_bool(cf, sname, &boolval))
-                        if(boolval)
-                                setbit(m->flags, MF_CANUSESIMPLESWORD);
-
                 sprintf(sname, "monsters.[%d].aitype", j);
                 config_lookup_int(cf, sname, &tmp);
                 m->ai = aitable[tmp];
@@ -151,23 +147,15 @@ int parse_monsters()
                 m->viewradius = 12; // temporary solution?!
 
                 // Let's give the monster a weapon!
-                if(hasbit(m->flags, MF_CANUSESIMPLESWORD)) {
+                if(hasbit(m->flags, MF_CANUSEWEAPON)) {
                         int x;
                         obj_t *o;
 
-                        x = get_objdef_by_name("short sword");
+                        sprintf(sname, "monsters.[%d].weapon", j);
+                        config_lookup_string(cf, sname, &value);
+                        strcpy(string, value);
 
-                        m->inventory = init_inventory();
-                        o = spawn_object(x, 0);
-                        m->inventory->object[0] = o;
-                        m->weapon = o;
-                }
-
-                if(hasbit(m->flags, MF_CANUSEWEAPON) && !hasbit(m->flags, MF_CANUSESIMPLESWORD)) {
-                        int x;
-                        obj_t *o;
-
-                        x = get_objdef_by_name("dagger");
+                        x = get_objdef_by_name(string);
 
                         m->inventory = init_inventory();
                         o = spawn_object(x, 0);
@@ -176,11 +164,11 @@ int parse_monsters()
                 }
 
                 if(hasbit(m->flags, MF_CANHAVEGOLD)) {
-                        if(!m->inventory) {
+                        if(!m->inventory)
                                 m->inventory = init_inventory();
-                                m->inventory->gold += ri(2, 20);
+
+                        m->inventory->gold += ri(0, 15*m->level);
                         }
-                }
 
                 
 //if(m->weapon)
@@ -196,7 +184,7 @@ int parse_monsters()
                 m->prev = monsterdefs;
                 monsterdefs = m;
 
-                printf("."); // simple "progress bar"
+                printf("."); // "progress bar"
         }
         
         printf(" OK\n");

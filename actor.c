@@ -272,7 +272,7 @@ int calculate_final_score()
 void player_die(actor_t *killer)
 {
         if(game->wizardmode) {
-                youc(COLOR_RED, "You die! Fortunately, you're in wizard mode! 10 HP for you!");
+                youc(COLOR_RED, "die! Fortunately, you're in wizard mode! 10 HP for you!");
                 player->hp += 10;
                 return;
         }
@@ -310,7 +310,7 @@ void attack(actor_t *attacker, actor_t *defender)
         defender->attacker = attacker;
 
         attack  = d(1, 20);
-        attack += ability_modifier(attacker->attr.str); // strength_modifier[pstr];
+        attack += ability_modifier(attacker->attr.dex); // strength_modifier[pstr];
         if(attacker->weapon)
                 attack += attacker->weapon->attackmod;
 
@@ -320,7 +320,7 @@ void attack(actor_t *attacker, actor_t *defender)
         // + equipment  bonus
 
         if(attacker->weapon) {
-                damage = dice(attacker->weapon->dice, attacker->weapon->sides, attacker->weapon->damagemod);
+                damage = dice(attacker->weapon->dice, attacker->weapon->sides, (attacker->weapon->damagemod + ability_modifier(attacker->attr.str))); //TODO: change when we take attributes more into regard depending on weapon (e.g. some require dex, others str, etc.
         } else {
                 damage = dice(1, 3, ability_modifier(attacker->attr.str));
         }
@@ -332,12 +332,12 @@ void attack(actor_t *attacker, actor_t *defender)
         if(attack >= defense) {  // it's a hit!
                 if(attacker == player) {
                         if(damage <= 0)
-                                youc(COLOR_WHITE, "You hit the %s, but do no damage!", defender->name);
+                                youc(COLOR_WHITE, "hit the %s, but do no damage!", defender->name);
                         else
                                 youc(COLOR_RED, "hit the %s with a %s for %d damage!", defender->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
                 } else {
                         if(damage <= 0)
-                                gtprintfc(COLOR_WHITE, "The %s hits you, but does no damage!", attacker->name);
+                                gtprintfc(COLOR_WHITE, "The %s hits you with a %s, but does no damage!", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing");
                         else
                                 gtprintfc(COLOR_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
                 }
@@ -358,7 +358,7 @@ void attack(actor_t *attacker, actor_t *defender)
                 if(attacker == player)
                         youc(COLOR_WHITE, "miss the %s!", defender->name);
                 else
-                        gtprintfc(COLOR_WHITE, "The %s tries to hit you, but fails!", attacker->name);
+                        gtprintfc(COLOR_WHITE, "The %s tries to hit you with a %s, but fails!", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing");
         }
 
         if(attacker == player)

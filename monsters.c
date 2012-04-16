@@ -460,6 +460,11 @@ void spawn_monster(int n, monster_t *head, int maxlevel)
         head->next->prev = head;
         head->next->head = head;
         setbit(head->next->flags, MF_SLEEPING);
+        if(head->next->inventory) {
+                if(head->next->inventory->gold)
+                        head->next->inventory->gold = ri(0, head->next->inventory->gold);
+        }
+
         //gtprintf("spawned monster %s\n", head->next->name);
         
         mid_counter++;
@@ -468,7 +473,9 @@ void spawn_monster(int n, monster_t *head, int maxlevel)
 
 void kill_monster(void *level, monster_t *m, actor_t *killer)
 {
+        int i;
         level_t *l;
+
         l = (level_t *) level;
 
         if(l->c[m->y][m->x].monster == m) {
@@ -478,6 +485,23 @@ void kill_monster(void *level, monster_t *m, actor_t *killer)
                 l->c[m->y][m->x].monster = NULL;
                 if(killer == player) {
                         player->kills++;
+                }
+
+                // and a chance of the monster dropping some or all of its inventory
+                if(m->inventory) {
+                        //if(perc(75)) {
+                                for(i=0;i<52;i++) {   // most likely monster won't have 52 items, but you never know...
+                                        if(m->inventory->object[i]) {
+                                                drop(m, m->inventory->object[i]);
+                                        }
+                                }
+
+                                if(m->inventory->gold) {
+                                        l->c[m->y][m->x].inventory->gold += m->inventory->gold;
+                                        m->inventory->gold = 0;
+                                }
+                                        
+                        //}
                 }
         } else {
                 gtprintf("monster's x&y doesn't correspond to cell?");

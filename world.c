@@ -1098,7 +1098,6 @@ void generate_terrain(int visible)
                 for(y = 0; y < world->out->ysize; y++) {
                         if(world->out->c[y][x].height >= world->out->zero - world->out->lakelimit && world->out->c[y][x].height <= world->out->zero + world->out->lakelimit) {
                                 world->out->c[y][x].type = AREA_PLAIN;
-                                //world->out->c[y][x].flags = 0;
                                 world->out->c[y][x].color = COLOR_PLAIN;
                                 world->out->c[y][x].monster = NULL;
                                 world->out->c[y][x].inventory = NULL;
@@ -1106,7 +1105,6 @@ void generate_terrain(int visible)
                         }
                         if(world->out->c[y][x].height < world->out->zero - world->out->lakelimit) {
                                 world->out->c[y][x].type = AREA_LAKE;
-                                //world->out->c[y][x].flags = 0;
                                 world->out->c[y][x].color = COLOR_BLUE;
                                 world->out->c[y][x].monster = NULL;
                                 world->out->c[y][x].inventory = NULL;
@@ -1114,7 +1112,6 @@ void generate_terrain(int visible)
                         }
                         if(world->out->c[y][x].height > world->out->zero + world->out->lakelimit) {
                                 world->out->c[y][x].type = AREA_MOUNTAIN;
-                                //world->out->c[y][x].flags = 0;
                                 world->out->c[y][x].color = COLOR_MOUNTAIN;
                                 world->out->c[y][x].monster = NULL;
                                 world->out->c[y][x].inventory = NULL;

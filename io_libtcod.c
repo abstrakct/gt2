@@ -441,6 +441,8 @@ void draw_map()
                                                         color = COLOR_LIT_WALL;
                                                 else if(ct(j, i) == DNG_FLOOR)
                                                         color = COLOR_SHADE;
+                                                else 
+                                                        color = level->c[j][i].color;
                                         } else {
                                                 color = COLOR_SHADE;
                                         }
@@ -680,17 +682,21 @@ void draw_right()
                         //o = get_object_from_letter(slot_to_letter(j), player->inventory);
                         o = player->inventory->object[j];
                         if(is_worn(o)) {
-                                if(is_pair(o))
-                                        TCOD_console_print(game->right.c, 1, i, "%c   a pair of %s %s", slot_to_letter(j), o->fullname, is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
-                                else
-                                        TCOD_console_print(game->right.c, 1, i, "%c   %s %s", slot_to_letter(j), a_an(o->fullname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                TCOD_console_print(game->right.c, 1, i, "%c", slot_to_letter(j));
                                 TCOD_console_put_char_ex(game->right.c, 3, i, '*', TCOD_light_green, TCOD_black);
+                                TCOD_console_set_default_foreground(game->right.c, o->color.fore);
+                                TCOD_console_set_default_background(game->right.c, o->color.back);
+                                TCOD_console_print(game->right.c, 5, i, "%s %s", a_an(o->fullname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                TCOD_console_set_default_foreground(game->right.c, TCOD_white);
+                                TCOD_console_set_default_background(game->right.c, TCOD_black);
                         } else {
-                                if(is_pair(o))
-                                        TCOD_console_print(game->right.c, 1, i, "%c   a pair of %s", slot_to_letter(j), o->fullname);
-                                else
-                                        TCOD_console_print(game->right.c, 1, i, "%c   %s", slot_to_letter(j), a_an(o->fullname));
+                                TCOD_console_print(game->right.c, 1, i, "%c", slot_to_letter(j));
                                 TCOD_console_put_char_ex(game->right.c, 3, i, '-', TCOD_white, TCOD_black);
+                                TCOD_console_set_default_foreground(game->right.c, o->color.fore);
+                                TCOD_console_set_default_background(game->right.c, o->color.back);
+                                TCOD_console_print(game->right.c, 5, i, "%s", a_an(o->fullname));
+                                TCOD_console_set_default_foreground(game->right.c, TCOD_white);
+                                TCOD_console_set_default_background(game->right.c, TCOD_black);
                         }
                         i++;
                 }

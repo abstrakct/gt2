@@ -315,6 +315,7 @@ bool do_action(int action)
                         if(ppy < 0)
                                 ppy = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_UP:
@@ -365,6 +366,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
@@ -392,6 +394,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_NW:
@@ -428,6 +431,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_NE:
@@ -467,6 +471,7 @@ bool do_action(int action)
                         if(ppy < 0)
                                 ppy = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_SW:
@@ -504,6 +509,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_SE:
@@ -547,6 +553,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         player->ticks -= TICKS_MOVEMENT;
+                        queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
                 case ACTION_PICKUP:
@@ -875,7 +882,6 @@ void do_turn()
                 ret = do_next_thing_in_queue();
                         
                 if(ret) {
-                        queue(ACTION_HEAL_PLAYER);
                         game->turn++;
                         look();
                         if(player->temp)
@@ -1117,27 +1123,27 @@ int main(int argc, char *argv[])
                                                         // let's move!
                                                         if(y > ny) { // moving downward
                                                                 if(x > nx)
-                                                                        queue(ACTION_PLAYER_MOVE_SE);
+                                                                        queuemany(ACTION_PLAYER_MOVE_SE, ACTION_HEAL_PLAYER, ENDOFLIST);
                                                                 if(x < nx)
-                                                                        queue(ACTION_PLAYER_MOVE_SW);
+                                                                        queuemany(ACTION_PLAYER_MOVE_SW, ACTION_HEAL_PLAYER, ENDOFLIST);
                                                                 if(x == nx)
-                                                                        queue(ACTION_PLAYER_MOVE_DOWN);
+                                                                        queuemany(ACTION_PLAYER_MOVE_DOWN, ACTION_HEAL_PLAYER, ENDOFLIST);
                                                         }
 
                                                         if(y < ny) {
                                                                 if(x > nx)
-                                                                        queue(ACTION_PLAYER_MOVE_NE);
+                                                                        queuemany(ACTION_PLAYER_MOVE_NE, ACTION_HEAL_PLAYER, ENDOFLIST);
                                                                 if(x < nx)
-                                                                        queue(ACTION_PLAYER_MOVE_NW);
+                                                                        queuemany(ACTION_PLAYER_MOVE_NW, ACTION_HEAL_PLAYER, ENDOFLIST);
                                                                 if(x == nx)
-                                                                        queue(ACTION_PLAYER_MOVE_UP);
+                                                                        queuemany(ACTION_PLAYER_MOVE_UP, ACTION_HEAL_PLAYER, ENDOFLIST);
                                                         }
 
                                                         if(y == ny) {
                                                                 if(x > nx)
-                                                                        queue(ACTION_PLAYER_MOVE_RIGHT);
+                                                                        queuemany(ACTION_PLAYER_MOVE_RIGHT, ACTION_HEAL_PLAYER, ENDOFLIST);
                                                                 if(x < nx)
-                                                                        queue(ACTION_PLAYER_MOVE_LEFT);
+                                                                        queuemany(ACTION_PLAYER_MOVE_LEFT, ACTION_HEAL_PLAYER, ENDOFLIST);
                                                         }
                                                         nx = x; ny = y;
                                                 } else {

@@ -96,6 +96,9 @@ extern char *otypestrings[];
 #define OF_GLOVES     0x00000400
 #define OF_FOOTWEAR   0x00000800
 #define OF_SHIELD     0x00001000
+//#define OFUNUSED    0x00002000
+//#define OFUNUSED    0x00004000
+//#define OFUNUSED    0x00008000
 
 // Weapon flags
 #define OF_SWORD      0x00010000
@@ -109,7 +112,7 @@ extern char *otypestrings[];
 
 #define OF_OBVIOUS    0x01000000     // Effect is obvious -> identification!
 #define OF_DONOTAP    0x02000000     // Do not autopickup this item!
-//#define OF_UNUSED4    0x04000000
+#define OF_SEENBYPLAYER 0x04000000
 //#define OF_UNUSED5    0x08000000
 //#define OF_UNUSED6    0x10000000
 //#define OF_UNUSED7    0x20000000

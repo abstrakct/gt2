@@ -432,8 +432,21 @@ void draw_map()
         for(i = ppx, dx = 1; i < (ppx + game->map.w - 2); i++, dx++) {
                 for(j = ppy, dy = 1; j < (ppy + game->map.h - 2); j++, dy++) {
                         if(j < level->ysize && i < level->xsize) {
-                                if(TCOD_map_is_in_fov(level->map, i, j))
+                                if(TCOD_map_is_in_fov(level->map, i, j)) {
                                         setbit(level->c[j][i].flags, CF_VISITED);
+                                        if(level->c[j][i].monster) {
+                                                if(!hasbit(level->c[j][i].monster->flags, MF_SEENBYPLAYER)) {
+                                                        setbit(level->c[j][i].monster->flags, MF_SEENBYPLAYER);
+                                                        gtprintfc(COLOR_RED, "%s comes into view!", Upper(a_an(level->c[j][i].monster->name)));
+                                                }
+                                        }
+                                        if(level->c[j][i].inventory && level->c[j][i].inventory->object[0]) {
+                                                if(!hasbit(level->c[j][i].inventory->object[0]->flags, OF_SEENBYPLAYER)) {
+                                                        setbit(level->c[j][i].inventory->object[0]->flags, OF_SEENBYPLAYER);
+                                                        gtprintf("You found %s.", a_an(level->c[j][i].inventory->object[0]->fullname));
+                                                }
+                                        }
+                                }
 
                                 if(hasbit(level->c[j][i].flags, CF_VISITED)) {
                                         if(TCOD_map_is_in_fov(level->map, i, j)) {

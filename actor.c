@@ -100,10 +100,17 @@ bool actor_in_lineofsight(actor_t *src, actor_t *dest)
  * This function will check if the actor src can see cell at goaly,goalx
  * Returns true if it can, false if not,
  *
- * Adapted from http://roguebasin.roguelikedevelopment.org/index.php/Simple_Line_of_Sight
+ * The non-libtcod part is adapted from http://roguebasin.roguelikedevelopment.org/index.php/Simple_Line_of_Sight
  */
 bool in_lineofsight(actor_t *src, int goaly, int goalx)
 {
+#ifdef GT_USE_LIBTCOD
+        TCOD_map_compute_fov(world->curlevel->map, src->x, src->y, src->viewradius, true, FOV_SHADOW);
+        if(TCOD_map_is_in_fov(world->curlevel->map, goalx, goaly))
+                return true;
+        else
+                return false;
+#else
         int t, x, y, ax, ay, sx, sy, dx, dy;
 
         if(src->x == goalx && src->y == goaly) // shouldn't actually happen?
@@ -167,6 +174,7 @@ bool in_lineofsight(actor_t *src, int goaly, int goalx)
 
                 return false;
         }
+#endif
 }
 
 bool next_to(actor_t *a, actor_t *b)

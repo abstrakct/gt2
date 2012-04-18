@@ -6,6 +6,11 @@
 #ifndef _IOLIBTCOD_H
 #define _IOLIBTCOD_H
 
+typedef struct coord {
+        int y;
+        int x;
+} co;
+
 // Prototypes
 void init_display();
 void shutdown_display();
@@ -26,7 +31,7 @@ bool blocks_light(void *l, int y, int x);
 void fov_initmap(void *l);
 void fov_updatemap(void *level);
 void init_pathfinding(void *a);
-#define update_path(a) init_pathfinding(a)
+co get_next_step(void *actor);
 
 int get_command();
 void init_commands();

@@ -168,7 +168,35 @@ void init_pathfinding(void *a)
         actor_t *actor;
 
         actor = (actor_t*)a;
-        actor->path = TCOD_path_new_using_map(world->curlevel->map, 1.41f);
+        actor->path = TCOD_path_new_using_map(world->curlevel->map, 1.0f);
+}
+
+void update_path(void *actor)
+{
+        actor_t *a;
+
+        a = (actor_t*)actor;
+        TCOD_path_compute(a->path, a->x, a->y, a->goalx, a->goaly);
+}
+
+co get_next_step(void *actor)
+{
+        actor_t *a;
+        co c;
+        int x, y;
+
+        a = (actor_t*)actor;
+        
+        TCOD_path_compute(a->path, a->x, a->y, a->goalx, a->goaly);
+        if(!TCOD_path_walk(a->path, &x, &y, true)) {
+                c.x = 0;
+                c.y = 0;
+        } else {
+                c.x = x;
+                c.y = y;
+        }
+
+        return c;
 }
 
 char ask_char(char *question)

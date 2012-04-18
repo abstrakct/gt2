@@ -32,12 +32,12 @@
 #include "actor.h"
 #include "monsters.h"
 #include "world.h"
+#include "gt.h"
 #include "datafiles.h"
 #include "io.h"
 #include "debug.h"
 #include "saveload.h"
 #include "commands.h"
-#include "gt.h"
 #include "utils.h"
 
 char *otypestrings[50] = {
@@ -879,6 +879,7 @@ void do_turn()
         i = aq->num;
 
         while(i) {
+                update_screen();
                 ret = do_next_thing_in_queue();
                         
                 if(ret) {
@@ -888,8 +889,8 @@ void do_turn()
                                 process_temp_effects(player);
                 }
 
-                update_screen();
                 i = aq->num;
+                update_screen();
         }
 }
 

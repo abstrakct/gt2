@@ -82,29 +82,6 @@ void makedistancemap(int desty, int destx)
         //gtprintf("%d - makedistancemap - END!", game->turn);
 }
 
-co get_next_step(int y, int x)
-{
-        co c;
-        int dx, dy, dist, newdist, newdx, newdy;
-
-        dx = 0; 
-        dy = 0;
-        dist = 99999;
-        for(newdy = -1; newdy <= 1; newdy++) {
-                for(newdx = -1; newdx <= 1; newdx++) {
-                        newdist = distancemap[y + newdy][x + newdx];
-                        if(newdist < dist) {
-                                dist = newdist;
-                                dx = newdx;
-                                dy = newdy;
-                        }
-                }
-        }
-
-        c.x = dx;
-        c.y = dy;
-        return c;
-}
 
 int simpleoutdoorpathfinder(actor_t *m)
 {
@@ -323,6 +300,20 @@ bool newpathfinder(actor_t *m)
         return true;
 }
 
+float monster_path_callback_func(int xFrom, int yFrom, int xTo, int yTo, void *user_data)
+{
+        level_t *l;
+        float f;
+
+        l = (level_t*)user_data;
+        if(monster_passable(l, yTo, xTo))
+                f = 1.0f;
+        else
+                f = 0.0f;
+
+        return f;
+}
+
 void hostile_ai(actor_t *m)
 {
         int oy, ox;
@@ -331,30 +322,49 @@ void hostile_ai(actor_t *m)
         oy = m->y;
         ox = m->x;
 
+        //gtprintf("hostile_ai!");
         if(m->attacker && next_to(m, m->attacker)) {
+                //gtprintf("  %s has attacker (%s) and is next to attacker!", m->name, m->attacker->name);
                 attack(m, m->attacker);
                 return;
         }
 
         if(next_to(m, player)) {
+                //gtprintf("  %s is next to player! attacking!", m->name);
                 m->attacker = player;
                 attack(m, m->attacker);
                 return;
         }
 
         if(actor_in_lineofsight(m, player)) {
-                c = get_next_step(m->y, m->x);
+                //gtprintf("  player is in line of sight of %s!", m->name);
+                m->goalx = player->x;
+                m->goaly = player->y;
+        } else {
+                //gtprintf("  player is not in line of sight!");
+                m->attacker = NULL;
+                do {
+                        m->goalx = ri(1, world->curlevel->xsize-1);
+                        m->goaly = ri(1, world->curlevel->ysize-1);
+                } while(!monster_passable(world->curlevel, m->goaly, m->goalx));
+        }
 
-                if(monster_passable(world->curlevel, m->y + c.y, m->x + c.x)) {
-                        m->y += c.y;
-                        m->x += c.x;
+        c = get_next_step(m);
+        //gtprintf("  getting next step in path - it is %d,%d! (monsterxy = %d,%d)", c.x, c.y, m->x, m->y);
+        if(c.x == 0 && c.y == 0) {
+                //gtprintf("  no path found?!");
+                return;
+        } else {
+                if(monster_passable(world->curlevel, c.y, c.x)) {
+                        //gtprintf("  next step is passable!");
+                        m->y = c.y;
+                        m->x = c.x;
                         world->cmap[oy][ox].monster = NULL;
                         world->cmap[m->y][m->x].monster = m;
-                }
-        } else {
-                m->attacker = NULL;
-                while(!simpleoutdoorpathfinder(m));
+                } 
         }
+
+        //gtprintf("ENDHOSTILEAI");
 }
 
 void heal_monster(actor_t *m, int num)
@@ -438,6 +448,9 @@ bool place_monster_at(int y, int x, monster_t *monster, level_t *l)
         monster->y = y;
         if(monster_passable(l, y, x) && l->c[monster->y][monster->x].monster == NULL) {
                 l->c[monster->y][monster->x].monster = monster;
+#ifdef GT_USE_LIBTCOD
+                monster->path = TCOD_path_new_using_function(l->xsize, l->ysize, monster_path_callback_func, l, 1.0f);
+#endif
                 return true;
         } else {
                 return false;
@@ -462,8 +475,7 @@ void spawn_monster(int n, monster_t *head, int maxlevel)
         head->next->prev = head;
         head->next->head = head;
         setbit(head->next->flags, MF_SLEEPING);
-
-
+        head->next->viewradius = 12;
 
         if(head->next->inventory) {
                 if(head->next->inventory->object[0]) {

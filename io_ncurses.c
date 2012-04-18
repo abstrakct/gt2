@@ -414,6 +414,34 @@ void init_pathfinding(void *a)
 {
 }
 
+co get_next_step(void *actor)
+{
+        actor *a;
+        co c;
+        int dx, dy, dist, newdist, newdx, newdy;
+
+        a = (actor_t*)actor;
+        dx = 0; 
+        dy = 0;
+        dist = 99999;
+        for(newdy = -1; newdy <= 1; newdy++) {
+                for(newdx = -1; newdx <= 1; newdx++) {
+                        newdist = distancemap[a->y + newdy][a->x + newdx];
+                        if(newdist < dist) {
+                                dist = newdist;
+                                dx = newdx;
+                                dy = newdy;
+                        }
+                }
+        }
+
+        c.x = a->x + dx;
+        c.y = a->y + dy;
+        return c;
+}
+
+
+
 // The actual drawing on screen
 
 void draw_world()

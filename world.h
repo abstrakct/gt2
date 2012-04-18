@@ -23,7 +23,7 @@
 
 #define DNG_FLOOR           12
 #define DNG_WALL            13
-#define DNG_FILL            DNG_WALL
+#define DNG_FILL            14
 #define DNG_NOTHING         AREA_NOTHING
 
 #define AREA_WALL           100
@@ -72,7 +72,10 @@ struct levelstruct {
         cell_t     **c;
         monster_t   *monsters;      // point to head of linked lists of monsters on this level
         obj_t       *objects;
+#ifdef GT_USE_LIBTCOD
         TCOD_map_t   map;
+#endif
+        int      walkable, visited;      // walkable = how many cells can player walk to? visited = how many cells has the player visited/seen?
 };
 
 struct room {
@@ -115,6 +118,7 @@ typedef struct {   // roomdef_t
 #define CF_HAS_DOOR_OPEN   (1<<4)
 #define CF_HAS_DOOR_CLOSED (1<<5)
 #define CF_HAS_DOOR_SECRET (1<<6)
+#define CF_FLOODFILLED     (1<<7)
 
 
 void generate_world();
@@ -123,6 +127,7 @@ bool passable(level_t *l, int y, int x);
 bool monster_passable(level_t *l, int y, int x);
 void init_level(level_t *level);
 void set_level_visited(level_t *l);
+void set_cell_visited(level_t *l, int y, int x);
 void pathfinder(level_t *l, int y, int x, int dy, int dx);
 bool check_if_all_explored(level_t *l);
 

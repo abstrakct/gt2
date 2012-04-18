@@ -400,7 +400,6 @@ void clear_map_to_unlit(level_t *l)
 void donewfov(actor_t *a, level_t *l)
 {
         TCOD_map_compute_fov(l->map, a->x, a->y, a->viewradius, true, FOV_SHADOW);
-
 }
 
 void fov_updatemap(void *level)
@@ -461,7 +460,7 @@ void draw_map()
                 for(j = ppy, dy = 1; j < (ppy + game->map.h - 2); j++, dy++) {
                         if(j < level->ysize && i < level->xsize) {
                                 if(TCOD_map_is_in_fov(level->map, i, j)) {
-                                        setbit(level->c[j][i].flags, CF_VISITED);
+                                        set_cell_visited(level, j, i);
                                         if(level->c[j][i].monster) {
                                                 if(!hasbit(level->c[j][i].monster->flags, MF_SEENBYPLAYER)) {
                                                         setbit(level->c[j][i].monster->flags, MF_SEENBYPLAYER);

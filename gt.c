@@ -259,7 +259,9 @@ void clear_aq()
  */
 void monsters_move()
 {
+#ifdef GT_USE_NCURSES
         do_action(ACTION_MAKE_DISTANCEMAP);
+#endif
         do_action(ACTION_MOVE_MONSTERS);
 }
 
@@ -605,6 +607,7 @@ bool do_action(int action)
                                         player->viewradius = 12;
                         }
                         init_pathfinding(player);
+                        floodfill(world->curlevel, player->y, player->x);
                         player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_GO_UP_STAIRS:
@@ -622,6 +625,7 @@ bool do_action(int action)
                                 player->viewradius = 24;
                         }
                         init_pathfinding(player);
+                        floodfill(world->curlevel, player->y, player->x);
                         player->ticks -= TICKS_MOVEMENT;
                         break;
                 case ACTION_WIELDWEAR:
@@ -662,7 +666,7 @@ bool do_action(int action)
                         break;
                 case ACTION_HEAL_PLAYER:
                         i = 17 - pphy;
-                        if(i < 0)
+                        if(i <= 0)
                                 i = 1;
 
                         if(!(game->turn % i)) {
@@ -879,8 +883,8 @@ void do_turn()
         i = aq->num;
 
         while(i) {
-                update_screen();
                 ret = do_next_thing_in_queue();
+                update_screen();
                         
                 if(ret) {
                         game->turn++;
@@ -957,6 +961,7 @@ int main(int argc, char *argv[])
 
         init_commands();
         init_pathfinding(player);
+        floodfill(world->curlevel, player->y, player->x);
         initial_update_screen();
 
         do {
@@ -1100,15 +1105,16 @@ int main(int argc, char *argv[])
 
                                 found = false;
                                 done  = false;
-                                while(!found) {
-                                        player->goalx = ri(1, world->curlevel->xsize-1);
-                                        player->goaly = ri(1, world->curlevel->ysize-1);
-                                        if(ct(player->goaly, player->goalx) == DNG_FLOOR)
-                                                if(!hasbit(cf(player->goaly, player->goalx), CF_VISITED))
-                                                        found = true;
-                                        if(check_if_all_explored(world->curlevel)) {
-                                                done = true;
-                                                break;
+                                if(check_if_all_explored(world->curlevel)) {
+                                        done = true;
+                                }
+                                if(!done) {
+                                        while(!found) {
+                                                player->goalx = ri(1, world->curlevel->xsize-1);
+                                                player->goaly = ri(1, world->curlevel->ysize-1);
+                                                if(ct(player->goaly, player->goalx) == DNG_FLOOR)
+                                                        if(!hasbit(cf(player->goaly, player->goalx), CF_VISITED))
+                                                                found = true;
                                         }
                                 }
                                 

@@ -22,7 +22,7 @@
 
 #define OE_HEAL_NOW                30
 
-#define OE_LAST                    11
+#define OE_LAST                    31
 
 void apply_effects(actor_t *actor, obj_t *o);
 void apply_effect(int e, int effect, actor_t *actor, void *data);

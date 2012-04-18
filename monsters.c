@@ -322,26 +322,21 @@ void hostile_ai(actor_t *m)
         oy = m->y;
         ox = m->x;
 
-        //gtprintf("hostile_ai!");
         if(m->attacker && next_to(m, m->attacker)) {
-                //gtprintf("  %s has attacker (%s) and is next to attacker!", m->name, m->attacker->name);
                 attack(m, m->attacker);
                 return;
         }
 
         if(next_to(m, player)) {
-                //gtprintf("  %s is next to player! attacking!", m->name);
                 m->attacker = player;
                 attack(m, m->attacker);
                 return;
         }
 
         if(actor_in_lineofsight(m, player)) {
-                //gtprintf("  player is in line of sight of %s!", m->name);
                 m->goalx = player->x;
                 m->goaly = player->y;
         } else {
-                //gtprintf("  player is not in line of sight!");
                 m->attacker = NULL;
                 do {
                         m->goalx = ri(1, world->curlevel->xsize-1);
@@ -350,21 +345,14 @@ void hostile_ai(actor_t *m)
         }
 
         c = get_next_step(m);
-        //gtprintf("  getting next step in path - it is %d,%d! (monsterxy = %d,%d)", c.x, c.y, m->x, m->y);
         if(c.x == 0 && c.y == 0) {
-                //gtprintf("  no path found?!");
                 return;
         } else {
-                if(monster_passable(world->curlevel, c.y, c.x)) {
-                        //gtprintf("  next step is passable!");
-                        m->y = c.y;
-                        m->x = c.x;
-                        world->cmap[oy][ox].monster = NULL;
-                        world->cmap[m->y][m->x].monster = m;
-                } 
+                m->y = c.y;
+                m->x = c.x;
+                world->cmap[oy][ox].monster = NULL;
+                world->cmap[m->y][m->x].monster = m;
         }
-
-        //gtprintf("ENDHOSTILEAI");
 }
 
 void heal_monster(actor_t *m, int num)

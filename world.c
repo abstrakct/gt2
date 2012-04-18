@@ -90,8 +90,14 @@ void clear_area(level_t *l, int y1, int x1, int y2, int x2)
         }
 }
 
-// rather useless actually, but we'll keep it for now.
-bool check_if_all_explored(level_t *l)
+/*
+ * Check if everything the player can reach has been reached.
+ * It goes like this:
+ * Do a floodfill from player x,y (only necessary to do when entering level, right?)
+ * Then count if the number of filled cells equal the number of visited cells.
+ * If the player has seen it all, then those two numbers should be equal.
+ */
+/*bool check_if_all_explored(level_t *l)
 {
         int x, y;
         bool result;
@@ -100,7 +106,7 @@ bool check_if_all_explored(level_t *l)
         floors = visited = 0;
         for(x = 0; x < l->xsize; x++) {
                 for(y = 0; y < l->ysize; y++) {
-                        if(ct(y, x) == DNG_FLOOR) {
+                        if(hasbit(cf(y, x), CF_FLOODFILLED)) {
                                 floors++;
                                 if(hasbit(cf(y, x), CF_VISITED))
                                         visited++;
@@ -114,8 +120,16 @@ bool check_if_all_explored(level_t *l)
                 result = false;
 
         return result;
-}
+}*/
 
+bool check_if_all_explored(level_t *l)
+{
+        //gtprintf("walkable = %d     visited = %d", l->walkable, l->visited);
+        if(l->visited == l->walkable)
+                return true;
+        else
+                return false;
+}
 
 /*
  * this function cleans the dungeon for stuff made by the dungeon generator which shouldn't be there.
@@ -174,11 +188,10 @@ void generate_dungeon_type_1(int d)
                 
         l = &world->dng[d];
 
-
         minroomsizey = 3;
         minroomsizex = 4;
-        maxroomsizey = 10;
-        maxroomsizex = 20;
+        maxroomsizey = 9;
+        maxroomsizex = 16;
 
         nry = l->ysize / maxroomsizey;
         nrx = l->xsize / maxroomsizex;
@@ -709,10 +722,10 @@ void pathfinder(level_t *l, int y1, int x1, int y2, int x2)
 * *******************************************/
 void floodfill(level_t *l, int y, int x)
 {
-//fprintf(stderr, "DEBUG: %s:%d - entering floodfill! x,y = %d,%d\n", __FILE__, __LINE__, x, y);
-        if(l->c[y][x].type == DNG_FLOOR) {
-                l->c[y][x].type = DNG_FILL;
-                l->c[y][x].color = COLOR_LAKE;
+        if(l->c[y][x].type == DNG_FLOOR && !hasbit(l->c[y][x].flags, CF_FLOODFILLED)) {
+                setbit(l->c[y][x].flags, CF_FLOODFILLED);
+                l->walkable++;
+                //l->c[y][x].color = COLOR_LAKE;
                 floodfill(l, y-1, x);
                 floodfill(l, y+1, x);
                 floodfill(l, y,   x-1);
@@ -724,13 +737,22 @@ void floodfill(level_t *l, int y, int x)
         }
 }
 
+void set_cell_visited(level_t *l, int y, int x)
+{
+        if(!hasbit(l->c[y][x].flags, CF_VISITED)) {
+                setbit(l->c[y][x].flags, CF_VISITED);
+                if(l->c[y][x].type == DNG_FLOOR)
+                        l->visited++;
+        }
+}
+
 void set_level_visited(level_t *l)
 {
         int x,y;
 
         for(y=0;y<l->ysize;y++) {
                 for(x=0;x<l->xsize;x++) {
-                        l->c[y][x].flags |= CF_VISITED;
+                        set_cell_visited(l, y, x);
                 }
         }
 }
@@ -1020,8 +1042,8 @@ void meta_generate_dungeon(int d, int type)
                         world->dng[d].ysize = ri(100, 200);
                         world->dng[d].xsize = ri(200, 300);
                 } else {
-                        world->dng[d].xsize = (ri(70, 120));  // let's start within reasonable sizes!
-                        world->dng[d].ysize = (ri(50, 100));
+                        world->dng[d].xsize = (ri(55, 100));  // let's start within reasonable sizes!
+                        world->dng[d].ysize = (ri(40, 80));
                 }
 
                 world->dng[d].level = d;

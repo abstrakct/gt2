@@ -37,7 +37,7 @@ struct objdef_save_struct {
        signed short attackmod;
        signed short damagemod;
        char         basename[50];
-       char         unidname[100];
+       //char         unidname[100];
        char         fullname[100];   // we might want to not include these here...??
        char         c;
        char         minlevel;

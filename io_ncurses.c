@@ -546,7 +546,7 @@ void draw_wstat()
 
         mvwprintw(wleft, 1, 1, "Name:");
         mvwprintw(wleft, 2, 1, "Turn:   %d", game->turn);
-        mvwprintw(wleft, 3, 1, "Weapon: %s", player->weapon ? player->weapon->fullname : "bare hands");
+        mvwprintw(wleft, 3, 1, "Weapon: %s", player->weapon ? player->weapon->displayname : "bare hands");
         //mvwprintw(wleft, 3, 1, "y,x     %d,%d", ply, plx);
         //mvwprintw(wleft, 4, 1, "(py,px) (%d,%d)", ppy, ppx);
         mvwprintw(wleft, 5, 1, "viewradius: %d", player->viewradius);
@@ -582,12 +582,12 @@ void draw_wstat()
                         //o = get_object_from_letter(slot_to_letter(j), player->inventory);
                         o = player->inventory->object[j];
                         if(is_worn(o)) {
-                                mvwprintw(wstat, i, 1, "%c)   %s %s", slot_to_letter(j), a_an(o->fullname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                mvwprintw(wstat, i, 1, "%c)   %s %s", slot_to_letter(j), a_an(o->displayname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
                                 wattron(wstat, COLOR_PAIR(COLOR_GREEN));
                                 mvwprintw(wstat, i, 4, "*"); 
                                 wattroff(wstat, COLOR_PAIR(COLOR_GREEN));
                         } else {
-                                mvwprintw(wstat, i, 1, "%c) - %s", slot_to_letter(j), a_an(o->fullname));
+                                mvwprintw(wstat, i, 1, "%c) - %s", slot_to_letter(j), a_an(o->displayname));
                         }
                         i++;
                 }

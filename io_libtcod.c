@@ -470,7 +470,7 @@ void draw_map()
                                         if(level->c[j][i].inventory && level->c[j][i].inventory->object[0]) {
                                                 if(!hasbit(level->c[j][i].inventory->object[0]->flags, OF_SEENBYPLAYER)) {
                                                         setbit(level->c[j][i].inventory->object[0]->flags, OF_SEENBYPLAYER);
-                                                        gtprintf("You found %s.", a_an(level->c[j][i].inventory->object[0]->fullname));
+                                                        gtprintf("You found %s.", a_an(level->c[j][i].inventory->object[0]->displayname));
                                                 }
                                         }
                                 }
@@ -618,7 +618,7 @@ void draw_left()
 
         i++;
         TCOD_console_set_default_foreground(game->left.c, TCOD_white);
-        TCOD_console_print(game->left.c, 1, i+3, "Weapon: %s", player->weapon ? player->weapon->fullname : "bare hands");
+        TCOD_console_print(game->left.c, 1, i+3, "Weapon: %s", player->weapon ? player->weapon->displayname : "bare hands");
         //TCOD_console_print(game->left.c, 1, i+4, "viewradius: %d", player->viewradius);
         
         /* Hitpoints */
@@ -659,7 +659,7 @@ void draw_left()
 
         mvwprintw(wleft, 1, 1, "Name:");
         mvwprintw(wleft, 2, 1, "Turn:   %d", game->turn);
-        mvwprintw(wleft, 3, 1, "Weapon: %s", player->weapon ? player->weapon->fullname : "bare hands");
+        mvwprintw(wleft, 3, 1, "Weapon: %s", player->weapon ? player->weapon->displayname : "bare hands");
         //mvwprintw(wleft, 3, 1, "y,x     %d,%d", ply, plx);
         //mvwprintw(wleft, 4, 1, "(py,px) (%d,%d)", ppy, ppx);
         mvwprintw(wleft, 5, 1, "viewradius: %d", player->viewradius);
@@ -695,12 +695,12 @@ void draw_left()
                         //o = get_object_from_letter(slot_to_letter(j), player->inventory);
                         o = player->inventory->object[j];
                         if(is_worn(o)) {
-                                mvwprintw(wstat, i, 1, "%c)   %s %s", slot_to_letter(j), a_an(o->fullname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                mvwprintw(wstat, i, 1, "%c)   %s %s", slot_to_letter(j), a_an(o->displayname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
                                 wattron(wstat, COLOR_PAIR(COLOR_GREEN));
                                 mvwprintw(wstat, i, 4, "*"); 
                                 wattroff(wstat, COLOR_PAIR(COLOR_GREEN));
                         } else {
-                                mvwprintw(wstat, i, 1, "%c)   %s", slot_to_letter(j), a_an(o->fullname));
+                                mvwprintw(wstat, i, 1, "%c)   %s", slot_to_letter(j), a_an(o->displayname));
                         }
                         i++;
                 }
@@ -731,7 +731,7 @@ void draw_right()
                                 TCOD_console_put_char_ex(game->right.c, 3, i, '*', TCOD_light_green, TCOD_black);
                                 TCOD_console_set_default_foreground(game->right.c, o->color.fore);
                                 TCOD_console_set_default_background(game->right.c, o->color.back);
-                                TCOD_console_print(game->right.c, 5, i, "%s %s", a_an(o->fullname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                TCOD_console_print(game->right.c, 5, i, "%s %s", a_an(o->displayname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
                                 TCOD_console_set_default_foreground(game->right.c, TCOD_white);
                                 TCOD_console_set_default_background(game->right.c, TCOD_black);
                         } else {
@@ -739,7 +739,7 @@ void draw_right()
                                 TCOD_console_put_char_ex(game->right.c, 3, i, '-', TCOD_white, TCOD_black);
                                 TCOD_console_set_default_foreground(game->right.c, o->color.fore);
                                 TCOD_console_set_default_background(game->right.c, o->color.back);
-                                TCOD_console_print(game->right.c, 5, i, "%s", a_an(o->fullname));
+                                TCOD_console_print(game->right.c, 5, i, "%s", a_an(o->displayname));
                                 TCOD_console_set_default_foreground(game->right.c, TCOD_white);
                                 TCOD_console_set_default_background(game->right.c, TCOD_black);
                         }

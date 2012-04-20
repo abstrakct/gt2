@@ -38,8 +38,7 @@ struct object {
         long          flags;                // 4 bytes = 32 bits/flags, see OF_defines below - CONSIDER CHANGE TO LONG LONG
         signed short  attackmod;            // +/- on attack; for armor: acmodifier
         signed short  damagemod;            // +/- on damage;
-        char          basename[50];         // the basic name of the item
-        char          unidname[100];        // unidentified name
+        char          basename[50];         // the basic (unidentified) name of the item
         char          fullname[100];        // should be more than enough, adjust later
         char          displayname[128];
         char          c;
@@ -235,6 +234,7 @@ void   unwear(void *a, obj_t *o);
 void   puton(void *actor, int slot, obj_t *o);
 void   drop(void *a, obj_t *o);
 void   quaff(void *a, obj_t *o);
+void   identify(obj_t *o);
 
 inv_t *init_inventory();
 void   spawn_golds(int num, int max, void *p);

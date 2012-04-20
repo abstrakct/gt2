@@ -323,6 +323,7 @@ void generate_fullname(obj_t *o)
                 strcat(n, " of Holy Fuck");
         
         strcpy(o->fullname, n);
+        strcpy(o->displayname, n);
 }
 
 /*
@@ -475,7 +476,7 @@ obj_t *spawn_object(int n, void *level)
         add_attackmod(new, level);
         add_damagemod(new, level);
 
-        generate_fullname(new);  // TODO displayname vs fullname etc.
+        generate_fullname(new);
         add_to_master_object_list(new);
 
         return new;
@@ -498,7 +499,7 @@ obj_t *spawn_object_with_rarity(int rarity, void *level)
         add_attackmod(new, level);
         add_damagemod(new, level);
 
-        generate_fullname(new);  // TODO displayname vs fullname etc.
+        generate_fullname(new);
         add_to_master_object_list(new);
 
         return new;
@@ -535,6 +536,7 @@ bool spawn_object_with_rarity_at(int y, int x, int rarity, void *level)
                 return false;
         }
 
+        generate_fullname(o);
         return true;
 }
 
@@ -731,9 +733,18 @@ void puton(void *a, int slot, obj_t *o)
                         setbit(o->flags, OF_ID_MOD);
                         do_identify_all_of_type(o);
                         generate_fullname(o);
-                        gtprintfc(COLOR_INFO, "This is %s!", a_an(o->fullname));
+                        strcpy(o->displayname, o->fullname);
+                        gtprintfc(COLOR_INFO, "This is %s!", a_an(o->displayname));
                 }
         }
+}
+
+void identify(obj_t *o)
+{
+        setbit(o->flags, OF_IDENTIFIED);
+        do_identify_all_of_type(o);
+        generate_fullname(o);
+        strcpy(o->displayname, o->fullname);
 }
 
 void quaff(void *a, obj_t *o)
@@ -747,10 +758,8 @@ void quaff(void *a, obj_t *o)
                 apply_effects(actor, o);
 
                 if((actor == player) && !hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
-                        setbit(o->flags, OF_IDENTIFIED);
-                        do_identify_all_of_type(o);
-                        generate_fullname(o);
-                        gtprintfc(COLOR_INFO, "That was %s!", a_an(o->fullname));
+                        identify(o);
+                        gtprintfc(COLOR_INFO, "That was %s!", a_an(o->displayname));
                 }
 
                 slot = object_to_slot(o, actor->inventory);
@@ -777,7 +786,7 @@ void wear(void *a, obj_t *o)
                         }
                         if(c == 'l') {
                                 if(pw_leftbracelet) {
-                                        if(!yesno("Do you want to remove your %s", pw_leftbracelet->fullname)) {
+                                        if(!yesno("Do you want to remove your %s", pw_leftbracelet->displayname)) {
                                                 gtprintf("OK then.");
                                                 return;
                                         } else {
@@ -789,7 +798,7 @@ void wear(void *a, obj_t *o)
                                 }
                         } else if(c == 'r') {
                                 if(pw_rightbracelet) {
-                                        if(!yesno("Do you want to remove your %s", pw_rightbracelet->fullname)) {
+                                        if(!yesno("Do you want to remove your %s", pw_rightbracelet->displayname)) {
                                                 gtprintf("OK then.");
                                                 return;
                                         } else {
@@ -802,13 +811,13 @@ void wear(void *a, obj_t *o)
                         }
 
                         if(!o->attackmod)
-                                gtprintfc(COLOR_INFO, "The %s seems to be malfunctioning!", o->fullname);      // change this when we implement the identification system!
+                                gtprintfc(COLOR_INFO, "The %s seems to be malfunctioning!", o->displayname);      // change this when we implement the identification system!
 
                 }
 
                 if(is_amulet(o)) {
                         if(pw_amulet) {
-                                if(!yesno("Do you want to remove your %s", pw_amulet->fullname)) {
+                                if(!yesno("Do you want to remove your %s", pw_amulet->displayname)) {
                                         gtprintf("OK then.");
                                         return;
                                 } else {
@@ -823,7 +832,7 @@ void wear(void *a, obj_t *o)
                 if(is_armor(o)) {
                         if(is_bodyarmor(o)) {
                                 if(pw_body) {
-                                        if(!yesno("Do you want to remove your %s", pw_body->fullname)) {
+                                        if(!yesno("Do you want to remove your %s", pw_body->displayname)) {
                                                 gtprintf("OK then.");
                                                 return;
                                         } else {
@@ -837,7 +846,7 @@ void wear(void *a, obj_t *o)
 
                         if(is_headgear(o)) {
                                 if(pw_headgear) {
-                                        if(!yesno("Do you want to remove your %s", pw_headgear->fullname)) {
+                                        if(!yesno("Do you want to remove your %s", pw_headgear->displayname)) {
                                                 gtprintf("OK then.");
                                                 return;
                                         } else {
@@ -851,7 +860,7 @@ void wear(void *a, obj_t *o)
 
                         if(is_footwear(o)) {
                                 if(pw_footwear) {
-                                        if(!yesno("Do you want to remove your %s", pw_footwear->fullname)) {
+                                        if(!yesno("Do you want to remove your %s", pw_footwear->displayname)) {
                                                 gtprintf("OK then.");
                                                 return;
                                         } else {
@@ -865,7 +874,7 @@ void wear(void *a, obj_t *o)
 
                         if(is_gloves(o)) {
                                 if(pw_gloves) {
-                                        if(!yesno("Do you want to remove your %s", pw_gloves->fullname)) {
+                                        if(!yesno("Do you want to remove your %s", pw_gloves->displayname)) {
                                                 gtprintf("OK then.");
                                                 return;
                                         } else {
@@ -879,7 +888,7 @@ void wear(void *a, obj_t *o)
 
                         if(is_shield(o)) {
                                 if(pw_shield) {
-                                        if(!yesno("Do you want to remove your %s", pw_shield->fullname)) {
+                                        if(!yesno("Do you want to remove your %s", pw_shield->displayname)) {
                                                 gtprintf("OK then.");
                                                 return;
                                         } else {
@@ -902,10 +911,8 @@ void wield(void *a, obj_t *o)
         player->weapon = o;
         apply_effects(actor, o);
         if((actor == player) && !hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {             // TODO: Fix so taht identifying weapons/armor is based on e.g. experience with said type of weapon.
-                setbit(o->flags, OF_IDENTIFIED);
-                do_identify_all_of_type(o);
-                generate_fullname(o);
-                gtprintfc(COLOR_INFO, "You believe this is %s!", a_an(o->fullname));
+                identify(o);
+                gtprintfc(COLOR_INFO, "You believe this is %s!", a_an(o->displayname));
         }
 }
 
@@ -928,7 +935,7 @@ void wieldwear(void *a, obj_t *o)
 
                 if(is_weapon(o)) {
                         wield(actor, o);
-                        youc(COLOR_INFO, "are now wielding a %s.", o->fullname);
+                        youc(COLOR_INFO, "are now wielding a %s.", o->displayname);
                 } else {
                         wear(actor, o);
                 }
@@ -944,7 +951,7 @@ void unwear(void *a, obj_t *o)
 
         for(i = 0; i < WEAR_SLOTS; i++) {
                 if(actor->w[i] == o) {
-                        youc(COLOR_INFO, "remove your %s.", o->fullname);
+                        youc(COLOR_INFO, "remove your %s.", o->displayname);
                         actor->w[i] = NULL;
                         unapply_effects(actor, o);
                         if(is_armor(o)) {
@@ -979,7 +986,7 @@ void unwieldwear(void *a, obj_t *o)
 
         if(is_weapon(o)) {
                 unwield(actor, o);
-                youc(COLOR_INFO, "unwield the %s.", o->fullname);
+                youc(COLOR_INFO, "unwield the %s.", o->displayname);
         } else {
                 unwear(actor, o);
         }
@@ -1035,7 +1042,7 @@ void pick_up(obj_t *o, void *p)
         a->inventory->num_used++;
 
         //assign_free_slot(o);
-        gtprintfc(COLOR_INFO, "%c - %s", slot_to_letter(slot), a_an(o->fullname));
+        gtprintfc(COLOR_WHITE, "  %c - %s", slot_to_letter(slot), a_an(o->displayname));
 }
 
 void place_object_in_cell(obj_t *o, cell_t *c)

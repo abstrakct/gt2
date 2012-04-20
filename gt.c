@@ -839,9 +839,9 @@ void look()
                                         do_action(ACTION_PICKUP);
                                 } else {
                                         if(is_pair(ob))
-                                                gtprintf("There is a pair of %s here.", ob->fullname);
+                                                gtprintf("There is a pair of %s here.", ob->displayname);
                                         else
-                                                gtprintf("There is %s here.", a_an(ob->fullname));
+                                                gtprintf("There is %s here.", a_an(ob->displayname));
                                 }
                         }
 
@@ -856,9 +856,9 @@ void look()
                                         return;
 
                                 /*if(is_pair(ci(ply, plx)->object[slot]))
-                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->object[slot]->fullname);
+                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->object[slot]->displayname);
                                 else*/
-                                        gtprintf("There is %s and %s here.", a_an(ci(ply, plx)->object[slot]->fullname), a_an(ci(ply, plx)->object[slot2]->fullname));
+                                        gtprintf("There is %s and %s here.", a_an(ci(ply, plx)->object[slot]->displayname), a_an(ci(ply, plx)->object[slot2]->displayname));
                         }
 
                         if(ci(ply, plx)->num_used > 2) {
@@ -867,7 +867,7 @@ void look()
                                 gtprintfc(COLOR_INFO, "There are several things here:");
                                 for(i=0;i<52;i++) {
                                         if(ci(ply, plx)->object[i])
-                                                gtprintf("%s", a_an(ci(ply, plx)->object[i]->fullname));
+                                                gtprintf("%s", a_an(ci(ply, plx)->object[i]->displayname));
                                 }
                         }
                 }

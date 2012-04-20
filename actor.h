@@ -68,6 +68,8 @@ typedef struct { // uattr_t
 
 #define PROTECTIONS 2
 
+#define is_invisible(a) (hasbit(a->flags, MF_INVISIBLE))
+
 typedef struct actorstruct {                               // actor_t 
         short        id;                                   // id = monsterdef id
         unsigned int mid;                                  // mid = unique id for this monster; in monsterdefs mid = index into aitable! (that should work right?)

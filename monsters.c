@@ -327,7 +327,7 @@ void hostile_ai(actor_t *m)
                 return;
         }
 
-        if(next_to(m, player)) {
+        if(next_to(m, player) && !is_invisible(player)) {
                 m->attacker = player;
                 attack(m, m->attacker);
                 return;

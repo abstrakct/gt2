@@ -21,8 +21,9 @@
 #define OE_PROTECTION_FIRE         21
 
 #define OE_HEAL_NOW                30
+#define OE_INVISIBILITY            31
 
-#define OE_LAST                    31
+#define OE_LAST                    32
 
 void apply_effects(actor_t *actor, obj_t *o);
 void apply_effect(int e, int effect, actor_t *actor, void *data);
@@ -37,5 +38,7 @@ void oe_charisma(actor_t *actor, void *data, int e);
 void oe_protection_life(actor_t *actor, void *data, int e);
 void oe_protection_fire(actor_t *actor, void *data, int e);
 void oe_heal_now(actor_t *actor, void *data, int e);
+void oe_invisibility(actor_t *actor, void *data, int e);
 
+void add_effect_with_duration_dice_sides(obj_t *a, short b, short c, short d, short e, short f, short g);
 #endif

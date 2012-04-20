@@ -19,7 +19,10 @@ typedef struct object_effect {
         short gain;               // for stat effects, this is the amount of points gained (and lost when temp effect runs out)
         short dice;
         short sides;
-        short durd, durs;
+        short modifier;           // dice modifier
+        short durationdice;
+        short durationsides;
+        short durationmodifier;
         short duration;           // set to -1 for permanent effects
 } oe_t;
 
@@ -65,7 +68,6 @@ typedef struct {  // inv_t
 
 #define add_effect(a, b) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects].effect = b; a->effects++; }
 #define add_effect_with_duration(a, b, c) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects].effect = b; a->effect[(int)a->effects].duration = c; a->effects++; }
-#define add_effect_with_duration_dice_sides(a, b, c, d, e, f) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects].effect = b; a->effect[(int)a->effects].durd = c; a->effect[(int)a->effects].durs = d; a->effect[(int)a->effects].dice = e; a->effect[(int)a->effects].sides = f; a->effect[(int)a->effects].duration = 1; a->effects++; }
 
 #define OT_GOLD       1
 #define OT_WEAPON     2
@@ -148,8 +150,10 @@ extern int mats_amulets[MATERIALS];
 #define POT_CLEAR      5
 #define POT_YELLOW     6
 #define POT_PINK       7
+#define POT_AMBER      8
+#define POT_GOLD       9
 
-#define POTS           7
+#define POTS           9
 
 extern int mats_potions[POTS];
 

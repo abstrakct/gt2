@@ -48,7 +48,7 @@ char *materialstring[] = {
 };
 
 char *potionstring[] = {
-        0, "red", "green", "sparkling", "blue", "clear", "yellow", "pink"
+        0, "red", "green", "sparkling", "blue", "clear", "yellow", "pink", "amber", "golden orange"
 };
 
 obj_t get_objdef(int n)

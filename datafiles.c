@@ -571,7 +571,7 @@ int parse_jewelry()
 int parse_potions()
 {
         config_setting_t *cfg;
-        int i, j, material, d, s, durd, durs;
+        int i, j, material, d, s, durd, durs, durm, effect;
         char sname[100];
         const char *value;
 
@@ -589,7 +589,7 @@ int parse_potions()
                 sprintf(sname, "potion.[%d].name", j);
                 config_lookup_string(cf, sname, &value);
                 strcpy(o->basename, value);
-                
+
                 for(y = 0; y < 10; y++) {
                         sprintf(sname, "potion.[%d].effect.[%d].brand", j, y);
                         config_lookup_string(cf, sname, &value);
@@ -611,12 +611,14 @@ int parse_potions()
                                         add_effect(o, OE_HEAL_NOW);
                                 }
                         }
-                        
-                        if(!strcmp(value, "stat")) {
-                                sprintf(sname, "potion.[%d].effect.[%d].type", j, y);
-                                config_lookup_string(cf, sname, &value);
 
-                                if(!strcmp(value, "permanent")) {
+                        sprintf(sname, "potion.[%d].effect.[%d].type", j, y);
+                        config_lookup_string(cf, sname, &value);
+
+                        if(!strcmp(value, "permanent")) {
+                                sprintf(sname, "potion.[%d].effect.[%d].brand", j, y);
+                                config_lookup_string(cf, sname, &value);
+                                if(!strcmp(value, "stat")) {
                                         sprintf(sname, "potion.[%d].effect.[%d].stat", j, y);
                                         config_lookup_string(cf, sname, &value);
 
@@ -633,30 +635,44 @@ int parse_potions()
                                         if(!strcmp(value, "charisma"))
                                                 add_effect_with_duration(o, OE_CHARISMA, -1);
                                 }
+                        }
 
-                                if(!strcmp(value, "temporary")) {
+                        if(!strcmp(value, "temporary")) {
+                                sprintf(sname, "potion.[%d].effect.[%d].brand", j, y);
+                                config_lookup_string(cf, sname, &value);
+
+                                if(!strcmp(value, "invisibility"))
+                                        effect = OE_INVISIBILITY;
+
+                                if(!strcmp(value, "stat")) {
                                         sprintf(sname, "potion.[%d].effect.[%d].stat", j, y);
                                         config_lookup_string(cf, sname, &value);
-                                        
-                                        durd = 0;
-                                        sprintf(sname, "potion.[%d].effect.[%d].dur_d", j, y);
-                                        config_lookup_int(cf, sname, &durd);
-                                        durs = 0;
-                                        sprintf(sname, "potion.[%d].effect.[%d].dur_s", j, y);
-                                        config_lookup_int(cf, sname, &durs);
-
-                                        x = 0;
-                                        sprintf(sname, "potion.[%d].effect.[%d].dice", j, y);
-                                        config_lookup_int(cf, sname, &x);
-                                        d = x;
-                                        x = 0;
-                                        sprintf(sname, "potion.[%d].effect.[%d].sides", j, y);
-                                        config_lookup_int(cf, sname, &x);
-                                        s = x;
-
-                                        if(!strcmp(value, "strength")) 
-                                                add_effect_with_duration_dice_sides(o, OE_STRENGTH, durd, durs, d, s);
+                                        if(!strcmp(value, "strength"))
+                                                effect = OE_STRENGTH;
                                 }
+
+                                durd = 0;
+                                sprintf(sname, "potion.[%d].effect.[%d].dur_d", j, y);
+                                config_lookup_int(cf, sname, &durd);
+                                durs = 0;
+                                sprintf(sname, "potion.[%d].effect.[%d].dur_s", j, y);
+                                config_lookup_int(cf, sname, &durs);
+                                durm = 0;
+                                sprintf(sname, "potion.[%d].effect.[%d].dur_m", j, y);
+                                config_lookup_int(cf, sname, &durm);
+
+
+                                x = 0;
+                                sprintf(sname, "potion.[%d].effect.[%d].dice", j, y);
+                                config_lookup_int(cf, sname, &x);
+                                d = x;
+
+                                x = 0;
+                                sprintf(sname, "potion.[%d].effect.[%d].sides", j, y);
+                                config_lookup_int(cf, sname, &x);
+                                s = x;
+
+                                add_effect_with_duration_dice_sides(o, effect, durd, durs, durm, d, s);
                         }
                 }
 
@@ -701,14 +717,16 @@ int parse_potions()
                         die("whoa! we ran out of material!");
 
                 switch(o->material) {
-                        case POT_RED: o->color = COLOR_RED; break;
-                        case POT_GREEN: o->color = COLOR_GREEN; break;
+                        case POT_RED:       o->color = COLOR_RED; break;
+                        case POT_GREEN:     o->color = COLOR_GREEN; break;
                         case POT_SPARKLING: o->color = COLOR_WHITE; break;
-                        case POT_BLUE: o->color = COLOR_BLUE; break;
-                        case POT_CLEAR: o->color = COLOR_WHITE; break;
-                        case POT_YELLOW: o->color = COLOR_YELLOW; break;
-                        case POT_PINK: o->color = COLOR_MAGENTA; break;
-                        default: o->color = COLOR_WHITE; break;
+                        case POT_BLUE:      o->color = COLOR_BLUE; break;
+                        case POT_CLEAR:     o->color = COLOR_WHITE; break;
+                        case POT_YELLOW:    o->color = COLOR_YELLOW; break;
+                        case POT_PINK:      o->color = COLOR_MAGENTA; break;
+                        case POT_AMBER:     o->color = COLOR_AMBER; break;
+                        case POT_GOLD:      o->color = COLOR_GOLD; break;
+                        default:            o->color = COLOR_WHITE; break;
                 };
 
                 o->head = objdefs->head;
@@ -720,9 +738,9 @@ int parse_potions()
                 printf(".");
         }
 
-        printf(" OK\n");
+printf(" OK\n");
 
-        return 0;
+return 0;
 }
 
 int parse_objects()

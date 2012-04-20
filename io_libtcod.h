@@ -126,6 +126,7 @@ extern  gtcolor_t colors[];
 #define COLOR_MOUNTAIN colors[C_BLACK_RED]
 #define COLOR_LAKE     colors[C_BLACK_BLUE]
 #define COLOR_PLAYER   colors[C_BLACK_BLUE]
+#define COLOR_PINVIS   colors[C_WHITE_BLUE]
 
 #define COLOR_YELLOW   colors[C_BLACK_YELLOW]
 #define COLOR_BLUE     colors[C_BLACK_BLUE]
@@ -133,6 +134,7 @@ extern  gtcolor_t colors[];
 #define COLOR_RED      colors[C_BLACK_RED]
 #define COLOR_WHITE    colors[C_BLACK_WHITE]
 #define COLOR_MAGENTA  colors[C_BLACK_MAGENTA]
+#define COLOR_AMBER    colors[C_BLACK_AMBER]
 
 #define COLOR_WARNING  colors[C_BLACK_RED]
 #define COLOR_BAD      colors[C_BLACK_RED]

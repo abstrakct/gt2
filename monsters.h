@@ -23,6 +23,7 @@ extern aifunction aitable[];
 #define MF_UNUSED1           (1 <<  6)
 #define MF_SLEEPING          (1 <<  7)
 #define MF_SEENBYPLAYER      (1 <<  8)
+#define MF_INVISIBLE         (1 <<  9)
 
 // Prototypes
 monster_t get_monsterdef(int n);

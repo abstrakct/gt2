@@ -55,8 +55,30 @@ effectfunctionpointer effecttable[] = {
         0,
         0,
         0,
-        oe_heal_now
+        oe_heal_now,
+        oe_invisibility
 };
+
+// TODO: MULTIPLE TEMPORARY EFFECTS!!!
+
+// This one is always temporary.
+void oe_invisibility(actor_t *actor, void *data, int e)
+{
+        obj_t *o;
+        int duration;
+
+        o = (obj_t *) data;
+
+        if(is_potion(o)) {
+                duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                if(actor == player)
+                        youc(COLOR_INFO, "become invisible!");
+                actor->temp = gtmalloc(sizeof(oe_t));
+                *(actor->temp) = o->effect[e];
+                actor->temp->duration = duration;
+                setbit(actor->flags, MF_INVISIBLE);
+        }
+}
 
 void oe_heal_now(actor_t *actor, void *data, int e)
 {
@@ -130,8 +152,8 @@ void oe_strength(actor_t *actor, void *data, int e)
                 if(o->effect[e].duration == -1) {
                         actor->attr.str++;
                 } else if(o->effect[e].duration > 0) {
-                        duration = dice(o->effect[e].durd, o->effect[e].durs, 0);
-                        gain = dice(o->effect[e].dice, o->effect[e].sides, 0);
+                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
                         actor->attr.str += gain;
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
@@ -307,6 +329,16 @@ void unapply_temp_effect(actor_t *actor)
                         gtfree(actor->temp);
                         actor->temp = NULL;
                         break;
+                case OE_INVISIBILITY:
+                        if(actor == player)
+                                gtprintfc(COLOR_INFO, "Your body looks more solid again.");
+                        clearbit(actor->flags, MF_INVISIBLE);
+                        gtfree(actor->temp);
+                        actor->temp = NULL;
+                        break;
+                default:
+                        gtprintf("trying to unapply unknown effect %d.", actor->temp->effect);
+                        break;
         }
 }
 
@@ -315,4 +347,19 @@ void process_temp_effects(actor_t *actor)
         actor->temp->duration--;
         if(actor->temp->duration == 0)
                 unapply_temp_effect(actor);
+}
+
+// "converted" from macro to function, therefore stupid variable names
+void add_effect_with_duration_dice_sides(obj_t *a, short b, short c, short d, short e, short f, short g)
+{
+        if(a->effects < MAX_EFFECTS) { 
+                a->effect[(int)a->effects].effect = b;
+                a->effect[(int)a->effects].durationdice = c;
+                a->effect[(int)a->effects].durationsides = d;
+                a->effect[(int)a->effects].durationmodifier = e; 
+                a->effect[(int)a->effects].dice = f;
+                a->effect[(int)a->effects].sides = g;
+                a->effect[(int)a->effects].duration = 1;
+                a->effects++;
+        }
 }

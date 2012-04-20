@@ -519,8 +519,13 @@ void draw_map()
                                         if(TCOD_map_is_in_fov(level->map, i, j) && level->c[j][i].monster /*&& actor_in_lineofsight(player, level->c[j][i].monster)*/)
                                                 gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
 
+                                        if(hasbit(player->flags, MF_INVISIBLE))
+                                                color = COLOR_PINVIS;
+                                        else
+                                                color = COLOR_PLAYER;
+
                                         if(j == ply && i == plx)
-                                                gtmapaddch(dy, dx, COLOR_PLAYER, '@');
+                                                gtmapaddch(dy, dx, color, '@');
                                 }
                         }
                 }

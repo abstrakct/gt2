@@ -364,6 +364,7 @@ void heal_monster(actor_t *m, int num)
 void move_monsters()
 {
         monster_t *m;
+        int i;
 
         m = world->curlevel->monsters;
         if(!m)
@@ -392,14 +393,17 @@ void move_monsters()
                                 hostile_ai(m);
                                 m->ticks -= 1000;
                                 if(m->hp < m->maxhp) {
-                                        if(game->turn % 3)
+                                        i = 17 - m->attr.phy;
+                                        if(i <= 0)
+                                                i = 1;
+                                        if(game->turn % i)
                                                 if(perc(40+m->attr.phy)) {
-                                                        int i;
+                                                        int j;
 
-                                                        i = ability_modifier(m->attr.phy);
-                                                        if(i <= 0)
-                                                                i = 1;
-                                                        heal_monster(m, ri(1, i));
+                                                        j = ability_modifier(m->attr.phy);
+                                                        if(j < 1)
+                                                                j = 1;
+                                                        heal_monster(m, ri(1, j));
                                                 }
                                 }
                         }

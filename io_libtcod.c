@@ -67,18 +67,29 @@ cmd_t *curcommands;
 
 /*           keycode         char pressed lalt lctrl ralt rctrl shift */
 cmd_t normalcommands[] = {
+        // movement
         { { TCODK_DOWN,         0,   1,     0,   0,   0,    0,    0 }, CMD_DOWN,        "Move down" },
         { { TCODK_CHAR,       'j',   1,     0,   0,   0,    0,    0 }, CMD_DOWN,        "Move down" },
+        { { TCODK_KP2,          0,   1,     0,   0,   0,    0,    0 }, CMD_DOWN,        "Move down" },
         { { TCODK_UP,           0,   1,     0,   0,   0,    0,    0 }, CMD_UP,          "Move up" },
         { { TCODK_CHAR,       'k',   1,     0,   0,   0,    0,    0 }, CMD_UP,          "Move up" },
+        { { TCODK_KP8,          0,   1,     0,   0,   0,    0,    0 }, CMD_UP,          "Move up" },
         { { TCODK_LEFT,         0,   1,     0,   0,   0,    0,    0 }, CMD_LEFT,        "Move left" },
         { { TCODK_CHAR,       'h',   1,     0,   0,   0,    0,    0 }, CMD_LEFT,        "Move left" },
+        { { TCODK_KP4,          0,   1,     0,   0,   0,    0,    0 }, CMD_LEFT,        "Move left" },
         { { TCODK_RIGHT,        0,   1,     0,   0,   0,    0,    0 }, CMD_RIGHT,       "Move right" },
         { { TCODK_CHAR,       'l',   1,     0,   0,   0,    0,    0 }, CMD_RIGHT,       "Move right" },
+        { { TCODK_KP6,          0,   1,     0,   0,   0,    0,    0 }, CMD_RIGHT,       "Move right" },
         { { TCODK_CHAR,       'y',   1,     0,   0,   0,    0,    0 }, CMD_NW,          "Move up-left" },
+        { { TCODK_KP7,        'y',   1,     0,   0,   0,    0,    0 }, CMD_NW,          "Move up-left" },
         { { TCODK_CHAR,       'u',   1,     0,   0,   0,    0,    0 }, CMD_NE,          "Move up-right" },
+        { { TCODK_KP9,        'u',   1,     0,   0,   0,    0,    0 }, CMD_NE,          "Move up-right" },
         { { TCODK_CHAR,       'b',   1,     0,   0,   0,    0,    0 }, CMD_SW,          "Move down-left" },
+        { { TCODK_KP1,        'b',   1,     0,   0,   0,    0,    0 }, CMD_SW,          "Move down-left" },
         { { TCODK_CHAR,       'n',   1,     0,   0,   0,    0,    0 }, CMD_SE,          "Move down-right" },
+        { { TCODK_KP3,        'n',   1,     0,   0,   0,    0,    0 }, CMD_SE,          "Move down-right" },
+
+        // actions
         { { TCODK_CHAR,       'w',   0,     0,   0,   0,    0,    0 }, CMD_WIELDWEAR,   "Wield or wear an item" },
         { { TCODK_CHAR,       'r',   0,     0,   0,   0,    0,    0 }, CMD_UNWIELDWEAR, "Remove or unwield an item" },
         { { TCODK_CHAR,       ',',   1,     0,   0,   0,    0,    0 }, CMD_PICKUP,      "Pick up something" },
@@ -87,6 +98,7 @@ cmd_t normalcommands[] = {
         { { TCODK_CHAR,       '>',   1,     0,   0,   0,    0,    1 }, CMD_DESCEND,     "Go down stairs" },
         { { TCODK_CHAR,       'd',   0,     0,   0,   0,    0,    0 }, CMD_DROP,        "Drop an object" },
         { { TCODK_CHAR,       'q',   0,     0,   0,   0,    0,    0 }, CMD_QUAFF,       "Quaff a potion" },
+        { { TCODK_CHAR,       'o',   1,     0,   0,   0,    0,    0 }, CMD_AUTOEXPLORE, "Autoexplore" },
         //{ { TCODK_CHAR,       'i', 1, 0, 0, 0, 0, 0 }, CMD_INVENTORY,   "Show inventory" },
         //{ TCODK_F5,  CMD_SAVE,        "Save" },
         //{ TCODK_F6,  CMD_LOAD,        "Load" },
@@ -108,9 +120,8 @@ cmd_t normalcommands[] = {
         { { TCODK_CHAR,       'L', 1, 0, 0, 0, 0, 1 }, CMD_LONGRIGHT,   "" },
         { { TCODK_CHAR,       'v', 1, 0, 0, 0, 0, 0 }, CMD_TOGGLEFOV,   "Toggle FOV" },
         //{ KEY_F(4),  CMD_DUMPOBJECTS, "Dump objects" },
-        { { TCODK_CHAR,       'o', 1, 0, 0, 0, 0, 0 }, CMD_DUMPOBJECTS, "" },
+        { { TCODK_F2,         'o', 1, 0, 0, 0, 0, 0 }, CMD_DUMPOBJECTS, "" },
         { { TCODK_CHAR,       'c', 1, 0, 0, 0, 0, 0 }, CMD_DUMPCOLORS, "" },
-        { { TCODK_CHAR,       'p', 1, 0, 0, 0, 0, 0 }, CMD_PATHFINDER, "" },
 #endif
         //{ , CMD_IDENTIFYALL, "Identify everything" },
         //{ , CMD_SKILLSCREEN, "Show skills" },
@@ -789,6 +800,18 @@ void initial_update_screen()
 }
 
 // Input and messages
+
+bool gt_checkforkeypress()
+{
+        TCOD_key_t key;
+
+        //TCOD_console_flush();
+        key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+        if(key.vk == TCODK_NONE)
+                return false;
+        else
+                return true;
+}
 
 gtkey gtgetch()
 {

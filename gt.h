@@ -140,8 +140,10 @@ extern int                 tempxsize, tempysize;
 
 bool do_next_thing_in_queue();
 void queue(int action);
+void queuemany(int first, ...);
 void shutdown_gt();
 bool do_action(int action);
+void do_turn();
 
 
 #endif

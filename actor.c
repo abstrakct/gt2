@@ -411,3 +411,80 @@ void move_player_to_stairs_down(int d)
                 }
         }
 }
+
+bool get_next_autoexplore_coord(short *x, short *y)
+{
+        bool found, done;
+        found = false;
+        done  = false;
+
+        if(check_if_all_explored(world->curlevel)) {
+                done = true;
+        }
+
+        if(!done) {
+                while(!found) {
+                        *x = ri(1, world->curlevel->xsize-1);
+                        *y = ri(1, world->curlevel->ysize-1);
+                        if(ct(*y, *x) == DNG_FLOOR)
+                                if(!hasbit(cf(*y, *x), CF_VISITED))
+                                        found = true;
+                }
+        }
+
+        return done;
+}
+
+void autoexplore()
+{
+        int nx, ny, x, y;
+        bool done;
+
+        nx = plx; ny = ply;
+
+        done = get_next_autoexplore_coord(&(player->goalx), &(player->goaly));
+
+        if(done) {
+                gtprintf("You have explored the entire dungeon.");
+        } else {
+                setbit(player->flags, PF_AUTOEXPLORING);
+                TCOD_path_compute(player->path, plx, ply, player->goalx, player->goaly);
+                while(!TCOD_path_is_empty(player->path)) {
+                        if(TCOD_path_walk(player->path, &x, &y, true)) {
+                                // let's move!
+                                
+                                if(is_autoexploring) {             // i.e. if not interrupted
+                                        if(y > ny) { // moving downward
+                                                if(x > nx)
+                                                        queuemany(ACTION_PLAYER_MOVE_SE, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                if(x < nx)
+                                                        queuemany(ACTION_PLAYER_MOVE_SW, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                if(x == nx)
+                                                        queuemany(ACTION_PLAYER_MOVE_DOWN, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                        }
+
+                                        if(y < ny) {
+                                                if(x > nx)
+                                                        queuemany(ACTION_PLAYER_MOVE_NE, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                if(x < nx)
+                                                        queuemany(ACTION_PLAYER_MOVE_NW, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                if(x == nx)
+                                                        queuemany(ACTION_PLAYER_MOVE_UP, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                        }
+
+                                        if(y == ny) {
+                                                if(x > nx)
+                                                        queuemany(ACTION_PLAYER_MOVE_RIGHT, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                if(x < nx)
+                                                        queuemany(ACTION_PLAYER_MOVE_LEFT, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                        }
+                                        nx = x; ny = y;
+                                        do_turn();
+                                }
+                        } else {
+                                gtprintf("Hm - you seem to be stuck!");
+                        }
+                }
+                clearbit(player->flags, PF_AUTOEXPLORING);
+        }
+}

@@ -69,6 +69,7 @@ typedef struct { // uattr_t
 #define PROTECTIONS 2
 
 #define is_invisible(a) (hasbit(a->flags, MF_INVISIBLE))
+#define is_autoexploring (hasbit(player->flags, PF_AUTOEXPLORING))
 
 typedef struct actorstruct {                               // actor_t 
         short        id;                                   // id = monsterdef id
@@ -110,6 +111,8 @@ typedef struct actorstruct {                               // actor_t
         struct actorstruct *head;
 } actor_t;
 
+#define PF_AUTOEXPLORING (1 << 1)
+
 char   get_first_free_letter();
 char   slot_to_letter(int i);
 int    letter_to_slot(char c);
@@ -119,6 +122,7 @@ void   assign_free_slot(obj_t *o);
 void   unassign_object(obj_t *o);
 void   assign_letter(char c, obj_t *o);
 
+void autoexplore();
 
 bool in_lineofsight(actor_t *src, int goaly, int goalx);
 bool actor_in_lineofsight(actor_t *src, actor_t *dest);

@@ -883,8 +883,15 @@ void do_turn()
         i = aq->num;
 
         while(i) {
+                if(is_autoexploring) {
+                        if(gt_checkforkeypress()) {
+                                gtprintf("interrupting...");
+                                clearbit(player->flags, PF_AUTOEXPLORING);
+                        }
+                }
+
                 ret = do_next_thing_in_queue();
-                update_screen();
+                //update_screen();
                         
                 if(ret) {
                         game->turn++;
@@ -1100,64 +1107,9 @@ int main(int argc, char *argv[])
                         case CMD_REST:
                                 queue(ACTION_NOTHING);
                                 break;
-                        case CMD_PATHFINDER:
-                                nx = plx; ny = ply;
-
-                                found = false;
-                                done  = false;
-                                if(check_if_all_explored(world->curlevel)) {
-                                        done = true;
-                                }
-                                if(!done) {
-                                        while(!found) {
-                                                player->goalx = ri(1, world->curlevel->xsize-1);
-                                                player->goaly = ri(1, world->curlevel->ysize-1);
-                                                if(ct(player->goaly, player->goalx) == DNG_FLOOR)
-                                                        if(!hasbit(cf(player->goaly, player->goalx), CF_VISITED))
-                                                                found = true;
-                                        }
-                                }
-                                
-                                if(done) {
-                                        gtprintf("You have explored the entire dungeon.");
-                                } else {
-                                        //update_path(player);
-                                        TCOD_path_compute(player->path, plx, ply, player->goalx, player->goaly);
-                                        //for(i = 0; i < TCOD_path_size(player->path); i++) {
-                                        while(!TCOD_path_is_empty(player->path)) {
-                                                //TCOD_path_get(player->path, i, &x, &y);
-                                                if(TCOD_path_walk(player->path, &x, &y, true)) {
-                                                        // let's move!
-                                                        if(y > ny) { // moving downward
-                                                                if(x > nx)
-                                                                        queuemany(ACTION_PLAYER_MOVE_SE, ACTION_HEAL_PLAYER, ENDOFLIST);
-                                                                if(x < nx)
-                                                                        queuemany(ACTION_PLAYER_MOVE_SW, ACTION_HEAL_PLAYER, ENDOFLIST);
-                                                                if(x == nx)
-                                                                        queuemany(ACTION_PLAYER_MOVE_DOWN, ACTION_HEAL_PLAYER, ENDOFLIST);
-                                                        }
-
-                                                        if(y < ny) {
-                                                                if(x > nx)
-                                                                        queuemany(ACTION_PLAYER_MOVE_NE, ACTION_HEAL_PLAYER, ENDOFLIST);
-                                                                if(x < nx)
-                                                                        queuemany(ACTION_PLAYER_MOVE_NW, ACTION_HEAL_PLAYER, ENDOFLIST);
-                                                                if(x == nx)
-                                                                        queuemany(ACTION_PLAYER_MOVE_UP, ACTION_HEAL_PLAYER, ENDOFLIST);
-                                                        }
-
-                                                        if(y == ny) {
-                                                                if(x > nx)
-                                                                        queuemany(ACTION_PLAYER_MOVE_RIGHT, ACTION_HEAL_PLAYER, ENDOFLIST);
-                                                                if(x < nx)
-                                                                        queuemany(ACTION_PLAYER_MOVE_LEFT, ACTION_HEAL_PLAYER, ENDOFLIST);
-                                                        }
-                                                        nx = x; ny = y;
-                                                } else {
-                                                        gtprintf("Hm - you seem to be stuck!");
-                                                }
-                                        }
-                                }
+                        case CMD_PATHFINDER: break;
+                        case CMD_AUTOEXPLORE:
+                                autoexplore();
                                 break;
                         default:
                                 queue(ACTION_NOTHING);

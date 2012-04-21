@@ -81,13 +81,13 @@ cmd_t normalcommands[] = {
         { { TCODK_CHAR,       'l',   1,     0,   0,   0,    0,    0 }, CMD_RIGHT,       "Move right" },
         { { TCODK_KP6,          0,   1,     0,   0,   0,    0,    0 }, CMD_RIGHT,       "Move right" },
         { { TCODK_CHAR,       'y',   1,     0,   0,   0,    0,    0 }, CMD_NW,          "Move up-left" },
-        { { TCODK_KP7,        'y',   1,     0,   0,   0,    0,    0 }, CMD_NW,          "Move up-left" },
+        { { TCODK_KP7,          0,   1,     0,   0,   0,    0,    0 }, CMD_NW,          "Move up-left" },
         { { TCODK_CHAR,       'u',   1,     0,   0,   0,    0,    0 }, CMD_NE,          "Move up-right" },
-        { { TCODK_KP9,        'u',   1,     0,   0,   0,    0,    0 }, CMD_NE,          "Move up-right" },
+        { { TCODK_KP9,          0,   1,     0,   0,   0,    0,    0 }, CMD_NE,          "Move up-right" },
         { { TCODK_CHAR,       'b',   1,     0,   0,   0,    0,    0 }, CMD_SW,          "Move down-left" },
-        { { TCODK_KP1,        'b',   1,     0,   0,   0,    0,    0 }, CMD_SW,          "Move down-left" },
+        { { TCODK_KP1,          0,   1,     0,   0,   0,    0,    0 }, CMD_SW,          "Move down-left" },
         { { TCODK_CHAR,       'n',   1,     0,   0,   0,    0,    0 }, CMD_SE,          "Move down-right" },
-        { { TCODK_KP3,        'n',   1,     0,   0,   0,    0,    0 }, CMD_SE,          "Move down-right" },
+        { { TCODK_KP3,          0,   1,     0,   0,   0,    0,    0 }, CMD_SE,          "Move down-right" },
 
         // actions
         { { TCODK_CHAR,       'w',   0,     0,   0,   0,    0,    0 }, CMD_WIELDWEAR,   "Wield or wear an item" },

@@ -742,7 +742,10 @@ void draw_right()
                                 TCOD_console_put_char_ex(game->right.c, 3, i, '*', TCOD_light_green, TCOD_black);
                                 TCOD_console_set_default_foreground(game->right.c, o->color.fore);
                                 TCOD_console_set_default_background(game->right.c, o->color.back);
-                                TCOD_console_print(game->right.c, 5, i, "%s %s", a_an(o->displayname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                if(is_pair(o))
+                                        TCOD_console_print(game->right.c, 5, i, "a pair of %s %s", o->displayname, is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                else
+                                        TCOD_console_print(game->right.c, 5, i, "%s %s", a_an(o->displayname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
                                 TCOD_console_set_default_foreground(game->right.c, TCOD_white);
                                 TCOD_console_set_default_background(game->right.c, TCOD_black);
                         } else {
@@ -750,7 +753,10 @@ void draw_right()
                                 TCOD_console_put_char_ex(game->right.c, 3, i, '-', TCOD_white, TCOD_black);
                                 TCOD_console_set_default_foreground(game->right.c, o->color.fore);
                                 TCOD_console_set_default_background(game->right.c, o->color.back);
-                                TCOD_console_print(game->right.c, 5, i, "%s", a_an(o->displayname));
+                                if(is_pair(o))
+                                        TCOD_console_print(game->right.c, 5, i, "a pair of %s", o->displayname);
+                                else
+                                        TCOD_console_print(game->right.c, 5, i, "%s", a_an(o->displayname));
                                 TCOD_console_set_default_foreground(game->right.c, TCOD_white);
                                 TCOD_console_set_default_background(game->right.c, TCOD_black);
                         }

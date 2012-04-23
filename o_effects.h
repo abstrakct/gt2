@@ -16,6 +16,7 @@
 #define OE_PHYSIQUE                4
 #define OE_DEXTERITY               5
 #define OE_CHARISMA                6
+#define OE_SPEED                   7
 
 #define OE_PROTECTION_LIFE         20 
 #define OE_PROTECTION_FIRE         21
@@ -39,6 +40,10 @@ void oe_protection_life(actor_t *actor, void *data, int e);
 void oe_protection_fire(actor_t *actor, void *data, int e);
 void oe_heal_now(actor_t *actor, void *data, int e);
 void oe_invisibility(actor_t *actor, void *data, int e);
+void oe_speed(actor_t *actor, void *data, int e);
+
 
 void add_effect_with_duration_dice_sides(obj_t *a, short b, short c, short d, short e, short f, short g);
+void add_effect_with_duration_and_floatgain(obj_t *a, int effect, int duration, float gain);
+void add_effect_with_duration_and_intgain(obj_t *a, int effect, int duration, int gain);
 #endif

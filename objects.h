@@ -17,6 +17,7 @@
 typedef struct object_effect {
         short effect;
         short gain;               // for stat effects, this is the amount of points gained (and lost when temp effect runs out)
+        float fgain;              // for gains which require a float (e.g. speed)
         short dice;
         short sides;
         short modifier;           // dice modifier

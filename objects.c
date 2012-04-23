@@ -275,12 +275,22 @@ void generate_fullname(obj_t *o)
                         }
                 }
         } else if(o->type == OT_ARMOR) {
-                if(is_identified(o) && o->attackmod > 0)
+                if(is_identified(o) && o->attackmod > 0) {
                         sprintf(n, "+%d ", o->attackmod);
-                if(is_identified(o) && o->attackmod < 0)
+                        strcat(n, o->basename); 
+                } else if(is_identified(o) && o->attackmod < 0) {
                         sprintf(n,  "%d ", o->attackmod);
-
-                if(!is_identified(o) && o->attackmod) {
+                        strcat(n, o->basename); 
+                } else if(is_identified(o) && o->effects) {
+                        strcat(n, o->basename);
+                        strcat(n, " ");
+                        for(i=0;i<MAX_EFFECTS;i++) {
+                                switch(o->effect[i].effect) {
+                                        case OE_DEXTERITY: sprintf(n, "%s DEX+%d ", n, o->effect[i].gain); break;
+                                        case OE_SPEED: strcat(n, "FAST "); break;
+                                }
+                        }
+                } else if((!is_identified(o) && o->attackmod) || (!is_identified(o) && o->effects)) {
                         i = dice(1, 5, 0);
                         switch(i) {
                                 case 1: sprintf(n, "lightly sparkling "); break;
@@ -289,8 +299,10 @@ void generate_fullname(obj_t *o)
                                 case 4: sprintf(n, "flickering "); break;
                                 case 5: o->color = COLOR_WHITE; break;
                         }
+                        strcat(n, o->basename); 
+                } else {
+                        strcat(n, o->basename); 
                 }
-                strcat(n, o->basename); 
         } else if(o->type == OT_BRACELET) {
                 if(is_identified(o) && is_id_mod(o)) {
                         if(o->attackmod > 0)

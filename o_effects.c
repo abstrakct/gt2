@@ -32,7 +32,7 @@ effectfunctionpointer effecttable[] = {
         oe_physique,
         oe_dexterity,
         oe_charisma,
-        0,
+        oe_speed,
         0,
         0,
         0,
@@ -93,6 +93,24 @@ void oe_heal_now(actor_t *actor, void *data, int e)
 
         if(actor == player)
                 youc(COLOR_INFO, "feel healed!");
+}
+
+void oe_speed(actor_t *actor, void *data, int e)
+{
+        obj_t *o;
+
+        o = (obj_t *)data;
+        
+        if(actor == player) {
+                if(is_worn(o)) {
+                        player->speed += o->effect[e].fgain;
+                        youc(COLOR_INFO, "feel faster!");
+                } else {
+                        player->speed -= o->effect[e].fgain;
+                        youc(COLOR_INFO, "feel slower.");
+                }
+        }
+
 }
 
 void oe_protection_life(actor_t *actor, void *data, int e)
@@ -360,6 +378,26 @@ void add_effect_with_duration_dice_sides(obj_t *a, short b, short c, short d, sh
                 a->effect[(int)a->effects].dice = f;
                 a->effect[(int)a->effects].sides = g;
                 a->effect[(int)a->effects].duration = 1;
+                a->effects++;
+        }
+}
+
+void add_effect_with_duration_and_floatgain(obj_t *a, int effect, int duration, float gain)
+{
+        if(a->effects < MAX_EFFECTS) { 
+                a->effect[(int)a->effects].effect   = effect;
+                a->effect[(int)a->effects].duration = duration;
+                a->effect[(int)a->effects].fgain    = gain;
+                a->effects++;
+        }
+}
+
+void add_effect_with_duration_and_intgain(obj_t *a, int effect, int duration, int gain)
+{
+        if(a->effects < MAX_EFFECTS) { 
+                a->effect[(int)a->effects].effect   = effect;
+                a->effect[(int)a->effects].duration = duration;
+                a->effect[(int)a->effects].gain     = gain;
                 a->effects++;
         }
 }

@@ -196,9 +196,10 @@ int parse_monsters()
 int parse_armor()
 {
         config_setting_t *cfg;
-        int i, j;
+        int i, j, y;
         char sname[100];
         const char *value;
+        double f;
 
         cfg = config_lookup(cf, "armor");
         i = config_setting_length(cfg);
@@ -250,8 +251,52 @@ int parse_armor()
                                 o->rarity = UNIQUE;
                 }
 
-                o->id = objid; objid++;
+                sprintf(sname, "armor.[%d].unique", j);
+                config_lookup_bool(cf, sname, &x);
+                if(x)
+                        setbit(o->flags, OF_UNIQUE);
+
+                x = 0;
+                sprintf(sname, "armor.[%d].obvious", j);
+                config_lookup_bool(cf, sname, &x);
+                if(x)
+                        setbit(o->flags, OF_OBVIOUS);
+
                 o->color = COLOR_WHITE;
+                for(y = 0; y < 10; y++) {
+                        sprintf(sname, "armor.[%d].effect.[%d].brand", j, y);
+                        config_lookup_string(cf, sname, &value);
+                        if(!strcmp(value, "stat")) {
+                                sprintf(sname, "armor.[%d].effect.[%d].stat", j, y);
+                                config_lookup_string(cf, sname, &value);
+                                sprintf(sname, "armor.[%d].effect.[%d].gain", j, y);
+                                config_lookup_int(cf, sname, &x);
+
+                                if(!strcmp(value, "strength")) 
+                                        add_effect_with_duration_and_intgain(o, OE_STRENGTH, -1, x);
+                                if(!strcmp(value, "physique"))
+                                        add_effect_with_duration_and_intgain(o, OE_PHYSIQUE, -1, x);
+                                if(!strcmp(value, "intelligence"))
+                                        add_effect_with_duration_and_intgain(o, OE_INTELLIGENCE, -1, x);
+                                if(!strcmp(value, "wisdom"))
+                                        add_effect_with_duration_and_intgain(o, OE_WISDOM, -1, x);
+                                if(!strcmp(value, "dexterity"))
+                                        add_effect_with_duration_and_intgain(o, OE_DEXTERITY, -1, x);
+                                if(!strcmp(value, "charisma"))
+                                        add_effect_with_duration_and_intgain(o, OE_CHARISMA, -1, x);
+
+                                
+                                o->color = COLOR_MAGENTA;
+                        }
+
+                        if(!strcmp(value, "speed")) {
+                                sprintf(sname, "armor.[%d].effect.[%d].gain", j, y);
+                                config_lookup_float(cf, sname, &f);
+                                add_effect_with_duration_and_floatgain(o, OE_SPEED, -1, f);
+                        }
+                }
+
+                o->id = objid; objid++;
 
                 o->head = objdefs->head;
                 objdefs->next = o;

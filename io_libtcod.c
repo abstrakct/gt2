@@ -315,7 +315,13 @@ void init_display()
 
 	//sprintf(font, "fonts/font-%i.png", fontsize);
 	//sprintf(font, "fonts/terminal16x16_gs_ro.png");
-        TCOD_console_set_custom_font(font, /*TCOD_FONT_TYPE_GREYSCALE |*/ TCOD_FONT_LAYOUT_ASCII_INROW, 16, 16);
+
+	//sprintf(font, "fonts/terminal8x12_gs_ro.png");
+	sprintf(font, "fonts/terminal8x14_gs_ro.png");
+	//sprintf(font, "fonts/terminal10x16_gs_ro.png");
+	
+
+        TCOD_console_set_custom_font(font, TCOD_FONT_TYPE_GREYSCALE | TCOD_FONT_LAYOUT_ASCII_INROW, 16, 16);
 
         TCOD_console_init_root(gtconfig.cols, gtconfig.rows, GAME_NAME, false, TCOD_RENDERER_SDL);
 	TCOD_console_map_ascii_codes_to_font(0, 255, 0, 0);

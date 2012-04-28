@@ -20,7 +20,7 @@ endif
 
 CC = gcc 
 DEFINES = #-DGT_USE_DUMMY
-LDFLAGS = -Wl $(LIBS)  # ,-rpath=lib 
+LDFLAGS = $(LIBS)  # ,-rpath=lib 
 
 SOURCES   = gt.c utils.c monsters.c datafiles.c world.c debug.c saveload.c actor.c objects.c o_effects.c cards.c fractmod.c io_ncurses.c io_libtcod.c 
 HEADERS   = gt.h utils.h monsters.h datafiles.h world.h debug.h saveload.h actor.h objects.h o_effects.h cards.h fractmod.h io_ncurses.h io_libtcod.h commands.h

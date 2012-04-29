@@ -838,10 +838,7 @@ void look()
                                 if(gtconfig.ap[ob->type] && !hasbit(ob->flags, OF_DONOTAP)) {
                                         do_action(ACTION_PICKUP);
                                 } else {
-                                        if(is_pair(ob))
-                                                gtprintf("There is a pair of %s here.", ob->displayname);
-                                        else
-                                                gtprintf("There is %s here.", a_an(ob->displayname));
+                                        gtprintf("There is %s here.", a_an(pair(ob)));
                                 }
                         }
 
@@ -855,10 +852,7 @@ void look()
                                 if(slot2 < 0)
                                         return;
 
-                                /*if(is_pair(ci(ply, plx)->object[slot]))
-                                        gtprintf("There is a pair of %s here.", ci(ply, plx)->object[slot]->displayname);
-                                else*/
-                                        gtprintf("There is %s and %s here.", a_an(ci(ply, plx)->object[slot]->displayname), a_an(ci(ply, plx)->object[slot2]->displayname));
+                                gtprintf("There is %s and %s here.", a_an(pair(ci(ply, plx)->object[slot])), a_an(pair(ci(ply, plx)->object[slot2])));
                         }
 
                         if(ci(ply, plx)->num_used > 2) {
@@ -867,7 +861,7 @@ void look()
                                 gtprintfc(COLOR_INFO, "There are several things here:");
                                 for(i=0;i<52;i++) {
                                         if(ci(ply, plx)->object[i])
-                                                gtprintf("%s", a_an(ci(ply, plx)->object[i]->displayname));
+                                                gtprintf("%s", a_an(pair(ci(ply, plx)->object[i])));
                                 }
                         }
                 }

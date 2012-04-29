@@ -49,6 +49,8 @@ void gtprintfc(gtcolor_t color, char *fmt, ...);
 
 char *a_an(char *s);
 char *Upper(char *s);
+char *pair(obj_t *o);
+
 
 extern int garbageindex;
 extern void *garbage[MAX_GARBAGE];

@@ -321,6 +321,8 @@ void init_display()
 	//sprintf(font, "fonts/terminal10x16_gs_ro.png");
 	
 
+        if(screenwidth <= 1024)
+                gtconfig.rows /= 2;
         TCOD_console_set_custom_font(font, TCOD_FONT_TYPE_GREYSCALE | TCOD_FONT_LAYOUT_ASCII_INROW, 16, 16);
 
         TCOD_console_init_root(gtconfig.cols, gtconfig.rows, GAME_NAME, false, TCOD_RENDERER_SDL);

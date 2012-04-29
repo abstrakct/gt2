@@ -233,6 +233,19 @@ char *Upper(char *s)
         return s;
 }
 
+char *pair(obj_t *o)
+{
+        char *s;
+        s = gtmalloc(20*sizeof(char));
+
+        if(hasbit(o->flags, OF_GLOVES) || hasbit(o->flags, OF_FOOTWEAR))
+                sprintf(s, "pair of %s", o->displayname);
+        else
+                strcpy(s, o->displayname);
+
+        return s;
+}
+
 char *a_an(char *s)
 {
         static char ret[4];

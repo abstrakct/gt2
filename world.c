@@ -1192,7 +1192,7 @@ void generate_world()
         //clear_area(&world->dng[1], 6, 6, r.y+6, r.x+6);
         //insert_roomdef_at(&world->dng[1], 6, 6);
 
-        for(i = 2; i <= 10; i++) {
+        for(i = 2; i <= 25; i++) {
                 int p;
 
                 p = ri(1,100);

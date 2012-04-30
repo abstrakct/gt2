@@ -666,7 +666,7 @@ void draw_left()
         TCOD_console_print(game->left.c, 5, i+4, "%d/%d (%.1f%%)", player->hp, player->maxhp, ((float)(100/(float)player->maxhp) * (float)player->hp));
 
         TCOD_console_set_default_foreground(game->left.c, TCOD_white);
-        TCOD_console_print(game->left.c, 1, i+6,  "Speed: %f", player->speed);
+        TCOD_console_print(game->left.c, 1, i+6,  "Speed: %.2f Ticks = %d", player->speed, player->ticks);
         TCOD_console_print(game->left.c, 1, i+7,  "STR:   %d", player->attr.str);
         TCOD_console_print(game->left.c, 1, i+8,  "DEX:   %d", player->attr.dex);
         TCOD_console_print(game->left.c, 1, i+9,  "PHY:   %d", player->attr.phy);

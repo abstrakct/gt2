@@ -295,12 +295,11 @@ void generate_fullname(obj_t *o)
                         if(o->attackmod < 0)
                                 sprintf(n,  "%d ", o->attackmod);
 
-                        strcpy(n, o->basename); 
                         if(o->effects) {
                                 if(strlen(o->fullname))
-                                        sprintf(n, "%s [", o->truename);
+                                        sprintf(n, "%s%s [", n, o->truename);
                                 else
-                                        sprintf(n, "%s [", o->basename);
+                                        sprintf(n, "%s%s [", n, o->basename);
 
                                 for(i=0;i<MAX_EFFECTS;i++) {
                                         if(o->effect[i].effect) {
@@ -318,7 +317,9 @@ void generate_fullname(obj_t *o)
                                         }
                                 }
                                 strcat(n, "]");
-                        }
+                        } else
+                                strcat(n, o->basename); 
+
                 }
                 
                 if((!is_identified(o) && o->attackmod)) {
@@ -758,13 +759,13 @@ void puton(void *a, int slot, obj_t *o)
 
         actor = (actor_t *) a;
 
+        youc(COLOR_INFO, "put on %s.", a_an(pair(o)));
         actor->w[slot] = o;
         apply_effects(actor, o);
 
         if(is_armor(o)) {
                 actor->ac += o->ac;
                 actor->ac += o->attackmod;
-                youc(COLOR_INFO, "put on %s.", a_an(pair(o)));
         }
         
         if(actor == player) {
@@ -981,8 +982,10 @@ void wieldwear(void *a, obj_t *o)
                 if(is_weapon(o)) {
                         wield(actor, o);
                         youc(COLOR_INFO, "are now wielding a %s.", o->displayname);
+                        player->ticks -= TICKS_WIELDWEAR;
                 } else {
                         wear(actor, o);
+                        player->ticks -= TICKS_WIELDWEAR;
                 }
         }
 }

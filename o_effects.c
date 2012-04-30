@@ -101,9 +101,12 @@ void oe_speed(actor_t *actor, void *data, int e)
 
         o = (obj_t *)data;
         
+        gtprintf("speedeffect!");
         if(actor == player) {
                 if(is_worn(o)) {
+                        gtprintf("speed = %.2f   fgain = %.2f", player->speed, o->effect[e].fgain);
                         player->speed += o->effect[e].fgain;
+                        gtprintf("speed = %.2f   fgain = %.2f", player->speed, o->effect[e].fgain);
                         youc(COLOR_INFO, "feel faster!");
                 } else {
                         player->speed -= o->effect[e].fgain;
@@ -230,10 +233,18 @@ void oe_wisdom(actor_t *actor, void *data, int e)
                         actor->temp->duration = duration;
                         actor->temp->gain = gain;
                 }
-        } else if(is_worn(o)) {
-                actor->attr.wis += o->attackmod;
+        }
+
+        if(is_worn(o)) {
+                if(o->effect[e].gain)
+                        actor->attr.wis += o->effect[e].gain;
+                else
+                        actor->attr.wis += o->attackmod;
         } else {
-                actor->attr.wis -= o->attackmod;
+                if(o->effect[e].gain)
+                        actor->attr.wis -= o->effect[e].gain;
+                else
+                        actor->attr.wis -= o->attackmod;
         }
 
         if(actor == player) {
@@ -269,10 +280,18 @@ void oe_physique(actor_t *actor, void *data, int e)
                         actor->temp->duration = duration;
                         actor->temp->gain = gain;
                 }
-        } else if(is_worn(o)) {
-                actor->attr.phy += o->attackmod;
+        }
+
+        if(is_worn(o)) {
+                if(o->effect[e].gain)
+                        actor->attr.phy += o->effect[e].gain;
+                else
+                        actor->attr.phy += o->attackmod;
         } else {
-                actor->attr.phy -= o->attackmod;
+                if(o->effect[e].gain)
+                        actor->attr.phy -= o->effect[e].gain;
+                else
+                        actor->attr.phy -= o->attackmod;
         }
 
         if(actor == player) {
@@ -308,10 +327,18 @@ void oe_intelligence(actor_t *actor, void *data, int e)
                         actor->temp->duration = duration;
                         actor->temp->gain = gain;
                 }
-        } else if(is_worn(o)) {
-                actor->attr.intl += o->attackmod;
+        }
+
+        if(is_worn(o)) {
+                if(o->effect[e].gain)
+                        actor->attr.intl += o->effect[e].gain;
+                else
+                        actor->attr.intl += o->attackmod;
         } else {
-                actor->attr.intl -= o->attackmod;
+                if(o->effect[e].gain)
+                        actor->attr.intl -= o->effect[e].gain;
+                else
+                        actor->attr.intl -= o->attackmod;
         }
 
         if(actor == player) {
@@ -392,10 +419,18 @@ void oe_charisma(actor_t *actor, void *data, int e)
                         actor->temp->duration = duration;
                         actor->temp->gain = gain;
                 }
-        } else if(is_worn(o)) {
-                actor->attr.cha += o->attackmod;
+        }
+
+        if(is_worn(o)) {
+                if(o->effect[e].gain)
+                        actor->attr.cha += o->effect[e].gain;
+                else
+                        actor->attr.cha += o->attackmod;
         } else {
-                actor->attr.cha -= o->attackmod;
+                if(o->effect[e].gain)
+                        actor->attr.cha -= o->effect[e].gain;
+                else
+                        actor->attr.cha -= o->attackmod;
         }
 
         if(actor == player) {

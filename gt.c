@@ -146,6 +146,8 @@ void init_player()
         player->attr.cha  = dice(3, 6, 0);
         player->attr.intl = dice(3, 6, 0);
 
+        player->speed = 1.0;
+
         // TODO: Starting HP - FIX according to race etc.
         player->hp = player->maxhp = (dice(1, 10, 7)) + ability_modifier(player->attr.phy);
 
@@ -163,7 +165,8 @@ void shutdown_gt()
                        free((void *)garbage[i]);
         }
         
-        fclose(messagefile);
+        if(messagefile)
+                fclose(messagefile);
 }
 
 /*
@@ -271,8 +274,8 @@ void monsters_move()
 void setup_attack()
 {
         do_action(ACTION_ATTACK);
-        monsters_move();
         do_action(ACTION_HEAL_PLAYER);
+        player->ticks += TICKS_ATTACK;
 }
 
 /*********************************************
@@ -572,7 +575,7 @@ bool do_action(int action)
                                 ci(ply, plx)->object[slot] = NULL;
                                 ci(ply, plx)->num_used--;
                         }
-                        player->ticks -= TICKS_MOVEMENT;
+                        fullturn = false;
                         break;
                 case ACTION_ATTACK:
                         attack(a_attacker, a_victim);
@@ -607,8 +610,8 @@ bool do_action(int action)
                                         player->viewradius = 12;
                         }
                         init_pathfinding(player);
-                        floodfill(world->curlevel, player->y, player->x);
-                        player->ticks -= TICKS_MOVEMENT;
+                        //floodfill(world->curlevel, player->y, player->x);
+                        fullturn = false;
                         break;
                 case ACTION_GO_UP_STAIRS:
                         tmpy = ply; tmpx = plx;
@@ -625,8 +628,8 @@ bool do_action(int action)
                                 player->viewradius = 24;
                         }
                         init_pathfinding(player);
-                        floodfill(world->curlevel, player->y, player->x);
-                        player->ticks -= TICKS_MOVEMENT;
+                        //floodfill(world->curlevel, player->y, player->x);
+                        fullturn = false;
                         break;
                 case ACTION_WIELDWEAR:
                         o = (obj_t *) actiondata;
@@ -634,7 +637,7 @@ bool do_action(int action)
                                 wieldwear(player, o);
                         else
                                 gtprintf("You don't have that!");
-                        player->ticks -= TICKS_WIELDWEAR;
+                        fullturn = false;
                         break;
                 case ACTION_UNWIELDWEAR:
                         o = (obj_t *) actiondata;
@@ -642,8 +645,8 @@ bool do_action(int action)
                                 unwieldwear(player, o);
                         else
                                 gtprintf("You don't have that!");
+                        fullturn = false;
 
-                        player->ticks -= TICKS_WIELDWEAR;
                         break;
                 case ACTION_QUAFF:
                         o = (obj_t *) actiondata;
@@ -651,7 +654,7 @@ bool do_action(int action)
                                 quaff(player, o);
                         else
                                 gtprintf("You don't have that!");
-                        player->ticks -= TICKS_WIELDWEAR;
+                        fullturn = false;
                         break;
                 case ACTION_DROP:
                         o = (obj_t *) actiondata;
@@ -659,10 +662,11 @@ bool do_action(int action)
                                 drop(player, o);
                         else
                                 gtprintf("You don't have that!");
-                        player->ticks -= TICKS_WIELDWEAR;
+                        fullturn = false;
                         break;  
                 case ACTION_FIX_VIEW:
                         fixview();
+                        fullturn = false;
                         break;
                 case ACTION_HEAL_PLAYER:
                         i = 17 - pphy;
@@ -681,6 +685,7 @@ bool do_action(int action)
                         fullturn = false;
                         break;
                 case ACTION_NOTHING:
+                        fullturn = false;
                         //updatescreen = false;
                         break;
                 default:
@@ -873,30 +878,35 @@ void do_turn()
        // bool fullturn;
         int i, ret;
 
-        player->ticks += 1000;
-        i = aq->num;
+        player->ticks += (int) player->speed * 1000;
+        //i = aq->num;
+        i = round(player->speed);
 
+        //while(i && player->ticks >= 1000) {
         while(i) {
                 if(is_autoexploring) {
                         if(gt_checkforkeypress()) {
-                                gtprintf("interrupting...");
+                                gtprintf("Autoexplore interrupted...");
                                 clearbit(player->flags, PF_AUTOEXPLORING);
                         }
                 }
 
                 ret = do_next_thing_in_queue();
-                //update_screen();
-                        
                 if(ret) {
                         game->turn++;
+                        i--;
                         look();
                         if(player->temp)
                                 process_temp_effects(player);
                 }
 
-                i = aq->num;
+                if(i == 0)
+                        monsters_move();
+                //i = aq->num;
                 update_screen();
         }
+
+        update_screen();
 }
 
 int main(int argc, char *argv[])
@@ -963,6 +973,7 @@ int main(int argc, char *argv[])
         init_commands();
         init_pathfinding(player);
         initial_update_screen();
+        player->ticks = 0;
 
         do {
                 c = 0;

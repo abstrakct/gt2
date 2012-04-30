@@ -67,6 +67,12 @@ extern  gtcolor_t colors[];
 #define C_BLACK_DARKERGREY      16
 #define C_BLACK_GOLD            17
 #define C_BLACK_AMBER           18
+#define C_BLACK_ORANGE          19
+#define C_BLACK_LIMEGREEN       20
+#define C_BLACK_SKYBLUE         21
+#define C_BLACK_VIOLET          22
+#define C_BLACK_CRIMSON         23
+#define C_BLACK_AZURE           24
 
 
 #define C_RED_BLACK             8
@@ -118,6 +124,21 @@ extern  gtcolor_t colors[];
 #define C_CYAN_CYAN             54
 #define C_CYAN_WHITE            55
 
+#define COLOR_YELLOW    colors[C_BLACK_YELLOW]
+#define COLOR_BLUE      colors[C_BLACK_BLUE]
+#define COLOR_GREEN     colors[C_BLACK_GREEN]
+#define COLOR_RED       colors[C_BLACK_RED]
+#define COLOR_WHITE     colors[C_BLACK_WHITE]
+#define COLOR_MAGENTA   colors[C_BLACK_MAGENTA]
+#define COLOR_AMBER     colors[C_BLACK_AMBER]
+#define COLOR_ORANGE    colors[C_BLACK_ORANGE]
+#define COLOR_LIMEGREEN colors[C_BLACK_LIMEGREEN]
+#define COLOR_VIOLET    colors[C_BLACK_VIOLET]
+#define COLOR_CRIMSON   colors[C_BLACK_CRIMSON]
+#define COLOR_CYAN      colors[C_BLACK_CYAN]
+#define COLOR_AZURE     colors[C_BLACK_AZURE]
+#define COLOR_SKYBLUE   colors[C_BLACK_SKYBLUE]
+
 
 #define COLOR_PLAIN    colors[C_BLACK_WHITE]
 #define COLOR_FOREST   colors[C_BLACK_GREEN]
@@ -128,14 +149,6 @@ extern  gtcolor_t colors[];
 #define COLOR_LAKE     colors[C_BLACK_BLUE]
 #define COLOR_PLAYER   colors[C_BLACK_BLUE]
 #define COLOR_PINVIS   colors[C_WHITE_BLUE]
-
-#define COLOR_YELLOW   colors[C_BLACK_YELLOW]
-#define COLOR_BLUE     colors[C_BLACK_BLUE]
-#define COLOR_GREEN    colors[C_BLACK_GREEN]
-#define COLOR_RED      colors[C_BLACK_RED]
-#define COLOR_WHITE    colors[C_BLACK_WHITE]
-#define COLOR_MAGENTA  colors[C_BLACK_MAGENTA]
-#define COLOR_AMBER    colors[C_BLACK_AMBER]
 
 #define COLOR_WARNING  colors[C_BLACK_RED]
 #define COLOR_BAD      colors[C_BLACK_RED]

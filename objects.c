@@ -44,11 +44,11 @@ char objchars[] = {
 };
 
 char *materialstring[] = {
-        0, "gold", "silver", "bronze", "copper", "wooden", "iron", "marble", "glass", "bone", "platinum", "steel", "blackwood", "brass", "ebony", "bloodwood"
+        0, "gold", "silver", "bronze", "copper", "wooden", "iron", "marble", "glass", "bone", "platinum", "steel", "blackwood", "brass", "ebony", "bloodwood", "stone"
 };
 
 char *potionstring[] = {
-        0, "red", "green", "sparkling", "blue", "clear", "yellow", "pink", "amber", "golden orange"
+        0, "red", "green", "sparkling", "blue", "clear", "yellow", "pink", "amber", "golden orange", "orange", "lime green", "cyan", "sky blue", "violet", "crimson", "azure"
 };
 
 obj_t get_objdef(int n)
@@ -216,26 +216,39 @@ void get_random_unused_material(short type)
 
 }
 
+char *get_enchanted_description()
+{
+        char *n;
+        int i;
+
+        n = malloc(sizeof(char) * 100);
+        i = dice(1, 7, 0);
+        switch(i) {
+                case 1: sprintf(n, "nicely decorated "); break;
+                case 2: sprintf(n, "finely engraved "); break;
+                case 3: sprintf(n, "polished "); break;
+                case 4: sprintf(n, "radiant "); break;
+                case 5: sprintf(n, "strangely inscribed "); break;
+                case 6: sprintf(n, "shiny "); break;
+                default: n[0] = '\0'; break;
+        }
+
+        return n;
+}
+
 /*
  * Generate the full name of object
  */
 
 void generate_fullname(obj_t *o)
 {
-        char n[200];
+        char *n;
         int i;
 
+        n = gtmalloc(sizeof(char) * 250);
         if(o->type == OT_WEAPON) {
                 if(!is_identified(o) && (o->attackmod || o->damagemod || (o->damagemod && o->attackmod))) {
-                        i = dice(1, 5, 0);
-                        switch(i) {
-                                case 1: sprintf(n, "lightly sparkling "); break;
-                                case 2: sprintf(n, "faintly glowing "); break;
-                                case 3: sprintf(n, "shimmering "); break;
-                                case 4: sprintf(n, "flickering "); break;
-                                case 5: o->color = COLOR_WHITE; break;
-                        }
-
+                        strcpy(n, get_enchanted_description());
                         strcat(n, o->basename);
                 } else {
                         if(!o->attackmod && !o->damagemod) {
@@ -275,32 +288,51 @@ void generate_fullname(obj_t *o)
                         }
                 }
         } else if(o->type == OT_ARMOR) {
-                if(is_identified(o) && o->attackmod > 0) {
-                        sprintf(n, "+%d ", o->attackmod);
-                        strcat(n, o->basename); 
-                } else if(is_identified(o) && o->attackmod < 0) {
-                        sprintf(n,  "%d ", o->attackmod);
-                        strcat(n, o->basename); 
-                } else if(is_identified(o) && o->effects) {
-                        strcat(n, o->basename);
-                        strcat(n, " ");
-                        for(i=0;i<MAX_EFFECTS;i++) {
-                                switch(o->effect[i].effect) {
-                                        case OE_DEXTERITY: sprintf(n, "%s DEX+%d ", n, o->effect[i].gain); break;
-                                        case OE_SPEED: strcat(n, "FAST "); break;
+                if(is_identified(o)) {
+                        if(o->attackmod > 0)
+                                sprintf(n, "+%d ", o->attackmod);
+
+                        if(o->attackmod < 0)
+                                sprintf(n,  "%d ", o->attackmod);
+
+                        strcpy(n, o->basename); 
+                        if(o->effects) {
+                                if(strlen(o->fullname))
+                                        sprintf(n, "%s [", o->truename);
+                                else
+                                        sprintf(n, "%s [", o->basename);
+
+                                for(i=0;i<MAX_EFFECTS;i++) {
+                                        if(o->effect[i].effect) {
+                                                switch(o->effect[i].effect) {
+                                                        case OE_DEXTERITY: sprintf(n, "%sDex+%d", n, o->effect[i].gain); break;
+                                                        case OE_STRENGTH:  sprintf(n, "%sStr+%d", n, o->effect[i].gain); break;
+                                                        case OE_WISDOM:    sprintf(n, "%sWis+%d", n, o->effect[i].gain); break;
+                                                        case OE_INTELLIGENCE: sprintf(n, "%sInt+%d", n, o->effect[i].gain); break;
+                                                        case OE_PHYSIQUE:  sprintf(n, "%sPhy+%d", n, o->effect[i].gain); break;
+                                                        case OE_CHARISMA:  sprintf(n, "%sCha+%d", n, o->effect[i].gain); break;
+                                                        case OE_SPEED: strcat(n, "Speed"); break;
+                                                }
+                                                if(i < MAX_EFFECTS-1 && o->effect[i+1].effect)
+                                                        strcat(n, ", ");
+                                        }
                                 }
+                                strcat(n, "]");
                         }
-                } else if((!is_identified(o) && o->attackmod) || (!is_identified(o) && o->effects)) {
+                }
+                
+                if((!is_identified(o) && o->attackmod)) {
+                        strcpy(n, get_enchanted_description());
                         i = dice(1, 5, 0);
-                        switch(i) {
-                                case 1: sprintf(n, "lightly sparkling "); break;
-                                case 2: sprintf(n, "faintly glowing "); break;
-                                case 3: sprintf(n, "shimmering "); break;
-                                case 4: sprintf(n, "flickering "); break;
-                                case 5: o->color = COLOR_WHITE; break;
-                        }
                         strcat(n, o->basename); 
-                } else {
+                }
+
+                if((!is_identified(o) && o->effects)) {
+                        strcpy(n, get_enchanted_description());
+                        strcat(n, o->basename); 
+                }
+
+                if(!is_identified(o) && !o->attackmod && !o->effects) {
                         strcat(n, o->basename); 
                 }
         } else if(o->type == OT_BRACELET) {
@@ -334,6 +366,7 @@ void generate_fullname(obj_t *o)
         if(hasbit(o->flags, OF_HOLYFUCK))
                 strcat(n, " of Holy Fuck");
         
+        //fprintf(stderr, "generated name %s\n", n);
         strcpy(o->fullname, n);
         strcpy(o->displayname, n);
 }
@@ -731,7 +764,7 @@ void puton(void *a, int slot, obj_t *o)
         if(is_armor(o)) {
                 actor->ac += o->ac;
                 actor->ac += o->attackmod;
-                youc(COLOR_INFO, "put on %s.", a_an(o->fullname));
+                youc(COLOR_INFO, "put on %s.", a_an(pair(o)));
         }
         
         if(actor == player) {
@@ -746,7 +779,7 @@ void puton(void *a, int slot, obj_t *o)
                         do_identify_all_of_type(o);
                         generate_fullname(o);
                         strcpy(o->displayname, o->fullname);
-                        gtprintfc(COLOR_INFO, "This is %s!", a_an(o->displayname));
+                        gtprintfc(COLOR_INFO, "This is %s!", a_an(pair(o)));
                 }
         }
 }
@@ -771,7 +804,7 @@ void quaff(void *a, obj_t *o)
 
                 if((actor == player) && !hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {
                         identify(o);
-                        gtprintfc(COLOR_INFO, "That was %s!", a_an(o->displayname));
+                        gtprintfc(COLOR_INFO, "That was %s!", a_an(pair(o)));
                 }
 
                 slot = object_to_slot(o, actor->inventory);
@@ -924,7 +957,7 @@ void wield(void *a, obj_t *o)
         apply_effects(actor, o);
         if((actor == player) && !hasbit(o->flags, OF_IDENTIFIED) && hasbit(o->flags, OF_OBVIOUS)) {             // TODO: Fix so taht identifying weapons/armor is based on e.g. experience with said type of weapon.
                 identify(o);
-                gtprintfc(COLOR_INFO, "You believe this is %s!", a_an(o->displayname));
+                gtprintfc(COLOR_INFO, "You believe this is %s!", a_an(pair(o)));
         }
 }
 
@@ -1054,7 +1087,7 @@ void pick_up(obj_t *o, void *p)
         a->inventory->num_used++;
 
         //assign_free_slot(o);
-        gtprintfc(COLOR_WHITE, "  %c - %s", slot_to_letter(slot), a_an(o->displayname));
+        gtprintfc(COLOR_WHITE, "  %c - %s", slot_to_letter(slot), a_an(pair(o)));
 }
 
 void place_object_in_cell(obj_t *o, cell_t *c)

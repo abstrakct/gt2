@@ -26,38 +26,51 @@
 
 #include <libtcod/libtcod.h>
 
-#define RGB_BLACK {0,0,0}
-#define RGB_WHITE {255,255,255}
-#define RGB_RED   {255,0,0}
-#define RGB_GREEN {0,255,0}
-#define RGB_BLUE  {0,0,255}
-#define RGB_YELLOW {255,255,0}
-#define RGB_MAGENTA {255,0,191}
-#define RGB_CYAN {0,255,255}
-#define RGB_DARKER_GREY {63,63,63}
-#define RGB_GOLD {221,191,0}
-#define RGB_AMBER {255,191,0}
+#define RGB_BLACK       {  0,  0,  0}
+#define RGB_WHITE       {255,255,255}
+#define RGB_RED         {255,  0,  0}
+#define RGB_GREEN       {  0,255,  0}
+#define RGB_BLUE        {  0,  0,255}
+#define RGB_YELLOW      {255,255,  0}
+#define RGB_MAGENTA     {255,  0,191}
+#define RGB_CYAN        {  0,255,255}
+#define RGB_DARKER_GREY { 63, 63, 63}
+#define RGB_GOLD        {221,191,  0}
+#define RGB_AMBER       {255,191,  0}
+#define RGB_ORANGE      {255,127,  0}
+#define RGB_LIMEGREEN   {191,255,  0}
+#define RGB_CYAN        {  0,255,255}
+#define RGB_SKYBLUE     {  0,191,255}
+#define RGB_VIOLET      {127,  0,255}
+#define RGB_CRIMSON     {255,  0, 63}
+#define RGB_AZURE       {  0,127,255}
 
 gtcolor_t colors[] = { 
-        { RGB_BLACK,    RGB_BLACK },
-        { RGB_RED,      RGB_BLACK },
-        { RGB_GREEN,    RGB_BLACK },
-        { RGB_YELLOW,   RGB_BLACK },
-        { RGB_BLUE,     RGB_BLACK },
-        { RGB_MAGENTA,  RGB_BLACK },
-        { RGB_CYAN,     RGB_BLACK },
-        { RGB_WHITE,    RGB_BLACK },
-        { RGB_BLACK,    RGB_WHITE },
-        { RGB_RED,      RGB_WHITE },
-        { RGB_GREEN,    RGB_WHITE },
-        { RGB_YELLOW,   RGB_WHITE },
-        { RGB_BLUE,     RGB_WHITE },
-        { RGB_MAGENTA,  RGB_WHITE },
-        { RGB_CYAN,     RGB_WHITE },
-        { RGB_WHITE,    RGB_WHITE },
+        { RGB_BLACK,       RGB_BLACK },
+        { RGB_RED,         RGB_BLACK },
+        { RGB_GREEN,       RGB_BLACK },
+        { RGB_YELLOW,      RGB_BLACK },
+        { RGB_BLUE,        RGB_BLACK },
+        { RGB_MAGENTA,     RGB_BLACK },
+        { RGB_CYAN,        RGB_BLACK },
+        { RGB_WHITE,       RGB_BLACK },
+        { RGB_BLACK,       RGB_WHITE },
+        { RGB_RED,         RGB_WHITE },
+        { RGB_GREEN,       RGB_WHITE },
+        { RGB_YELLOW,      RGB_WHITE },
+        { RGB_BLUE,        RGB_WHITE },
+        { RGB_MAGENTA,     RGB_WHITE },
+        { RGB_CYAN,        RGB_WHITE },
+        { RGB_WHITE,       RGB_WHITE },
         { RGB_DARKER_GREY, RGB_BLACK },
-        { RGB_GOLD, RGB_BLACK },
-        { RGB_AMBER, RGB_BLACK },
+        { RGB_GOLD,        RGB_BLACK },
+        { RGB_AMBER,       RGB_BLACK },
+        { RGB_ORANGE,      RGB_BLACK },
+        { RGB_LIMEGREEN,   RGB_BLACK },
+        { RGB_SKYBLUE,     RGB_BLACK },
+        { RGB_VIOLET,      RGB_BLACK },
+        { RGB_CRIMSON,     RGB_BLACK },
+        { RGB_AZURE,       RGB_BLACK },
 };
 
 extern int maxmess;
@@ -489,7 +502,7 @@ void draw_map()
                                         if(level->c[j][i].inventory && level->c[j][i].inventory->object[0]) {
                                                 if(!hasbit(level->c[j][i].inventory->object[0]->flags, OF_SEENBYPLAYER)) {
                                                         setbit(level->c[j][i].inventory->object[0]->flags, OF_SEENBYPLAYER);
-                                                        gtprintf("You found %s.", a_an(level->c[j][i].inventory->object[0]->displayname));
+                                                        gtprintf("You found %s.", a_an(pair(level->c[j][i].inventory->object[0])));
                                                 }
                                         }
                                 }
@@ -653,16 +666,17 @@ void draw_left()
         TCOD_console_print(game->left.c, 5, i+4, "%d/%d (%.1f%%)", player->hp, player->maxhp, ((float)(100/(float)player->maxhp) * (float)player->hp));
 
         TCOD_console_set_default_foreground(game->left.c, TCOD_white);
-        TCOD_console_print(game->left.c, 1, i+6,  "AC:    %d", player->ac);
+        TCOD_console_print(game->left.c, 1, i+6,  "Speed: %f", player->speed);
         TCOD_console_print(game->left.c, 1, i+7,  "STR:   %d", player->attr.str);
         TCOD_console_print(game->left.c, 1, i+8,  "DEX:   %d", player->attr.dex);
         TCOD_console_print(game->left.c, 1, i+9,  "PHY:   %d", player->attr.phy);
         TCOD_console_print(game->left.c, 1, i+10, "INT:   %d", player->attr.intl);
         TCOD_console_print(game->left.c, 1, i+11, "WIS:   %d", player->attr.wis);
         TCOD_console_print(game->left.c, 1, i+12, "CHA:   %d", player->attr.cha);
-        TCOD_console_print(game->left.c, 1, i+13, "XP:    %d", player->xp);
-        TCOD_console_print(game->left.c, 1, i+14, "Level: %d", player->level);
-        TCOD_console_print(game->left.c, 1, i+15, "Turn:  %d", game->turn);
+        TCOD_console_print(game->left.c, 1, i+13, "AC:    %d", player->ac);
+        TCOD_console_print(game->left.c, 1, i+14, "XP:    %d", player->xp);
+        TCOD_console_print(game->left.c, 1, i+15, "Level: %d", player->level);
+        TCOD_console_print(game->left.c, 1, i+16, "Turn:  %d", game->turn);
         
         //TCOD_console_print(game->left.c, 1, i+9, 1, "Dungeon level: %d (out of %d)", game->currentlevel, game->createdareas);
         //mvwprintw(wleft, 3, 1, "y,x     %d,%d", ply, plx);
@@ -744,16 +758,15 @@ void draw_right()
         for(j = 0; j < 52; j++) {
                 if(player->inventory->object[j]) {
                         //o = get_object_from_letter(slot_to_letter(j), player->inventory);
+                        //
+                        //TODO:SIMPLIFY
                         o = player->inventory->object[j];
                         if(is_worn(o)) {
                                 TCOD_console_print(game->right.c, 1, i, "%c", slot_to_letter(j));
                                 TCOD_console_put_char_ex(game->right.c, 3, i, '*', TCOD_light_green, TCOD_black);
                                 TCOD_console_set_default_foreground(game->right.c, o->color.fore);
                                 TCOD_console_set_default_background(game->right.c, o->color.back);
-                                if(is_pair(o))
-                                        TCOD_console_print(game->right.c, 5, i, "a pair of %s %s", o->displayname, is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
-                                else
-                                        TCOD_console_print(game->right.c, 5, i, "%s %s", a_an(o->displayname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                TCOD_console_print(game->right.c, 5, i, "%s %s", a_an(pair(o)), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
                                 TCOD_console_set_default_foreground(game->right.c, TCOD_white);
                                 TCOD_console_set_default_background(game->right.c, TCOD_black);
                         } else {
@@ -761,10 +774,7 @@ void draw_right()
                                 TCOD_console_put_char_ex(game->right.c, 3, i, '-', TCOD_white, TCOD_black);
                                 TCOD_console_set_default_foreground(game->right.c, o->color.fore);
                                 TCOD_console_set_default_background(game->right.c, o->color.back);
-                                if(is_pair(o))
-                                        TCOD_console_print(game->right.c, 5, i, "a pair of %s", o->displayname);
-                                else
-                                        TCOD_console_print(game->right.c, 5, i, "%s", a_an(o->displayname));
+                                TCOD_console_print(game->right.c, 5, i, "%s", a_an(pair(o)));
                                 TCOD_console_set_default_foreground(game->right.c, TCOD_white);
                                 TCOD_console_set_default_background(game->right.c, TCOD_black);
                         }

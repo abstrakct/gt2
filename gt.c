@@ -901,10 +901,10 @@ void do_turn()
 
 int main(int argc, char *argv[])
 {
-        int c, x, y, l, nx, ny;
+        int c, x, y, l;
         char messagefilename[50];
-        char found;
-        bool done;
+        //char found;
+        //bool done;
 
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
@@ -962,7 +962,6 @@ int main(int argc, char *argv[])
 
         init_commands();
         init_pathfinding(player);
-        floodfill(world->curlevel, player->y, player->x);
         initial_update_screen();
 
         do {

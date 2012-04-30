@@ -41,7 +41,8 @@ struct object {
         signed short  damagemod;            // +/- on damage;
         char          basename[50];         // the basic (unidentified) name of the item
         char          fullname[100];        // should be more than enough, adjust later
-        char          displayname[128];
+        char          truename[100];
+        char          displayname[200];
         char          c;
         char          slot;                 // inventory slot; not sure if needed?!
         char          minlevel;
@@ -66,8 +67,6 @@ typedef struct {  // inv_t
 // in inv_t:
 // long long used;                   // use a bitfield/bitmap to note which slots are used? Worth it?
 
-#define add_effect(a, b) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects].effect = b; a->effects++; }
-#define add_effect_with_duration(a, b, c) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects].effect = b; a->effect[(int)a->effects].duration = c; a->effects++; }
 
 #define OT_GOLD       1
 #define OT_WEAPON     2
@@ -138,8 +137,9 @@ extern char *otypestrings[];
 #define MAT_BRASS     13
 #define MAT_EBONY     14
 #define MAT_BLOODWOOD 15
+#define MAT_STONE     16
 
-#define MATERIALS     15
+#define MATERIALS     16
 extern int mats_bracelets[MATERIALS];
 extern int mats_amulets[MATERIALS];
 
@@ -152,8 +152,15 @@ extern int mats_amulets[MATERIALS];
 #define POT_PINK       7
 #define POT_AMBER      8
 #define POT_GOLD       9
+#define POT_ORANGE    10
+#define POT_LIMEGREEN 11
+#define POT_CYAN      12
+#define POT_SKYBLUE   13
+#define POT_VIOLET    14
+#define POT_CRIMSON   15
+#define POT_AZURE     16
 
-#define POTS           9
+#define POTS          15
 
 extern int mats_potions[POTS];
 

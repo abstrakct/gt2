@@ -168,7 +168,10 @@ void oe_strength(actor_t *actor, void *data, int e)
 
         if(is_potion(o)) {
                 if(o->effect[e].duration == -1) {
-                        actor->attr.str++;
+                        if(o->effect[e].gain)
+                                actor->attr.str += o->effect[e].gain;
+                        else
+                                actor->attr.str++;
                 } else if(o->effect[e].duration > 0) {
                         duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
                         gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
@@ -183,9 +186,15 @@ void oe_strength(actor_t *actor, void *data, int e)
         }
         
         if(is_worn(o)) {
-                actor->attr.str += o->attackmod;
+                if(o->effect[e].gain)
+                        actor->attr.str += o->effect[e].gain;
+                else
+                        actor->attr.str += o->attackmod;
         } else {
-                actor->attr.str -= o->attackmod;
+                if(o->effect[e].gain)
+                        actor->attr.str -= o->effect[e].gain;
+                else
+                        actor->attr.str -= o->attackmod;
         }
 
         if(actor == player) {
@@ -199,14 +208,29 @@ void oe_strength(actor_t *actor, void *data, int e)
 void oe_wisdom(actor_t *actor, void *data, int e)
 {
         obj_t *o;
-        int x;
+        int x, gain, duration;
 
         o = (obj_t *) data;
         x = actor->attr.wis;
 
-        if(is_potion(o))
-                actor->attr.wis++;
-        else if(is_worn(o)) {
+        if(is_potion(o)) {
+                if(o->effect[e].duration == -1) {
+                        actor->attr.wis++;
+                } else if(o->effect[e].duration > 0) {
+                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        if(o->effect[e].gain)
+                                gain = o->effect[e].gain;
+                        else
+                                gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+                        actor->attr.wis += gain;
+                        if(actor == player)
+                                youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
+                        actor->temp = gtmalloc(sizeof(oe_t));
+                        *(actor->temp) = o->effect[e];
+                        actor->temp->duration = duration;
+                        actor->temp->gain = gain;
+                }
+        } else if(is_worn(o)) {
                 actor->attr.wis += o->attackmod;
         } else {
                 actor->attr.wis -= o->attackmod;
@@ -223,14 +247,29 @@ void oe_wisdom(actor_t *actor, void *data, int e)
 void oe_physique(actor_t *actor, void *data, int e)
 {
         obj_t *o;
-        int x;
+        int x, gain, duration;
 
         o = (obj_t *) data;
         x = actor->attr.phy;
 
-        if(is_potion(o))
-                actor->attr.phy++;
-        else if(is_worn(o)) {
+        if(is_potion(o)) {
+                if(o->effect[e].duration == -1) {
+                        actor->attr.phy++;
+                } else if(o->effect[e].duration > 0) {
+                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        if(o->effect[e].gain)
+                                gain = o->effect[e].gain;
+                        else
+                                gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+                        actor->attr.phy += gain;
+                        if(actor == player)
+                                youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
+                        actor->temp = gtmalloc(sizeof(oe_t));
+                        *(actor->temp) = o->effect[e];
+                        actor->temp->duration = duration;
+                        actor->temp->gain = gain;
+                }
+        } else if(is_worn(o)) {
                 actor->attr.phy += o->attackmod;
         } else {
                 actor->attr.phy -= o->attackmod;
@@ -247,14 +286,29 @@ void oe_physique(actor_t *actor, void *data, int e)
 void oe_intelligence(actor_t *actor, void *data, int e)
 {
         obj_t *o;
-        int x;
+        int x, gain, duration;
 
         o = (obj_t *) data;
         x = actor->attr.intl;
 
-        if(is_potion(o))
-                actor->attr.intl++;
-        else if(is_worn(o)) {
+        if(is_potion(o)) {
+                if(o->effect[e].duration == -1) {
+                        actor->attr.intl++;
+                } else if(o->effect[e].duration > 0) {
+                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        if(o->effect[e].gain)
+                                gain = o->effect[e].gain;
+                        else
+                                gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+                        actor->attr.intl += gain;
+                        if(actor == player)
+                                youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
+                        actor->temp = gtmalloc(sizeof(oe_t));
+                        *(actor->temp) = o->effect[e];
+                        actor->temp->duration = duration;
+                        actor->temp->gain = gain;
+                }
+        } else if(is_worn(o)) {
                 actor->attr.intl += o->attackmod;
         } else {
                 actor->attr.intl -= o->attackmod;
@@ -271,17 +325,38 @@ void oe_intelligence(actor_t *actor, void *data, int e)
 void oe_dexterity(actor_t *actor, void *data, int e)
 {
         obj_t *o;
-        int x;
+        int x, gain, duration;
 
         o = (obj_t *) data;
         x = actor->attr.dex;
 
-        if(is_potion(o))
-                actor->attr.dex++;
-        else if(is_worn(o)) {
-                actor->attr.dex += o->attackmod;
+        if(is_potion(o)) {
+                if(o->effect[e].duration == -1) {
+                        actor->attr.dex++;
+                } else if(o->effect[e].duration > 0) {
+                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        if(o->effect[e].gain)
+                                gain = o->effect[e].gain;
+                        else
+                                gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+                        actor->attr.dex += gain;
+                        if(actor == player)
+                                youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
+                        actor->temp = gtmalloc(sizeof(oe_t));
+                        *(actor->temp) = o->effect[e];
+                        actor->temp->duration = duration;
+                        actor->temp->gain = gain;
+                }
+        } else if(is_worn(o)) {
+                if(o->effect[e].gain)
+                        actor->attr.dex += o->effect[e].gain;
+                else
+                        actor->attr.dex += o->attackmod;
         } else {
-                actor->attr.dex -= o->attackmod;
+                if(o->effect[e].gain)
+                        actor->attr.dex -= o->effect[e].gain;
+                else
+                        actor->attr.dex -= o->attackmod;
         }
 
         if(actor == player) {
@@ -295,14 +370,29 @@ void oe_dexterity(actor_t *actor, void *data, int e)
 void oe_charisma(actor_t *actor, void *data, int e)
 {
         obj_t *o;
-        int x;
+        int x, gain, duration;
 
         o = (obj_t *) data;
         x = actor->attr.cha;
 
-        if(is_potion(o))
-                actor->attr.cha++;
-        else if(is_worn(o)) {
+        if(is_potion(o)) {
+                if(o->effect[e].duration == -1) {
+                        actor->attr.cha++;
+                } else if(o->effect[e].duration > 0) {
+                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        if(o->effect[e].gain)
+                                gain = o->effect[e].gain;
+                        else
+                                gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+                        actor->attr.cha += gain;
+                        if(actor == player)
+                                youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
+                        actor->temp = gtmalloc(sizeof(oe_t));
+                        *(actor->temp) = o->effect[e];
+                        actor->temp->duration = duration;
+                        actor->temp->gain = gain;
+                }
+        } else if(is_worn(o)) {
                 actor->attr.cha += o->attackmod;
         } else {
                 actor->attr.cha -= o->attackmod;

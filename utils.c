@@ -236,7 +236,7 @@ char *Upper(char *s)
 char *pair(obj_t *o)
 {
         char *s;
-        s = gtmalloc(20*sizeof(char));
+        s = gtmalloc(300*sizeof(char));
 
         if(hasbit(o->flags, OF_GLOVES) || hasbit(o->flags, OF_FOOTWEAR))
                 sprintf(s, "pair of %s", o->displayname);

@@ -10,6 +10,9 @@
 
 #include "actor.h"
 
+#define add_effect(a, b) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects].effect = b; a->effects++; }
+#define add_effect_with_duration(a, b, c) if(a->effects < MAX_EFFECTS) { a->effect[(int)a->effects].effect = b; a->effect[(int)a->effects].duration = c; a->effects++; }
+
 #define OE_STRENGTH                1
 #define OE_WISDOM                  2
 #define OE_INTELLIGENCE            3

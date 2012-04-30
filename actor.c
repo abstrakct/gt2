@@ -280,6 +280,28 @@ int calculate_final_score()
         return score;
 }
 
+void dump_header(char *s)
+{
+        printf("\n\n\t\t\t * %s *\n", s);
+}
+
+void player_die_dump_inventory()
+{
+        int j;
+        obj_t *o;
+
+        dump_header("Inventory");
+        
+        printf("\t\tGold: %d\n", player->inventory->gold);
+        for(j = 0; j < 52; j++) {
+                if(player->inventory->object[j]) {
+                        o = player->inventory->object[j];
+                        identify(o);
+                        printf("\t\t%c - %s\n", slot_to_letter(j), a_an(pair(o)));
+                }
+        }
+}
+
 void player_die(actor_t *killer)
 {
         if(game->wizardmode) {
@@ -293,42 +315,61 @@ void player_die(actor_t *killer)
         more();
         shutdown_display();
 
-        printf("\n\n\t\t\t * %s *\n", player->name);
+        dump_header(player->name);
         if(!killer->weapon)
                 printf("\t\tWas beaten to death by %s,\n", a_an(killer->name));
-        else
+        else {
+                identify(killer->weapon);
                 printf("\t\tWas killed by %s, using %s,\n", a_an(killer->name), a_an(killer->weapon->fullname));
+        }
 
         if(game->context == CONTEXT_DUNGEON)
                 printf("\t\tat level %d of the dungeon.\n", game->currentlevel);
         if(game->context == CONTEXT_OUTSIDE)
                 printf("\t\twhile outside the dungeon.\n");
 
+        player_die_dump_inventory();
+
+        dump_header("Trivia");
         printf("\t\tYou killed a total of %d monsters.\n", player->kills);
-        printf("\t\tYou got a total of %d experience points.\n\t\tYou got a final score of %d points.\n\n\n\n\n\n", player->xp, calculate_final_score());
+        printf("\t\tYou got a total of %d experience points.\n\t\tYou got a final score of %d points.\n", player->xp, calculate_final_score());
+        printf("\t\tYou died with %d/%d hitpoints.\n", player->hp, player->maxhp);
+        printf("\n\n\n\n\n");
+
 
         shutdown_gt();
         exit(0);
 }
 
-/*
- * ATTACK!
- */
-void attack(actor_t *attacker, actor_t *defender)
+int attackroll(actor_t *a)
 {
-        int attack, defense, damage;
+        int attack;
 
-        defender->attacker = attacker;
+        attack = d(1, 20);
+        attack += ability_modifier(a->attr.str); // eller dex?
+        if(a->weapon)
+                attack += a->weapon->attackmod;
 
-        attack  = d(1, 20);
-        attack += ability_modifier(attacker->attr.dex); // strength_modifier[pstr];
-        if(attacker->weapon)
-                attack += attacker->weapon->attackmod;
+        return attack;
+}
+
+int defenseroll(actor_t *defender)
+{
+        int defense;
 
         defense = 10;         // base defense
         defense += ability_modifier(defender->attr.dex);
+        defense += defender->ac;
         // + class/race bonus
         // + equipment  bonus
+
+
+        return defense;
+}
+
+int damageroll(actor_t *attacker)
+{
+        int damage;
 
         if(attacker->weapon) {
                 damage = dice(attacker->weapon->dice, attacker->weapon->sides, (attacker->weapon->damagemod + ability_modifier(attacker->attr.str))); //TODO: change when we take attributes more into regard depending on weapon (e.g. some require dex, others str, etc.
@@ -336,21 +377,63 @@ void attack(actor_t *attacker, actor_t *defender)
                 damage = dice(1, 3, ability_modifier(attacker->attr.str));
         }
 
-        damage -= defender->ac;       // TODO: Adjust/change 
+        return damage;
+}
 
+/*
+ * ATTACK!
+ */
+void attack(actor_t *attacker, actor_t *defender)
+{
+        int attack, defense, damage, crit, i;
+        bool naturalhit, naturalmiss, criticalmiss, criticalhit;
 
+        naturalmiss = naturalhit = criticalmiss = criticalhit = false;
+
+        defender->attacker = attacker;
+
+        /* 
+         * First, see if this is a critical hit, or miss.
+         */
+        attack = d(1,20);
+        if(attack == 1) {
+                naturalmiss = true;
+                criticalmiss = true;
+        } else if(attack == 20) {
+                naturalhit = true;
+                crit = attackroll(attacker);
+                defense = defenseroll(defender);
+                if(crit >= defense) {    // it's a critical hit!
+                        criticalhit = true;
+                        damage = damageroll(attacker);
+                        damage += damageroll(attacker);
+                }
+        } else {
+                attack  = attackroll(attacker);
+                defense = defenseroll(defender);
+                damage  = damageroll(attacker);
+        }
+        
         //gtprintfc(C_BLACK_MAGENTA, "DEBUG: %s:%d - attack = %d   defense = %d   damage = %d\n", __FILE__, __LINE__, attack, defense, damage);
         if(attack >= defense) {  // it's a hit!
                 if(attacker == player) {
-                        if(damage <= 0)
+                        if(damage <= 0) {
                                 youc(COLOR_WHITE, "hit the %s, but do no damage!", defender->name);
-                        else
-                                youc(COLOR_RED, "hit the %s with a %s for %d damage!", defender->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                        } else {
+                                if(criticalhit)
+                                        gtprintfc(COLOR_GREEN, "Bullseye! You hit the %s real hard!!", defender->name);
+                                else
+                                        youc(COLOR_RED, "hit the %s with a %s for %d damage!", defender->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                        }
                 } else {
-                        if(damage <= 0)
+                        if(damage <= 0) {
                                 gtprintfc(COLOR_WHITE, "The %s hits you with a %s, but does no damage!", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing");
-                        else
-                                gtprintfc(COLOR_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                        } else {
+                                if(criticalhit)
+                                        gtprintfc(COLOR_RED, "Ouch! That hurt real bad!");
+                                else
+                                        gtprintfc(COLOR_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                        }
                 }
 
                 if(damage > 0)
@@ -366,10 +449,49 @@ void attack(actor_t *attacker, actor_t *defender)
                         }
                 }
         } else {
-                if(attacker == player)
-                        youc(COLOR_WHITE, "miss the %s!", defender->name);
-                else
-                        gtprintfc(COLOR_WHITE, "The %s tries to hit you with a %s, but fails!", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing");
+                if(attacker == player) {
+                        if(criticalmiss && naturalmiss) {
+                                youc(COLOR_RED, "try to hit the %s, but fail miserably!", defender->name);
+                                if(perc(50)) {
+                                        i = d(1,8);
+                                        switch(i) {
+                                                case 1: youc(COLOR_RED, "hit yourself in the left foot!"); break;
+                                                case 2: youc(COLOR_RED, "hit yourself in the left arm!"); break;
+                                                case 3: youc(COLOR_RED, "hit yourself in the stomach!"); break;
+                                                case 4: youc(COLOR_RED, "hit yourself in the head!"); break;
+                                                case 5: youc(COLOR_RED, "hit yourself in the right foot!"); break;
+                                                case 6: youc(COLOR_RED, "hit yourself in the right arm!"); break;
+                                                case 7: youc(COLOR_RED, "hit yourself in the face!"); break;
+                                                case 8: youc(COLOR_RED, "hit yourself in the chest!"); break;
+                                        }
+                                        i = d(1,3);
+                                        player->hp -= i;
+                                }
+                        } else {
+                                youc(COLOR_WHITE, "miss the %s!", defender->name);
+                        }
+                } else {
+                        if(criticalmiss && naturalmiss) {
+                                gtprintfc(COLOR_GREEN, "The %s tries to hit you, but fails miserably!!", attacker->name);
+                                if(perc(75)) {
+                                        i = d(1,8);
+                                        switch(i) { // TODO: Don't assume that every monster has human bodyparts!
+                                                case 1: gtprintfc(COLOR_GREEN, "The %s hits itself in the left foot!", attacker->name); break;
+                                                case 2: gtprintfc(COLOR_GREEN, "The %s hits itself in the left arm!", attacker->name); break;
+                                                case 3: gtprintfc(COLOR_GREEN, "The %s hits itself in the stomach!", attacker->name); break;
+                                                case 4: gtprintfc(COLOR_GREEN, "The %s hits itself in the head!", attacker->name); break;
+                                                case 5: gtprintfc(COLOR_GREEN, "The %s hits itself in the right foot!", attacker->name); break;
+                                                case 6: gtprintfc(COLOR_GREEN, "The %s hits itself in the right arm!", attacker->name); break;
+                                                case 7: gtprintfc(COLOR_GREEN, "The %s hits itself in the face!", attacker->name); break;
+                                                case 8: gtprintfc(COLOR_GREEN, "The %s hits itself in the chest!", attacker->name); break;
+                                        }
+                                        i = d(1,3);
+                                        defender->hp -= i;
+                                }
+                        } else {
+                                gtprintfc(COLOR_WHITE, "The %s tries to hit you with a %s, but fails!", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing");
+                        }
+                }
         }
 
         if(attacker == player)

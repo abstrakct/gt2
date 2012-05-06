@@ -138,7 +138,7 @@ extern int                 tempxsize, tempysize;
 
 /* function prototypes */
 
-bool do_next_thing_in_queue();
+int do_next_thing_in_queue();
 void queue(int action);
 void queuemany(int first, ...);
 void shutdown_gt();

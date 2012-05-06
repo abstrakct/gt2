@@ -72,6 +72,7 @@ int                 tempxsize, tempysize;
 bool                loadgame;
 void               *actiondata;
 actor_t            *a_attacker, *a_victim;
+int                 actionlength[100];
 
 // Messages
 message_t messages[500];
@@ -120,6 +121,29 @@ void init_variables()
 
         game->wizardmode = false;
         player = (actor_t *) gtmalloc(sizeof(actor_t));
+
+        actionlength[ACTION_MAKE_DISTANCEMAP] = 0;
+        actionlength[ACTION_MOVE_MONSTERS] = 0;
+        actionlength[ACTION_ATTACK] = 1000;
+        actionlength[ACTION_HEAL_PLAYER] = 0;
+        actionlength[ACTION_PLAYER_MOVE_DOWN] = 1000;
+        actionlength[ACTION_PLAYER_MOVE_UP] = 1000;
+        actionlength[ACTION_PLAYER_MOVE_LEFT] = 1000;
+        actionlength[ACTION_PLAYER_MOVE_RIGHT] = 1000;
+        actionlength[ACTION_PLAYER_MOVE_NW] = 1000;
+        actionlength[ACTION_PLAYER_MOVE_NE] = 1000;
+        actionlength[ACTION_PLAYER_MOVE_SW] = 1000;
+        actionlength[ACTION_PLAYER_MOVE_SE] = 1000;
+        actionlength[ACTION_PICKUP] = 1000;
+        actionlength[ACTION_GO_DOWN_STAIRS] = 1000;
+        actionlength[ACTION_GO_UP_STAIRS] = 1000;
+        actionlength[ACTION_WIELDWEAR] = 500;
+        actionlength[ACTION_UNWIELDWEAR] = 500;
+        actionlength[ACTION_QUAFF] = 500;
+        actionlength[ACTION_DROP] = 1000;
+        actionlength[ACTION_FIX_VIEW] = 0;
+        actionlength[ACTION_NOTHING] = 0;
+        actionlength[ACTION_ENTER_DUNGEON] = 1000;
 }
 
 /*********************************************
@@ -319,7 +343,6 @@ bool do_action(int action)
                         }
                         if(ppy < 0)
                                 ppy = 0;
-                        player->ticks -= TICKS_MOVEMENT;
                         queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
@@ -345,7 +368,6 @@ bool do_action(int action)
                         }
                         if(ppy < 0)
                                 ppy = 0;
-                        player->ticks -= TICKS_MOVEMENT;
                         monsters_move();
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
@@ -370,7 +392,6 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
-                        player->ticks -= TICKS_MOVEMENT;
                         queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
@@ -398,7 +419,6 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
-                        player->ticks -= TICKS_MOVEMENT;
                         queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
@@ -435,7 +455,6 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
-                        player->ticks -= TICKS_MOVEMENT;
                         queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
@@ -475,7 +494,6 @@ bool do_action(int action)
                         }
                         if(ppy < 0)
                                 ppy = 0;
-                        player->ticks -= TICKS_MOVEMENT;
                         queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
@@ -513,7 +531,6 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
-                        player->ticks -= TICKS_MOVEMENT;
                         queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
@@ -557,7 +574,6 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
-                        player->ticks -= TICKS_MOVEMENT;
                         queue(ACTION_HEAL_PLAYER);
                         monsters_move();
                         break;
@@ -579,7 +595,6 @@ bool do_action(int action)
                         break;
                 case ACTION_ATTACK:
                         attack(a_attacker, a_victim);
-                        player->ticks -= TICKS_ATTACK;
                         break;
                 case ACTION_MOVE_MONSTERS:
                         move_monsters();
@@ -770,19 +785,23 @@ void queuemany(int first, ...)
 * Author - RK
 * Date - Dec 14 2011
 * *******************************************/
-bool do_next_thing_in_queue() // needs a better name..
+int do_next_thing_in_queue() // needs a better name..
 {
-        bool ret;
+        int ret;
         struct actionqueue *tmp;
 
         tmp = aq->next;
-        ret = false;
+        ret = 0;
 
         if(tmp) {
-                ret = do_action(tmp->action);
-                aq->num--;
-                aq->next = tmp->next;
-                gtfree(tmp);
+                if(player->ticks >= actionlength[tmp->action]) {
+                        do_action(tmp->action);
+                        ret = actionlength[tmp->action];
+                        player->ticks -= ret;
+                        aq->num--;
+                        aq->next = tmp->next;
+                        gtfree(tmp);
+                }
         }
 
         return ret;
@@ -876,14 +895,15 @@ void look()
 void do_turn()
 {
        // bool fullturn;
-        int i, ret;
+        int i, elapsed;
 
+        elapsed = 0;
         player->ticks += (int) player->speed * 1000;
         //i = aq->num;
         i = round(player->speed);
 
         //while(i && player->ticks >= 1000) {
-        while(i) {
+        while(player->ticks >= 1000) {
                 if(is_autoexploring) {
                         if(gt_checkforkeypress()) {
                                 gtprintf("Autoexplore interrupted...");
@@ -891,22 +911,19 @@ void do_turn()
                         }
                 }
 
-                ret = do_next_thing_in_queue();
-                if(ret) {
+                elapsed += do_next_thing_in_queue();
+                update_screen();
+                if(elapsed >= 1000) {
                         game->turn++;
-                        i--;
                         look();
                         if(player->temp)
                                 process_temp_effects(player);
                 }
 
-                if(i == 0)
-                        monsters_move();
-                //i = aq->num;
+                monsters_move();
                 update_screen();
+                //i = aq->num;
         }
-
-        update_screen();
 }
 
 int main(int argc, char *argv[])

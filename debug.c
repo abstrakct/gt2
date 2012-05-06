@@ -18,6 +18,32 @@
 #include "gt.h"
 #include "utils.h"
 
+char *action_name[] = { 
+        "Nothing",
+        "Player move left",
+        "Player move right",
+        "Player move up",
+        "Player move down",
+        "Player move up-left",
+        "Player move up-right",
+        "Player move down-left",
+        "Player move down-right",
+        "Pick up",
+        "Attack",
+        "Move monsters",
+        "Enter dungeon",
+        "Go down stairs",
+        "Go up stairs",
+        "Fix view",
+        "Wield/wear",
+        "Unwield/unwear",
+        "Heal player",
+        "Make distancemap (obsolete)",
+        "Drop",
+        "Quaff"
+};
+
+
 void dump_monsterdefs()
 {
         monster_t *m, *n;
@@ -83,9 +109,14 @@ void dump_action_queue()
 
         tmp = aq;
         i = 0;
+        gtprintf("---------------------------------------------------------------------------------------------");
         while(tmp) {
-                gtprintf("item %d\taction %d\tnum %d\n", i, tmp->action, tmp->num);
+                if(i == 0)
+                        gtprintf("HEAD -- number of actions in queue: %d\n", tmp->num);
+                else
+                        gtprintf("%d:   action %s (%d) - num %d - length %d\n", i, action_name[tmp->action], tmp->action, tmp->num, actionlength[tmp->action]);
                 tmp = tmp->next; 
                 i++;
         }
+        gtprintf("---------------------------------------------------------------------------------------------");
 }

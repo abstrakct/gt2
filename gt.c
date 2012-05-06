@@ -280,26 +280,14 @@ void clear_aq()
         }
 }
 
-/**
- * @brief Do the steps necessary to move monsters.
- * A kind of wrapper function I guess.
- */
-void monsters_move()
-{
-#ifdef GT_USE_NCURSES
-        do_action(ACTION_MAKE_DISTANCEMAP);
-#endif
-        do_action(ACTION_MOVE_MONSTERS);
-}
-
 /*! \brief Setup attack
  * Actually perform an attack.
  */
 void setup_attack()
 {
-        do_action(ACTION_ATTACK);
-        do_action(ACTION_HEAL_PLAYER);
-        player->ticks += TICKS_ATTACK;
+        queue(ACTION_ATTACK);
+        queue(ACTION_HEAL_PLAYER);
+        player->ticks += actionlength[ACTION_ATTACK];
 }
 
 /*********************************************
@@ -344,7 +332,7 @@ bool do_action(int action)
                         if(ppy < 0)
                                 ppy = 0;
                         queue(ACTION_HEAL_PLAYER);
-                        monsters_move();
+                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_UP:
                         if(passable(world->curlevel, ply-1,plx)) {
@@ -368,7 +356,7 @@ bool do_action(int action)
                         }
                         if(ppy < 0)
                                 ppy = 0;
-                        monsters_move();
+                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
                         if(passable(world->curlevel, ply, plx-1)) {
@@ -393,7 +381,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         queue(ACTION_HEAL_PLAYER);
-                        monsters_move();
+                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
                         if(passable(world->curlevel, ply,plx+1)) {
@@ -420,7 +408,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         queue(ACTION_HEAL_PLAYER);
-                        monsters_move();
+                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_NW:
                         if(passable(world->curlevel, ply-1,plx-1)) {
@@ -456,7 +444,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         queue(ACTION_HEAL_PLAYER);
-                        monsters_move();
+                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_NE:
                         if(passable(world->curlevel, ply-1,plx+1)) {
@@ -495,7 +483,7 @@ bool do_action(int action)
                         if(ppy < 0)
                                 ppy = 0;
                         queue(ACTION_HEAL_PLAYER);
-                        monsters_move();
+                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_SW:
                         if(passable(world->curlevel, ply+1, plx-1)) {
@@ -532,7 +520,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         queue(ACTION_HEAL_PLAYER);
-                        monsters_move();
+                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_SE:
                         if(passable(world->curlevel, ply+1, plx+1)) {
@@ -575,7 +563,7 @@ bool do_action(int action)
                         if(ppx < 0)
                                 ppx = 0;
                         queue(ACTION_HEAL_PLAYER);
-                        monsters_move();
+                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PICKUP:
                         if(ci(ply, plx) && ci(ply, plx)->gold > 0) {
@@ -597,6 +585,9 @@ bool do_action(int action)
                         attack(a_attacker, a_victim);
                         break;
                 case ACTION_MOVE_MONSTERS:
+#ifdef GT_USE_NCURSES
+                        do_action(ACTION_MAKE_DISTANCEMAP);
+#endif
                         move_monsters();
                         fullturn = false;
                         break;
@@ -625,7 +616,6 @@ bool do_action(int action)
                                         player->viewradius = 12;
                         }
                         init_pathfinding(player);
-                        //floodfill(world->curlevel, player->y, player->x);
                         fullturn = false;
                         break;
                 case ACTION_GO_UP_STAIRS:
@@ -746,6 +736,9 @@ void queue(int action)
         tmp->num = actionnum;
         prev->next = tmp;
         aq->num++;
+
+        //gtprintf("        end of queue! dumping it!");
+        //dump_action_queue();
 }
 
 /*
@@ -797,7 +790,7 @@ int do_next_thing_in_queue() // needs a better name..
                 if(player->ticks >= actionlength[tmp->action]) {
                         do_action(tmp->action);
                         ret = actionlength[tmp->action];
-                        player->ticks -= ret;
+                        //player->ticks -= ret;
                         aq->num--;
                         aq->next = tmp->next;
                         gtfree(tmp);
@@ -844,7 +837,7 @@ void look()
         if(ci(ply, plx)) {
                 if(ci(ply, plx) && ci(ply, plx)->gold) {
                         if(gtconfig.ap[OT_GOLD])
-                                do_action(ACTION_PICKUP);
+                                queue(ACTION_PICKUP);
                         else
                                 gtprintf("There is %d gold %s here.", ci(ply, plx)->gold, (ci(ply, plx)->gold > 1) ? "pieces" : "piece");
                 }
@@ -860,7 +853,7 @@ void look()
 
                                 ob = ci(ply, plx)->object[slot];
                                 if(gtconfig.ap[ob->type] && !hasbit(ob->flags, OF_DONOTAP)) {
-                                        do_action(ACTION_PICKUP);
+                                        queue(ACTION_PICKUP);
                                 } else {
                                         gtprintf("There is %s here.", a_an(pair(ob)));
                                 }
@@ -898,12 +891,15 @@ void do_turn()
         int i, elapsed;
 
         elapsed = 0;
+        gtprintf("\ntop of do_turn - dumping actionqueue:");
+        dump_action_queue();
+
         player->ticks += (int) player->speed * 1000;
         //i = aq->num;
         i = round(player->speed);
 
         //while(i && player->ticks >= 1000) {
-        while(player->ticks >= 1000) {
+        while(!game->dead && elapsed < player->ticks /*player->ticks >= 1000*/) {
                 if(is_autoexploring) {
                         if(gt_checkforkeypress()) {
                                 gtprintf("Autoexplore interrupted...");
@@ -915,15 +911,30 @@ void do_turn()
                 update_screen();
                 if(elapsed >= 1000) {
                         game->turn++;
-                        look();
                         if(player->temp)
                                 process_temp_effects(player);
                 }
 
-                monsters_move();
+                        look();
                 update_screen();
                 //i = aq->num;
         }
+
+        // now let's try to just do the rest of the queue here...
+        //while(aq->num)
+                //do_next_thing_in_queue();
+
+        gtprintf("\nend of do_turn - dumping actionqueue:");
+        dump_action_queue();
+}
+
+void catchsignal()
+{
+        game->dead = true;
+        shutdown_display();
+        shutdown_gt();
+        fprintf(stderr, "Caught signal - exiting.\n");
+        exit(0);
 }
 
 int main(int argc, char *argv[])
@@ -933,6 +944,9 @@ int main(int argc, char *argv[])
         //char found;
         //bool done;
 
+        signal(SIGINT,  catchsignal);
+        signal(SIGKILL, catchsignal);
+        
         if(!setlocale(LC_ALL, ""))
                 die("couldn't set locale.");
 
@@ -1000,6 +1014,7 @@ int main(int argc, char *argv[])
                 mapchanged = false;
                 player->oldx = plx;
                 player->oldy = ply;
+                //clear_aq();
 
                 switch(c) {
                         case CMD_QUIT:

@@ -20,16 +20,20 @@
 #include <libtcod/libtcod.h>
 #endif
 
+/**
+ * @struct gt_config_t
+ * @brief Various config options.
+ */
 typedef struct {                              // gt_config_t
-        int  minf, maxf;
-        int  minc, maxc;
+        int  minf, maxf;                      //!< minimum and maximum number of forests
+        int  minc, maxc;                      //!< minimum and maximum number of cities
         int  minv, maxv;
         int  mind, maxd;
         int  dxsize, dysize;
-        int  compress_savefile;                // compress the savefile?
-        char autopickup[10];
-        bool ap[10];                          // adjust later, match object type
-        int  rows, cols;
+        int  compress_savefile;               //!< compress the savefile?
+        char autopickup[10];                  //!< Chars of objects to autopickup
+        bool ap[10];                          //!< adjust later, match object type
+        int  rows, cols;                      //!< Window size
 } gt_config_t;
 
 #ifdef GT_USE_LIBTCOD
@@ -39,25 +43,28 @@ typedef struct {
 } win_t;
 #endif
 
+/**
+ * @brief Variables related to the running game.
+ */
 typedef struct {                              // game_t
-        char         version[20];
-        short        width, height;           // width, height of screen
-        short        mapw, maph;              // width, height of map window
+        char         version[20];             //!< Version of the game, in string format
+        short        width, height;           //!< width, height of screen
+        short        mapw, maph;              //!< width, height of map window
         int          mapcx, mapcy;
-        bool         dead;                    // is the game/player dead?
-        short        context;                 // which context are we in? see CONTEXT_ defines
-        short        currentlevel;            // what's the current level?
-        int          turn;                    // count turns
+        bool         dead;                    //!< is the game/player dead?
+        short        context;                 //!< which context are we in? see CONTEXT_ defines
+        short        currentlevel;            //!< what's the current level?
+        int          turn;                    //!< count turns
         long long    tick;
-        unsigned int seed;                    // random seed
-        short        monsterdefs;             // number of monster definitions
-        short        objdefs;                 // number of object definitions
-        short        createddungeons;         // number of dungeons which have been created
-        int          num_objects;             // number of spawned objects
-        int          num_monsters;            // number of spawned monsters
-        bool         wizardmode;              // yay!
-        char         savefile[255];           // filename of the save file for this game
-        obj_t       *objects[2000];
+        unsigned int seed;                    //!< random seed
+        short        monsterdefs;             //!< number of monster definitions
+        short        objdefs;                 //!< number of object definitions
+        short        createddungeons;         //!< number of dungeons which have been created
+        int          num_objects;             //!< number of spawned objects
+        int          num_monsters;            //!< number of spawned monsters
+        bool         wizardmode;              //!< wizardmode! yay!
+        char         savefile[255];           //!< filename of the save file for this game
+        obj_t       *objects[2000];           //!< Pointers to every object currently existing in the game. 2000 might have to be adjusted.
 #ifdef GT_USE_LIBTCOD
         win_t        map, messages, left, right;
 #endif
@@ -69,14 +76,16 @@ typedef struct {                              // message_t
 } message_t;
 
 struct actionqueue {                          // struct actionqueue
-        struct actionqueue *head;
-        struct actionqueue *next;
-        int action;
-        long num;
+        struct actionqueue *head;             //!< Pointer to the head of the actionqueue
+        struct actionqueue *next;             //!< Pointer to the next item in the queue
+        int action;                           //!< Which action is it? See \ref group_actions "ACTION_defines"
+        long num;                             //!< In the head, this contains the number of actions in the queue, for a specific action it signifies which number the action is overall (e.g. if it's the tenth action performed in the game, the two-thousandth, or whatever).
 };
 
 
-
+/** @defgroup group_actions Group of action defines
+ * @{
+ */
 #define ACTION_NOTHING            0
 #define ACTION_PLAYER_MOVE_LEFT   1
 #define ACTION_PLAYER_MOVE_RIGHT  2
@@ -99,6 +108,7 @@ struct actionqueue {                          // struct actionqueue
 #define ACTION_MAKE_DISTANCEMAP  19
 #define ACTION_DROP              20
 #define ACTION_QUAFF             21
+/** @} */
 
 #define TICKS_MOVEMENT  1000
 #define TICKS_ATTACK    1000

@@ -29,7 +29,9 @@ aifunction aitable[] = {
 };
 
 
-/*
+/**
+ * @brief Make a "distance map", used for pathfinding.
+ *
  * This function, and get_next_step(), is taken/adapted from:
  *
  * Newsgroups: rec.games.roguelike.development
@@ -38,6 +40,9 @@ aifunction aitable[] = {
  * Local: Mon, Dec 23 2002 9:57 am
  * Subject: Re: *simple* pathfinding
  * 
+ * @param desty Y coordinate of destination.
+ * @param destx X coordinate of destination.
+ *
  */
 void makedistancemap(int desty, int destx)
 {
@@ -83,6 +88,13 @@ void makedistancemap(int desty, int destx)
 }
 
 
+/**
+ * @brief Very stupid, random "pathfinder". It makes an actor move to a random (and legal/possible) cell.
+ *
+ * @param m Pointer to the actor/monster which is to do this movement.
+ *
+ * @return True if actor successfully moved, false if not.
+ */
 int simpleoutdoorpathfinder(actor_t *m)
 {
         int choice;
@@ -179,6 +191,11 @@ int simpleoutdoorpathfinder(actor_t *m)
 
 }
 
+/**
+ * @brief A very simple "AI". 
+ *
+ * @param m Monster/actor who is doing this.
+ */
 void simpleai(monster_t *m)
 {
         int dir, ox, oy;
@@ -300,6 +317,17 @@ bool newpathfinder(actor_t *m)
         return true;
 }
 
+/**
+ * @brief Callback function for libtcod pathfinding.
+ *
+ * @param xFrom Source X
+ * @param yFrom Source Y
+ * @param xTo   Dest. X
+ * @param yTo   Dest. Y
+ * @param user_data Pointer to the level where the pathfinding is taking place. 
+ *
+ * @return 1.0 if Dest X,Y is passable for a monster, 0.0 if not.
+ */
 float monster_path_callback_func(int xFrom, int yFrom, int xTo, int yTo, void *user_data)
 {
         level_t *l;
@@ -314,6 +342,11 @@ float monster_path_callback_func(int xFrom, int yFrom, int xTo, int yTo, void *u
         return f;
 }
 
+/**
+ * @brief A simple, but effective AI function which will attack the player or other hostile creatures - or chase them if necessary!
+ *
+ * @param m The monster/actor which is performing this hostility.
+ */
 void hostile_ai(actor_t *m)
 {
         int oy, ox;
@@ -355,12 +388,21 @@ void hostile_ai(actor_t *m)
         }
 }
 
+/**
+ * @brief Heal a monster, and notify the player.
+ *
+ * @param m   Pointer to monster to be healed.
+ * @param num Number of hitpoints to heal.
+ */
 void heal_monster(actor_t *m, int num)
 {
         increase_hp(m, num);
         gtprintf("The %s looks a bit healthier!", m->name);
 }
 
+/**
+ * @brief Move all monsters which are awake. Heal monster if appropriate.
+ */
 void move_monsters()
 {
         monster_t *m;
@@ -419,6 +461,13 @@ void move_monsters()
         }
 }
 
+/**
+ * @brief Get a monster definition.
+ *
+ * @param n Which monster definition to get.
+ *
+ * @return The monster definition.
+ */
 monster_t get_monsterdef(int n)
 {
         monster_t *tmp;
@@ -433,6 +482,16 @@ monster_t get_monsterdef(int n)
 
 /*
  * place a spawned monster at (y,x)
+ */
+/**
+ * @brief Place an already spawned monster at a location. Also, initialize pathfinding for monster.
+ *
+ * @param y Y coordinate.
+ * @param x X coordinate.
+ * @param monster Pointer to the spawned monster.
+ * @param l Pointer to the level where the monster is to be spawned.
+ *
+ * @return True if monster can be placed at x,y on this level, false if not.
  */
 bool place_monster_at(int y, int x, monster_t *monster, level_t *l)
 {
@@ -449,6 +508,14 @@ bool place_monster_at(int y, int x, monster_t *monster, level_t *l)
         }
 }
 
+/**
+ * @brief Spawn a monster - e.g. make a copy of a monster definition and make that copy ready to be deployed.
+ * HP for the monster will be slightly and randomly adjusted, to provide less predictability/more randomness.
+ *
+ * @param n Number of the monsterdef to use
+ * @param head Pointer to the head of the list of monsters which this monster is to be inserted into.
+ * @param maxlevel Maximum level of the monster to be created.
+ */
 void spawn_monster(int n, monster_t *head, int maxlevel)
 {
         monster_t *tmp;
@@ -490,6 +557,13 @@ void spawn_monster(int n, monster_t *head, int maxlevel)
         head->next->mid = mid_counter;
 }
 
+/**
+ * @brief Kill a monster.
+ *
+ * @param level Pointer to the level where the killing takes place.
+ * @param m Pointer to the unfortunate victim.
+ * @param killer Pointer to the entity which did the killing.
+ */
 void kill_monster(void *level, monster_t *m, actor_t *killer)
 {
         int i;
@@ -527,6 +601,11 @@ void kill_monster(void *level, monster_t *m, actor_t *killer)
         }
 }
 
+/**
+ * @brief "Unspawn" a monster - basically remove it from the game entirely.
+ *
+ * @param m Pointer to the monster.
+ */
 void unspawn_monster(monster_t *m)
 {
         if(m) {
@@ -537,8 +616,17 @@ void unspawn_monster(monster_t *m)
         }
 }
 
-/*
- * spawn a monster and place it at (y,x)
+/**
+ * @brief Spawn a monster, and (try to) place it at x,y (or y,x..)
+ *
+ * @param y Y coordinate
+ * @param x X coordinate
+ * @param n Number of the monsterdef to tuse
+ * @param head Head of list to attach this monster to (usually level->monsters)
+ * @param level Pointer to the level where monster will be spawned
+ * @param maxlevel Maximum level of monster.
+ *
+ * @return True if successfull, false if it failed.
  */
 bool spawn_monster_at(int y, int x, int n, monster_t *head, void *level, int maxlevel)
 {
@@ -557,8 +645,14 @@ bool spawn_monster_at(int y, int x, int n, monster_t *head, void *level, int max
 }
 
 /*
- * Spawn num monsters of maximum level max_level, on level l
- * (yeah, level is used for two things, and confusing... i should change the terminology!
+ */
+/**
+ * @brief Spawn a number of monsters on a certain level.
+ * Yeah, level is used for two things, and confusing... i should change the terminology!
+ *
+ * @param num How many monsters.
+ * @param max_level Maximum level of the monsters.
+ * @param p The level in which to spawn 'em.
  */
 void spawn_monsters(int num, int max_level, void *p)
 {

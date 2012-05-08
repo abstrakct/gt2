@@ -6,16 +6,24 @@
 #ifndef _COMMANDS_H
 #define _COMMANDS_H
 
-typedef struct {
+/**
+ * \struct gtcommandstruct
+ * @brief Struct for dealing with commands.
+ */
+typedef struct gtcommandstruct {
 #ifdef GT_USE_NCURSES
-        int key;
+        int key;        //!< Key
 #else
-        TCOD_key_t key;
+        TCOD_key_t key; //!< Key
 #endif
-        int cmd;
-        char desc[50];
+        int cmd;        //!< Which command
+        char desc[50];  //!< Description
 } cmd_t;
 
+
+/** @defgroup group_commands Group of command defines
+ * @{
+ */
 #define CMD_LEFT           1
 #define CMD_RIGHT          2
 #define CMD_UP             3
@@ -56,8 +64,7 @@ typedef struct {
 #define CMD_INCFOV        1005
 #define CMD_DECFOV        1006
 #define CMD_DUMPCOLORS    1007
-
-// prototypes
+/* @} */
 
 
 #endif

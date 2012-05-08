@@ -78,6 +78,9 @@ int                 actionlength[100];
 message_t messages[500];
 int currmess, maxmess;
 
+/**
+ * @brief Command line options
+ */
 struct option gt_options[] = {
         { "seed",    1,   0, 's' },
         { "load",    1,   0, 'l' },
@@ -85,6 +88,9 @@ struct option gt_options[] = {
         { NULL,      0, NULL, 0  }
 };
 
+/**
+ * @brief Initialize important variables and data structures.
+ */
 void init_variables()
 {
         garbageindex = 0;
@@ -146,11 +152,9 @@ void init_variables()
         actionlength[ACTION_ENTER_DUNGEON]     = 0;
 }
 
-/*********************************************
-* Description - initialize player
-* Author - RK
-* Date - Dec 14 2011
-* *******************************************/
+/**
+ * @brief Initialize the player struct. Should probably later deal with character generation.
+ */
 void init_player()
 {
         // TODO: Character generation!!
@@ -178,6 +182,9 @@ void init_player()
         strcpy(player->name, "Whiskeyjack");
 }
 
+/**
+ * @brief Close open files and free memory.
+ */
 void shutdown_gt()
 {
         int i;
@@ -193,9 +200,11 @@ void shutdown_gt()
                 fclose(messagefile);
 }
 
-/*
- * The following (parse_commandline) is muchly stolen
- * from getopt's wikipedia page
+/**
+ * @brief Parse the command line options. Most of this code is taken from getopt's wikipedia page
+ *
+ * @param argc Arg count
+ * @param argv Arguments
  */
 void parse_commandline(int argc, char **argv)
 {
@@ -219,6 +228,9 @@ void parse_commandline(int argc, char **argv)
         }
 }
 
+/**
+ * @brief Fix the viewport variables so that the map is drawn correctly.
+ */
 void fixview()
 {
         ppx = plx - (game->map.w / 2);
@@ -247,9 +259,9 @@ void fixview()
                 ppy = 0;
 }
 
-/*! \brief Open a door
- *  \param x The X coordinate
- *  \param y The Y coordinate
+/*! \brief Open a door.
+ *  \param x The X coordinate of the door.
+ *  \param y The Y coordinate of the door.
  */
 void open_door(int y, int x)
 {
@@ -280,8 +292,7 @@ void clear_aq()
         }
 }
 
-/*! \brief Setup attack
- * Actually perform an attack.
+/*! \brief Setup attack - that is, do what's needed to perform an attack by the player.
  */
 void setup_attack()
 {
@@ -292,11 +303,13 @@ void setup_attack()
         //player->ticks += actionlength[ACTION_ATTACK];
 }
 
-/*********************************************
-* Description - Do an action specified by parameter action
-* Author - RK
-* Date - Dec 14 2011
-* *******************************************/
+/**
+ * @brief Do an action. This really should be split into functions.
+ *
+ * @param action Which action to perform - see \ref group_actions "ACTION-defines" in gt.h
+ *
+ * @return True if action took a full turn, false if not. (This is currently becoming obsolete.) 
+ */
 bool do_action(int action)
 {
         int oldy, oldx;
@@ -697,12 +710,11 @@ bool do_action(int action)
         return fullturn;
 }
 
-/*********************************************
-* Description - Add action to action queue
-* Parameters: int action = ACTION_#define to add
-* Author - RK
-* Date - Dec 14 2011
-* *******************************************/
+/**
+ * @brief Add an action to the action queue.,
+ *
+ * @param action Which action to queue - see \ref group_actions "ACTION-defines" in gt.h
+ */
 void queue(int action)
 {
         struct actionqueue *tmp, *prev;
@@ -728,8 +740,11 @@ void queue(int action)
         //dump_action_queue();
 }
 
-/*
- *  Queue num actions
+/**
+ * @brief Queue more than one instance of the same action.
+ *
+ * @param num How many instances.
+ * @param action Which action to queue - see \ref group_actions "ACTION-defines" in gt.h
  */
 void queuex(int num, int action)
 {
@@ -739,10 +754,11 @@ void queuex(int num, int action)
                 queue(action);
 }
 
-/*
- * Queue up many actions. Argument list must{
-
- * end with ENDOFLIST
+/**
+ * @brief Add several, possibly different, actions to the action queue.
+ *
+ * @param first The first action to add (see \ref group_actions "ACTION-defines")
+ * @param ... Additional actions to add. The last argument has to be ENDOFLIST.
  */
 void queuemany(int first, ...)
 {
@@ -760,11 +776,11 @@ void queuemany(int first, ...)
         va_end(args);
 }
 
-/*********************************************
-* Description - Process the first action in the action queue
-* Author - RK
-* Date - Dec 14 2011
-* *******************************************/
+/**
+ * @brief Do the next thing in the action queue.
+ *
+ * @return The number of ticks the action took.
+ */
 int do_next_thing_in_queue() // needs a better name..
 {
         int ret;
@@ -787,23 +803,33 @@ int do_next_thing_in_queue() // needs a better name..
         return ret;
 }
 
-bool do_all_things_in_queue() // needs a better name..
+/**
+ * @brief Do all the actions in the action queue.
+ *
+ * @return The number of ticks it took.
+ */
+int do_all_things_in_queue() // needs a better name..
 {
         struct actionqueue *tmp;
-        bool ret;
+        int ret;
 
         tmp = aq->next;
-        ret = false;
+        ret = 0;
 
         while(tmp) {
-                ret = do_next_thing_in_queue();
+                ret += do_next_thing_in_queue();
                 tmp = tmp->next;
         }
 
         return ret;
 }
 
-// TODO: Move pickup stuff out from look()
+/**
+ * @brief Take a look at the player's current position, and tell him what he sees.
+ * Also, (auto)pickup any interesting items. (Pickup should probably be moved to a separate function.)
+ *
+ * TODO: Move pickup stuff out from look()
+ */
 void look()
 {
         //char *stairmat[] = { "stone", "wood", "bone", "marble", "metal" };
@@ -873,6 +899,9 @@ void look()
         }
 }
 
+/**
+ * @brief Do a complete turn. This should take into account the player's speed, and schedule other actions accordingly.
+ */
 void do_turn()
 {
         bool finished;
@@ -939,6 +968,7 @@ void do_turn()
 void do_turn_fucked()
 {
        // bool fullturn;
+       // int i;
         int elapsed;
 
         elapsed = 0;
@@ -979,6 +1009,9 @@ void do_turn_fucked()
         dump_action_queue();
 }
 
+/**
+ * @brief Catch a signal and perform an action (currently, that action is to exit).
+ */
 void catchsignal()
 {
         game->dead = true;

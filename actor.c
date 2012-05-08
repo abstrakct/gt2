@@ -494,9 +494,7 @@ void attack(actor_t *attacker, actor_t *defender)
                 }
         }
 
-        if(attacker == player)
-                player->ticks -= TICKS_ATTACK;
-        else
+        if(attacker != player)
                 attacker->ticks -= TICKS_ATTACK;
 }
 

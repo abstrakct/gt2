@@ -122,28 +122,28 @@ void init_variables()
         game->wizardmode = false;
         player = (actor_t *) gtmalloc(sizeof(actor_t));
 
-        actionlength[ACTION_MAKE_DISTANCEMAP] = 0;
-        actionlength[ACTION_MOVE_MONSTERS] = 0;
-        actionlength[ACTION_ATTACK] = 1000;
-        actionlength[ACTION_HEAL_PLAYER] = 0;
-        actionlength[ACTION_PLAYER_MOVE_DOWN] = 1000;
-        actionlength[ACTION_PLAYER_MOVE_UP] = 1000;
-        actionlength[ACTION_PLAYER_MOVE_LEFT] = 1000;
+        actionlength[ACTION_MAKE_DISTANCEMAP]  = 0;
+        actionlength[ACTION_MOVE_MONSTERS]     = 0;
+        actionlength[ACTION_ATTACK]            = 1000;
+        actionlength[ACTION_HEAL_PLAYER]       = 0;
+        actionlength[ACTION_PLAYER_MOVE_DOWN]  = 1000;
+        actionlength[ACTION_PLAYER_MOVE_UP]    = 1000;
+        actionlength[ACTION_PLAYER_MOVE_LEFT]  = 1000;
         actionlength[ACTION_PLAYER_MOVE_RIGHT] = 1000;
-        actionlength[ACTION_PLAYER_MOVE_NW] = 1000;
-        actionlength[ACTION_PLAYER_MOVE_NE] = 1000;
-        actionlength[ACTION_PLAYER_MOVE_SW] = 1000;
-        actionlength[ACTION_PLAYER_MOVE_SE] = 1000;
-        actionlength[ACTION_PICKUP] = 1000;
-        actionlength[ACTION_GO_DOWN_STAIRS] = 1000;
-        actionlength[ACTION_GO_UP_STAIRS] = 1000;
-        actionlength[ACTION_WIELDWEAR] = 500;
-        actionlength[ACTION_UNWIELDWEAR] = 500;
-        actionlength[ACTION_QUAFF] = 500;
-        actionlength[ACTION_DROP] = 1000;
-        actionlength[ACTION_FIX_VIEW] = 0;
-        actionlength[ACTION_NOTHING] = 0;
-        actionlength[ACTION_ENTER_DUNGEON] = 1000;
+        actionlength[ACTION_PLAYER_MOVE_NW]    = 1000;
+        actionlength[ACTION_PLAYER_MOVE_NE]    = 1000;
+        actionlength[ACTION_PLAYER_MOVE_SW]    = 1000;
+        actionlength[ACTION_PLAYER_MOVE_SE]    = 1000;
+        actionlength[ACTION_PICKUP]            = 0;
+        actionlength[ACTION_GO_DOWN_STAIRS]    = 0;
+        actionlength[ACTION_GO_UP_STAIRS]      = 0;
+        actionlength[ACTION_WIELDWEAR]         = 1000;
+        actionlength[ACTION_UNWIELDWEAR]       = 1000;
+        actionlength[ACTION_QUAFF]             = 1000;
+        actionlength[ACTION_DROP]              = 1000;
+        actionlength[ACTION_FIX_VIEW]          = 0;
+        actionlength[ACTION_NOTHING]           = 0;
+        actionlength[ACTION_ENTER_DUNGEON]     = 0;
 }
 
 /*********************************************
@@ -286,8 +286,10 @@ void clear_aq()
 void setup_attack()
 {
         queue(ACTION_ATTACK);
+        queue(ACTION_MOVE_MONSTERS);
         queue(ACTION_HEAL_PLAYER);
-        player->ticks += actionlength[ACTION_ATTACK];
+
+        //player->ticks += actionlength[ACTION_ATTACK];
 }
 
 /*********************************************
@@ -331,8 +333,6 @@ bool do_action(int action)
                         }
                         if(ppy < 0)
                                 ppy = 0;
-                        queue(ACTION_HEAL_PLAYER);
-                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_UP:
                         if(passable(world->curlevel, ply-1,plx)) {
@@ -356,7 +356,6 @@ bool do_action(int action)
                         }
                         if(ppy < 0)
                                 ppy = 0;
-                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_LEFT:
                         if(passable(world->curlevel, ply, plx-1)) {
@@ -380,8 +379,6 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
-                        queue(ACTION_HEAL_PLAYER);
-                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_RIGHT:
                         if(passable(world->curlevel, ply,plx+1)) {
@@ -407,8 +404,6 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
-                        queue(ACTION_HEAL_PLAYER);
-                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_NW:
                         if(passable(world->curlevel, ply-1,plx-1)) {
@@ -443,8 +438,6 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
-                        queue(ACTION_HEAL_PLAYER);
-                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_NE:
                         if(passable(world->curlevel, ply-1,plx+1)) {
@@ -482,8 +475,6 @@ bool do_action(int action)
                         }
                         if(ppy < 0)
                                 ppy = 0;
-                        queue(ACTION_HEAL_PLAYER);
-                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_SW:
                         if(passable(world->curlevel, ply+1, plx-1)) {
@@ -519,8 +510,6 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
-                        queue(ACTION_HEAL_PLAYER);
-                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PLAYER_MOVE_SE:
                         if(passable(world->curlevel, ply+1, plx+1)) {
@@ -562,8 +551,6 @@ bool do_action(int action)
                         }
                         if(ppx < 0)
                                 ppx = 0;
-                        queue(ACTION_HEAL_PLAYER);
-                        queue(ACTION_MOVE_MONSTERS);
                         break;
                 case ACTION_PICKUP:
                         if(ci(ply, plx) && ci(ply, plx)->gold > 0) {
@@ -816,6 +803,7 @@ bool do_all_things_in_queue() // needs a better name..
         return ret;
 }
 
+// TODO: Move pickup stuff out from look()
 void look()
 {
         //char *stairmat[] = { "stone", "wood", "bone", "marble", "metal" };
@@ -887,8 +875,71 @@ void look()
 
 void do_turn()
 {
+        bool finished;
+        int elapsed, totalelapsed;
+
+        totalelapsed = 0;
+        elapsed = 0;
+        player->ticks += round(player->speed) * 1000;
+//fprintf(stderr, "DEBUG: %s:%d - starting do_turn, player has %d ticks\n", __FILE__, __LINE__, player->ticks);
+        //gtprintf("\ntop of do_turn - dumping actionqueue:");
+        //dump_action_queue();
+
+        finished = false;
+        while(!finished) {
+                update_screen();
+                if(is_autoexploring) {
+                        if(gt_checkforkeypress()) {
+                                gtprintf("Autoexplore interrupted...");
+                                clearbit(player->flags, PF_AUTOEXPLORING);
+                        }
+                }
+
+                if(game->dead)
+                        return;
+
+                if(aq->num && aq->next) {
+                        if(actionlength[aq->next->action] <= player->ticks) {
+                                elapsed = do_next_thing_in_queue();
+                                totalelapsed  += elapsed;
+                                //player->ticks -= elapsed;
+                                look();
+                                update_screen();
+                        }
+                        
+                        if(aq->next) {
+                                finished = false;
+                                if(actionlength[aq->next->action] > player->ticks)
+                                        player->ticks += actionlength[aq->next->action]; //round(player->speed) * 1000;
+                                        //finished = true;
+                        } else {
+                                finished = true;
+                        }
+                }
+
+                if(totalelapsed >= player->ticks) {
+                        if(player->temp)
+                                process_temp_effects(player);
+                        //totalelapsed -= 1000;
+                        queue(ACTION_HEAL_PLAYER);
+                        queue(ACTION_MOVE_MONSTERS);
+                        game->turn++;
+                        update_screen();
+                }
+
+                if(aq->num == 0) 
+                        finished = true;
+                        
+        }
+//fprintf(stderr, "DEBUG: %s:%d - ending do_turn, player has %d ticks\n", __FILE__, __LINE__, player->ticks);
+        //gtprintf("\nend of do_turn - dumping actionqueue:");
+        //dump_action_queue();
+}
+
+void do_turn_fucked()
+{
        // bool fullturn;
-        int i, elapsed;
+        int elapsed;
 
         elapsed = 0;
         gtprintf("\ntop of do_turn - dumping actionqueue:");
@@ -896,7 +947,7 @@ void do_turn()
 
         player->ticks += (int) player->speed * 1000;
         //i = aq->num;
-        i = round(player->speed);
+        //i = round(player->speed);
 
         //while(i && player->ticks >= 1000) {
         while(!game->dead && elapsed < player->ticks /*player->ticks >= 1000*/) {
@@ -915,14 +966,14 @@ void do_turn()
                                 process_temp_effects(player);
                 }
 
-                        look();
+                look();
                 update_screen();
                 //i = aq->num;
         }
 
         // now let's try to just do the rest of the queue here...
-        //while(aq->num)
-                //do_next_thing_in_queue();
+        while(aq->num && aq->next && (actionlength[aq->next->action] == 0 /*<= player->ticks*/))
+                do_next_thing_in_queue();
 
         gtprintf("\nend of do_turn - dumping actionqueue:");
         dump_action_queue();
@@ -1086,14 +1137,16 @@ int main(int argc, char *argv[])
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_INCFOV:
-                                player->viewradius++;
+                                //player->viewradius++;
+                                player->speed++;
                                 //world->out->lakelimit++;
                                 //generate_terrain(1);
                                 //gtprintf("lakelimit = %d", world->out->lakelimit);
                                 queue(ACTION_NOTHING);
                                 break;
                         case CMD_DECFOV:
-                                player->viewradius--;
+                                //player->viewradius--;
+                                player->speed--;
                                 //world->out->lakelimit--;
                                 //generate_terrain(1);
                                 //gtprintf("lakelimit = %d", world->out->lakelimit);

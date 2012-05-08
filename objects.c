@@ -982,10 +982,10 @@ void wieldwear(void *a, obj_t *o)
                 if(is_weapon(o)) {
                         wield(actor, o);
                         youc(COLOR_INFO, "are now wielding a %s.", o->displayname);
-                        player->ticks -= TICKS_WIELDWEAR;
+                        //player->ticks -= TICKS_WIELDWEAR;
                 } else {
                         wear(actor, o);
-                        player->ticks -= TICKS_WIELDWEAR;
+                        //player->ticks -= TICKS_WIELDWEAR;
                 }
         }
 }

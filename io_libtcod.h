@@ -45,7 +45,7 @@ bool gt_checkforkeypress();
 extern  gtcolor_t colors[];
 
 #define COLS  119                          // x
-#define ROWS   80                          // y
+#define ROWS   60                          // y
 
 // Color definitions
 #define C_BLACK_BLACK           0

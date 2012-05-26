@@ -429,7 +429,7 @@ void move_monsters()
 
                 if(m && !hasbit(m->flags, MF_SLEEPING)) {
                         //if(m->attacker) {
-                        m->ticks += (int) (m->speed*1000);
+                        m->ticks += m->speed;
 
                         while(m->ticks >= 1000) {
                                 hostile_ai(m);

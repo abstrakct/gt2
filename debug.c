@@ -114,7 +114,7 @@ void dump_action_queue()
                 if(i == 0)
                         gtprintf("HEAD -- number of actions in queue: %d\n", tmp->num);
                 else
-                        gtprintf("%d:   action %s (%d) - num %d - length %d\n", i, action_name[tmp->action], tmp->action, tmp->num, actionlength[tmp->action]);
+                        gtprintf("%d:   action %s (%d) - num %d - length %d - tick %d\n", i, action_name[tmp->action], tmp->action, tmp->num, actionlength[tmp->action], tmp->tick);
                 tmp = tmp->next; 
                 i++;
         }

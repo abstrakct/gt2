@@ -65,8 +65,7 @@ typedef struct { // uattr_t
 
 #define pr_life      player->prot[0]
 #define pr_fire      player->prot[1]
-
-#define PROTECTIONS 2
+#define PROTECTIONS  2
 
 #define is_invisible(a) (hasbit(a->flags, MF_INVISIBLE))
 #define is_autoexploring (hasbit(player->flags, PF_AUTOEXPLORING))
@@ -90,9 +89,9 @@ typedef struct actorstruct {                               // actor_t
         long         flags;
         int          c;                                    // character, for monsters.
         // TODO: Add variable for glyph color?!
-        double       speed;
+        int          speed;
         double       movement;
-        long long    ticks;
+        int          ticks, todo;
         float        skill[MAX_SKILLS];
         char         wvfactor;
         short        worldview;

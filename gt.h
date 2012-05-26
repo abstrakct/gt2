@@ -55,7 +55,7 @@ typedef struct {                              // game_t
         short        context;                 //!< which context are we in? see CONTEXT_ defines
         short        currentlevel;            //!< what's the current level?
         int          turn;                    //!< count turns
-        long long    tick;
+        long long    tick, prevtick;
         unsigned int seed;                    //!< random seed
         short        monsterdefs;             //!< number of monster definitions
         short        objdefs;                 //!< number of object definitions
@@ -80,6 +80,7 @@ struct actionqueue {                          // struct actionqueue
         struct actionqueue *next;             //!< Pointer to the next item in the queue
         int action;                           //!< Which action is it? See \ref group_actions "ACTION_defines"
         long num;                             //!< In the head, this contains the number of actions in the queue, for a specific action it signifies which number the action is overall (e.g. if it's the tenth action performed in the game, the two-thousandth, or whatever).
+        long tick;                            //!< At which tick should this action be performed?
 };
 
 
@@ -150,6 +151,7 @@ extern int                 actionlength[100];
 /* function prototypes */
 
 int do_next_thing_in_queue();
+void schedule_action(int action);
 void queue(int action);
 void queuemany(int first, ...);
 void shutdown_gt();

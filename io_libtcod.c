@@ -161,7 +161,7 @@ int get_command()
         gtkey key;
         bool b;
 
-        TCOD_console_flush();
+//TCOD_console_flush();
 
         key = gtgetch();
         if(key.vk == TCODK_NONE)
@@ -231,6 +231,7 @@ char ask_char(char *question)
         update_screen();
 
         TCOD_console_flush();
+        key = TCOD_console_wait_for_keypress(true);
         key = TCOD_console_wait_for_keypress(true);
         //key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
 
@@ -340,7 +341,7 @@ void init_display()
 
         TCOD_console_init_root(gtconfig.cols, gtconfig.rows, GAME_NAME, false, TCOD_RENDERER_SDL);
 	TCOD_console_map_ascii_codes_to_font(0, 255, 0, 0);
-	//TCOD_console_set_keyboard_repeat(350, 60);
+	TCOD_console_set_keyboard_repeat(350, 70);
 
         game->width = gtconfig.cols;
         game->height = gtconfig.rows;
@@ -668,7 +669,7 @@ void draw_left()
         TCOD_console_print(game->left.c, 5, i+4, "%d/%d (%.1f%%)", player->hp, player->maxhp, ((float)(100/(float)player->maxhp) * (float)player->hp));
 
         TCOD_console_set_default_foreground(game->left.c, TCOD_white);
-        TCOD_console_print(game->left.c, 1, i+6,  "Speed: %.2f", player->speed);
+        TCOD_console_print(game->left.c, 1, i+6,  "Speed: %d - gameticks: %d", player->speed, game->tick);
         TCOD_console_print(game->left.c, 1, i+7,  "STR:   %d", player->attr.str);
         TCOD_console_print(game->left.c, 1, i+8,  "DEX:   %d", player->attr.dex);
         TCOD_console_print(game->left.c, 1, i+9,  "PHY:   %d", player->attr.phy);

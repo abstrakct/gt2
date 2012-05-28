@@ -72,7 +72,6 @@ int                 tempxsize, tempysize;
 bool                loadgame;
 void               *actiondata;
 actor_t            *a_attacker, *a_victim;
-int                 actionlength[100];
 action_t           *act;
 
 // Messages
@@ -134,30 +133,6 @@ void init_variables()
 
         game->wizardmode = false;
         player = (actor_t *) gtmalloc(sizeof(actor_t));
-
-        /*actionlength[ACTION_MAKE_DISTANCEMAP]  = 0;
-        actionlength[ACTION_MOVE_MONSTERS]     = 0;
-        actionlength[ACTION_ATTACK]            = 0;
-        actionlength[ACTION_HEAL_PLAYER]       = 0;
-        actionlength[ACTION_PLAYER_MOVE_DOWN]  = 0;
-        actionlength[ACTION_PLAYER_MOVE_UP]    = 0;
-        actionlength[ACTION_PLAYER_MOVE_LEFT]  = 0;
-        actionlength[ACTION_PLAYER_MOVE_RIGHT] = 0;
-        actionlength[ACTION_PLAYER_MOVE_NW]    = 0;
-        actionlength[ACTION_PLAYER_MOVE_NE]    = 0;
-        actionlength[ACTION_PLAYER_MOVE_SW]    = 0;
-        actionlength[ACTION_PLAYER_MOVE_SE]    = 0;
-        actionlength[ACTION_PICKUP]            = 0;
-        actionlength[ACTION_GO_DOWN_STAIRS]    = 0;
-        actionlength[ACTION_GO_UP_STAIRS]      = 0;
-        actionlength[ACTION_WIELDWEAR]         = 0;
-        actionlength[ACTION_UNWIELDWEAR]       = 0;
-        actionlength[ACTION_QUAFF]             = 0;
-        actionlength[ACTION_DROP]              = 0;
-        actionlength[ACTION_FIX_VIEW]          = 0;
-        actionlength[ACTION_NOTHING]           = 0;
-        actionlength[ACTION_ENTER_DUNGEON]     = 0;
-        actionlength[ACTION_MOVE_MONSTER]      = 0;*/
 }
 
 /**

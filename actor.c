@@ -94,7 +94,7 @@ int object_to_slot(obj_t *o, inv_t *inv)
 bool actor_in_lineofsight(actor_t *src, actor_t *dest)
 {
         if(is_invisible(dest)) {
-                if(perc(src->attr.intl))
+                if(perc(get_intelligence(src)))
                         return in_lineofsight(src, dest->y, dest->x);   //TODO:ADD see invisble stuff.
                 else
                         return false;

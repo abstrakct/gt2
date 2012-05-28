@@ -199,7 +199,7 @@ int parse_armor()
         int i, j, y;
         char sname[100];
         const char *value;
-        double f;
+        //double f;
 
         cfg = config_lookup(cf, "armor");
         i = config_setting_length(cfg);

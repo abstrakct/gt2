@@ -169,7 +169,6 @@ extern int                 currmess, maxmess;
 extern struct actionqueue *aq;
 extern gt_config_t         gtconfig;
 extern int                 tempxsize, tempysize;
-extern int                 actionlength[100];
 extern action_t           *act;
 
 

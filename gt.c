@@ -823,6 +823,16 @@ void schedule_monster(monster_t *m)
         gtprintfc(COLOR_SKYBLUE, "Scheduled monster %s at tick %d", m->name, act[i].tick);
 }
 
+void unschedule_all_monsters()
+{
+        int i;
+
+        for(i = 0; i < MAXACT; i++) {
+                if(act[i].action == ACTION_MOVE_MONSTERS || act[i].action == ACTION_MOVE_MONSTER)
+                        unschedule_action(i);
+        }
+}
+
 /**
  * @brief Queue more than one instance of the same action.
  *
@@ -1133,7 +1143,7 @@ void process_player_input()
                                 break;
                 case CMD_INCFOV:
                                 //player->viewradius++;
-                                player->speed++;
+                                player->speed--;
                                 //world->out->lakelimit++;
                                 //generate_terrain(1);
                                 //gtprintf("lakelimit = %d", world->out->lakelimit);
@@ -1141,7 +1151,7 @@ void process_player_input()
                                 break;
                 case CMD_DECFOV:
                                 //player->viewradius--;
-                                player->speed--;
+                                player->speed++;
                                 //world->out->lakelimit--;
                                 //generate_terrain(1);
                                 //gtprintf("lakelimit = %d", world->out->lakelimit);
@@ -1174,18 +1184,18 @@ void process_player_input()
                                 if(hasbit(cf(ply,plx), CF_HAS_STAIRS_DOWN)) {
                                         schedule_action(ACTION_GO_DOWN_STAIRS, player);
                                         schedule_action(ACTION_FIX_VIEW, player);
+                                        unschedule_all_monsters();
                                 } else {
                                         gtprintf("You can't go up here!");
-                                        schedule_action(ACTION_NOTHING, player);
                                 }
                                 break;
                 case CMD_ASCEND:
                                 if(hasbit(cf(ply,plx), CF_HAS_STAIRS_UP)) {
                                         schedule_action(ACTION_GO_UP_STAIRS, player);
                                         schedule_action(ACTION_FIX_VIEW, player);
+                                        unschedule_all_monsters();
                                 } else {
                                         gtprintf("You can't go up here!");
-                                        schedule_action(ACTION_NOTHING, player);
                                 }
                                 break;
                 case CMD_REST:
@@ -1200,7 +1210,6 @@ void process_player_input()
                                      break;
                 default:
                                      schedule_action(ACTION_NOTHING, player);
-                                     game->turn--;
                                      break;
         }
 

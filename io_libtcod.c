@@ -573,6 +573,9 @@ void draw_left()
 {
         int i;
         TCOD_color_t color;
+        float turn;
+
+        turn = (float) game->tick / 10.0f;
 
         i = 0;
 
@@ -598,7 +601,7 @@ void draw_left()
         TCOD_console_print(game->left.c, 5, i+4, "%d/%d (%.1f%%)", player->hp, player->maxhp, ((float)(100/(float)player->maxhp) * (float)player->hp));
 
         TCOD_console_set_default_foreground(game->left.c, TCOD_white);
-        TCOD_console_print(game->left.c, 1, i+6,  "Speed: %d - Tick: %d", player->speed, game->tick);
+        TCOD_console_print(game->left.c, 1, i+6,  "Turn: %.1f", player->speed, turn);
         TCOD_console_print(game->left.c, 1, i+7,  "STR:   %d", player->attr.str);
         TCOD_console_print(game->left.c, 1, i+8,  "DEX:   %d", player->attr.dex);
         TCOD_console_print(game->left.c, 1, i+9,  "PHY:   %d", player->attr.phy);
@@ -608,7 +611,7 @@ void draw_left()
         TCOD_console_print(game->left.c, 1, i+13, "AC:    %d", player->ac);
         TCOD_console_print(game->left.c, 1, i+14, "XP:    %d", player->xp);
         TCOD_console_print(game->left.c, 1, i+15, "Level: %d", player->level);
-        TCOD_console_print(game->left.c, 1, i+16, "Turn:  %d", game->turn);
+        TCOD_console_print(game->left.c, 1, i+16, "Speed: %d", player->speed);
         
         //TCOD_console_print(game->left.c, 1, i+9, 1, "Dungeon level: %d (out of %d)", game->currentlevel, game->createdareas);
         //mvwprintw(wleft, 3, 1, "y,x     %d,%d", ply, plx);
@@ -717,7 +720,10 @@ void draw_right()
 
 void update_ticks()
 {
-        TCOD_console_print(game->left.c, 1, 7,  "Speed: %d - Tick: %d", player->speed, game->tick);
+        float turn;
+
+        turn = (float) game->tick / 10.0f;
+        TCOD_console_print(game->left.c, 1, 7,  "Turn: %.1f", player->speed, turn);
 }
 
 void update_player()

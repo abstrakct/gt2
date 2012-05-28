@@ -264,8 +264,8 @@ void init_display()
                 gtconfig.rows = screenheight / 8;
                 gtconfig.cols = screenwidth  / 8;
 
-                gtconfig.rows -= 20;
-                gtconfig.cols += 10;
+                gtconfig.rows -= 30;
+                //gtconfig.cols += 10;
         }
 
         TCOD_console_set_custom_font(font, TCOD_FONT_TYPE_GREYSCALE | TCOD_FONT_LAYOUT_ASCII_INROW, 16, 16);

@@ -40,7 +40,9 @@ char *action_name[] = {
         "Heal player",
         "Make distancemap (obsolete)",
         "Drop",
-        "Quaff"
+        "Quaff",
+        "Move monster",
+        "Player next move",
 };
 
 
@@ -112,9 +114,9 @@ void dump_action_queue()
         //gtprintf("---------------------------------------------------------------------------------------------");
         while(tmp) {
                 if(i == 0)
-                        gtprintf("HEAD -- number of actions in queue: %d\n", tmp->num);
+                        gtprintf("HEAD -- number of actions in queue: %d", tmp->num);
                 else
-                        gtprintf("%d:   action %s (%d) - num %d - length %d - tick %d\n", i, action_name[tmp->action], tmp->action, tmp->num, actionlength[tmp->action], tmp->tick);
+                        gtprintf("%d:   action %s (%d) - num %d - tick %d", i, action_name[tmp->action], tmp->action, tmp->num, tmp->tick);
                 tmp = tmp->next; 
                 i++;
         }

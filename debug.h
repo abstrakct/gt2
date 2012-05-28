@@ -13,4 +13,6 @@ void dump_monsters(monster_t *list);
 void dump_objects(inv_t *i);
 void dump_action_queue();
 
+extern char *action_name[];
+
 #endif

@@ -135,6 +135,7 @@ cmd_t normalcommands[] = {
         //{ KEY_F(4),  CMD_DUMPOBJECTS, "Dump objects" },
         { { TCODK_F2,         'o', 1, 0, 0, 0, 0, 0 }, CMD_DUMPOBJECTS, "" },
         { { TCODK_CHAR,       'c', 1, 0, 0, 0, 0, 0 }, CMD_DUMPCOLORS, "" },
+        { { TCODK_CHAR,       'a', 1, 0, 0, 0, 0, 0 }, CMD_DUMPAQ, "" },
 #endif
         //{ , CMD_IDENTIFYALL, "Identify everything" },
         //{ , CMD_SKILLSCREEN, "Show skills" },
@@ -187,6 +188,8 @@ void init_commands()
         numcommands = (sizeof(normalcommands) / sizeof(cmd_t));
 }
 
+// Pathfinding
+
 void init_pathfinding(void *a)
 {
         actor_t *actor;
@@ -223,83 +226,7 @@ co get_next_step(void *actor)
         return c;
 }
 
-char ask_char(char *question)
-{
-        gtkey key;
-
-        gtprintf(question);
-        update_screen();
-
-        TCOD_console_flush();
-        key = TCOD_console_wait_for_keypress(true);
-        key = TCOD_console_wait_for_keypress(true);
-        //key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
-
-        if(key.shift && key.c >= 'a' && key.c <= 'z')
-                key.c += 'A' - 'a';
-
-        return key.c;
-}
-
-char ask_for_hand()
-{
-        gtkey c;
-        
-        while(1) {
-                gtprintf("Which hand - (l)eft or (r)ight?");
-                update_screen();
-                c = gtgetch();
-//fprintf(stderr, "DEBUG: %s:%d - you pressed key with decimal value %d\n", __FILE__, __LINE__, c);
-                if(c.c == 13 || c.c == 27)         // ENTER or ESCAPE
-                        return 0;
-                else if(c.c == 'l' || c.c == 'r')
-                        return c.c;
-                else
-                        gtprintf("Only (l)eft or (r)ight, please.");
-        }
-
-}
-
-bool yesno(char *fmt, ...)
-{
-        va_list argp;
-        char s[1000];
-        gtkey c;
-
-        va_start(argp, fmt);
-        vsprintf(s, fmt, argp);
-        va_end(argp);
-
-        strcat(s, " (y/n)?");
-        mess(s);
-
-        update_screen();
-        c = gtgetch();
-        while(1) { 
-                if(c.c == 'y' || c.c == 'Y')
-                        return true;
-                if(c.c == 'n' || c.c == 'N')
-                        return false;
-                
-                c = gtgetch();
-        }
-
-        return false;
-}
-
-void more()
-{
-        gtkey c;
-
-        gtprintfc(COLOR_WHITE, "-- more --");
-        while(1) {
-                c = gtgetch();
-                if(c.c == 13 || c.c == 32) {
-                        delete_last_message();
-                        return;
-                }
-        }
-}
+// General stuff
 
 void init_display()
 {
@@ -380,6 +307,8 @@ void shutdown_display()
 {
         printf("Shutting down!\n");
 }
+
+// LOS, FOV.
 
 bool blocks_light(void *level, int y, int x)
 {
@@ -496,12 +425,12 @@ void draw_map()
                         if(j < level->ysize && i < level->xsize) {
                                 if(TCOD_map_is_in_fov(level->map, i, j)) {
                                         set_cell_visited(level, j, i);
-                                        if(level->c[j][i].monster) {
+                                  /*      if(level->c[j][i].monster) {
                                                 if(!hasbit(level->c[j][i].monster->flags, MF_SEENBYPLAYER)) {
                                                         setbit(level->c[j][i].monster->flags, MF_SEENBYPLAYER);
                                                         gtprintfc(COLOR_RED, "%s comes into view!", Upper(a_an(level->c[j][i].monster->name)));
                                                 }
-                                        }
+                                        }*/
                                         if(level->c[j][i].inventory && level->c[j][i].inventory->object[0]) {
                                                 if(!hasbit(level->c[j][i].inventory->object[0]->flags, OF_SEENBYPLAYER)) {
                                                         setbit(level->c[j][i].inventory->object[0]->flags, OF_SEENBYPLAYER);
@@ -669,7 +598,7 @@ void draw_left()
         TCOD_console_print(game->left.c, 5, i+4, "%d/%d (%.1f%%)", player->hp, player->maxhp, ((float)(100/(float)player->maxhp) * (float)player->hp));
 
         TCOD_console_set_default_foreground(game->left.c, TCOD_white);
-        TCOD_console_print(game->left.c, 1, i+6,  "Speed: %d - gameticks: %d", player->speed, game->tick);
+        TCOD_console_print(game->left.c, 1, i+6,  "Speed: %d - Tick: %d", player->speed, game->tick);
         TCOD_console_print(game->left.c, 1, i+7,  "STR:   %d", player->attr.str);
         TCOD_console_print(game->left.c, 1, i+8,  "DEX:   %d", player->attr.dex);
         TCOD_console_print(game->left.c, 1, i+9,  "PHY:   %d", player->attr.phy);
@@ -786,6 +715,11 @@ void draw_right()
         }
 }
 
+void update_ticks()
+{
+        TCOD_console_print(game->left.c, 1, 7,  "Speed: %d - Tick: %d", player->speed, game->tick);
+}
+
 void update_player()
 {
         gtmapaddch(player->oldy, player->oldx, cc(player->oldy, player->oldx), mapchars[(int) ct(player->oldy, player->oldx)]);
@@ -827,6 +761,84 @@ void initial_update_screen()
 }
 
 // Input and messages
+
+char ask_char(char *question)
+{
+        gtkey key;
+
+        gtprintf(question);
+        update_screen();
+
+        TCOD_console_flush();
+        key = TCOD_console_wait_for_keypress(true);
+        key = TCOD_console_wait_for_keypress(true);
+        //key = TCOD_console_check_for_keypress(TCOD_KEY_PRESSED);
+
+        if(key.shift && key.c >= 'a' && key.c <= 'z')
+                key.c += 'A' - 'a';
+
+        return key.c;
+}
+
+char ask_for_hand()
+{
+        gtkey c;
+        
+        while(1) {
+                gtprintf("Which hand - (l)eft or (r)ight?");
+                update_screen();
+                c = gtgetch();
+//fprintf(stderr, "DEBUG: %s:%d - you pressed key with decimal value %d\n", __FILE__, __LINE__, c);
+                if(c.c == 13 || c.c == 27)         // ENTER or ESCAPE
+                        return 0;
+                else if(c.c == 'l' || c.c == 'r')
+                        return c.c;
+                else
+                        gtprintf("Only (l)eft or (r)ight, please.");
+        }
+
+}
+
+bool yesno(char *fmt, ...)
+{
+        va_list argp;
+        char s[1000];
+        gtkey c;
+
+        va_start(argp, fmt);
+        vsprintf(s, fmt, argp);
+        va_end(argp);
+
+        strcat(s, " (y/n)?");
+        mess(s);
+
+        update_screen();
+        c = gtgetch();
+        while(1) { 
+                if(c.c == 'y' || c.c == 'Y')
+                        return true;
+                if(c.c == 'n' || c.c == 'N')
+                        return false;
+                
+                c = gtgetch();
+        }
+
+        return false;
+}
+
+void more()
+{
+        gtkey c;
+
+        gtprintfc(COLOR_WHITE, "-- more --");
+        while(1) {
+                c = gtgetch();
+                if(c.c == 13 || c.c == 32) {
+                        delete_last_message();
+                        return;
+                }
+        }
+}
 
 bool gt_checkforkeypress()
 {
@@ -871,7 +883,7 @@ void domess()
         TCOD_console_blit(game->messages.c, 0, 0, game->messages.w, game->messages.h, NULL, game->messages.x, game->messages.y, 1.0, 1.0);
         TCOD_console_flush();
 
-        fprintf(messagefile, "%d - %s\n", game->turn, messages[currmess-1].text);
+        fprintf(messagefile, "%d - %s\n", game->tick, messages[currmess-1].text);
 }
 
 void scrollmessages()
@@ -892,6 +904,10 @@ void mess(char *message)
         //if(!strcmp(message, messages[currmess-1].text))
                 //return;
 
+        char debugmessage[1000];
+        sprintf(debugmessage, "%d: %s", game->tick, message);
+        //fprintf(stderr, "%s", debugmessage);
+
         scrollmessages();
         messages[currmess].color = COLOR_NORMAL;
         strcpy(messages[currmess].text, message);
@@ -909,6 +925,10 @@ void messc(gtcolor_t color, char *message)
 {
         //if(!strcmp(message, messages[currmess-1].text))
                 //return;
+
+        char debugmessage[1000];
+        sprintf(debugmessage, "%d: %s", game->tick, message);
+        //fprintf(stderr, "%s", debugmessage);
 
         scrollmessages();
         messages[currmess].color = color;

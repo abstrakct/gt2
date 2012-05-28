@@ -73,6 +73,7 @@ bool                loadgame;
 void               *actiondata;
 actor_t            *a_attacker, *a_victim;
 int                 actionlength[100];
+action_t           *act;
 
 // Messages
 message_t messages[500];
@@ -93,6 +94,8 @@ struct option gt_options[] = {
  */
 void init_variables()
 {
+        int i;
+
         garbageindex = 0;
 
         monsterdefs = (monster_t *) gtmalloc(sizeof(monster_t));
@@ -102,11 +105,15 @@ void init_variables()
         objdefs = (obj_t *) gtmalloc(sizeof(obj_t));
         objdefs->head = objdefs;
 
-        aq = (struct actionqueue *) gtmalloc(sizeof(struct actionqueue));
+        /*aq = (struct actionqueue *) gtmalloc(sizeof(struct actionqueue));
         aq->head = aq;
         aq->next = 0;
         aq->action = ACTION_NOTHING;
-        actionnum = 0;
+        actionnum = 0;*/
+
+        act = (action_t *) gtmalloc(sizeof(action_t) * MAXACT);
+        for(i=0;i<MAXACT;i++)
+                act[i].action = ACTION_FREESLOT;
 
         world = (world_t *) gtmalloc(sizeof(world_t));
 
@@ -128,28 +135,29 @@ void init_variables()
         game->wizardmode = false;
         player = (actor_t *) gtmalloc(sizeof(actor_t));
 
-        actionlength[ACTION_MAKE_DISTANCEMAP]  = 0;
+        /*actionlength[ACTION_MAKE_DISTANCEMAP]  = 0;
         actionlength[ACTION_MOVE_MONSTERS]     = 0;
-        actionlength[ACTION_ATTACK]            = 10;
+        actionlength[ACTION_ATTACK]            = 0;
         actionlength[ACTION_HEAL_PLAYER]       = 0;
-        actionlength[ACTION_PLAYER_MOVE_DOWN]  = 10;
-        actionlength[ACTION_PLAYER_MOVE_UP]    = 10;
-        actionlength[ACTION_PLAYER_MOVE_LEFT]  = 10;
-        actionlength[ACTION_PLAYER_MOVE_RIGHT] = 10;
-        actionlength[ACTION_PLAYER_MOVE_NW]    = 10;
-        actionlength[ACTION_PLAYER_MOVE_NE]    = 10;
-        actionlength[ACTION_PLAYER_MOVE_SW]    = 10;
-        actionlength[ACTION_PLAYER_MOVE_SE]    = 10;
+        actionlength[ACTION_PLAYER_MOVE_DOWN]  = 0;
+        actionlength[ACTION_PLAYER_MOVE_UP]    = 0;
+        actionlength[ACTION_PLAYER_MOVE_LEFT]  = 0;
+        actionlength[ACTION_PLAYER_MOVE_RIGHT] = 0;
+        actionlength[ACTION_PLAYER_MOVE_NW]    = 0;
+        actionlength[ACTION_PLAYER_MOVE_NE]    = 0;
+        actionlength[ACTION_PLAYER_MOVE_SW]    = 0;
+        actionlength[ACTION_PLAYER_MOVE_SE]    = 0;
         actionlength[ACTION_PICKUP]            = 0;
         actionlength[ACTION_GO_DOWN_STAIRS]    = 0;
         actionlength[ACTION_GO_UP_STAIRS]      = 0;
-        actionlength[ACTION_WIELDWEAR]         = 5;
-        actionlength[ACTION_UNWIELDWEAR]       = 5;
-        actionlength[ACTION_QUAFF]             = 3;
-        actionlength[ACTION_DROP]              = 5;
+        actionlength[ACTION_WIELDWEAR]         = 0;
+        actionlength[ACTION_UNWIELDWEAR]       = 0;
+        actionlength[ACTION_QUAFF]             = 0;
+        actionlength[ACTION_DROP]              = 0;
         actionlength[ACTION_FIX_VIEW]          = 0;
         actionlength[ACTION_NOTHING]           = 0;
         actionlength[ACTION_ENTER_DUNGEON]     = 0;
+        actionlength[ACTION_MOVE_MONSTER]      = 0;*/
 }
 
 /**
@@ -174,7 +182,7 @@ void init_player()
         player->attr.cha  = dice(3, 6, 0);
         player->attr.intl = dice(3, 6, 0);
 
-        player->speed = 1;
+        player->speed = 10;
 
         // TODO: Starting HP - FIX according to race etc.
         player->hp = player->maxhp = (dice(1, 10, 7)) + ability_modifier(player->attr.phy);
@@ -279,7 +287,7 @@ void open_door(int y, int x)
                 open_door(y,x-1);
 }
 
-/*! \brief Clear the actionqueue */
+/*! \brief Clear the actionqueue 
 void clear_aq()
 {
         struct actionqueue *tmp;
@@ -290,17 +298,23 @@ void clear_aq()
                 gtfree(tmp);
                 aq->num--;
         }
-}
+}*/
 
 /*! \brief Setup attack - that is, do what's needed to perform an attack by the player.
  */
 void setup_attack()
 {
-        schedule_action(ACTION_ATTACK);
-        schedule_action(ACTION_MOVE_MONSTERS);
-        schedule_action(ACTION_HEAL_PLAYER);
+        schedule_action(ACTION_ATTACK, player);
+}
 
-        //player->ticks += actionlength[ACTION_ATTACK];
+void do_one_action(int action)
+{
+        action_t a;
+
+        a.action = action;
+        a.tick = game->tick;
+
+        do_action(&a);
 }
 
 /**
@@ -310,7 +324,7 @@ void setup_attack()
  *
  * @return True if action took a full turn, false if not. (This is currently becoming obsolete.) 
  */
-bool do_action(int action)
+bool do_action(action_t *aqe)
 {
         int oldy, oldx;
         int tmpy, tmpx;
@@ -320,8 +334,9 @@ bool do_action(int action)
 
         oldy = ply; oldx = plx;
         fullturn = true;
+        //gtprintf("Doing action %s %s", action_name[aqe->action], aqe ? (aqe->monster ? aqe->monster->name : " ") : " ");
 
-        switch(action) {
+        switch(aqe->action) {
                 case ACTION_PLAYER_MOVE_DOWN:
                         if(passable(world->curlevel, ply+1, plx)) {
                                 if(world->curlevel->c[ply+1][plx].monster) {
@@ -674,28 +689,47 @@ bool do_action(int action)
                         fullturn = false;
                         break;
                 case ACTION_HEAL_PLAYER:
-                        i = 17 - pphy;
-                        if(i <= 0)
-                                i = 1;
-
-                        if(!(game->turn % i)) {
-                                if(perc(40+pphy))
-                                        increase_hp(player, 1);
-                        }
-
+                        increase_hp(player, 1);
                         fullturn = false;
                         break;
                 case ACTION_MAKE_DISTANCEMAP:
                         makedistancemap(player->y, player->x);
                         fullturn = false;
                         break;
+                case ACTION_MOVE_MONSTER:
+                        if(aqe)
+                                move_monster(aqe->monster);
+                        break;
+                case ACTION_PLAYER_NEXTMOVE:
+                        process_player_input();
+
+                        i = 17 - pphy;
+                        if(i <= 0)
+                                i = 1;
+
+                        if(!(game->tick % i)) {
+                                if(perc(40+pphy))
+                                        schedule_action(ACTION_HEAL_PLAYER, player);
+                        }
+                        
+                        schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 1);
+
+                        // also, schedule some future actions
+                        //if(!game->tick % 50) {
+                                //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed);
+                                //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 2);
+                                //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 3);
+                                //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 4);
+                        //}
+
+                        break;
                 case ACTION_NOTHING:
                         fullturn = false;
                         //updatescreen = false;
                         break;
                 default:
-                        fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, action);
-                        gtprintf("DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, action);
+                        fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, aqe->action);
+                        gtprintf("DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, aqe->action);
                         fullturn = false;
                         //updatescreen = false;
                         break;
@@ -710,12 +744,117 @@ bool do_action(int action)
         return fullturn;
 }
 
+int get_next_free_action_slot()
+{
+        int i;
+
+        for(i = 1; i < MAXACT; i++) {
+                if(act[i].action == ACTION_FREESLOT)
+                        return i;
+        }
+
+        return 0;
+}
+
+int schedule_action(int action, actor_t *actor)
+{
+        int i;
+
+        i = get_next_free_action_slot();
+        if(!i)
+                die("fatal! no free slots in action queue!");
+
+        act[i].action = action;
+        act[i].tick = game->tick + actor->speed;
+        //gtprintfc(COLOR_SKYBLUE, "Scheduled action %s at tick %d!", action_name[action], act[i].tick);
+
+        return i;
+}
+
+int schedule_action_delayed(int action, actor_t *actor, int delay)
+{
+        int i;
+
+        i = get_next_free_action_slot();
+        if(!i)
+                die("fatal! no free slots in action queue!");
+
+        act[i].action = action;
+        act[i].tick = game->tick + actor->speed + delay;
+        //gtprintfc(COLOR_SKYBLUE, "Scheduled delayed action %s at tick %d!", action_name[action], act[i].tick);
+
+        return i;
+}
+
+int schedule_action_immediately(int action, actor_t *actor)
+{
+        int i;
+        action_t a;
+
+        i = get_next_free_action_slot();
+        if(!i)
+                die("fatal! no free slots in action queue!");
+
+        a.action = action;
+        a.tick = game->tick;
+
+
+        //gtprintfc(COLOR_SKYBLUE, "Doing action immediately - %s at tick %d (game->tick = %d)!", action_name[action], act[i].tick, game->tick);
+        do_action(&a);
+
+        return i;
+}
+
+void unschedule_action(int index)
+{
+        act[index].action  = ACTION_FREESLOT;
+        act[index].tick    = 0;
+        act[index].monster = 0;
+        act[index].object  = 0;
+}
+
 /**
  * @brief Schedule an action at a specified time.
  *
  * @param action Which action to schedule - see \ref group_actions "ACTION-defines" in gt.h
+ *
+ * @return Pointer to newly scheduled item in actionqueue.
  */
-void schedule_action(int action)
+/*struct actionqueue* schedule_action(int action, actor_t *actor)
+{
+        struct actionqueue *tmp, *prev;
+
+        prev = aq;
+        tmp = aq->next;
+        
+        while(tmp) {
+                prev = tmp;
+                tmp = tmp->next; 
+        }
+
+        tmp = (struct actionqueue *) gtmalloc(sizeof(struct actionqueue));
+        tmp->head = aq;
+        tmp->next = 0; //aq->next;
+        //aq->next = tmp;
+
+        tmp->action = action;
+        tmp->tick = game->tick + actor->speed;
+        actionnum++;
+        tmp->num = actionnum;
+        prev->next = tmp;
+        aq->num++;
+
+
+        gtprintf("Scheduled action %s at tick %d!", action_name[action], tmp->tick);
+        dump_action_queue();
+        return tmp;
+
+
+
+        //gtprintf("        end of queue! dumping it!");
+}*/
+
+/*struct actionqueue* schedule_action_delayed(int action, actor_t *actor, int delay)
 {
         struct actionqueue *tmp, *prev;
 
@@ -731,15 +870,30 @@ void schedule_action(int action)
         tmp->head = aq;
         tmp->next = 0;
         tmp->action = action;
-        tmp->tick = game->tick + actionlength[action];
+        tmp->tick = game->tick + actor->speed + delay;
         actionnum++;
         tmp->num = actionnum;
         prev->next = tmp;
         aq->num++;
-        //gtprintf("Scheduled action %d at tick %d!", action, tmp->tick);
+
+
+        gtprintf("Scheduled (delayed) action %s at tick %d!", action_name[action], tmp->tick);
+        //dump_action_queue();
+        return tmp;
+
+
 
         //gtprintf("        end of queue! dumping it!");
-        //dump_action_queue();
+}*/
+
+void schedule_monster(monster_t *m)
+{
+        int i;
+
+        i = schedule_action(ACTION_MOVE_MONSTER, m);
+        act[i].monster = m;
+
+        // gtprintf("Scheduled monster %s at tick %d", m->name, tmp->tick);
 }
 
 /**
@@ -779,12 +933,12 @@ void queue(int action)
  * @param num How many instances.
  * @param action Which action to queue - see \ref group_actions "ACTION-defines" in gt.h
  */
-void schedule_actionx(int num, int action)
+void schedule_actionx(int num, int action, actor_t *actor)
 {
         int i;
 
         for(i=0; i<num; i++)
-                schedule_action(action);
+                schedule_action(action, actor);
 }
 
 /**
@@ -793,17 +947,17 @@ void schedule_actionx(int num, int action)
  * @param first The first action to add (see \ref group_actions "ACTION-defines")
  * @param ... Additional actions to add. The last argument has to be ENDOFLIST.
  */
-void queuemany(int first, ...)
+void queuemany(actor_t *actor, int first, ...)
 {
         va_list args;
         int i;
 
         va_start(args, first);
-        schedule_action(first);
+        schedule_action(first, actor);
 
         i = va_arg(args, int);
         while(i != ENDOFLIST) {
-                schedule_action(i);
+                schedule_action(i, actor);
                 i = va_arg(args, int);
         }
         va_end(args);
@@ -824,7 +978,7 @@ int do_next_thing_in_queue() // needs a better name..
 
         if(tmp) {
                 //if(player->ticks >= actionlength[tmp->action]) {
-                        do_action(tmp->action);
+                        //do_action(tmp->action, tmp);
                         ret = actionlength[tmp->action];
                         //player->ticks -= ret;
                         aq->num--;
@@ -862,7 +1016,7 @@ void process_autopickup()
         if(ci(ply, plx)) {
                 if(ci(ply, plx) && ci(ply, plx)->gold) {
                         if(gtconfig.ap[OT_GOLD])
-                                schedule_action(ACTION_PICKUP);
+                                schedule_action_immediately(ACTION_PICKUP, player);
                 }
 
                 if(ci(ply, plx)->num_used > 0) {
@@ -876,7 +1030,7 @@ void process_autopickup()
 
                                 ob = ci(ply, plx)->object[slot];
                                 if(gtconfig.ap[ob->type] && !hasbit(ob->flags, OF_DONOTAP)) {
-                                        schedule_action(ACTION_PICKUP);
+                                        schedule_action_immediately(ACTION_PICKUP, player);
                                 }
                         }
                 }
@@ -885,9 +1039,7 @@ void process_autopickup()
 
 /**
  * @brief Take a look at the player's current position, and tell him what he sees.
- * Also, (auto)pickup any interesting items. (Pickup should probably be moved to a separate function.)
  *
- * TODO: Move pickup stuff out from look()
  */
 void look()
 {
@@ -951,55 +1103,84 @@ void look()
         }
 }
 
+bool action_at_tick(int tick)
+{
+        struct actionqueue *tmp;
+
+        tmp = aq->next;
+        while(tmp) {
+                if(tmp->tick == tick)
+                        return true;
+
+                tmp = tmp->next;
+        }
+
+        return false;
+}
+
+void do_everything_at_tick(int tick)
+{
+        int i;
+
+        for(i = 0; i < MAXACT; i++) {
+                if(act[i].action >= 0) {
+                        if(act[i].tick == tick) {
+                                do_action(&act[i]);
+                                unschedule_action(i);
+                        }
+                }
+        }
+}
+
+void increase_ticks(int i)
+{
+        game->tick += i;
+        update_ticks();
+}
+
 /**
  * @brief Do a complete turn. This should take into account the player's speed, and schedule other actions accordingly.
  */
 void do_turn()
 {
-        bool finished;
-        int elapsed;
+        int i;
 
-        elapsed = 0;
         //player->ticks += player->speed;
 
-        finished = false;
 
-        while(!finished) {
-                //look();
-                //update_screen();
-                if(is_autoexploring) {
-                        if(gt_checkforkeypress()) {
-                                gtprintf("Autoexplore interrupted...");
-                                clearbit(player->flags, PF_AUTOEXPLORING);
-                        }
+        //gtprintf("Started do_turn. ---------------------------------------");
+
+        //dump_action_queue();
+
+        //update_screen();
+
+        //look();
+        
+        look_for_monsters();
+        update_screen();
+
+        if(is_autoexploring) {
+                if(gt_checkforkeypress()) {
+                        gtprintf("Autoexplore interrupted...");
+                        clearbit(player->flags, PF_AUTOEXPLORING);
                 }
-
-                if(game->dead)
-                        return;
-
-                elapsed = do_all_things_in_queue();
-                player->ticks -= (elapsed / player->speed);
-
-                game->tick += (elapsed / player->speed);
-
-                //look();
-
-                if((game->tick - game->prevtick) >= 10) {
-                        if(player->temp)
-                                process_temp_effects(player);
-                        do_action(ACTION_HEAL_PLAYER);
-                        do_action(ACTION_MOVE_MONSTERS);
-                        game->turn++;
-                        game->prevtick = game->tick;
-                }
-
-                look();
-                process_autopickup();
-                do_all_things_in_queue();
-                update_screen();
-
-                finished = true;
         }
+
+        if(game->dead)
+                return;
+
+        for(i = 0; i < 10; i++) {
+                do_everything_at_tick(game->tick);
+                update_screen();
+                increase_ticks(1);
+        }
+
+        if(player->temp)
+                process_temp_effects(player);
+
+        update_screen();
+
+        //gtprintf("Ended do_turn. -----------------------------------------");
 }
 
 /**
@@ -1014,9 +1195,179 @@ void catchsignal()
         exit(0);
 }
 
-int main(int argc, char *argv[])
+
+/**
+ * @brief Get a command from the player, and schedule the appropriate action.
+ *
+ */
+void process_player_input()
 {
         int c, x, y, l;
+
+        look();
+        process_autopickup();
+        update_screen();
+        c = 0;
+        while(!c)
+                c = get_command();
+
+        mapchanged = false;
+        player->oldx = plx;
+        player->oldy = ply;
+
+        switch(c) {
+                case CMD_QUIT:
+                        schedule_action(ACTION_NOTHING, player);
+                        game->dead = 1;
+                        break;
+                case CMD_DOWN:  schedule_action(ACTION_PLAYER_MOVE_DOWN, player); break;
+                case CMD_UP:    schedule_action(ACTION_PLAYER_MOVE_UP, player); break;
+                case CMD_LEFT:  schedule_action(ACTION_PLAYER_MOVE_LEFT, player); break;
+                case CMD_RIGHT: schedule_action(ACTION_PLAYER_MOVE_RIGHT, player); break;
+                case CMD_NW:    schedule_action(ACTION_PLAYER_MOVE_NW, player); break;
+                case CMD_NE:    schedule_action(ACTION_PLAYER_MOVE_NE, player); break;
+                case CMD_SW:    schedule_action(ACTION_PLAYER_MOVE_SW, player); break;
+                case CMD_SE:    schedule_action(ACTION_PLAYER_MOVE_SE, player); break;
+                case CMD_WIELDWEAR:
+                                l = ask_char("Which item would you like to wield/wear?");
+                                actiondata = (void *) get_object_from_letter(l, player->inventory);
+                                schedule_action(ACTION_WIELDWEAR, player);
+                                break;
+                case CMD_UNWIELDWEAR:
+                                l = ask_char("Which item would you like to remove/unwield?");
+                                actiondata = (void *) get_object_from_letter(l, player->inventory);
+                                schedule_action(ACTION_UNWIELDWEAR, player);
+                                break;
+                case CMD_DROP:
+                                l = ask_char("Which item would you like to drop?");
+                                actiondata = (void *) get_object_from_letter(l, player->inventory);
+                                schedule_action(ACTION_DROP, player);
+                                break;
+                case CMD_LONGDOWN:
+                                schedule_actionx(20, ACTION_PLAYER_MOVE_DOWN, player);
+                                break;
+                case CMD_LONGUP:
+                                schedule_actionx(20, ACTION_PLAYER_MOVE_UP, player);
+                                break;
+                case CMD_LONGLEFT:
+                                schedule_actionx(20, ACTION_PLAYER_MOVE_LEFT, player);
+                                break;
+                case CMD_LONGRIGHT:
+                                schedule_actionx(20, ACTION_PLAYER_MOVE_RIGHT, player);
+                                break;
+                case CMD_TOGGLEFOV:
+                                gtprintf("Setting all cells to visible.");
+                                set_level_visited(world->curlevel);
+                                schedule_action(ACTION_NOTHING, player);
+                                break;
+                case CMD_SPAWNMONSTER:
+                                spawn_monster_at(ply+5, plx+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel, 100);
+                                //dump_monsters(world->curlevel->monsters);
+                                schedule_action(ACTION_NOTHING, player);
+                                break;
+                case CMD_WIZARDMODE:
+                                game->wizardmode = (game->wizardmode ? false : true); schedule_action(ACTION_NOTHING, player);
+                                gtprintf("Wizard mode %s!", game->wizardmode ? "on" : "off");
+                                break;
+                case CMD_SAVE:
+                                save_game(game->savefile);
+                                schedule_action(ACTION_NOTHING, player);
+                                break;
+                case CMD_LOAD:
+                                if(!load_game(game->savefile, 1))
+                                        gtprintf("Loading failed!");
+                                else
+                                        gtprintf("Loading successful!");
+                                schedule_action(ACTION_NOTHING, player);
+                                break;
+                case CMD_DUMPOBJECTS:
+                                dump_objects(world->curlevel->c[ply][plx].inventory);
+                                schedule_action(ACTION_NOTHING, player);
+                                break;
+                case CMD_INCFOV:
+                                //player->viewradius++;
+                                player->speed++;
+                                //world->out->lakelimit++;
+                                //generate_terrain(1);
+                                //gtprintf("lakelimit = %d", world->out->lakelimit);
+                                schedule_action(ACTION_NOTHING, player);
+                                break;
+                case CMD_DECFOV:
+                                //player->viewradius--;
+                                player->speed--;
+                                //world->out->lakelimit--;
+                                //generate_terrain(1);
+                                //gtprintf("lakelimit = %d", world->out->lakelimit);
+                                schedule_action(ACTION_NOTHING, player);
+                                break;
+                case CMD_FLOODFILL:
+                                x = ri(11, world->curlevel->xsize);
+                                y = ri(11, world->curlevel->ysize);
+                                while(world->curlevel->c[y][x].type != DNG_FLOOR) {
+                                        x = ri(11, world->curlevel->xsize);
+                                        y = ri(11, world->curlevel->ysize);
+                                }
+                                gtprintf("floodfilling from %d, %d\n", y, x);
+                                floodfill(world->curlevel, y, x);
+                                schedule_action(ACTION_NOTHING, player);
+                                break;
+                case CMD_INVENTORY:
+                                schedule_action(ACTION_NOTHING, player);
+                                dump_objects(player->inventory);
+                                break;
+                case CMD_PICKUP:
+                                schedule_action(ACTION_PICKUP, player);
+                                break;
+                case CMD_QUAFF:
+                                l = ask_char("Which potion would you like to drink?");
+                                actiondata = (void *) get_object_from_letter(l, player->inventory);
+                                schedule_action(ACTION_QUAFF, player);
+                                break;
+                case CMD_DESCEND:
+                                if(hasbit(cf(ply,plx), CF_HAS_STAIRS_DOWN)) {
+                                        schedule_action(ACTION_GO_DOWN_STAIRS, player);
+                                        schedule_action(ACTION_FIX_VIEW, player);
+                                } else {
+                                        gtprintf("You can't go up here!");
+                                        schedule_action(ACTION_NOTHING, player);
+                                }
+                                break;
+                case CMD_ASCEND:
+                                if(hasbit(cf(ply,plx), CF_HAS_STAIRS_UP)) {
+                                        schedule_action(ACTION_GO_UP_STAIRS, player);
+                                        schedule_action(ACTION_FIX_VIEW, player);
+                                } else {
+                                        gtprintf("You can't go up here!");
+                                        schedule_action(ACTION_NOTHING, player);
+                                }
+                                break;
+                case CMD_REST:
+                                schedule_action(ACTION_NOTHING, player);
+                                break;
+                case CMD_PATHFINDER: break;
+                case CMD_AUTOEXPLORE:
+                                     autoexplore();
+                                     break;
+                case CMD_DUMPAQ:
+                                     dump_action_queue();
+                                     break;
+                default:
+                                     schedule_action(ACTION_NOTHING, player);
+                                     game->turn--;
+                                     break;
+        }
+
+}
+
+void game_loop()
+{
+        do {
+                do_turn();
+        } while(!game->dead);
+}
+
+int main(int argc, char *argv[])
+{
         char messagefilename[50];
         //char found;
         //bool done;
@@ -1074,7 +1425,7 @@ int main(int argc, char *argv[])
 
                 // then move down a level...
                 move_player_to_stairs_down(0);
-                do_action(ACTION_GO_DOWN_STAIRS);
+                do_one_action(ACTION_GO_DOWN_STAIRS);
                 fixview();
         }
 
@@ -1082,162 +1433,13 @@ int main(int argc, char *argv[])
         init_pathfinding(player);
         initial_update_screen();
         player->ticks = 0;
+        schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 1);
+        //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed);
+        //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 2);
+        //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 3);
+        //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 4);
 
-        do {
-                //look();
-                //update_screen();
-                c = 0;
-                while(!c)
-                        c = get_command();
-
-                mapchanged = false;
-                player->oldx = plx;
-                player->oldy = ply;
-                //clear_aq();
-
-                switch(c) {
-                        case CMD_QUIT:
-                                schedule_action(ACTION_NOTHING);
-                                game->dead = 1;
-                                break;
-                        case CMD_DOWN:  schedule_action(ACTION_PLAYER_MOVE_DOWN); break;
-                        case CMD_UP:    schedule_action(ACTION_PLAYER_MOVE_UP); break;
-                        case CMD_LEFT:  schedule_action(ACTION_PLAYER_MOVE_LEFT); break;
-                        case CMD_RIGHT: schedule_action(ACTION_PLAYER_MOVE_RIGHT); break;
-                        case CMD_NW:    schedule_action(ACTION_PLAYER_MOVE_NW); break;
-                        case CMD_NE:    schedule_action(ACTION_PLAYER_MOVE_NE); break;
-                        case CMD_SW:    schedule_action(ACTION_PLAYER_MOVE_SW); break;
-                        case CMD_SE:    schedule_action(ACTION_PLAYER_MOVE_SE); break;
-                        case CMD_WIELDWEAR:
-                                       l = ask_char("Which item would you like to wield/wear?");
-                                       actiondata = (void *) get_object_from_letter(l, player->inventory);
-                                       schedule_action(ACTION_WIELDWEAR);
-                                       TCOD_console_flush();
-                                       break;
-                        case CMD_UNWIELDWEAR:
-                                       l = ask_char("Which item would you like to remove/unwield?");
-                                       actiondata = (void *) get_object_from_letter(l, player->inventory);
-                                       schedule_action(ACTION_UNWIELDWEAR);
-                                       break;
-                        case CMD_DROP:
-                                       l = ask_char("Which item would you like to drop?");
-                                       actiondata = (void *) get_object_from_letter(l, player->inventory);
-                                       schedule_action(ACTION_DROP);
-                                       break;
-                        case CMD_LONGDOWN:
-                                schedule_actionx(20, ACTION_PLAYER_MOVE_DOWN);
-                                break;
-                        case CMD_LONGUP:
-                                schedule_actionx(20, ACTION_PLAYER_MOVE_UP);
-                                break;
-                        case CMD_LONGLEFT:
-                                schedule_actionx(20, ACTION_PLAYER_MOVE_LEFT);
-                                break;
-                        case CMD_LONGRIGHT:
-                                schedule_actionx(20, ACTION_PLAYER_MOVE_RIGHT);
-                                break;
-                        case CMD_TOGGLEFOV:
-                                gtprintf("Setting all cells to visible.");
-                                set_level_visited(world->curlevel);
-                                schedule_action(ACTION_NOTHING);
-                                break;
-                        case CMD_SPAWNMONSTER:
-                                spawn_monster_at(ply+5, plx+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel, 100);
-                                //dump_monsters(world->curlevel->monsters);
-                                schedule_action(ACTION_NOTHING);
-                                break;
-                        case CMD_WIZARDMODE:
-                                game->wizardmode = (game->wizardmode ? false : true); schedule_action(ACTION_NOTHING);
-                                gtprintf("Wizard mode %s!", game->wizardmode ? "on" : "off");
-                                break;
-                        case CMD_SAVE:
-                                save_game(game->savefile);
-                                schedule_action(ACTION_NOTHING);
-                                break;
-                        case CMD_LOAD:
-                                if(!load_game(game->savefile, 1))
-                                        gtprintf("Loading failed!");
-                                else
-                                        gtprintf("Loading successful!");
-                                schedule_action(ACTION_NOTHING);
-                                break;
-                        case CMD_DUMPOBJECTS:
-                                dump_objects(world->curlevel->c[ply][plx].inventory);
-                                schedule_action(ACTION_NOTHING);
-                                break;
-                        case CMD_INCFOV:
-                                //player->viewradius++;
-                                player->speed++;
-                                //world->out->lakelimit++;
-                                //generate_terrain(1);
-                                //gtprintf("lakelimit = %d", world->out->lakelimit);
-                                schedule_action(ACTION_NOTHING);
-                                break;
-                        case CMD_DECFOV:
-                                //player->viewradius--;
-                                player->speed--;
-                                //world->out->lakelimit--;
-                                //generate_terrain(1);
-                                //gtprintf("lakelimit = %d", world->out->lakelimit);
-                                schedule_action(ACTION_NOTHING);
-                                break;
-                        case CMD_FLOODFILL:
-                                x = ri(11, world->curlevel->xsize);
-                                y = ri(11, world->curlevel->ysize);
-                                while(world->curlevel->c[y][x].type != DNG_FLOOR) {
-                                        x = ri(11, world->curlevel->xsize);
-                                        y = ri(11, world->curlevel->ysize);
-                                }
-                                gtprintf("floodfilling from %d, %d\n", y, x);
-                                floodfill(world->curlevel, y, x);
-                                schedule_action(ACTION_NOTHING);
-                                break;
-                        case CMD_INVENTORY:
-                                schedule_action(ACTION_NOTHING);
-                                dump_objects(player->inventory);
-                                break;
-                        case CMD_PICKUP:
-                                schedule_action(ACTION_PICKUP);
-                                break;
-                        case CMD_QUAFF:
-                                l = ask_char("Which potion would you like to drink?");
-                                actiondata = (void *) get_object_from_letter(l, player->inventory);
-                                schedule_action(ACTION_QUAFF);
-                                break;
-                        case CMD_DESCEND:
-                                if(hasbit(cf(ply,plx), CF_HAS_STAIRS_DOWN)) {
-                                        schedule_action(ACTION_GO_DOWN_STAIRS);
-                                        schedule_action(ACTION_FIX_VIEW);
-                                } else {
-                                        gtprintf("You can't go up here!");
-                                        schedule_action(ACTION_NOTHING);
-                                }
-                                break;
-                        case CMD_ASCEND:
-                                if(hasbit(cf(ply,plx), CF_HAS_STAIRS_UP)) {
-                                        schedule_action(ACTION_GO_UP_STAIRS);
-                                        schedule_action(ACTION_FIX_VIEW);
-                                } else {
-                                        gtprintf("You can't go up here!");
-                                        schedule_action(ACTION_NOTHING);
-                                }
-                                break;
-                        case CMD_REST:
-                                schedule_action(ACTION_NOTHING);
-                                break;
-                        case CMD_PATHFINDER: break;
-                        case CMD_AUTOEXPLORE:
-                                autoexplore();
-                                break;
-                        default:
-                                schedule_action(ACTION_NOTHING);
-                                game->turn--;
-                                break;
-                }
-
-                        do_turn();
-
-        } while(!game->dead);
+        game_loop();
 
         shutdown_display();
         shutdown_gt();

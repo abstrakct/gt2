@@ -18,6 +18,7 @@ void shutdown_display();
 void gtmapaddch(int y, int x, gtcolor_t color, char c);
 void update_screen();
 void update_player();
+void update_ticks();
 void initial_update_screen();
 gtkey gtgetch();
 

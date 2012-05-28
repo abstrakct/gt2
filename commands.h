@@ -64,6 +64,7 @@ typedef struct gtcommandstruct {
 #define CMD_INCFOV        1005
 #define CMD_DECFOV        1006
 #define CMD_DUMPCOLORS    1007
+#define CMD_DUMPAQ        1008
 /* @} */
 
 

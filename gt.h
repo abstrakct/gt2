@@ -55,7 +55,7 @@ typedef struct {                              // game_t
         short        context;                 //!< which context are we in? see CONTEXT_ defines
         short        currentlevel;            //!< what's the current level?
         int          turn;                    //!< count turns
-        long long    tick, prevtick;
+        int          tick, prevtick;
         unsigned int seed;                    //!< random seed
         short        monsterdefs;             //!< number of monster definitions
         short        objdefs;                 //!< number of object definitions
@@ -80,9 +80,20 @@ struct actionqueue {                          // struct actionqueue
         struct actionqueue *next;             //!< Pointer to the next item in the queue
         int action;                           //!< Which action is it? See \ref group_actions "ACTION_defines"
         long num;                             //!< In the head, this contains the number of actions in the queue, for a specific action it signifies which number the action is overall (e.g. if it's the tenth action performed in the game, the two-thousandth, or whatever).
-        long tick;                            //!< At which tick should this action be performed?
+        int  tick;                            //!< At which tick should this action be performed?
+        monster_t *monster;
+        obj_t *object;
 };
 
+typedef struct action {
+        int        action;
+        int        tick;
+//        bool       completed;
+        monster_t *monster;
+        obj_t     *object;
+} action_t;
+
+#define MAXACT 100
 
 /** @defgroup group_actions Group of action defines
  * @{
@@ -109,6 +120,10 @@ struct actionqueue {                          // struct actionqueue
 #define ACTION_MAKE_DISTANCEMAP  19
 #define ACTION_DROP              20
 #define ACTION_QUAFF             21
+#define ACTION_MOVE_MONSTER      22
+#define ACTION_PLAYER_NEXTMOVE   23
+
+#define ACTION_FREESLOT          -577
 /** @} */
 
 #define TICKS_MOVEMENT  1000
@@ -150,13 +165,25 @@ extern int                 actionlength[100];
 
 /* function prototypes */
 
+//struct actionqueue* schedule_action(int action, actor_t *actor);
+//struct actionqueue* schedule_action_delayed(int action, actor_t *actor, int delay);
+
+int get_next_free_action_slot();
+int schedule_action(int action, actor_t *actor);
+int schedule_action_delayed(int action, actor_t *actor, int delay);
+void schedule_monster(monster_t *m);
+void unschedule_action(int index);
+
 int do_next_thing_in_queue();
-void schedule_action(int action);
 void queue(int action);
-void queuemany(int first, ...);
+void queuemany(actor_t *actor, int first, ...);
 void shutdown_gt();
-bool do_action(int action);
+void do_one_action(int action);
+bool do_action(action_t *aqe);
+void do_everything_at_tick(int tick);
+
 void do_turn();
+void process_player_input();
 
 
 #endif

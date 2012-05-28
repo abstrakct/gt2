@@ -252,6 +252,7 @@ void init_display()
         	sprintf(font, "fonts/ds.png");
         	gtconfig.rows += 20;
         	gtconfig.cols /= 2;
+        	gtconfig.cols += 20;
         } else
                 sprintf(font, "fonts/df.png");
 

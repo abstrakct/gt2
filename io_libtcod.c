@@ -251,6 +251,7 @@ void init_display()
         if(screenwidth <= 1024) {
         	sprintf(font, "fonts/ds.png");
         	gtconfig.rows += 20;
+        	gtconfig.cols /= 2;
         } else
                 sprintf(font, "fonts/df.png");
 

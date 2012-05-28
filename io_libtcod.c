@@ -250,9 +250,6 @@ void init_display()
 
         if(screenwidth <= 1024) {
         	sprintf(font, "fonts/ds.png");
-        	gtconfig.rows += 20;
-        	gtconfig.cols /= 2;
-        	gtconfig.cols += 20;
         } else
                 sprintf(font, "fonts/df.png");
 
@@ -262,10 +259,12 @@ void init_display()
 	//sprintf(font, "fonts/terminal8x12_gs_ro.png");
 	sprintf(font, "fonts/terminal8x14_gs_ro.png");
 	//sprintf(font, "fonts/terminal10x16_gs_ro.png");
-	
 
-        if(screenwidth <= 1024)
-                gtconfig.rows /= 2;
+        if(screenwidth <= 1024) {
+                gtconfig.rows = screenheight / 10;
+                gtconfig.cols = screenwidth  / 10;
+        }
+
         TCOD_console_set_custom_font(font, TCOD_FONT_TYPE_GREYSCALE | TCOD_FONT_LAYOUT_ASCII_INROW, 16, 16);
 
         TCOD_console_init_root(gtconfig.cols, gtconfig.rows, GAME_NAME, false, TCOD_RENDERER_SDL);

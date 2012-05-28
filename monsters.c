@@ -432,7 +432,7 @@ void move_monster(monster_t *m)
                         i = 17 - m->attr.phy;
                         if(i <= 0)
                                 i = 1;
-                        if(game->turn % i) {
+                        if(game->tick % i) {
                                 if(perc(40+m->attr.phy)) {
                                         int j;
 
@@ -443,8 +443,9 @@ void move_monster(monster_t *m)
                                 }
                         }
                 }
-                schedule_monster(m);
         }
+
+        schedule_monster(m);
 }
 
 /**

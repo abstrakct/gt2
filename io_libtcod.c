@@ -612,6 +612,22 @@ void draw_left()
         TCOD_console_print(game->left.c, 1, i+14, "XP:    %d", player->xp);
         TCOD_console_print(game->left.c, 1, i+15, "Level: %d", player->level);
         TCOD_console_print(game->left.c, 1, i+16, "Speed: %d", player->speed);
+
+        if(player->temp[TEMP_INVISIBLE]) {
+                TCOD_console_set_default_foreground(game->left.c, TCOD_sea);
+                TCOD_console_print(game->left.c, 1, i+18, "Invisible");
+        }
+
+        if(player->temp[TEMP_STRENGTH]) {
+                TCOD_console_set_default_foreground(game->left.c, TCOD_green);
+                TCOD_console_print(game->left.c, 1, i+18, "Strong");
+        }
+
+        if(player->temp[TEMP_WISDOM]) {
+                TCOD_console_set_default_foreground(game->left.c, TCOD_green);
+                TCOD_console_print(game->left.c, 1, i+18, "Wise");
+        }
+
         
         //TCOD_console_print(game->left.c, 1, i+9, 1, "Dungeon level: %d (out of %d)", game->currentlevel, game->createdareas);
         //mvwprintw(wleft, 3, 1, "y,x     %d,%d", ply, plx);

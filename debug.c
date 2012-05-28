@@ -43,6 +43,7 @@ char *action_name[] = {
         "Quaff",
         "Move monster",
         "Player next move",
+        "Decrease invisibility counter",
 };
 
 
@@ -104,7 +105,7 @@ void dump_objects(inv_t *i)
 
 }
 
-void dump_action_queue()
+void dump_action_queue_old()
 {
         int i;
         struct actionqueue *tmp;
@@ -121,4 +122,14 @@ void dump_action_queue()
                 i++;
         }
         //gtprintf("---------------------------------------------------------------------------------------------");
+}
+
+void dump_action_queue()
+{
+        int i;
+
+        for(i = 0; i < MAXACT; i++) {
+                if(act[i].action != ACTION_FREESLOT)
+                        gtprintf("%d:   action %s (%d) - tick %d", i, action_name[act[i].action], act[i].action, act[i].tick);
+        }
 }

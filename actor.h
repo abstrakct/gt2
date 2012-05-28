@@ -96,7 +96,8 @@ typedef struct actorstruct {                               // actor_t
         char         wvfactor;
         short        worldview;
         short        kills;
-        oe_t         *temp;
+        //oe_t         *temp;
+        int          temp[50];                             // temporary effects
 #ifdef GT_USE_LIBTCOD
         TCOD_path_t  path;
 #endif
@@ -112,6 +113,15 @@ typedef struct actorstruct {                               // actor_t
 
 #define PF_AUTOEXPLORING (1 << 1)
 
+#define TEMP_INVISIBLE    0
+#define TEMP_STRENGTH     1
+#define TEMP_WISDOM       2
+#define TEMP_INTELLIGENCE 3
+#define TEMP_CHARISMA     4
+#define TEMP_DEXTERITY    5
+#define TEMP_PHYSIQUE     6
+
+#define TEMP_LAST         7
 char   get_first_free_letter();
 char   slot_to_letter(int i);
 int    letter_to_slot(char c);

@@ -88,9 +88,11 @@ struct actionqueue {                          // struct actionqueue
 typedef struct action {
         int        action;
         int        tick;
-//        bool       completed;
         monster_t *monster;
         obj_t     *object;
+        actor_t   *actor;
+        int        gain;                      // for temporary effects
+//        bool       completed;
 } action_t;
 
 #define MAXACT 100
@@ -122,6 +124,13 @@ typedef struct action {
 #define ACTION_QUAFF             21
 #define ACTION_MOVE_MONSTER      22
 #define ACTION_PLAYER_NEXTMOVE   23
+#define ACTION_DECREASE_INVISIBILITY 24
+#define ACTION_DECREASE_TEMP_CHARISMA 25
+#define ACTION_DECREASE_TEMP_STRENGTH 26
+#define ACTION_DECREASE_TEMP_INTELLIGENCE 27
+#define ACTION_DECREASE_TEMP_PHYSIQUE 28
+#define ACTION_DECREASE_TEMP_WISDOM 29
+#define ACTION_DECREASE_TEMP_DEXTERITY 30
 
 #define ACTION_FREESLOT          -577
 /** @} */
@@ -161,6 +170,7 @@ extern struct actionqueue *aq;
 extern gt_config_t         gtconfig;
 extern int                 tempxsize, tempysize;
 extern int                 actionlength[100];
+extern action_t           *act;
 
 
 /* function prototypes */

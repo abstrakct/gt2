@@ -182,7 +182,7 @@ void init_player()
         player->attr.cha  = dice(3, 6, 0);
         player->attr.intl = dice(3, 6, 0);
 
-        player->speed = 10;
+        player->speed = 9;
 
         // TODO: Starting HP - FIX according to race etc.
         player->hp = player->maxhp = (dice(1, 10, 7)) + ability_modifier(player->attr.phy);
@@ -723,6 +723,17 @@ bool do_action(action_t *aqe)
                         //}
 
                         break;
+                case ACTION_DECREASE_INVISIBILITY:
+                        aqe->actor->temp[TEMP_INVISIBLE] -= 1;
+                        if(aqe->actor->temp[TEMP_INVISIBLE] == 0) {
+                                if(aqe->actor == player)
+                                        gtprintfc(COLOR_INFO, "You become visible again.");
+                                else
+                                        gtprintfc(COLOR_INFO, "The %s becomes visible again.", aqe->actor->name);
+
+                                clearbit(aqe->actor->flags, MF_INVISIBLE);
+                        }
+                        break;
                 case ACTION_NOTHING:
                         fullturn = false;
                         //updatescreen = false;
@@ -766,6 +777,7 @@ int schedule_action(int action, actor_t *actor)
 
         act[i].action = action;
         act[i].tick = game->tick + actor->speed;
+        act[i].actor = actor;
         //gtprintfc(COLOR_SKYBLUE, "Scheduled action %s at tick %d!", action_name[action], act[i].tick);
 
         return i;
@@ -781,6 +793,7 @@ int schedule_action_delayed(int action, actor_t *actor, int delay)
 
         act[i].action = action;
         act[i].tick = game->tick + actor->speed + delay;
+        act[i].actor = actor;
         //gtprintfc(COLOR_SKYBLUE, "Scheduled delayed action %s at tick %d!", action_name[action], act[i].tick);
 
         return i;
@@ -820,7 +833,7 @@ void schedule_monster(monster_t *m)
         i = schedule_action(ACTION_MOVE_MONSTER, m);
         act[i].monster = m;
 
-        gtprintfc(COLOR_SKYBLUE, "Scheduled monster %s at tick %d", m->name, act[i].tick);
+        //gtprintfc(COLOR_SKYBLUE, "Scheduled monster %s at tick %d", m->name, act[i].tick);
 }
 
 void unschedule_all_monsters()
@@ -1003,15 +1016,10 @@ void do_turn()
 {
         int i;
 
-        //player->ticks += player->speed;
-
-
         //gtprintf("Started do_turn. ---------------------------------------");
 
         //dump_action_queue();
-
         //update_screen();
-
         //look();
         
         look_for_monsters();
@@ -1029,12 +1037,13 @@ void do_turn()
 
         for(i = 0; i < 10; i++) {
                 do_everything_at_tick(game->tick);
+                look_for_monsters();
                 update_screen();
                 increase_ticks(1);
         }
 
-        if(player->temp)
-                process_temp_effects(player);
+        //if(player->temp)
+        //        process_temp_effects(player);
 
         update_screen();
 
@@ -1074,7 +1083,6 @@ void process_player_input()
 
         switch(c) {
                 case CMD_QUIT:
-                        schedule_action(ACTION_NOTHING, player);
                         game->dead = 1;
                         break;
                 case CMD_DOWN:  schedule_action(ACTION_PLAYER_MOVE_DOWN, player); break;

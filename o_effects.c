@@ -59,7 +59,14 @@ effectfunctionpointer effecttable[] = {
         oe_invisibility
 };
 
-// TODO: MULTIPLE TEMPORARY EFFECTS!!!
+void schedule_temporary_effect(actor_t *actor, int duration, int effect, int action)
+{
+        int i;
+        for(i = 0; i < (duration*10); i += 10)
+                schedule_action_delayed(action, actor, i);
+
+        actor->temp[effect] += duration;
+}
 
 // This one is always temporary.
 void oe_invisibility(actor_t *actor, void *data, int e)
@@ -73,9 +80,11 @@ void oe_invisibility(actor_t *actor, void *data, int e)
                 duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
                 if(actor == player)
                         youc(COLOR_INFO, "become invisible!");
-                actor->temp = gtmalloc(sizeof(oe_t));
+                /*actor->temp = gtmalloc(sizeof(oe_t));
                 *(actor->temp) = o->effect[e];
-                actor->temp->duration = duration;
+                actor->temp->duration = duration;*/
+
+                schedule_temporary_effect(actor, duration, TEMP_INVISIBLE, ACTION_DECREASE_INVISIBILITY);
                 setbit(actor->flags, MF_INVISIBLE);
         }
 }
@@ -181,10 +190,8 @@ void oe_strength(actor_t *actor, void *data, int e)
                         actor->attr.str += gain;
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
-                        actor->temp = gtmalloc(sizeof(oe_t));
-                        *(actor->temp) = o->effect[e];
-                        actor->temp->duration = duration;
-                        actor->temp->gain = gain;
+
+                        schedule_temporary_effect(actor, duration, TEMP_STRENGTH, ACTION_DECREASE_TEMP_STRENGTH);
                 }
         }
         
@@ -228,10 +235,8 @@ void oe_wisdom(actor_t *actor, void *data, int e)
                         actor->attr.wis += gain;
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
-                        actor->temp = gtmalloc(sizeof(oe_t));
-                        *(actor->temp) = o->effect[e];
-                        actor->temp->duration = duration;
-                        actor->temp->gain = gain;
+
+                        schedule_temporary_effect(actor, duration, TEMP_WISDOM, ACTION_DECREASE_TEMP_WISDOM);
                 }
         }
 
@@ -275,10 +280,8 @@ void oe_physique(actor_t *actor, void *data, int e)
                         actor->attr.phy += gain;
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
-                        actor->temp = gtmalloc(sizeof(oe_t));
-                        *(actor->temp) = o->effect[e];
-                        actor->temp->duration = duration;
-                        actor->temp->gain = gain;
+
+                        schedule_temporary_effect(actor, duration, TEMP_PHYSIQUE, ACTION_DECREASE_TEMP_PHYSIQUE);
                 }
         }
 
@@ -322,10 +325,8 @@ void oe_intelligence(actor_t *actor, void *data, int e)
                         actor->attr.intl += gain;
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
-                        actor->temp = gtmalloc(sizeof(oe_t));
-                        *(actor->temp) = o->effect[e];
-                        actor->temp->duration = duration;
-                        actor->temp->gain = gain;
+
+                        schedule_temporary_effect(actor, duration, TEMP_INTELLIGENCE, ACTION_DECREASE_TEMP_INTELLIGENCE);
                 }
         }
 
@@ -369,10 +370,8 @@ void oe_dexterity(actor_t *actor, void *data, int e)
                         actor->attr.dex += gain;
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
-                        actor->temp = gtmalloc(sizeof(oe_t));
-                        *(actor->temp) = o->effect[e];
-                        actor->temp->duration = duration;
-                        actor->temp->gain = gain;
+
+                        schedule_temporary_effect(actor, duration, TEMP_DEXTERITY, ACTION_DECREASE_TEMP_DEXTERITY);
                 }
         } else if(is_worn(o)) {
                 if(o->effect[e].gain)
@@ -414,10 +413,9 @@ void oe_charisma(actor_t *actor, void *data, int e)
                         actor->attr.cha += gain;
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
-                        actor->temp = gtmalloc(sizeof(oe_t));
-                        *(actor->temp) = o->effect[e];
-                        actor->temp->duration = duration;
-                        actor->temp->gain = gain;
+                        
+                        // TODO/IDEA: separate attr for attrgain!
+                        schedule_temporary_effect(actor, duration, TEMP_CHARISMA, ACTION_DECREASE_TEMP_CHARISMA);
                 }
         }
 
@@ -461,7 +459,7 @@ void apply_effects(actor_t *actor, obj_t *o)
 
 void unapply_temp_effect(actor_t *actor)
 {
-        int old;
+        /*int old;
 
         switch(actor->temp->effect) {
                 case OE_STRENGTH:
@@ -482,14 +480,14 @@ void unapply_temp_effect(actor_t *actor)
                 default:
                         gtprintf("trying to unapply unknown effect %d.", actor->temp->effect);
                         break;
-        }
+        }*/
 }
 
 void process_temp_effects(actor_t *actor)
 {
-        actor->temp->duration--;
+        /*actor->temp->duration--;
         if(actor->temp->duration == 0)
-                unapply_temp_effect(actor);
+                unapply_temp_effect(actor);*/
 }
 
 // "converted" from macro to function, therefore stupid variable names

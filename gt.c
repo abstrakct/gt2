@@ -813,79 +813,6 @@ void unschedule_action(int index)
         act[index].object  = 0;
 }
 
-/**
- * @brief Schedule an action at a specified time.
- *
- * @param action Which action to schedule - see \ref group_actions "ACTION-defines" in gt.h
- *
- * @return Pointer to newly scheduled item in actionqueue.
- */
-/*struct actionqueue* schedule_action(int action, actor_t *actor)
-{
-        struct actionqueue *tmp, *prev;
-
-        prev = aq;
-        tmp = aq->next;
-        
-        while(tmp) {
-                prev = tmp;
-                tmp = tmp->next; 
-        }
-
-        tmp = (struct actionqueue *) gtmalloc(sizeof(struct actionqueue));
-        tmp->head = aq;
-        tmp->next = 0; //aq->next;
-        //aq->next = tmp;
-
-        tmp->action = action;
-        tmp->tick = game->tick + actor->speed;
-        actionnum++;
-        tmp->num = actionnum;
-        prev->next = tmp;
-        aq->num++;
-
-
-        gtprintf("Scheduled action %s at tick %d!", action_name[action], tmp->tick);
-        dump_action_queue();
-        return tmp;
-
-
-
-        //gtprintf("        end of queue! dumping it!");
-}*/
-
-/*struct actionqueue* schedule_action_delayed(int action, actor_t *actor, int delay)
-{
-        struct actionqueue *tmp, *prev;
-
-        prev = aq;
-        tmp = aq->next;
-        
-        while(tmp) {
-                prev = tmp;
-                tmp = tmp->next; 
-        }
-
-        tmp = (struct actionqueue *) gtmalloc(sizeof(struct actionqueue));
-        tmp->head = aq;
-        tmp->next = 0;
-        tmp->action = action;
-        tmp->tick = game->tick + actor->speed + delay;
-        actionnum++;
-        tmp->num = actionnum;
-        prev->next = tmp;
-        aq->num++;
-
-
-        gtprintf("Scheduled (delayed) action %s at tick %d!", action_name[action], tmp->tick);
-        //dump_action_queue();
-        return tmp;
-
-
-
-        //gtprintf("        end of queue! dumping it!");
-}*/
-
 void schedule_monster(monster_t *m)
 {
         int i;
@@ -893,38 +820,7 @@ void schedule_monster(monster_t *m)
         i = schedule_action(ACTION_MOVE_MONSTER, m);
         act[i].monster = m;
 
-        // gtprintf("Scheduled monster %s at tick %d", m->name, tmp->tick);
-}
-
-/**
- * @brief Add an action to the action queue.,
- *
- * @param action Which action to queue - see \ref group_actions "ACTION-defines" in gt.h
- */
-void queue(int action)
-{
-        struct actionqueue *tmp, *prev;
-
-        prev = aq;
-        tmp = aq->next;
-        
-        while(tmp) {
-                prev = tmp;
-                tmp = tmp->next; 
-        }
-
-        tmp = (struct actionqueue *) gtmalloc(sizeof(struct actionqueue));
-        tmp->head = aq;
-        tmp->next = 0;
-        tmp->action = action;
-        actionnum++;
-        tmp->num = actionnum;
-        prev->next = tmp;
-        aq->num++;
-        player->ticks += (actionlength[action] / player->speed);
-
-        //gtprintf("        end of queue! dumping it!");
-        //dump_action_queue();
+        gtprintfc(COLOR_SKYBLUE, "Scheduled monster %s at tick %d", m->name, act[i].tick);
 }
 
 /**
@@ -961,54 +857,6 @@ void queuemany(actor_t *actor, int first, ...)
                 i = va_arg(args, int);
         }
         va_end(args);
-}
-
-/**
- * @brief Do the next thing in the action queue.
- *
- * @return The number of ticks the action took.
- */
-int do_next_thing_in_queue() // needs a better name..
-{
-        int ret;
-        struct actionqueue *tmp;
-
-        tmp = aq->next;
-        ret = 0;
-
-        if(tmp) {
-                //if(player->ticks >= actionlength[tmp->action]) {
-                        //do_action(tmp->action, tmp);
-                        ret = actionlength[tmp->action];
-                        //player->ticks -= ret;
-                        aq->num--;
-                        aq->next = tmp->next;
-                        gtfree(tmp);
-                //}
-        }
-
-        return ret;
-}
-
-/**
- * @brief Do all the actions in the action queue.
- *
- * @return The number of ticks it took.
- */
-int do_all_things_in_queue() // needs a better name..
-{
-        struct actionqueue *tmp;
-        int ret;
-
-        tmp = aq->next;
-        ret = 0;
-
-        while(tmp) {
-                ret += do_next_thing_in_queue();
-                tmp = tmp->next;
-        }
-
-        return ret;
 }
 
 void process_autopickup()
@@ -1194,7 +1042,6 @@ void catchsignal()
         fprintf(stderr, "Caught signal - exiting.\n");
         exit(0);
 }
-
 
 /**
  * @brief Get a command from the player, and schedule the appropriate action.

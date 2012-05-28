@@ -196,8 +196,6 @@ bool next_to(actor_t *a, actor_t *b)
                         (a->x == b->x-1 && a->y == b->y+1) ||
                         (a->x == b->x+1 && a->y == b->y-1))
                 return true;
-        else
-                return false;
 
         return false;
 }
@@ -389,6 +387,17 @@ void attack(actor_t *attacker, actor_t *defender)
         bool naturalhit, naturalmiss, criticalmiss, criticalhit;
 
         naturalmiss = naturalhit = criticalmiss = criticalhit = false;
+
+        // First of all, check if attacker and defender are next to each other, or if one has moved in the meantime
+        // Note: I'm not sure if this will actually ever happen...
+        if(!next_to(attacker, defender)) {
+                if(attacker == player)
+                        gtprintf("You try to attack the %s, but the %s moves out of range!", defender->name, defender->name);
+                if(defender == player)
+                        gtprintf("The %s tries to attack you, but you move out of range!", attacker->name);
+
+                return;
+        }
 
         defender->attacker = attacker;
 

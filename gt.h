@@ -174,8 +174,6 @@ int schedule_action_delayed(int action, actor_t *actor, int delay);
 void schedule_monster(monster_t *m);
 void unschedule_action(int index);
 
-int do_next_thing_in_queue();
-void queue(int action);
 void queuemany(actor_t *actor, int first, ...);
 void shutdown_gt();
 void do_one_action(int action);

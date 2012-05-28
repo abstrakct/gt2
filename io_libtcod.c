@@ -261,8 +261,11 @@ void init_display()
 	//sprintf(font, "fonts/terminal10x16_gs_ro.png");
 
         if(screenwidth <= 1024) {
-                gtconfig.rows = screenheight / 10;
-                gtconfig.cols = screenwidth  / 10;
+                gtconfig.rows = screenheight / 8;
+                gtconfig.cols = screenwidth  / 8;
+
+                gtconfig.rows -= 20;
+                gtconfig.cols += 10;
         }
 
         TCOD_console_set_custom_font(font, TCOD_FONT_TYPE_GREYSCALE | TCOD_FONT_LAYOUT_ASCII_INROW, 16, 16);

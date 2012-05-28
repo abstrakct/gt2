@@ -113,12 +113,12 @@ void oe_speed(actor_t *actor, void *data, int e)
         gtprintf("speedeffect!");
         if(actor == player) {
                 if(is_worn(o)) {
-                        gtprintf("speed = %.2f   fgain = %.2f", player->speed, o->effect[e].fgain);
-                        player->speed += o->effect[e].fgain;
-                        gtprintf("speed = %.2f   fgain = %.2f", player->speed, o->effect[e].fgain);
+                        gtprintf("speed = %d   gain = %d", player->speed, o->effect[e].gain);
+                        player->speed -= o->effect[e].gain;
+                        gtprintf("speed = %d   gain = %d", player->speed, o->effect[e].gain);
                         youc(COLOR_INFO, "feel faster!");
                 } else {
-                        player->speed -= o->effect[e].fgain;
+                        player->speed += o->effect[e].gain;
                         youc(COLOR_INFO, "feel slower.");
                 }
         }
@@ -176,7 +176,7 @@ void oe_strength(actor_t *actor, void *data, int e)
         int x, gain, duration;
 
         o = (obj_t *) data;
-        x = actor->attr.str;
+        x = get_strength(actor);
 
         if(is_potion(o)) {
                 if(o->effect[e].duration == -1) {
@@ -197,20 +197,20 @@ void oe_strength(actor_t *actor, void *data, int e)
         
         if(is_worn(o)) {
                 if(o->effect[e].gain)
-                        actor->attr.str += o->effect[e].gain;
+                        actor->attrmod.str += o->effect[e].gain;
                 else
-                        actor->attr.str += o->attackmod;
+                        actor->attrmod.str += o->attackmod;
         } else {
                 if(o->effect[e].gain)
-                        actor->attr.str -= o->effect[e].gain;
+                        actor->attrmod.str -= o->effect[e].gain;
                 else
-                        actor->attr.str -= o->attackmod;
+                        actor->attrmod.str -= o->attackmod;
         }
 
         if(actor == player) {
-                if(x > actor->attr.str)
+                if(x > get_strength(player))
                         youc(COLOR_INFO, "feel weaker.");
-                else if(x < actor->attr.str)
+                else if(x < get_strength(player))
                         youc(COLOR_INFO, "feel stronger!");
         }
 }
@@ -221,7 +221,7 @@ void oe_wisdom(actor_t *actor, void *data, int e)
         int x, gain, duration;
 
         o = (obj_t *) data;
-        x = actor->attr.wis;
+        x = get_wisdom(actor);
 
         if(is_potion(o)) {
                 if(o->effect[e].duration == -1) {
@@ -242,20 +242,20 @@ void oe_wisdom(actor_t *actor, void *data, int e)
 
         if(is_worn(o)) {
                 if(o->effect[e].gain)
-                        actor->attr.wis += o->effect[e].gain;
+                        actor->attrmod.wis += o->effect[e].gain;
                 else
-                        actor->attr.wis += o->attackmod;
+                        actor->attrmod.wis += o->attackmod;
         } else {
                 if(o->effect[e].gain)
-                        actor->attr.wis -= o->effect[e].gain;
+                        actor->attrmod.wis -= o->effect[e].gain;
                 else
-                        actor->attr.wis -= o->attackmod;
+                        actor->attrmod.wis -= o->attackmod;
         }
 
         if(actor == player) {
-                if(x > actor->attr.wis)
+                if(x > get_wisdom(player))
                         youc(COLOR_INFO, "feel more ignorant.");
-                else if(x < actor->attr.wis)
+                else if(x < get_wisdom(player))
                         youc(COLOR_INFO, "feel wiser!");
         }
 }
@@ -266,7 +266,7 @@ void oe_physique(actor_t *actor, void *data, int e)
         int x, gain, duration;
 
         o = (obj_t *) data;
-        x = actor->attr.phy;
+        x = get_physique(actor);
 
         if(is_potion(o)) {
                 if(o->effect[e].duration == -1) {
@@ -287,20 +287,20 @@ void oe_physique(actor_t *actor, void *data, int e)
 
         if(is_worn(o)) {
                 if(o->effect[e].gain)
-                        actor->attr.phy += o->effect[e].gain;
+                        actor->attrmod.phy += o->effect[e].gain;
                 else
-                        actor->attr.phy += o->attackmod;
+                        actor->attrmod.phy += o->attackmod;
         } else {
                 if(o->effect[e].gain)
-                        actor->attr.phy -= o->effect[e].gain;
+                        actor->attrmod.phy -= o->effect[e].gain;
                 else
-                        actor->attr.phy -= o->attackmod;
+                        actor->attrmod.phy -= o->attackmod;
         }
 
         if(actor == player) {
-                if(x > actor->attr.phy)
+                if(x > get_physique(player))
                         youc(COLOR_INFO, "feel small and fragile.");
-                else if(x < actor->attr.phy)
+                else if(x < get_physique(player))
                         youc(COLOR_INFO, "feel more able to perform physically challenging tasks!");
         }
 }
@@ -311,7 +311,7 @@ void oe_intelligence(actor_t *actor, void *data, int e)
         int x, gain, duration;
 
         o = (obj_t *) data;
-        x = actor->attr.intl;
+        x = get_intelligence(actor);
 
         if(is_potion(o)) {
                 if(o->effect[e].duration == -1) {
@@ -332,20 +332,20 @@ void oe_intelligence(actor_t *actor, void *data, int e)
 
         if(is_worn(o)) {
                 if(o->effect[e].gain)
-                        actor->attr.intl += o->effect[e].gain;
+                        actor->attrmod.intl += o->effect[e].gain;
                 else
-                        actor->attr.intl += o->attackmod;
+                        actor->attrmod.intl += o->attackmod;
         } else {
                 if(o->effect[e].gain)
-                        actor->attr.intl -= o->effect[e].gain;
+                        actor->attrmod.intl -= o->effect[e].gain;
                 else
-                        actor->attr.intl -= o->attackmod;
+                        actor->attrmod.intl -= o->attackmod;
         }
 
         if(actor == player) {
-                if(x > actor->attr.intl)
+                if(x > get_intelligence(player))
                         youc(COLOR_INFO, "feel stupider.");
-                else if(x < actor->attr.intl)
+                else if(x < get_intelligence(player))
                         youc(COLOR_INFO, "feel smarter!");
         }
 }
@@ -356,7 +356,7 @@ void oe_dexterity(actor_t *actor, void *data, int e)
         int x, gain, duration;
 
         o = (obj_t *) data;
-        x = actor->attr.dex;
+        x = get_dexterity(actor);
 
         if(is_potion(o)) {
                 if(o->effect[e].duration == -1) {
@@ -375,20 +375,20 @@ void oe_dexterity(actor_t *actor, void *data, int e)
                 }
         } else if(is_worn(o)) {
                 if(o->effect[e].gain)
-                        actor->attr.dex += o->effect[e].gain;
+                        actor->attrmod.dex += o->effect[e].gain;
                 else
-                        actor->attr.dex += o->attackmod;
+                        actor->attrmod.dex += o->attackmod;
         } else {
                 if(o->effect[e].gain)
-                        actor->attr.dex -= o->effect[e].gain;
+                        actor->attrmod.dex -= o->effect[e].gain;
                 else
-                        actor->attr.dex -= o->attackmod;
+                        actor->attrmod.dex -= o->attackmod;
         }
 
         if(actor == player) {
-                if(x > actor->attr.dex)
+                if(x > get_dexterity(player))
                         youc(COLOR_INFO, "feel less agile.");
-                else if(x < actor->attr.dex)
+                else if(x < get_dexterity(player))
                         youc(COLOR_INFO, "feel more agile!");
         }
 }
@@ -399,7 +399,7 @@ void oe_charisma(actor_t *actor, void *data, int e)
         int x, gain, duration;
 
         o = (obj_t *) data;
-        x = actor->attr.cha;
+        x = get_charisma(actor);
 
         if(is_potion(o)) {
                 if(o->effect[e].duration == -1) {
@@ -421,20 +421,20 @@ void oe_charisma(actor_t *actor, void *data, int e)
 
         if(is_worn(o)) {
                 if(o->effect[e].gain)
-                        actor->attr.cha += o->effect[e].gain;
+                        actor->attrmod.cha += o->effect[e].gain;
                 else
-                        actor->attr.cha += o->attackmod;
+                        actor->attrmod.cha += o->attackmod;
         } else {
                 if(o->effect[e].gain)
-                        actor->attr.cha -= o->effect[e].gain;
+                        actor->attrmod.cha -= o->effect[e].gain;
                 else
-                        actor->attr.cha -= o->attackmod;
+                        actor->attrmod.cha -= o->attackmod;
         }
 
         if(actor == player) {
-                if(x > actor->attr.cha)
+                if(x > get_charisma(player))
                         youc(COLOR_INFO, "feel less attractive.");
-                else if(x < actor->attr.cha)
+                else if(x < get_charisma(player))
                         youc(COLOR_INFO, "feel more attractive!");
         }
 }

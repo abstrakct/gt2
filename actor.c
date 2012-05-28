@@ -246,18 +246,18 @@ void award_xp(actor_t *defender)
 
         ret = 0;
 
-        if(defender->attr.str >= 15)
-                ret += defender->attr.str - 13;
-        if(defender->attr.phy >= 15)
-                ret += defender->attr.phy - 13;
-        if(defender->attr.intl >= 15)
-                ret += defender->attr.intl - 13;
-        if(defender->attr.wis >= 15)
-                ret += defender->attr.wis - 13;
-        if(defender->attr.dex >= 15)
-                ret += defender->attr.dex - 13;
-        if(defender->attr.cha >= 15)
-                ret += defender->attr.cha - 13;
+        if(get_strength(defender) >= 15)
+                ret += get_strength(defender) - 13;
+        if(get_physique(defender) >= 15)
+                ret += get_physique(defender) - 13;
+        if(get_intelligence(defender) >= 15)
+                ret += get_intelligence(defender) - 13;
+        if(get_wisdom(defender) >= 15)
+                ret += get_wisdom(defender) - 13;
+        if(get_dexterity(defender) >= 15)
+                ret += get_dexterity(defender) - 13;
+        if(get_charisma(defender) >= 15)
+                ret += get_charisma(defender) - 13;
 
         if(defender->maxhp / 10 < 1)
                 ret += defender->maxhp * 2;                        // or * 1? or?
@@ -347,7 +347,7 @@ int attackroll(actor_t *a)
         int attack;
 
         attack = d(1, 20);
-        attack += ability_modifier(a->attr.str); // eller dex?
+        attack += ability_modifier(get_strength(a)); // eller dex?
         if(a->weapon)
                 attack += a->weapon->attackmod;
 
@@ -359,7 +359,7 @@ int defenseroll(actor_t *defender)
         int defense;
 
         defense = 10;         // base defense
-        defense += ability_modifier(defender->attr.dex);
+        defense += ability_modifier(get_dexterity(defender));
         defense += defender->ac;
         // + class/race bonus
         // + equipment  bonus
@@ -373,9 +373,9 @@ int damageroll(actor_t *attacker)
         int damage;
 
         if(attacker->weapon) {
-                damage = dice(attacker->weapon->dice, attacker->weapon->sides, (attacker->weapon->damagemod + ability_modifier(attacker->attr.str))); //TODO: change when we take attributes more into regard depending on weapon (e.g. some require dex, others str, etc.
+                damage = dice(attacker->weapon->dice, attacker->weapon->sides, (attacker->weapon->damagemod + ability_modifier(get_strength(attacker)))); //TODO: change when we take attributes more into regard depending on weapon (e.g. some require dex, others str, etc.
         } else {
-                damage = dice(1, 3, ability_modifier(attacker->attr.str));
+                damage = dice(1, 3, ability_modifier(get_strength(attacker)));
         }
 
         return damage;
@@ -620,3 +620,34 @@ void autoexplore()
                 clearbit(player->flags, PF_AUTOEXPLORING);
         }
 }
+
+int get_strength(actor_t *a)
+{
+        return a->attr.str + a->attrmod.str;
+}
+
+int get_wisdom(actor_t *a)
+{
+        return a->attr.wis + a->attrmod.wis;
+}
+
+int get_dexterity(actor_t *a)
+{
+        return a->attr.dex + a->attrmod.dex;
+}
+
+int get_intelligence(actor_t *a)
+{
+        return a->attr.intl + a->attrmod.intl;
+}
+
+int get_physique(actor_t *a)
+{
+        return a->attr.phy + a->attrmod.phy;
+}
+
+int get_charisma(actor_t *a)
+{
+        return a->attr.cha + a->attrmod.cha;
+}
+

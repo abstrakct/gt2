@@ -734,6 +734,13 @@ bool do_action(action_t *aqe)
                                 clearbit(aqe->actor->flags, MF_INVISIBLE);
                         }
                         break;
+                //case ACTION_DECREASE_TEMP_CHARISMA:
+                        //aqe->actor->temp[TEMP_CHARISMA] -= 1;
+                        //break; 
+                case ACTION_DECREASE_TEMP_STRENGTH:
+                        aqe->actor->temp[TEMP_STRENGTH] -= 1;
+                        //if(aqe->actor->temp[TEMP_STRENGTH] == 0) {
+                        break;
                 case ACTION_NOTHING:
                         fullturn = false;
                         //updatescreen = false;

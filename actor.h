@@ -18,9 +18,9 @@
 
 typedef struct { // sattr_t
         signed char str;
-        signed char phys;
+        signed char phy;
         signed char intl;
-        signed char know;
+        signed char wis;
         signed char dex;
         signed char cha;
 } sattr_t;
@@ -80,6 +80,7 @@ typedef struct actorstruct {                               // actor_t
         int          xp;
         short        ac;
         uattr_t      attr;
+        sattr_t      attrmod;
         int          level;
         short        race, cla;
         inv_t        *inventory;
@@ -141,5 +142,12 @@ void increase_hp(actor_t *a, int amount);
 void move_player_to_stairs_down(int d);
 void move_player_to_stairs_up(int d);
 int ability_modifier(int ab);
+
+int get_strength(actor_t *a);
+int get_wisdom(actor_t *a);
+int get_dexterity(actor_t *a);
+int get_physique(actor_t *a);
+int get_intelligence(actor_t *a);
+int get_charisma(actor_t *a);
 
 #endif

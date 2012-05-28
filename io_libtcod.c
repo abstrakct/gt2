@@ -601,13 +601,13 @@ void draw_left()
         TCOD_console_print(game->left.c, 5, i+4, "%d/%d (%.1f%%)", player->hp, player->maxhp, ((float)(100/(float)player->maxhp) * (float)player->hp));
 
         TCOD_console_set_default_foreground(game->left.c, TCOD_white);
-        TCOD_console_print(game->left.c, 1, i+6,  "Turn: %.1f", player->speed, turn);
-        TCOD_console_print(game->left.c, 1, i+7,  "STR:   %d", player->attr.str);
-        TCOD_console_print(game->left.c, 1, i+8,  "DEX:   %d", player->attr.dex);
-        TCOD_console_print(game->left.c, 1, i+9,  "PHY:   %d", player->attr.phy);
-        TCOD_console_print(game->left.c, 1, i+10, "INT:   %d", player->attr.intl);
-        TCOD_console_print(game->left.c, 1, i+11, "WIS:   %d", player->attr.wis);
-        TCOD_console_print(game->left.c, 1, i+12, "CHA:   %d", player->attr.cha);
+        TCOD_console_print(game->left.c, 1, i+6,  "Turn:  %.1f", player->speed, turn);
+        TCOD_console_print(game->left.c, 1, i+7,  "STR:   %d", get_strength(player));
+        TCOD_console_print(game->left.c, 1, i+8,  "DEX:   %d", get_dexterity(player));
+        TCOD_console_print(game->left.c, 1, i+9,  "PHY:   %d", get_physique(player));
+        TCOD_console_print(game->left.c, 1, i+10, "INT:   %d", get_intelligence(player));
+        TCOD_console_print(game->left.c, 1, i+11, "WIS:   %d", get_wisdom(player));
+        TCOD_console_print(game->left.c, 1, i+12, "CHA:   %d", get_charisma(player));
         TCOD_console_print(game->left.c, 1, i+13, "AC:    %d", player->ac);
         TCOD_console_print(game->left.c, 1, i+14, "XP:    %d", player->xp);
         TCOD_console_print(game->left.c, 1, i+15, "Level: %d", player->level);

@@ -294,8 +294,8 @@ int parse_armor()
 
                                 if(!strcmp(value, "speed")) {
                                         sprintf(sname, "armor.[%d].effect.[%d].gain", j, y);
-                                        config_lookup_float(cf, sname, &f);
-                                        add_effect_with_duration_and_floatgain(o, OE_SPEED, -1, f);
+                                        config_lookup_int(cf, sname, &x);
+                                        add_effect_with_duration_and_intgain(o, OE_SPEED, -1, x);
                                 }
                         }
                 }

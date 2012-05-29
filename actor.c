@@ -435,16 +435,16 @@ void attack(actor_t *attacker, actor_t *defender)
                                 if(criticalhit)
                                         gtprintfc(COLOR_GREEN, "Bullseye! You hit the %s real hard!!", defender->name);
                                 else
-                                        youc(COLOR_RED, "hit the %s with a %s for %d damage!", defender->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                                        youc(COLOR_RED, "hit the %s with %s for %d damage!", defender->name, attacker->weapon ? a_an(attacker->weapon->basename) : "a fistful of nothing", damage);
                         }
                 } else {
                         if(damage <= 0) {
-                                gtprintfc(COLOR_WHITE, "The %s hits you with a %s, but does no damage!", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing");
+                                gtprintfc(COLOR_WHITE, "The %s hits you with %s, but does no damage!", attacker->name, attacker->weapon ? a_an(attacker->weapon->basename) : "a fistful of nothing");
                         } else {
                                 if(criticalhit)
                                         gtprintfc(COLOR_RED, "Ouch! That hurt real bad!");
                                 else
-                                        gtprintfc(COLOR_RED, "The %s hits you with a %s for %d damage", attacker->name, attacker->weapon ? attacker->weapon->basename : "fistful of nothing", damage);
+                                        gtprintfc(COLOR_RED, "The %s hits you with %s for %d damage", attacker->name, attacker->weapon ? a_an(attacker->weapon->basename) : "a fistful of nothing", damage);
                         }
                 }
 

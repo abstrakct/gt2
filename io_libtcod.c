@@ -262,11 +262,13 @@ void init_display()
 
         if(screenwidth <= 1024) {
                 gtconfig.rows = screenheight / 8;
-                gtconfig.cols = screenwidth  / 8;
-
                 gtconfig.rows -= 30;
-                //gtconfig.cols += 10;
-        }
+                gtconfig.cols = screenwidth  / 8;
+        } else {
+                gtconfig.rows = screenheight / 15;
+                gtconfig.cols = screenwidth  / 15;
+        } 
+                
 
         TCOD_console_set_custom_font(font, TCOD_FONT_TYPE_GREYSCALE | TCOD_FONT_LAYOUT_ASCII_INROW, 16, 16);
 

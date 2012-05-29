@@ -1020,7 +1020,7 @@ void do_turn()
         for(i = 0; i < 10; i++) {
                 do_everything_at_tick(game->tick);
                 look_for_monsters();
-                update_screen();
+                //update_screen();
                 increase_ticks(1);
         }
 

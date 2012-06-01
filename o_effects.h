@@ -33,17 +33,17 @@ void apply_effects(actor_t *actor, obj_t *o);
 void apply_effect(int e, int effect, actor_t *actor, void *data);
 void process_temp_effects(actor_t *actor);
 
-void oe_strength(actor_t *actor, void *data, int e);
-void oe_wisdom(actor_t *actor, void *data, int e);
-void oe_intelligence(actor_t *actor, void *data, int e);
-void oe_physique(actor_t *actor, void *data, int e);
-void oe_dexterity(actor_t *actor, void *data, int e);
-void oe_charisma(actor_t *actor, void *data, int e);
-void oe_protection_life(actor_t *actor, void *data, int e);
-void oe_protection_fire(actor_t *actor, void *data, int e);
-void oe_heal_now(actor_t *actor, void *data, int e);
-void oe_invisibility(actor_t *actor, void *data, int e);
-void oe_speed(actor_t *actor, void *data, int e);
+void oe_strength(actor_t *actor, void *data, int e, bool apply);
+void oe_wisdom(actor_t *actor, void *data, int e, bool apply);
+void oe_intelligence(actor_t *actor, void *data, int e, bool apply);
+void oe_physique(actor_t *actor, void *data, int e, bool apply);
+void oe_dexterity(actor_t *actor, void *data, int e, bool apply);
+void oe_charisma(actor_t *actor, void *data, int e, bool apply);
+void oe_protection_life(actor_t *actor, void *data, int e, bool apply);
+void oe_protection_fire(actor_t *actor, void *data, int e, bool apply);
+void oe_heal_now(actor_t *actor, void *data, int e, bool apply);
+void oe_invisibility(actor_t *actor, void *data, int e, bool apply);
+void oe_speed(actor_t *actor, void *data, int e, bool apply);
 
 
 void add_effect_with_duration_dice_sides(obj_t *a, short b, short c, short d, short e, short f, short g);

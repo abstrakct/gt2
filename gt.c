@@ -687,7 +687,7 @@ bool do_action(action_t *aqe)
                                         schedule_action(ACTION_HEAL_PLAYER, player);
                         }
                         
-                        schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 1);
+                        schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 0, 1);
 
                         // also, schedule some future actions
                         //if(!game->tick % 50) {
@@ -700,21 +700,18 @@ bool do_action(action_t *aqe)
                         break;
                 case ACTION_DECREASE_INVISIBILITY:
                         aqe->actor->temp[TEMP_INVISIBLE] -= 1;
-                        if(aqe->actor->temp[TEMP_INVISIBLE] == 0) {
-                                if(aqe->actor == player)
-                                        gtprintfc(COLOR_INFO, "You become visible again.");
-                                else
-                                        gtprintfc(COLOR_INFO, "The %s becomes visible again.", aqe->actor->name);
-
-                                clearbit(aqe->actor->flags, MF_INVISIBLE);
-                        }
+                        if(aqe->actor->temp[TEMP_INVISIBLE] == 0)
+                                oe_invisibility(aqe->actor, NULL, 0, false);
                         break;
                 //case ACTION_DECREASE_TEMP_CHARISMA:
                         //aqe->actor->temp[TEMP_CHARISMA] -= 1;
+                        //if(aqe->actor->temp[TEMP_CHARISMA] == 0)
+                                //oe_charisma(aqe->actor, 
                         //break; 
                 case ACTION_DECREASE_TEMP_STRENGTH:
                         aqe->actor->temp[TEMP_STRENGTH] -= 1;
-                        //if(aqe->actor->temp[TEMP_STRENGTH] == 0) {
+                        if(aqe->actor->temp[TEMP_STRENGTH] == 0)
+                                oe_strength(aqe->actor, aqe->object, aqe->gain, false);
                         break;
                 case ACTION_NOTHING:
                         fullturn = false;
@@ -765,7 +762,7 @@ int schedule_action(int action, actor_t *actor)
         return i;
 }
 
-int schedule_action_delayed(int action, actor_t *actor, int delay)
+int schedule_action_delayed(int action, actor_t *actor, obj_t *object, int delay)
 {
         int i;
 
@@ -776,6 +773,7 @@ int schedule_action_delayed(int action, actor_t *actor, int delay)
         act[i].action = action;
         act[i].tick = game->tick + actor->speed + delay;
         act[i].actor = actor;
+        act[i].object = object;
         //gtprintfc(COLOR_SKYBLUE, "Scheduled delayed action %s at tick %d!", action_name[action], act[i].tick);
 
         return i;
@@ -1279,7 +1277,7 @@ int main(int argc, char *argv[])
         init_pathfinding(player);
         initial_update_screen();
         player->ticks = 0;
-        schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 1);
+        schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 0, 1);
         //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed);
         //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 2);
         //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 3);

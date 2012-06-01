@@ -179,7 +179,7 @@ extern action_t           *act;
 
 int get_next_free_action_slot();
 int schedule_action(int action, actor_t *actor);
-int schedule_action_delayed(int action, actor_t *actor, int delay);
+int schedule_action_delayed(int action, actor_t *actor, obj_t *object, int delay);
 void schedule_monster(monster_t *m);
 void unschedule_action(int index);
 

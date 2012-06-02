@@ -25,6 +25,7 @@ typedef struct object_effect {
         short durationsides;
         short durationmodifier;
         short duration;           // set to -1 for permanent effects
+        bool  negative;
 } oe_t;
 
 

@@ -578,7 +578,7 @@ bool do_action(action_t *aqe)
 #ifdef GT_USE_NCURSES
                         do_action(ACTION_MAKE_DISTANCEMAP);
 #endif
-                        move_monsters();
+                        //move_monsters();
                         fullturn = false;
                         break;
                 case ACTION_GO_DOWN_STAIRS:
@@ -1242,7 +1242,7 @@ int main(int argc, char *argv[])
                 init_player();
                 parse_data_files(ONLY_CONFIG);
                 if(!load_game(game->savefile, 0))
-                        die("Couldn't open file %s\n", game->savefile);
+                        die("Loading game failed! Filename: %s\n", game->savefile);
 
                 sprintf(messagefilename, "%s/messages.%d.gtsave", SAVE_DIRECTORY, game->seed);
                 messagefile = fopen(messagefilename, "a");
@@ -1276,7 +1276,6 @@ int main(int argc, char *argv[])
         init_commands();
         init_pathfinding(player);
         initial_update_screen();
-        player->ticks = 0;
         schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 0, 1);
         //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed);
         //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 2);

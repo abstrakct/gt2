@@ -30,21 +30,25 @@ struct monsterdef_save_struct {
 
 /* This one must match obj_t when it comes to variable types etc.! */
 struct objdef_save_struct {
-       int          id;
-       gtcolor_t    color;
-       short        type;
-       long         flags;
-       signed short attackmod;
-       signed short damagemod;
-       char         basename[50];
-       //char         unidname[100];
-       char         fullname[100];   // we might want to not include these here...??
-       char         c;
-       char         minlevel;
-       int          quantity;
-       char         material;
-       short        dice, sides;
-       char         skill;
+        int          id;
+        gtcolor_t    color;
+        short        type;
+        long         flags;
+        signed short attackmod;
+        signed short damagemod;
+        char         basename[125];         // the basic (unidentified) name of the item
+        char         fullname[125];        // should be more than enough, adjust later
+        char         truename[125];
+        char         displayname[125];
+        char         c;
+        char         minlevel;
+        int          quantity;
+        char         material;
+        short        dice, sides;
+        char         skill;
+        char         effects;
+        oe_t         effect[MAX_EFFECTS];
+        short        rarity;
 };
 
 struct player_save_struct {
@@ -65,6 +69,8 @@ struct player_save_struct {
         char    wvfactor;
         short   worldview;
         float   skill[MAX_SKILLS];
+        int     kills;
+        int     temp[MAX_TEMP_EFFECTS];
 };
 
 

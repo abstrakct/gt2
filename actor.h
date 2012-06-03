@@ -70,6 +70,17 @@ typedef struct { // uattr_t
 #define is_invisible(a) (hasbit(a->flags, MF_INVISIBLE))
 #define is_autoexploring (hasbit(player->flags, PF_AUTOEXPLORING))
 
+#define TEMP_INVISIBLE    0
+#define TEMP_STRENGTH     1
+#define TEMP_WISDOM       2
+#define TEMP_INTELLIGENCE 3
+#define TEMP_CHARISMA     4
+#define TEMP_DEXTERITY    5
+#define TEMP_PHYSIQUE     6
+
+#define TEMP_LAST         7
+#define MAX_TEMP_EFFECTS 10
+
 typedef struct actorstruct {                               // actor_t 
         short        id;                                   // id = monsterdef id
         unsigned int mid;                                  // mid = unique id for this monster; in monsterdefs mid = index into aitable! (that should work right?)
@@ -92,13 +103,12 @@ typedef struct actorstruct {                               // actor_t
         // TODO: Add variable for glyph color?!
         int          speed;
         double       movement;
-        int          ticks, todo;
         float        skill[MAX_SKILLS];
         char         wvfactor;
         short        worldview;
-        short        kills;
+        int          kills;
         //oe_t         *temp;
-        int          temp[50];                             // temporary effects
+        int          temp[MAX_TEMP_EFFECTS];                             // temporary effects
 #ifdef GT_USE_LIBTCOD
         TCOD_path_t  path;
 #endif
@@ -114,15 +124,6 @@ typedef struct actorstruct {                               // actor_t
 
 #define PF_AUTOEXPLORING (1 << 1)
 
-#define TEMP_INVISIBLE    0
-#define TEMP_STRENGTH     1
-#define TEMP_WISDOM       2
-#define TEMP_INTELLIGENCE 3
-#define TEMP_CHARISMA     4
-#define TEMP_DEXTERITY    5
-#define TEMP_PHYSIQUE     6
-
-#define TEMP_LAST         7
 char   get_first_free_letter();
 char   slot_to_letter(int i);
 int    letter_to_slot(char c);

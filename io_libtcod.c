@@ -117,7 +117,8 @@ cmd_t normalcommands[] = {
         //{ TCODK_F6,  CMD_LOAD,        "Load" },
 #ifdef DEVELOPMENT_MODE
         { { TCODK_F1,           0, 1, 0, 0, 0, 0, 0 }, CMD_WIZARDMODE,  "Toggle wizard mode" },
-        //{ TCODK_F2,  CMD_INCTIME,     "Time travel!?" },
+        { { TCODK_F2,           0, 1, 0, 0, 0, 0, 0 }, CMD_DUMPOBJECTS, "" },
+        { { TCODK_F5,           0, 1, 0, 0, 0, 0, 0 }, CMD_SAVE,        "Save game" },
         { { TCODK_CHAR,       '+', 1, 0, 0, 0, 0, 0 }, CMD_INCFOV,      "Increase FOV" },
         { { TCODK_CHAR,       '-', 1, 0, 0, 0, 0, 0 }, CMD_DECFOV,      "Decrease FOV" },
         { { TCODK_CHAR,       'f', 1, 0, 0, 0, 0, 0 }, CMD_FLOODFILL,   "Floodfill (debug)" },
@@ -132,8 +133,6 @@ cmd_t normalcommands[] = {
         { { TCODK_CHAR,       'H', 1, 0, 0, 0, 0, 1 }, CMD_LONGLEFT,    "" },
         { { TCODK_CHAR,       'L', 1, 0, 0, 0, 0, 1 }, CMD_LONGRIGHT,   "" },
         { { TCODK_CHAR,       'v', 1, 0, 0, 0, 0, 0 }, CMD_TOGGLEFOV,   "Toggle FOV" },
-        //{ KEY_F(4),  CMD_DUMPOBJECTS, "Dump objects" },
-        { { TCODK_F2,         'o', 1, 0, 0, 0, 0, 0 }, CMD_DUMPOBJECTS, "" },
         { { TCODK_CHAR,       'c', 1, 0, 0, 0, 0, 0 }, CMD_DUMPCOLORS, "" },
         { { TCODK_CHAR,       'a', 1, 0, 0, 0, 0, 0 }, CMD_DUMPAQ, "" },
 #endif
@@ -963,5 +962,8 @@ void messc(gtcolor_t color, char *message)
         strcpy(messages[currmess].text, message);
         domess();
 }
+
+//
+
 
 // vim: fdm=syntax guifont=Terminus\ 8

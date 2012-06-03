@@ -39,10 +39,10 @@ struct object {
         long          flags;                // 4 bytes = 32 bits/flags, see OF_defines below - CONSIDER CHANGE TO LONG LONG
         signed short  attackmod;            // +/- on attack; for armor: acmodifier
         signed short  damagemod;            // +/- on damage;
-        char          basename[50];         // the basic (unidentified) name of the item
-        char          fullname[100];        // should be more than enough, adjust later
-        char          truename[100];
-        char          displayname[200];
+        char          basename[125];         // the basic (unidentified) name of the item
+        char          fullname[125];        // should be more than enough, adjust later
+        char          truename[125];
+        char          displayname[125];
         char          c;
         char          slot;                 // inventory slot; not sure if needed?!
         char          minlevel;
@@ -51,7 +51,6 @@ struct object {
         short         dice, sides;                 // sides is used for AC for armor!
         char          skill;                       // a particular skill needed to use this weapon?
         char          effects;
-        //short         effect[MAX_EFFECTS];
         oe_t          effect[MAX_EFFECTS];
         short         rarity;
 };

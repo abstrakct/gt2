@@ -453,6 +453,7 @@ void move_monster(monster_t *m)
  */
 void move_monsters()
 {
+        /*
         monster_t *m;
         int i;
 
@@ -497,16 +498,9 @@ void move_monsters()
                                                 }
                                 }
                         }
-                        /*} else {
-                          m->ticks += (int) (m->speed*1000);
-                          while(m->ticks >= 1000) {
-                          if(m->ai)
-                          m->ai(m);
-                          m->ticks -= 1000;
-                          }
-                          }*/
                 }
         }
+                */
 }
 
 

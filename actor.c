@@ -505,9 +505,6 @@ void attack(actor_t *attacker, actor_t *defender)
                         }
                 }
         }
-
-        if(attacker != player)
-                attacker->ticks -= TICKS_ATTACK;
 }
 
 void move_player_to_stairs_up(int d)

@@ -6,7 +6,6 @@ datafiles.o: datafiles.c objects.h io.h io_libtcod.h actor.h o_effects.h \
 debug.o: debug.c objects.h io.h io_libtcod.h actor.h monsters.h world.h \
  datafiles.h debug.h gt.h utils.h
 fractmod.o: fractmod.c fractmod.h
-fracttest.o: fracttest.c fractmod.h
 gt.o: gt.c cards.h objects.h io.h io_libtcod.h o_effects.h actor.h \
  monsters.h world.h gt.h datafiles.h debug.h saveload.h commands.h \
  utils.h

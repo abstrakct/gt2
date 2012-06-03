@@ -620,7 +620,7 @@ int parse_jewelry()
 int parse_potions()
 {
         config_setting_t *cfg;
-        int i, j, material, d, s, durd, durs, durm, effect;
+        int i, j, material, d, s, durd, durs, durm, effect, negative;
         char sname[100];
         const char *value;
 
@@ -698,7 +698,21 @@ int parse_potions()
                                         config_lookup_string(cf, sname, &value);
                                         if(!strcmp(value, "strength"))
                                                 effect = OE_STRENGTH;
+                                        if(!strcmp(value, "dexterity"))
+                                                effect = OE_DEXTERITY;
+                                        if(!strcmp(value, "wisdom"))
+                                                effect = OE_WISDOM;
+                                        if(!strcmp(value, "physique"))
+                                                effect = OE_PHYSIQUE;
+                                        if(!strcmp(value, "intelligence"))
+                                                effect = OE_INTELLIGENCE;
+                                        if(!strcmp(value, "charisma"))
+                                                effect = OE_CHARISMA;
                                 }
+
+                                sprintf(sname, "potion.[%d].effect.[%d].negative", j, y);
+                                if(config_lookup_bool(cf, sname, &negative) != CONFIG_TRUE)
+                                        negative = false;
 
                                 durd = 0;
                                 sprintf(sname, "potion.[%d].effect.[%d].dur_d", j, y);
@@ -710,7 +724,6 @@ int parse_potions()
                                 sprintf(sname, "potion.[%d].effect.[%d].dur_m", j, y);
                                 config_lookup_int(cf, sname, &durm);
 
-
                                 x = 0;
                                 sprintf(sname, "potion.[%d].effect.[%d].dice", j, y);
                                 config_lookup_int(cf, sname, &x);
@@ -721,7 +734,10 @@ int parse_potions()
                                 config_lookup_int(cf, sname, &x);
                                 s = x;
 
-                                add_effect_with_duration_dice_sides(o, effect, durd, durs, durm, d, s);
+                                if(negative)
+                                        add_negative_effect_with_duration_dice_sides(o, effect, durd, durs, durm, d, s);
+                                else
+                                        add_effect_with_duration_dice_sides(o, effect, durd, durs, durm, d, s);
                         }
                 }
 

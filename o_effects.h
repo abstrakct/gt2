@@ -49,4 +49,5 @@ void oe_speed(actor_t *actor, void *data, int e, bool apply);
 void add_effect_with_duration_dice_sides(obj_t *a, short b, short c, short d, short e, short f, short g);
 void add_effect_with_duration_and_floatgain(obj_t *a, int effect, int duration, float gain);
 void add_effect_with_duration_and_intgain(obj_t *a, int effect, int duration, int gain);
+void add_negative_effect_with_duration_dice_sides(obj_t *o, short b, short c, short d, short e, short f, short g);
 #endif

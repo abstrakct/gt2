@@ -624,13 +624,25 @@ void draw_left()
         }
 
         if(player->temp[TEMP_STRENGTH]) {
-                TCOD_console_set_default_foreground(game->left.c, TCOD_green);
-                TCOD_console_print(game->left.c, 1, i+18, "Strong");
+                if(player->attrmod.str > 0) {
+                        TCOD_console_set_default_foreground(game->left.c, TCOD_green);
+                        TCOD_console_print(game->left.c, 1, i+19, "Strong");
+                }
+                if(player->attrmod.str < 0) {
+                        TCOD_console_set_default_foreground(game->left.c, TCOD_red);
+                        TCOD_console_print(game->left.c, 1, i+19, "Weak");
+                }
         }
 
         if(player->temp[TEMP_WISDOM]) {
-                TCOD_console_set_default_foreground(game->left.c, TCOD_green);
-                TCOD_console_print(game->left.c, 1, i+18, "Wise");
+                if(player->attrmod.wis > 0) {
+                        TCOD_console_set_default_foreground(game->left.c, TCOD_green);
+                        TCOD_console_print(game->left.c, 1, i+20, "Wise");
+                }
+                if(player->attrmod.wis < 0) {
+                        TCOD_console_set_default_foreground(game->left.c, TCOD_red);
+                        TCOD_console_print(game->left.c, 1, i+20, "Foolish");
+                }
         }
 
         

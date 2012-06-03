@@ -713,6 +713,11 @@ bool do_action(action_t *aqe)
                         if(aqe->actor->temp[TEMP_STRENGTH] == 0)
                                 oe_strength(aqe->actor, aqe->object, aqe->gain, false);
                         break;
+                case ACTION_DECREASE_TEMP_WISDOM:
+                        aqe->actor->temp[TEMP_WISDOM] -= 1;
+                        if(aqe->actor->temp[TEMP_WISDOM] == 0)
+                                oe_wisdom(aqe->actor, aqe->object, aqe->gain, false);
+                        break;
                 case ACTION_NOTHING:
                         fullturn = false;
                         //updatescreen = false;

@@ -204,6 +204,8 @@ void oe_strength(actor_t *actor, void *data, int e, bool apply)
                         duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
                         gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
 
+                        if(o->effect[e].negative)
+                                gain = 0 - gain;
                         actor->attrmod.str += gain;
 
                         if(actor == player)
@@ -243,38 +245,47 @@ void oe_wisdom(actor_t *actor, void *data, int e, bool apply)
         o = (obj_t *) data;
         x = get_wisdom(actor);
 
-        if(is_potion(o)) {
+        if(!apply)
+                actor->attrmod.wis -= e;  // we use 'e' for the gain value when unapplying a temporary stat effect. makes sense, no?
+
+        if(apply && is_potion(o)) {
                 if(o->effect[e].duration == -1) {
-                        actor->attr.wis++;
+                        if(o->effect[e].gain)
+                                actor->attr.wis += o->effect[e].gain;
+                        else
+                                actor->attr.wis++;
                 } else if(o->effect[e].duration > 0) {
                         duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
-                        if(o->effect[e].gain)
-                                gain = o->effect[e].gain;
-                        else
-                                gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+                        gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+
+                        if(o->effect[e].negative)
+                                gain = 0 - gain;
                         actor->attrmod.wis += gain;
+
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
 
                         schedule_temporary_effect(actor, duration, TEMP_WISDOM, ACTION_DECREASE_TEMP_WISDOM, o, gain);
                 }
         }
-
-        if(is_worn(o)) {
-                if(o->effect[e].gain)
-                        actor->attrmod.wis += o->effect[e].gain;
-                else
-                        actor->attrmod.wis += o->attackmod;
-        } else {
-                if(o->effect[e].gain)
-                        actor->attrmod.wis -= o->effect[e].gain;
-                else
-                        actor->attrmod.wis -= o->attackmod;
+        
+        if(apply) {
+                if(is_worn(o)) {
+                        if(o->effect[e].gain)
+                                actor->attrmod.wis += o->effect[e].gain;
+                        else
+                                actor->attrmod.wis += o->attackmod;
+                } else {
+                        if(o->effect[e].gain)
+                                actor->attrmod.wis -= o->effect[e].gain;
+                        else
+                                actor->attrmod.wis -= o->attackmod;
+                }
         }
 
         if(actor == player) {
                 if(x > get_wisdom(player))
-                        youc(COLOR_INFO, "feel more ignorant.");
+                        youc(COLOR_INFO, "feel foolish!");
                 else if(x < get_wisdom(player))
                         youc(COLOR_INFO, "feel wiser!");
         }
@@ -299,7 +310,7 @@ void oe_physique(actor_t *actor, void *data, int e, bool apply)
                                 gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
                         actor->attrmod.phy += gain;
                         if(actor == player)
-                                youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
+                                youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
 
                         schedule_temporary_effect(actor, duration, TEMP_PHYSIQUE, ACTION_DECREASE_TEMP_PHYSIQUE, o, gain);
                 }
@@ -511,17 +522,33 @@ void process_temp_effects(actor_t *actor)
 }
 
 // "converted" from macro to function, therefore stupid variable names
-void add_effect_with_duration_dice_sides(obj_t *a, short b, short c, short d, short e, short f, short g)
+void add_effect_with_duration_dice_sides(obj_t *o, short b, short c, short d, short e, short f, short g)
 {
-        if(a->effects < MAX_EFFECTS) { 
-                a->effect[(int)a->effects].effect = b;
-                a->effect[(int)a->effects].durationdice = c;
-                a->effect[(int)a->effects].durationsides = d;
-                a->effect[(int)a->effects].durationmodifier = e; 
-                a->effect[(int)a->effects].dice = f;
-                a->effect[(int)a->effects].sides = g;
-                a->effect[(int)a->effects].duration = 1;
-                a->effects++;
+        if(o->effects < MAX_EFFECTS) { 
+                o->effect[(int)o->effects].effect = b;
+                o->effect[(int)o->effects].durationdice = c;
+                o->effect[(int)o->effects].durationsides = d;
+                o->effect[(int)o->effects].durationmodifier = e; 
+                o->effect[(int)o->effects].dice = f;
+                o->effect[(int)o->effects].sides = g;
+                o->effect[(int)o->effects].duration = 1;
+                o->effects++;
+        }
+}
+
+// "converted" from macro to function, therefore stupid variable names
+void add_negative_effect_with_duration_dice_sides(obj_t *o, short b, short c, short d, short e, short f, short g)
+{
+        if(o->effects < MAX_EFFECTS) { 
+                o->effect[(int)o->effects].effect = b;
+                o->effect[(int)o->effects].durationdice = c;
+                o->effect[(int)o->effects].durationsides = d;
+                o->effect[(int)o->effects].durationmodifier = e; 
+                o->effect[(int)o->effects].dice = f;
+                o->effect[(int)o->effects].sides = g;
+                o->effect[(int)o->effects].duration = 1;
+                o->effect[(int)o->effects].negative = true;
+                o->effects++;
         }
 }
 

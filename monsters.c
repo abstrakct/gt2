@@ -560,6 +560,7 @@ void look_for_monsters()
                 }
         }
 }
+
 /**
  * @brief Get a monster definition.
  *

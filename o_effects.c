@@ -445,7 +445,6 @@ void oe_charisma(actor_t *actor, void *data, int e, bool apply)
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
                         
-                        // TODO/IDEA: separate attr for attrgain!
                         schedule_temporary_effect(actor, duration, TEMP_CHARISMA, ACTION_DECREASE_TEMP_CHARISMA, o, gain);
                 }
         }

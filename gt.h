@@ -36,12 +36,15 @@ typedef struct {                              // gt_config_t
         int  rows, cols;                      //!< Window size
 } gt_config_t;
 
-#ifdef GT_USE_LIBTCOD
 typedef struct {
         int x, y, w, h;
+#ifdef GT_USE_LIBTCOD
         TCOD_console_t c;
-} win_t;
 #endif
+#ifdef GT_USE_NCURSES
+        WINDOW *c;
+#endif
+} win_t;
 
 /**
  * @brief Variables related to the running game.
@@ -65,9 +68,7 @@ typedef struct {                              // game_t
         bool         wizardmode;              //!< wizardmode! yay!
         char         savefile[255];           //!< filename of the save file for this game
         obj_t       *objects[2000];           //!< Pointers to every object currently existing in the game. 2000 might have to be adjusted.
-#ifdef GT_USE_LIBTCOD
         win_t        map, messages, left, right;
-#endif
 } game_t;
 
 typedef struct {                              // message_t
@@ -124,6 +125,7 @@ typedef struct action {
 #define ACTION_QUAFF             21
 #define ACTION_MOVE_MONSTER      22
 #define ACTION_PLAYER_NEXTMOVE   23
+//#define ACTION_DECREASE_TEMP_EFFECT 24
 #define ACTION_DECREASE_INVISIBILITY 24
 #define ACTION_DECREASE_TEMP_CHARISMA 25
 #define ACTION_DECREASE_TEMP_STRENGTH 26
@@ -146,6 +148,8 @@ typedef struct action {
 #define TRUE 1
 // #define MAX_MESSAGES 100
 #define ENDOFLIST -577
+
+#define PLAYER_ID -577
 
 // define some shortcuts
 #define ply player->y

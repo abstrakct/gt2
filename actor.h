@@ -79,7 +79,7 @@ typedef struct { // uattr_t
 #define TEMP_PHYSIQUE     6
 
 #define TEMP_LAST         7
-#define MAX_TEMP_EFFECTS 10
+#define MAX_TEMP_EFFECTS 25
 
 typedef struct actorstruct {                               // actor_t 
         short        id;                                   // id = monsterdef id
@@ -102,13 +102,14 @@ typedef struct actorstruct {                               // actor_t
         int          c;                                    // character, for monsters.
         // TODO: Add variable for glyph color?!
         int          speed;
-        double       movement;
         float        skill[MAX_SKILLS];
         char         wvfactor;
         short        worldview;
         int          kills;
         //oe_t         *temp;
         int          temp[MAX_TEMP_EFFECTS];                             // temporary effects
+        oe_t         effect[MAX_TEMP_EFFECTS];
+        int          temp_effects;
 #ifdef GT_USE_LIBTCOD
         TCOD_path_t  path;
 #endif

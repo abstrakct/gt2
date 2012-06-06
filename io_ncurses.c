@@ -33,6 +33,7 @@ WINDOW *wmap;
 WINDOW *wleft;
 
 extern int maxmess;
+extern int distancemap[YSIZE][XSIZE];
 
 int numcommands;
 cmd_t *curcommands;
@@ -263,9 +264,9 @@ void shutdown_display()
         endwin();
 }
 
-bool blocks_light(int y, int x)
+bool blocks_light(void *level, int y, int x)
 {
-        level_t *l = world->curlevel;
+        level_t *l = (level_t *) level;
 
         if(hasbit(l->c[y][x].flags, CF_HAS_DOOR_CLOSED))
                 return true;
@@ -330,7 +331,7 @@ void dofov(actor_t *actor, level_t *l, float x, float y)
                 if((int)oy >= 0 && (int)ox >= 0 && (int)oy < l->ysize && (int)ox < l->xsize) {
                         l->c[(int)oy][(int)ox].visible = 1;
                         setbit(l->c[(int)oy][(int)ox].flags, CF_VISITED);
-                        if(blocks_light((int) oy, (int) ox)) {
+                        if(blocks_light(l, (int) oy, (int) ox)) {
                                 return;
                         }/* else {  //SCARY MODE! 
                                 if(perc((100-actor->viewradius)/3))
@@ -380,7 +381,7 @@ void dofovlight(actor_t *actor, level_t *l, float x, float y)
                                 setbit(l->c[(int)oy][(int)ox].flags, CF_LIT);
                         }
 
-                        if(blocks_light((int) oy, (int) ox)) {
+                        if(blocks_light(l, (int) oy, (int) ox)) {
                                 //gtprintf("cell %d,%d blocks light", (int)oy, (int)ox);
                                 return;
                         }
@@ -406,7 +407,11 @@ void FOVlight(actor_t *a, level_t *l)
         }
 }
 
-void fov_initmap(level_t *l)
+void fov_initmap(void *l)
+{
+}
+
+void fov_updatemap(void *level)
 {
 }
 
@@ -416,7 +421,7 @@ void init_pathfinding(void *a)
 
 co get_next_step(void *actor)
 {
-        actor *a;
+        actor_t *a;
         co c;
         int dx, dy, dist, newdist, newdx, newdy;
 
@@ -439,7 +444,6 @@ co get_next_step(void *actor)
         c.y = a->y + dy;
         return c;
 }
-
 
 
 // The actual drawing on screen
@@ -623,6 +627,10 @@ void initial_update_screen()
         doupdate();
 }
 
+void update_ticks()
+{
+}
+
 // Input and messages
 
 gtkey gtgetch()
@@ -630,6 +638,11 @@ gtkey gtgetch()
         gtkey c;
         c = wgetch(wmap);
         return c;
+}
+
+bool gt_checkforkeypress()
+{
+        return false;
 }
 
 void domess()

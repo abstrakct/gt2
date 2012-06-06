@@ -238,6 +238,15 @@ void save_player(actor_t *p, FILE *f)
         save_inventory(player->inventory, f);
 }
 
+void save_actionqueue(FILE *f)
+{
+        int i;
+
+        fwrite("ACTIONQUEUE", sizeof(char), 11, f);
+        for(i = 0; i < MAXACT; i++) {
+        } 
+}
+
 void generate_savefilename(char *filename)
 {
         sprintf(filename, "%s/%d.gtsave", SAVE_DIRECTORY, game->seed);
@@ -301,7 +310,7 @@ bool save_game(char *filename)
                 save_level(&world->dng[i], f);
 
         /* finally, the schedule / actionqueue */
-
+        save_actionqueue(f);
 
         fclose(f);
 
@@ -645,6 +654,11 @@ fprintf(stderr, "DEBUG: %s:%d - get object by oid failed!\n", __FILE__, __LINE__
         return true;
 }
 
+bool load_actionqueue(FILE *f)
+{
+
+}
+
 bool load_game(char *filename, int ingame)
 {
         FILE *f;
@@ -738,6 +752,7 @@ bool load_game(char *filename, int ingame)
         }
 
         /* schedule / actions */
+        load_actionqueue(f);
 
         fclose(f);
         printf("Loading successful!\n");

@@ -569,6 +569,7 @@ void autoexplore()
         int nx, ny, x, y;
         bool done;
 
+#ifdef GT_USE_LIBTCOD
         nx = plx; ny = ply;
 
         done = get_next_autoexplore_coord(&(player->goalx), &(player->goaly));
@@ -616,6 +617,7 @@ void autoexplore()
                 }
                 clearbit(player->flags, PF_AUTOEXPLORING);
         }
+#endif
 }
 
 int get_strength(actor_t *a)

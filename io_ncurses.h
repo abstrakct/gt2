@@ -12,11 +12,22 @@ extern WINDOW *winfo;
 extern WINDOW *wmap;
 extern WINDOW *wleft;
 
+typedef struct coord {
+        int y;
+        int x;
+} co;
+
+#define COLS  180                          // x
+#define ROWS   60                          // y
+
 // Prototypes
 void init_display();
 void shutdown_display();
 void draw_world();
 void draw_wstat();
+void update_ticks();
+bool gt_checkforkeypress();
+
 
 void gtmapaddch(int y, int x, int color, char c);
 void update_screen();
@@ -30,8 +41,9 @@ void mess(char *message);
 void messc(int color, char *message);
 void delete_last_message();
 
-bool blocks_light(int y, int x);
-void fov_initmap(level_t *l);
+bool blocks_light(void *l, int y, int x);
+void fov_initmap(void *l);
+void fov_updatemap(void *level);
 void init_pathfinding(void *a);
 co get_next_step(void *a);
 
@@ -129,5 +141,14 @@ void more();
 #define COLOR_LIGHT   62
 
 #define COLOR_INVISIBLE 63
+
+#define COLOR_AMBER     C_YELLOW_RED
+#define COLOR_GOLD      C_BLACK_YELLOW
+#define COLOR_ORANGE    C_RED_YELLOW
+#define COLOR_LIMEGREEN C_WHITE_GREEN
+#define COLOR_SKYBLUE   C_WHITE_BLUE
+#define COLOR_VIOLET    C_WHITE_MAGENTA
+#define COLOR_CRIMSON   C_RED_BLACK
+#define COLOR_AZURE     C_BLACK_BLUE
 
 #endif

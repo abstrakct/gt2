@@ -104,12 +104,6 @@ void init_variables()
         objdefs = (obj_t *) gtmalloc(sizeof(obj_t));
         objdefs->head = objdefs;
 
-        /*aq = (struct actionqueue *) gtmalloc(sizeof(struct actionqueue));
-        aq->head = aq;
-        aq->next = 0;
-        aq->action = ACTION_NOTHING;
-        actionnum = 0;*/
-
         act = (action_t *) gtmalloc(sizeof(action_t) * MAXACT);
         for(i=0;i<MAXACT;i++)
                 act[i].action = ACTION_FREESLOT;
@@ -162,6 +156,7 @@ void init_player()
         // TODO: Starting HP - FIX according to race etc.
         player->hp = player->maxhp = (dice(1, 10, 7)) + ability_modifier(player->attr.phy);
 
+        player->id = PLAYER_ID;
         strcpy(player->name, "Whiskeyjack");
 }
 
@@ -250,7 +245,9 @@ void open_door(int y, int x)
 {
         clearbit(cf(y, x), CF_HAS_DOOR_CLOSED);
         setbit(cf(y, x), CF_HAS_DOOR_OPEN);
+#ifdef GT_USE_LIBTCOD
         TCOD_map_set_properties(world->curlevel->map, x, y, true, true);
+#endif
 
         if(hasbit(cf(y+1,x), CF_HAS_DOOR_CLOSED))
                 open_door(y+1,x);
@@ -576,7 +573,7 @@ bool do_action(action_t *aqe)
                         break;
                 case ACTION_MOVE_MONSTERS:
 #ifdef GT_USE_NCURSES
-                        do_action(ACTION_MAKE_DISTANCEMAP);
+                        makedistancemap(player->y, player->x);
 #endif
                         //move_monsters();
                         fullturn = false;
@@ -1205,14 +1202,13 @@ void process_player_input()
                                      schedule_action(ACTION_NOTHING, player);
                                      break;
         }
-
 }
 
 void game_loop()
 {
-        do {
+        while(!game->dead) {
                 do_turn();
-        } while(!game->dead);
+        };
 }
 
 int main(int argc, char *argv[])
@@ -1257,6 +1253,9 @@ int main(int argc, char *argv[])
                 // these next should be loaded by load_game?!
                 world->cmap = world->dng[game->currentlevel].c;
                 world->curlevel = &world->dng[game->currentlevel];
+
+                fov_initmap(world->curlevel);
+                fov_updatemap(world->curlevel);
         } else {
                 init_level(world->out);
                 generate_world();
@@ -1282,10 +1281,6 @@ int main(int argc, char *argv[])
         init_pathfinding(player);
         initial_update_screen();
         schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 0, 1);
-        //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed);
-        //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 2);
-        //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 3);
-        //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 4);
 
         game_loop();
 

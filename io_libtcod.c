@@ -618,7 +618,7 @@ void draw_left()
         TCOD_console_print(game->left.c, 1, i+15, "Level: %d", player->level);
         TCOD_console_print(game->left.c, 1, i+16, "Speed: %d", player->speed);
 
-        if(player->temp[TEMP_INVISIBLE]) {
+        /*if(player->temp[TEMP_INVISIBLE]) {
                 TCOD_console_set_default_foreground(game->left.c, TCOD_sea);
                 TCOD_console_print(game->left.c, 1, i+18, "Invisible");
         }
@@ -643,7 +643,7 @@ void draw_left()
                         TCOD_console_set_default_foreground(game->left.c, TCOD_red);
                         TCOD_console_print(game->left.c, 1, i+20, "Foolish");
                 }
-        }
+        }*/
 }
 
 void draw_right()

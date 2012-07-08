@@ -106,9 +106,8 @@ typedef struct actorstruct {                               // actor_t
         char         wvfactor;
         short        worldview;
         int          kills;
-        //oe_t         *temp;
-        int          temp[MAX_TEMP_EFFECTS];                             // temporary effects
-        oe_t         effect[MAX_TEMP_EFFECTS];
+        //int          temp[MAX_TEMP_EFFECTS];                             // temporary effects
+        oe_t         *effect[MAX_TEMP_EFFECTS];
         int          temp_effects;
 #ifdef GT_USE_LIBTCOD
         TCOD_path_t  path;

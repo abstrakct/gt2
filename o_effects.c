@@ -59,36 +59,70 @@ effectfunctionpointer effecttable[] = {
         oe_invisibility
 };
 
-void schedule_temporary_effect(actor_t *actor, int duration, int effect, int action, obj_t *object, int gain)
+/*
+void add_temporary_effect(actor_t *actor, int duration, int effect, int action, obj_t *object, int gain)
 {
         int i, j;
 
         for(i = 0; i < (duration*10); i += 10) {
                 j = schedule_action_delayed(action, actor, object, i);
-                act[j].gain = gain;
+                if(object->effect[effect].negative)
+                        act[j].gain = -gain;
+                else
+                        act[j].gain = gain;
+        }
+}
+*/
+
+int get_first_free_temp_effect_slot(actor_t *actor)
+{
+        int i;
+
+        for(i=0;i<MAX_TEMP_EFFECTS;i++) {
+                if(actor->effect[i] == NULL)
+                        return i;
         }
 
-        actor->temp[effect] += duration;
+        return -1;
+}
+
+void add_temporary_effect(actor_t *actor, oe_t *effect)
+{
+        int i;
+
+        i = get_first_free_temp_effect_slot(actor);
+        if(i < 0) {
+                gtprintfc(COLOR_RED, "Your body can't handle this much!");
+                return;
+        }
+
+        actor->effect[i] = effect;
+        gtprintf("Added temp effect: effect = %d, gain = %d, duration = %d, negative = %s", effect->effect, effect->gain, effect->duration, effect->negative ? "true" : "false"); 
+}
+
+
+void remove_temporary_effect(actor_t *actor, int i)
+{
+        actor->effect[i] = NULL;
 }
 
 // This one is always temporary.
 void oe_invisibility(actor_t *actor, void *data, int e, bool apply)
 {
         obj_t *o;
-        int duration;
 
         o = (obj_t *) data;
 
         if(apply) {
                 if(o) {
                         if(is_potion(o)) {
-                                duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                                o->effect[e].duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
                                 if(actor == player)
                                         youc(COLOR_INFO, "become invisible!");
                                 else
                                         gtprintfc(COLOR_INFO, "The %s fades away and becomes invisible!", actor->name);
 
-                                schedule_temporary_effect(actor, duration, TEMP_INVISIBLE, ACTION_DECREASE_INVISIBILITY, o, 0);
+                                add_temporary_effect(actor, &o->effect[e]);
                                 setbit(actor->flags, MF_INVISIBLE);
                         }
                 }
@@ -186,7 +220,7 @@ void oe_protection_fire(actor_t *actor, void *data, int e, bool apply)
 void oe_strength(actor_t *actor, void *data, int e, bool apply)
 {
         obj_t *o;
-        int x, gain, duration;
+        int x, duration;
 
         o = (obj_t *) data;
         x = get_strength(actor);
@@ -195,27 +229,28 @@ void oe_strength(actor_t *actor, void *data, int e, bool apply)
                 actor->attrmod.str -= e;  // we use 'e' for the gain value when unapplying a temporary stat effect. makes sense, no?
 
         if(apply && is_potion(o)) {
-                if(o->effect[e].duration == -1) {
+                if(o->effect[e].duration == -1) {  // effect is permanent.
                         if(o->effect[e].gain)
                                 actor->attr.str += o->effect[e].gain;
                         else
                                 actor->attr.str++;
                 } else if(o->effect[e].duration > 0) {
-                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
-                        gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+                        o->effect[e].duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        o->effect[e].gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
 
                         if(o->effect[e].negative)
-                                gain = 0 - gain;
-                        actor->attrmod.str += gain;
+                                o->effect[e].gain = 0 - o->effect[e].gain;
+
+                        actor->attrmod.str += o->effect[e].gain;
 
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
 
-                        schedule_temporary_effect(actor, duration, TEMP_STRENGTH, ACTION_DECREASE_TEMP_STRENGTH, o, gain);
+                        add_temporary_effect(actor, &o->effect[e]);
                 }
         }
         
-        if(apply) {
+        if(apply && !is_potion(o)) {
                 if(is_worn(o)) {
                         if(o->effect[e].gain)
                                 actor->attrmod.str += o->effect[e].gain;
@@ -265,7 +300,7 @@ void oe_wisdom(actor_t *actor, void *data, int e, bool apply)
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
 
-                        schedule_temporary_effect(actor, duration, TEMP_WISDOM, ACTION_DECREASE_TEMP_WISDOM, o, gain);
+                        //schedule_temporary_effect(actor, duration, TEMP_WISDOM, ACTION_DECREASE_TEMP_WISDOM, o, gain);
                 }
         }
         
@@ -312,7 +347,7 @@ void oe_physique(actor_t *actor, void *data, int e, bool apply)
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
 
-                        schedule_temporary_effect(actor, duration, TEMP_PHYSIQUE, ACTION_DECREASE_TEMP_PHYSIQUE, o, gain);
+                        //schedule_temporary_effect(actor, duration, TEMP_PHYSIQUE, ACTION_DECREASE_TEMP_PHYSIQUE, o, gain);
                 }
         }
 
@@ -357,7 +392,7 @@ void oe_intelligence(actor_t *actor, void *data, int e, bool apply)
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
 
-                        schedule_temporary_effect(actor, duration, TEMP_INTELLIGENCE, ACTION_DECREASE_TEMP_INTELLIGENCE, o, gain);
+                        //schedule_temporary_effect(actor, duration, TEMP_INTELLIGENCE, ACTION_DECREASE_TEMP_INTELLIGENCE, o, gain);
                 }
         }
 
@@ -402,7 +437,7 @@ void oe_dexterity(actor_t *actor, void *data, int e, bool apply)
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
 
-                        schedule_temporary_effect(actor, duration, TEMP_DEXTERITY, ACTION_DECREASE_TEMP_DEXTERITY, o, gain);
+                        //schedule_temporary_effect(actor, duration, TEMP_DEXTERITY, ACTION_DECREASE_TEMP_DEXTERITY, o, gain);
                 }
         } else if(is_worn(o)) {
                 if(o->effect[e].gain)
@@ -445,7 +480,7 @@ void oe_charisma(actor_t *actor, void *data, int e, bool apply)
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
                         
-                        schedule_temporary_effect(actor, duration, TEMP_CHARISMA, ACTION_DECREASE_TEMP_CHARISMA, o, gain);
+                        //schedule_temporary_effect(actor, duration, TEMP_CHARISMA, ACTION_DECREASE_TEMP_CHARISMA, o, gain);
                 }
         }
 
@@ -469,13 +504,16 @@ void oe_charisma(actor_t *actor, void *data, int e, bool apply)
         }
 }
 
-void apply_effect(int e, int effect, actor_t *actor, void *data)
+void apply_effect(actor_t *actor, void *data, int i)
 {
-        if(!effect)
-                return;
+        obj_t *o;
+        int effect;
+
+        o = (obj_t *) data;
+        effect = o->effect[i].effect;
 
         if(effect < OE_LAST)
-                effecttable[effect](actor, data, e, true);
+                effecttable[effect](actor, data, i, true);
 }
 
 void apply_effects(actor_t *actor, obj_t *o)
@@ -484,7 +522,7 @@ void apply_effects(actor_t *actor, obj_t *o)
 
         for(i = 0; i < o->effects; i++)
                 if(o->effect[i].effect)
-                        apply_effect(i, o->effect[i].effect, actor, o);
+                        apply_effect(actor, o, i);
 }
 
 void unapply_temp_effect(actor_t *actor)
@@ -515,9 +553,19 @@ void unapply_temp_effect(actor_t *actor)
 
 void process_temp_effects(actor_t *actor)
 {
-        /*actor->temp->duration--;
-        if(actor->temp->duration == 0)
-                unapply_temp_effect(actor);*/
+        int i;
+
+        for(i = 0; i < MAX_TEMP_EFFECTS; i++) {
+                if(actor->effect[i]) {
+                        gtprintf("reducing duration of effect %d (gain %d): from %d to %d", i, actor->effect[i]->gain, actor->effect[i]->duration, actor->effect[i]->duration - 1);
+                        actor->effect[i]->duration--;
+                        if(actor->effect[i]->duration == 0) {
+                                gtprintf("removeing effect %d.", i);
+                                effecttable[actor->effect[i]->effect](actor, NULL, actor->effect[i]->gain, false);
+                                remove_temporary_effect(actor, i);
+                        }
+                }
+        }
 }
 
 // "converted" from macro to function, therefore stupid variable names
@@ -548,16 +596,6 @@ void add_negative_effect_with_duration_dice_sides(obj_t *o, short b, short c, sh
                 o->effect[(int)o->effects].duration = 1;
                 o->effect[(int)o->effects].negative = true;
                 o->effects++;
-        }
-}
-
-void add_effect_with_duration_and_floatgain(obj_t *a, int effect, int duration, float gain)
-{
-        if(a->effects < MAX_EFFECTS) { 
-                a->effect[(int)a->effects].effect   = effect;
-                a->effect[(int)a->effects].duration = duration;
-                a->effect[(int)a->effects].fgain    = gain;
-                a->effects++;
         }
 }
 

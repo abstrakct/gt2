@@ -810,7 +810,7 @@ void quaff(void *a, obj_t *o)
                 slot = object_to_slot(o, actor->inventory);
                 actor->inventory->object[slot] = NULL;
                 actor->inventory->num_used--;
-                unspawn_object(o);
+                //unspawn_object(o);
         }
 }
 

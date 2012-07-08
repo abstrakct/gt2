@@ -661,7 +661,7 @@ bool do_action(action_t *aqe)
                         
                         schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 0, 1);
                         break;
-                case ACTION_DECREASE_INVISIBILITY:
+                /*case ACTION_DECREASE_INVISIBILITY:
                         aqe->actor->temp[TEMP_INVISIBLE] -= 1;
                         if(aqe->actor->temp[TEMP_INVISIBLE] == 0)
                                 oe_invisibility(aqe->actor, NULL, 0, false);
@@ -680,7 +680,7 @@ bool do_action(action_t *aqe)
                         aqe->actor->temp[TEMP_WISDOM] -= 1;
                         if(aqe->actor->temp[TEMP_WISDOM] == 0)
                                 oe_wisdom(aqe->actor, aqe->object, aqe->gain, false);
-                        break;
+                        break;*/
                 case ACTION_NOTHING:
                         break;
                 default:
@@ -932,7 +932,6 @@ void do_everything_at_tick(int tick)
         }
 }
 
-
 void increase_ticks(int i)
 {
         game->tick += i;
@@ -972,6 +971,7 @@ void do_turn()
                 increase_ticks(1);
         }
 
+        process_temp_effects(player);
         update_screen();
 
         //gtprintf("Ended do_turn. -----------------------------------------");

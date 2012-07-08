@@ -15,17 +15,20 @@
 
 
 typedef struct object_effect {
-        short effect;
+        short effect;             // see OE_ defines in o_effects.h
         short gain;               // for stat effects, this is the amount of points gained (and lost when temp effect runs out)
-        float fgain;              // for gains which require a float (e.g. speed)
+        short duration;           // set to -1 for permanent effects
+        bool  negative;
+
+        /* for random gain */
         short dice;
         short sides;
         short modifier;           // dice modifier
+        
+        /* for random duration */
         short durationdice;
         short durationsides;
         short durationmodifier;
-        short duration;           // set to -1 for permanent effects
-        bool  negative;
 } oe_t;
 
 

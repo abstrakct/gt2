@@ -30,7 +30,7 @@
 #define OE_LAST                    32
 
 void apply_effects(actor_t *actor, obj_t *o);
-void apply_effect(int e, int effect, actor_t *actor, void *data);
+void apply_effect(actor_t *actor, void *data, int i);
 void process_temp_effects(actor_t *actor);
 
 void oe_strength(actor_t *actor, void *data, int e, bool apply);
@@ -47,7 +47,6 @@ void oe_speed(actor_t *actor, void *data, int e, bool apply);
 
 
 void add_effect_with_duration_dice_sides(obj_t *a, short b, short c, short d, short e, short f, short g);
-void add_effect_with_duration_and_floatgain(obj_t *a, int effect, int duration, float gain);
 void add_effect_with_duration_and_intgain(obj_t *a, int effect, int duration, int gain);
 void add_negative_effect_with_duration_dice_sides(obj_t *o, short b, short c, short d, short e, short f, short g);
 #endif

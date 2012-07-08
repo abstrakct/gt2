@@ -87,7 +87,6 @@ void makedistancemap(int desty, int destx)
         //gtprintf("%d - makedistancemap - END!", game->turn);
 }
 
-
 /**
  * @brief Very stupid, random "pathfinder". It makes an actor move to a random (and legal/possible) cell.
  *
@@ -136,41 +135,6 @@ int simpleoutdoorpathfinder(actor_t *m)
                 
                 m->y += ri(-1, 1);
                 m->x += ri(-1, 1);
-
-         /*       switch(choice) {
-                        case 91:
-                                m->x--;
-                                m->y++;
-                                break;
-                        case 92:
-                                m->y++;
-                                break;
-                        case 93:
-                                m->y++;
-                                m->x++;
-                                break;
-                        case 94:
-                                m->x--;
-                                break;
-                        case 95:
-                                break;
-                        case 96:
-                                m->x++;
-                                break;
-                        case 97:
-                                m->x--;
-                                m->y--;
-                                break;
-                        case 98:
-                                m->y--;
-                                break;
-                        case 99:
-                                m->x++;
-                                m->y--;
-                                break;
-                        case 100:
-                                break;
-                }*/
         }
 
         //makedistancemap(m->goaly, m->goalx);
@@ -447,62 +411,6 @@ void move_monster(monster_t *m)
 
         schedule_monster(m);
 }
-
-/**
- * @brief Move all monsters which are awake. Heal monster if appropriate.
- */
-void move_monsters()
-{
-        /*
-        monster_t *m;
-        int i;
-
-        m = world->curlevel->monsters;
-        if(!m)
-                return;
-
-
-        while(m) {
-                m = m->next;
-                while(m && hasbit(m->flags, MF_ISDEAD))
-                        m = m->next;
-
-                if(m && hasbit(m->flags, MF_SLEEPING)) {
-                        if(actor_in_lineofsight(m, player))
-                                clearbit(m->flags, MF_SLEEPING);
-                }
-
-
-                // TODO: SIMPLIFY!
-                //
-
-                if(m && !hasbit(m->flags, MF_SLEEPING)) {
-                        //if(m->attacker) {
-                        m->ticks += m->speed;
-
-                        while(m->ticks >= 10) {
-                                hostile_ai(m);
-                                m->ticks -= 10;
-                                if(m->hp < m->maxhp) {
-                                        i = 17 - m->attr.phy;
-                                        if(i <= 0)
-                                                i = 1;
-                                        if(game->turn % i)
-                                                if(perc(40+m->attr.phy)) {
-                                                        int j;
-
-                                                        j = ability_modifier(m->attr.phy);
-                                                        if(j < 1)
-                                                                j = 1;
-                                                        heal_monster(m, ri(1, j));
-                                                }
-                                }
-                        }
-                }
-        }
-                */
-}
-
 
 /**
  * @brief Schedule all monsters moves in the near future.

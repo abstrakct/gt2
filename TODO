@@ -1,6 +1,17 @@
-* Signal handler!
+TODO: ADD see invisble stuff.
+TODO: Add other level up effects here! (actor.c)
+TODO: change so that we take attributes more into regard depending on weapon (e.g. some require dex, others str, etc.) (actor.c)
+TODO: Don't assume that every monster has human bodypartsI
+TODO: track/record location of stairs on each level! (actor.c)
+TODO: Character generation!!
+TODO: Starting HP - FIX according to race etc.
+TODO: ADD OBJECT COLORS!!! (Still valid??)
+TODO: UI - SIMPLIFY
+TODO: add a lightradius in actor_t, calculate it based on stuff
+TODO: some kind of ID system for weapons! (and armor!)
+TODO: Fix so taht identifying weapons/armor is based on e.g. experience with said type of weapon. (objects.c)
+TODO: add namegens here (world.c)
+TODO: Make this work as forest generator!?
+TODO: Add variable for glyph color?! (actors, monsters)
 
-SAVE WEAPON
-FIX SAVE LOAD
-
-Remove THAC0 (unused)
+datafiles.c:        /* TODO: ??

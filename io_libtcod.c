@@ -644,68 +644,6 @@ void draw_left()
                         TCOD_console_print(game->left.c, 1, i+20, "Foolish");
                 }
         }
-
-        
-        //TCOD_console_print(game->left.c, 1, i+9, 1, "Dungeon level: %d (out of %d)", game->currentlevel, game->createdareas);
-        //mvwprintw(wleft, 3, 1, "y,x     %d,%d", ply, plx);
-        //mvwprintw(wleft, 4, 1, "(py,px) (%d,%d)", ppy, ppx);
-/*        obj_t *o;
-        int i, j;
-        int color;
-
-        werase(wleft);
-        werase(wstat);
-        box(wleft, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                         
-        box(wstat, ACS_VLINE, ACS_HLINE);                                                                                                                                                                                                                                                                         
-
-        mvwprintw(wleft, 1, 1, "Name:");
-        mvwprintw(wleft, 2, 1, "Turn:   %d", game->turn);
-        mvwprintw(wleft, 3, 1, "Weapon: %s", player->weapon ? player->weapon->displayname : "bare hands");
-        //mvwprintw(wleft, 3, 1, "y,x     %d,%d", ply, plx);
-        //mvwprintw(wleft, 4, 1, "(py,px) (%d,%d)", ppy, ppx);
-        mvwprintw(wleft, 5, 1, "viewradius: %d", player->viewradius);
-        if(player->hp >= (player->maxhp/4*3))
-                color = COLOR_PAIR(COLOR_GREEN);
-        else if(player->hp >= (player->maxhp/4) && player->hp < (player->maxhp/4*3))
-                color = COLOR_PAIR(COLOR_YELLOW);
-        else if(player->hp < (player->maxhp/4))
-                color = COLOR_PAIR(COLOR_RED);
-        mvwprintw(wleft, 6, 1, "HP:");
-        wattron(wleft, color);
-        mvwprintw(wleft, 6, 5, "%d/%d (%.1f%%)", player->hp, player->maxhp, ((float)(100/(float)player->maxhp) * (float)player->hp));
-        wattroff(wleft, color);
-        mvwprintw(wleft, 7, 1, "Player level: %d", player->level);
-        mvwprintw(wleft, 8, 1, "AC: %d", player->ac);
-        mvwprintw(wleft, 9, 1, "Dungeon level: %d (out of %d)", game->currentlevel, game->createddungeons);
-        mvwprintw(wleft, 10, 1, "STR:   %d", player->attr.str);
-        mvwprintw(wleft, 11, 1, "DEX:   %d", player->attr.dex);
-        mvwprintw(wleft, 12, 1, "PHY:   %d", player->attr.phy);
-        mvwprintw(wleft, 13, 1, "INT:   %d", player->attr.intl);
-        mvwprintw(wleft, 14, 1, "WIS:   %d", player->attr.wis);
-        mvwprintw(wleft, 15, 1, "CHA:   %d", player->attr.cha);
-        mvwprintw(wleft, 16, 1, "XP:    %d", player->xp);
-        mvwprintw(wleft, 17, 1, "Level: %d", player->level);
-
-
-        mvwprintw(wstat, 1, 1, "== INVENTORY ==");
-        mvwprintw(wstat, 2, 1, "Gold: %d", player->inventory->gold);
-        
-        i = 3;
-        for(j = 0; j < 52; j++) {
-                if(player->inventory->object[j]) {
-                        //o = get_object_from_letter(slot_to_letter(j), player->inventory);
-                        o = player->inventory->object[j];
-                        if(is_worn(o)) {
-                                mvwprintw(wstat, i, 1, "%c)   %s %s", slot_to_letter(j), a_an(o->displayname), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
-                                wattron(wstat, COLOR_PAIR(COLOR_GREEN));
-                                mvwprintw(wstat, i, 4, "*"); 
-                                wattroff(wstat, COLOR_PAIR(COLOR_GREEN));
-                        } else {
-                                mvwprintw(wstat, i, 1, "%c)   %s", slot_to_letter(j), a_an(o->displayname));
-                        }
-                        i++;
-                }
-        }*/
 }
 
 void draw_right()

@@ -259,20 +259,9 @@ void open_door(int y, int x)
                 open_door(y,x-1);
 }
 
-/*! \brief Clear the actionqueue 
-void clear_aq()
-{
-        struct actionqueue *tmp;
-
-        while(aq->num) {
-                tmp = aq->next;
-                aq->next = tmp->next;
-                gtfree(tmp);
-                aq->num--;
-        }
-}*/
-
 /*! \brief Setup attack - that is, do what's needed to perform an attack by the player.
+ *
+ * TODO: Do we need this???
  */
 void setup_attack()
 {
@@ -572,7 +561,6 @@ bool do_action(action_t *aqe)
 #ifdef GT_USE_NCURSES
                         makedistancemap(player->y, player->x);
 #endif
-                        //move_monsters();
                         break;
                 case ACTION_GO_DOWN_STAIRS:
                         if(game->currentlevel < game->createddungeons) {

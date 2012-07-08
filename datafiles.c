@@ -21,6 +21,12 @@
 #include "gt.h"
 #include "utils.h"
 
+
+//  TODO: LESS CODE DUPLICATION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
 config_t *cf;
 int objid;             // to keep track of all parsed objects, to give each a unique ID
 roomdef_t r;
@@ -895,8 +901,7 @@ int parse_data_files(int option)
                 return ret;
         }
 
-        /* TODO:
-         * This return value stuff makes rather little sense!!
+        /* TODO: This return value stuff makes rather little sense!!
          */
         ret = parse_configfile();
         ret = parse_objects();

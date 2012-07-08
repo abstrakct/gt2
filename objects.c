@@ -324,7 +324,6 @@ void generate_fullname(obj_t *o)
                 
                 if((!is_identified(o) && o->attackmod)) {
                         strcpy(n, get_enchanted_description());
-                        i = dice(1, 5, 0);
                         strcat(n, o->basename); 
                 }
 

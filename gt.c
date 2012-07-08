@@ -58,21 +58,21 @@ char *otypestrings[50] = {
 };
 
 // Important global variables
-monster_t          *monsterdefs;
-obj_t              *objdefs;
-game_t             *game;
-world_t            *world;
-actor_t            *player;
-struct actionqueue *aq;
-gt_config_t         gtconfig;
-long                actionnum;
-FILE               *messagefile;
-bool                mapchanged;
-int                 tempxsize, tempysize;
-bool                loadgame;
-void               *actiondata;
-actor_t            *a_attacker, *a_victim;
-action_t           *act;
+monster_t   *monsterdefs;
+obj_t       *objdefs;
+game_t      *game;
+world_t     *world;
+actor_t     *player;
+gt_config_t gtconfig;
+long        actionnum;
+FILE        *messagefile;
+bool        mapchanged;
+int         tempxsize, tempysize;
+bool        loadgame;
+void        *actiondata;
+actor_t     *a_attacker, *a_victim;
+struct      actionqueue *aq;
+action_t    *act;
 
 // Messages
 message_t messages[500];
@@ -290,11 +290,8 @@ void do_one_action(int action)
 }
 
 /**
- * @brief Do an action. This really should be split into functions.
+ * @brief Do an action.
  *
- * @param action Which action to perform - see \ref group_actions "ACTION-defines" in gt.h
- *
- * @return True if action took a full turn, false if not. (This is currently becoming obsolete.) 
  */
 bool do_action(action_t *aqe)
 {
@@ -576,7 +573,6 @@ bool do_action(action_t *aqe)
                         makedistancemap(player->y, player->x);
 #endif
                         //move_monsters();
-                        fullturn = false;
                         break;
                 case ACTION_GO_DOWN_STAIRS:
                         if(game->currentlevel < game->createddungeons) {
@@ -603,7 +599,6 @@ bool do_action(action_t *aqe)
                                         player->viewradius = 12;
                         }
                         init_pathfinding(player);
-                        fullturn = false;
                         break;
                 case ACTION_GO_UP_STAIRS:
                         tmpy = ply; tmpx = plx;
@@ -621,7 +616,6 @@ bool do_action(action_t *aqe)
                         }
                         init_pathfinding(player);
                         //floodfill(world->curlevel, player->y, player->x);
-                        fullturn = false;
                         break;
                 case ACTION_WIELDWEAR:
                         o = (obj_t *) actiondata;
@@ -629,7 +623,6 @@ bool do_action(action_t *aqe)
                                 wieldwear(player, o);
                         else
                                 gtprintf("You don't have that!");
-                        fullturn = false;
                         break;
                 case ACTION_UNWIELDWEAR:
                         o = (obj_t *) actiondata;
@@ -637,7 +630,6 @@ bool do_action(action_t *aqe)
                                 unwieldwear(player, o);
                         else
                                 gtprintf("You don't have that!");
-                        fullturn = false;
 
                         break;
                 case ACTION_QUAFF:
@@ -646,7 +638,6 @@ bool do_action(action_t *aqe)
                                 quaff(player, o);
                         else
                                 gtprintf("You don't have that!");
-                        fullturn = false;
                         break;
                 case ACTION_DROP:
                         o = (obj_t *) actiondata;
@@ -654,19 +645,15 @@ bool do_action(action_t *aqe)
                                 drop(player, o);
                         else
                                 gtprintf("You don't have that!");
-                        fullturn = false;
                         break;  
                 case ACTION_FIX_VIEW:
                         fixview();
-                        fullturn = false;
                         break;
                 case ACTION_HEAL_PLAYER:
                         increase_hp(player, 1);
-                        fullturn = false;
                         break;
                 case ACTION_MAKE_DISTANCEMAP:
                         makedistancemap(player->y, player->x);
-                        fullturn = false;
                         break;
                 case ACTION_MOVE_MONSTER:
                         if(aqe)
@@ -685,15 +672,6 @@ bool do_action(action_t *aqe)
                         }
                         
                         schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 0, 1);
-
-                        // also, schedule some future actions
-                        //if(!game->tick % 50) {
-                                //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed);
-                                //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 2);
-                                //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 3);
-                                //schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, player->speed * 4);
-                        //}
-
                         break;
                 case ACTION_DECREASE_INVISIBILITY:
                         aqe->actor->temp[TEMP_INVISIBLE] -= 1;
@@ -716,14 +694,10 @@ bool do_action(action_t *aqe)
                                 oe_wisdom(aqe->actor, aqe->object, aqe->gain, false);
                         break;
                 case ACTION_NOTHING:
-                        fullturn = false;
-                        //updatescreen = false;
                         break;
                 default:
                         fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, aqe->action);
                         gtprintf("DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, aqe->action);
-                        fullturn = false;
-                        //updatescreen = false;
                         break;
         }
 
@@ -956,21 +930,6 @@ void look()
         }
 }
 
-bool action_at_tick(int tick)
-{
-        struct actionqueue *tmp;
-
-        tmp = aq->next;
-        while(tmp) {
-                if(tmp->tick == tick)
-                        return true;
-
-                tmp = tmp->next;
-        }
-
-        return false;
-}
-
 void do_everything_at_tick(int tick)
 {
         int i;
@@ -984,6 +943,7 @@ void do_everything_at_tick(int tick)
                 }
         }
 }
+
 
 void increase_ticks(int i)
 {
@@ -1023,9 +983,6 @@ void do_turn()
                 //update_screen();
                 increase_ticks(1);
         }
-
-        //if(player->temp)
-        //        process_temp_effects(player);
 
         update_screen();
 

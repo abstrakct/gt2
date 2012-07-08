@@ -180,7 +180,7 @@ void insert_roomdef_at(level_t *l, int y, int x)
 void generate_dungeon_type_1(int d)
 {
         struct room **r;        
-        int numrooms, maxroomsizex, maxroomsizey, nrx, nry, i, j;
+        int maxroomsizex, maxroomsizey, nrx, nry, i, j;
         int x1, y1, sy, sx, x2, y2, ty, tx;
         int starty, startx, endy, endx;
         int minroomsizex, minroomsizey;
@@ -195,11 +195,11 @@ void generate_dungeon_type_1(int d)
 
         nry = l->ysize / maxroomsizey;
         nrx = l->xsize / maxroomsizex;
-        numrooms = nrx * nry;
+        //numrooms = nrx * nry;
 
         r = (struct room **) gtmalloc2d(nry+1, nrx+1, sizeof(struct room));
 
-        printf("Generating %d x %d = %d rooms (levelsize = %d x %d)\n", nry, nrx, numrooms, l->ysize, l->xsize);
+        //printf("Generating %d x %d = %d rooms (levelsize = %d x %d)\n", nry, nrx, numrooms, l->ysize, l->xsize);
         
         for(i = 1; i <= nrx; i++) {
                 for(j = 1; j <= nry; j++) {
@@ -335,7 +335,7 @@ void generate_dungeon_type_2(int d)
         level_t *l;
         //int color;
 
-        printf("Generating dungeon type 2...\n");
+        //printf("Generating dungeon type 2...\n");
         l = &world->dng[d];
         tx = 0; //ri(0, 10);  // starting X
         ty = 0; //ri(0, 10);  // starting y
@@ -423,7 +423,7 @@ void generate_dungeon_type_3(int d)
         int i, j, x, y, q, r, num;
         level_t *l;
 
-        printf("Generating dungeon type 3...\n");
+        //printf("Generating dungeon type 3...\n");
         l = &world->dng[d];
         q = ri(80, l->ysize);
         r = ri(100, l->xsize);
@@ -1188,7 +1188,9 @@ void generate_world()
 
         printf(" done.\n");
 
+        printf("Generating dungeons.");
         meta_generate_dungeon(1, 1);
+        printf(".");
         //clear_area(&world->dng[1], 6, 6, r.y+6, r.x+6);
         //insert_roomdef_at(&world->dng[1], 6, 6);
 
@@ -1202,7 +1204,10 @@ void generate_world()
                         meta_generate_dungeon(i, 2);
                 if(p >= 82)
                         meta_generate_dungeon(i, 3);
+
+                printf(".");
         }
+        printf("done.\n");
 
         generate_stairs();
 

@@ -794,7 +794,7 @@ int parse_potions()
                         case POT_BLUE:      o->color = COLOR_BLUE; break;
                         case POT_CLEAR:     o->color = COLOR_WHITE; break;
                         case POT_YELLOW:    o->color = COLOR_YELLOW; break;
-                        case POT_PINK:      o->color = COLOR_MAGENTA; break;
+                        case POT_PINK:      o->color = COLOR_MAGENTA; break; // TODO: CHANGE TO PINK
                         case POT_AMBER:     o->color = COLOR_AMBER; break;
                         case POT_GOLD:      o->color = COLOR_GOLD; break;
                         case POT_ORANGE:    o->color = COLOR_ORANGE; break; 
@@ -804,6 +804,11 @@ int parse_potions()
                         case POT_VIOLET:    o->color = COLOR_VIOLET; break;
                         case POT_CRIMSON:   o->color = COLOR_CRIMSON; break;
                         case POT_AZURE:     o->color = COLOR_AZURE; break;
+                        case POT_DARKRED:   o->color = COLOR_DARKRED; break;
+                        case POT_SEAGREEN:  o->color = COLOR_SEAGREEN; break;
+                        case POT_PURPLE:    o->color = COLOR_PURPLE; break;
+                        case POT_MAGENTA:   o->color = COLOR_MAGENTA; break;
+                        case POT_FIZZY:     o->color = COLOR_FIZZY; break;
                         default:            o->color = COLOR_WHITE; break;
                 };
 

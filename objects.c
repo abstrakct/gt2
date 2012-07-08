@@ -48,7 +48,9 @@ char *materialstring[] = {
 };
 
 char *potionstring[] = {
-        0, "red", "green", "sparkling", "blue", "clear", "yellow", "pink", "amber", "golden orange", "orange", "lime green", "cyan", "sky blue", "violet", "crimson", "azure"
+        0, "red", "green", "sparkling", "blue", "clear", "yellow", "pink", "amber", "golden orange",
+        "orange", "lime green", "cyan", "sky blue", "violet", "crimson", "azure", "dark red", "sea green", "purple",
+        "magenta", "fizzy", "cloudy"
 };
 
 obj_t get_objdef(int n)
@@ -209,11 +211,6 @@ void unspawn_object(obj_t *m)
                 remove_from_master_object_list(m);
                 gtfree(m);
         }
-}
-
-void get_random_unused_material(short type)
-{
-
 }
 
 char *get_enchanted_description()
@@ -549,6 +546,7 @@ obj_t *spawn_object_with_rarity(int rarity, void *level)
 
         return new;
 }
+
 /*
  * spawn an object (objdef n) and place it at (y,x) on level
  */

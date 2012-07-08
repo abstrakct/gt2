@@ -97,7 +97,7 @@ void add_temporary_effect(actor_t *actor, oe_t *effect)
         }
 
         actor->effect[i] = effect;
-        gtprintf("Added temp effect: effect = %d, gain = %d, duration = %d, negative = %s", effect->effect, effect->gain, effect->duration, effect->negative ? "true" : "false"); 
+        //gtprintf("Added temp effect: effect = %d, gain = %d, duration = %d, negative = %s", effect->effect, effect->gain, effect->duration, effect->negative ? "true" : "false"); 
 }
 
 
@@ -601,10 +601,10 @@ void process_temp_effects(actor_t *actor)
 
         for(i = 0; i < MAX_TEMP_EFFECTS; i++) {
                 if(actor->effect[i]) {
-                        gtprintf("reducing duration of effect %d (gain %d): from %d to %d", i, actor->effect[i]->gain, actor->effect[i]->duration, actor->effect[i]->duration - 1);
+                        //gtprintf("reducing duration of effect %d (gain %d): from %d to %d", i, actor->effect[i]->gain, actor->effect[i]->duration, actor->effect[i]->duration - 1);
                         actor->effect[i]->duration--;
                         if(actor->effect[i]->duration == 0) {
-                                gtprintf("removeing effect %d.", i);
+                                //gtprintf("removeing effect %d.", i);
                                 effecttable[actor->effect[i]->effect](actor, NULL, actor->effect[i]->gain, false);
                                 remove_temporary_effect(actor, i);
                         }

@@ -162,8 +162,14 @@ extern int mats_amulets[MATERIALS];
 #define POT_VIOLET    14
 #define POT_CRIMSON   15
 #define POT_AZURE     16
+#define POT_DARKRED   17
+#define POT_SEAGREEN  18
+#define POT_PURPLE    19
+#define POT_MAGENTA   20
+#define POT_FIZZY     21
+#define POT_CLOUDY    22
 
-#define POTS          15
+#define POTS          21
 
 extern int mats_potions[POTS];
 

@@ -220,7 +220,7 @@ void oe_protection_fire(actor_t *actor, void *data, int e, bool apply)
 void oe_strength(actor_t *actor, void *data, int e, bool apply)
 {
         obj_t *o;
-        int x, duration;
+        int x;
 
         o = (obj_t *) data;
         x = get_strength(actor);
@@ -275,7 +275,7 @@ void oe_strength(actor_t *actor, void *data, int e, bool apply)
 void oe_wisdom(actor_t *actor, void *data, int e, bool apply)
 {
         obj_t *o;
-        int x, gain, duration;
+        int x;
 
         o = (obj_t *) data;
         x = get_wisdom(actor);
@@ -290,21 +290,22 @@ void oe_wisdom(actor_t *actor, void *data, int e, bool apply)
                         else
                                 actor->attr.wis++;
                 } else if(o->effect[e].duration > 0) {
-                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
-                        gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+                        o->effect[e].duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        o->effect[e].gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
 
                         if(o->effect[e].negative)
-                                gain = 0 - gain;
-                        actor->attrmod.wis += gain;
+                                o->effect[e].gain = 0 - o->effect[e].gain;
+                        
+                        actor->attrmod.wis += o->effect[e].gain;
 
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
 
-                        //schedule_temporary_effect(actor, duration, TEMP_WISDOM, ACTION_DECREASE_TEMP_WISDOM, o, gain);
+                        add_temporary_effect(actor, &o->effect[e]);
                 }
         }
         
-        if(apply) {
+        if(apply && !is_potion(o)) {
                 if(is_worn(o)) {
                         if(o->effect[e].gain)
                                 actor->attrmod.wis += o->effect[e].gain;
@@ -329,88 +330,108 @@ void oe_wisdom(actor_t *actor, void *data, int e, bool apply)
 void oe_physique(actor_t *actor, void *data, int e, bool apply)
 {
         obj_t *o;
-        int x, gain, duration;
+        int x;
 
         o = (obj_t *) data;
         x = get_physique(actor);
 
-        if(is_potion(o)) {
-                if(o->effect[e].duration == -1) {
-                        actor->attr.phy++;
-                } else if(o->effect[e].duration > 0) {
-                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+        if(!apply)
+                actor->attrmod.phy -= e;  // we use 'e' for the gain value when unapplying a temporary stat effect. makes sense, no?
+
+        if(apply && is_potion(o)) {
+                if(o->effect[e].duration == -1) {  // effect is permanent.
                         if(o->effect[e].gain)
-                                gain = o->effect[e].gain;
+                                actor->attr.phy += o->effect[e].gain;
                         else
-                                gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
-                        actor->attrmod.phy += gain;
+                                actor->attr.phy++;
+                } else if(o->effect[e].duration > 0) {
+                        o->effect[e].duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        o->effect[e].gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+
+                        if(o->effect[e].negative)
+                                o->effect[e].gain = 0 - o->effect[e].gain;
+
+                        actor->attrmod.phy += o->effect[e].gain;
+
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
 
-                        //schedule_temporary_effect(actor, duration, TEMP_PHYSIQUE, ACTION_DECREASE_TEMP_PHYSIQUE, o, gain);
+                        add_temporary_effect(actor, &o->effect[e]);
                 }
         }
-
-        if(is_worn(o)) {
-                if(o->effect[e].gain)
-                        actor->attrmod.phy += o->effect[e].gain;
-                else
-                        actor->attrmod.phy += o->attackmod;
-        } else {
-                if(o->effect[e].gain)
-                        actor->attrmod.phy -= o->effect[e].gain;
-                else
-                        actor->attrmod.phy -= o->attackmod;
+        
+        if(apply && !is_potion(o)) {
+                if(is_worn(o)) {
+                        if(o->effect[e].gain)
+                                actor->attrmod.phy += o->effect[e].gain;
+                        else
+                                actor->attrmod.phy += o->attackmod;
+                } else {
+                        if(o->effect[e].gain)
+                                actor->attrmod.phy -= o->effect[e].gain;
+                        else
+                                actor->attrmod.phy -= o->attackmod;
+                }
         }
 
         if(actor == player) {
                 if(x > get_physique(player))
-                        youc(COLOR_INFO, "feel small and fragile.");
+                        youc(COLOR_INFO, "feel smaller, more fragile.");
                 else if(x < get_physique(player))
-                        youc(COLOR_INFO, "feel more able to perform physically challenging tasks!");
+                        youc(COLOR_INFO, "feel tougher!");
         }
 }
 
 void oe_intelligence(actor_t *actor, void *data, int e, bool apply)
 {
         obj_t *o;
-        int x, gain, duration;
+        int x;
 
         o = (obj_t *) data;
         x = get_intelligence(actor);
 
-        if(is_potion(o)) {
-                if(o->effect[e].duration == -1) {
-                        actor->attr.intl++;
-                } else if(o->effect[e].duration > 0) {
-                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
-                        if(o->effect[e].gain)
-                                gain = o->effect[e].gain;
-                        else
-                                gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
-                        actor->attrmod.intl += gain;
-                        if(actor == player)
-                                youc(COLOR_INFO, "feel a change in your mind, but you sense that it may go away again soon.");
+        if(!apply)
+                actor->attrmod.intl -= e;  // we use 'e' for the gain value when unapplying a temporary stat effect. makes sense, no?
 
-                        //schedule_temporary_effect(actor, duration, TEMP_INTELLIGENCE, ACTION_DECREASE_TEMP_INTELLIGENCE, o, gain);
+        if(apply && is_potion(o)) {
+                if(o->effect[e].duration == -1) {  // effect is permanent.
+                        if(o->effect[e].gain)
+                                actor->attr.intl += o->effect[e].gain;
+                        else
+                                actor->attr.intl++;
+                } else if(o->effect[e].duration > 0) {
+                        o->effect[e].duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        o->effect[e].gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+
+                        if(o->effect[e].negative)
+                                o->effect[e].gain = 0 - o->effect[e].gain;
+
+                        actor->attrmod.intl += o->effect[e].gain;
+
+                        if(actor == player)
+                                youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
+
+                        add_temporary_effect(actor, &o->effect[e]);
                 }
         }
-
-        if(is_worn(o)) {
-                if(o->effect[e].gain)
-                        actor->attrmod.intl += o->effect[e].gain;
-                else
-                        actor->attrmod.intl += o->attackmod;
-        } else {
-                if(o->effect[e].gain)
-                        actor->attrmod.intl -= o->effect[e].gain;
-                else
-                        actor->attrmod.intl -= o->attackmod;
+        
+        if(apply && !is_potion(o)) {
+                if(is_worn(o)) {
+                        if(o->effect[e].gain)
+                                actor->attrmod.intl += o->effect[e].gain;
+                        else
+                                actor->attrmod.intl += o->attackmod;
+                } else {
+                        if(o->effect[e].gain)
+                                actor->attrmod.intl -= o->effect[e].gain;
+                        else
+                                actor->attrmod.intl -= o->attackmod;
+                }
         }
 
         if(actor == player) {
                 if(x > get_intelligence(player))
-                        youc(COLOR_INFO, "feel stupider.");
+                        youc(COLOR_INFO, "feel stupider!");
                 else if(x < get_intelligence(player))
                         youc(COLOR_INFO, "feel smarter!");
         }
@@ -419,86 +440,109 @@ void oe_intelligence(actor_t *actor, void *data, int e, bool apply)
 void oe_dexterity(actor_t *actor, void *data, int e, bool apply)
 {
         obj_t *o;
-        int x, gain, duration;
+        int x;
 
         o = (obj_t *) data;
         x = get_dexterity(actor);
 
-        if(is_potion(o)) {
-                if(o->effect[e].duration == -1) {
-                        actor->attr.dex++;
-                } else if(o->effect[e].duration > 0) {
-                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+        if(!apply)
+                actor->attrmod.dex -= e;  // we use 'e' for the gain value when unapplying a temporary stat effect. makes sense, no?
+
+        if(apply && is_potion(o)) {
+                if(o->effect[e].duration == -1) {  // effect is permanent.
                         if(o->effect[e].gain)
-                                gain = o->effect[e].gain;
+                                actor->attr.dex += o->effect[e].gain;
                         else
-                                gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
-                        actor->attrmod.dex += gain;
+                                actor->attr.dex++;
+                } else if(o->effect[e].duration > 0) {
+                        o->effect[e].duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        o->effect[e].gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+
+                        if(o->effect[e].negative)
+                                o->effect[e].gain = 0 - o->effect[e].gain;
+
+                        actor->attrmod.dex += o->effect[e].gain;
+
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
 
-                        //schedule_temporary_effect(actor, duration, TEMP_DEXTERITY, ACTION_DECREASE_TEMP_DEXTERITY, o, gain);
+                        add_temporary_effect(actor, &o->effect[e]);
                 }
-        } else if(is_worn(o)) {
-                if(o->effect[e].gain)
-                        actor->attrmod.dex += o->effect[e].gain;
-                else
-                        actor->attrmod.dex += o->attackmod;
-        } else {
-                if(o->effect[e].gain)
-                        actor->attrmod.dex -= o->effect[e].gain;
-                else
-                        actor->attrmod.dex -= o->attackmod;
+        }
+        
+        if(apply && !is_potion(o)) {
+                if(is_worn(o)) {
+                        if(o->effect[e].gain)
+                                actor->attrmod.dex += o->effect[e].gain;
+                        else
+                                actor->attrmod.dex += o->attackmod;
+                } else {
+                        if(o->effect[e].gain)
+                                actor->attrmod.dex -= o->effect[e].gain;
+                        else
+                                actor->attrmod.dex -= o->attackmod;
+                }
         }
 
         if(actor == player) {
                 if(x > get_dexterity(player))
-                        youc(COLOR_INFO, "feel less agile.");
+                        youc(COLOR_INFO, "feel less agile!");
                 else if(x < get_dexterity(player))
                         youc(COLOR_INFO, "feel more agile!");
         }
 }
 
+
 void oe_charisma(actor_t *actor, void *data, int e, bool apply)
 {
         obj_t *o;
-        int x, gain, duration;
+        int x;
 
         o = (obj_t *) data;
         x = get_charisma(actor);
 
-        if(is_potion(o)) {
-                if(o->effect[e].duration == -1) {
-                        actor->attr.cha++;
-                } else if(o->effect[e].duration > 0) {
-                        duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+        if(!apply)
+                actor->attrmod.cha -= e;  // we use 'e' for the gain value when unapplying a temporary stat effect. makes sense, no?
+
+        if(apply && is_potion(o)) {
+                if(o->effect[e].duration == -1) {  // effect is permanent.
                         if(o->effect[e].gain)
-                                gain = o->effect[e].gain;
+                                actor->attr.cha += o->effect[e].gain;
                         else
-                                gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
-                        actor->attrmod.cha += gain;
+                                actor->attr.cha++;
+                } else if(o->effect[e].duration > 0) {
+                        o->effect[e].duration = dice(o->effect[e].durationdice, o->effect[e].durationsides, o->effect[e].durationmodifier);
+                        o->effect[e].gain = dice(o->effect[e].dice, o->effect[e].sides, o->effect[e].modifier);
+
+                        if(o->effect[e].negative)
+                                o->effect[e].gain = 0 - o->effect[e].gain;
+
+                        actor->attrmod.cha += o->effect[e].gain;
+
                         if(actor == player)
                                 youc(COLOR_INFO, "feel a change in your body, but you sense that it may go away again soon.");
-                        
-                        //schedule_temporary_effect(actor, duration, TEMP_CHARISMA, ACTION_DECREASE_TEMP_CHARISMA, o, gain);
+
+                        add_temporary_effect(actor, &o->effect[e]);
                 }
         }
-
-        if(is_worn(o)) {
-                if(o->effect[e].gain)
-                        actor->attrmod.cha += o->effect[e].gain;
-                else
-                        actor->attrmod.cha += o->attackmod;
-        } else {
-                if(o->effect[e].gain)
-                        actor->attrmod.cha -= o->effect[e].gain;
-                else
-                        actor->attrmod.cha -= o->attackmod;
+        
+        if(apply && !is_potion(o)) {
+                if(is_worn(o)) {
+                        if(o->effect[e].gain)
+                                actor->attrmod.cha += o->effect[e].gain;
+                        else
+                                actor->attrmod.cha += o->attackmod;
+                } else {
+                        if(o->effect[e].gain)
+                                actor->attrmod.cha -= o->effect[e].gain;
+                        else
+                                actor->attrmod.cha -= o->attackmod;
+                }
         }
 
         if(actor == player) {
                 if(x > get_charisma(player))
-                        youc(COLOR_INFO, "feel less attractive.");
+                        youc(COLOR_INFO, "feel less attractive!");
                 else if(x < get_charisma(player))
                         youc(COLOR_INFO, "feel more attractive!");
         }

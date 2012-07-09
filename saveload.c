@@ -241,7 +241,7 @@ void save_player(actor_t *p, FILE *f)
         for(i = 0; i < MAX_SKILLS; i++)
                 s.skill[i] = p->skill[i];
 
-        for(i = 0; i < MAX_TEMP_EFFECTS; i++)  // TODO: Save temporary effects on player!
+        //for(i = 0; i < MAX_TEMP_EFFECTS; i++)  // TODO: Save temporary effects on player!
                 //s.temp[i] = p->temp[i];
 
         fwrite("PLAYER", sizeof(char), 6, f);
@@ -659,7 +659,7 @@ fprintf(stderr, "DEBUG: %s:%d - get object by oid failed!\n", __FILE__, __LINE__
                 }
         }
 
-        for(i = 0; i < MAX_TEMP_EFFECTS; i++)
+        //for(i = 0; i < MAX_TEMP_EFFECTS; i++)
                 //p->temp[i] = s.temp[i];
 
         printf("loadplayerend\n");

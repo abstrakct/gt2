@@ -111,8 +111,9 @@ obj_t *get_object_by_oid_from_masterlist(int oid)
         int i;
 
         for(i = 0; i < 2000; i++) {
-                if(game->objects[i]->oid == oid)
-                        return game->objects[i];
+                if(game->objects[i])
+                        if(game->objects[i]->oid == oid)
+                                return game->objects[i];
         }
 
         return 0;

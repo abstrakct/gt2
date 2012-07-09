@@ -108,7 +108,7 @@ cmd_t normalcommands[] = {
         { { TCODK_CHAR,       'n',   1,     0,   0,   0,    0,    0 }, CMD_SE,          "Move down-right" },
         { { TCODK_KP3,          0,   1,     0,   0,   0,    0,    0 }, CMD_SE,          "Move down-right" },
 
-        // actions
+        // events
         { { TCODK_CHAR,       'w',   0,     0,   0,   0,    0,    0 }, CMD_WIELDWEAR,   "Wield or wear an item" },
         { { TCODK_CHAR,       'r',   0,     0,   0,   0,    0,    0 }, CMD_UNWIELDWEAR, "Remove or unwield an item" },
         { { TCODK_CHAR,       ',',   1,     0,   0,   0,    0,    0 }, CMD_PICKUP,      "Pick up something" },

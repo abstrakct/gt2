@@ -586,27 +586,27 @@ void autoexplore()
                                 if(is_autoexploring) {             // i.e. if not interrupted
                                         if(y > ny) { // moving downward
                                                 if(x > nx)
-                                                        queuemany(player, ACTION_PLAYER_MOVE_SE, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                        queuemany(player, EVENT_PLAYER_MOVE_SE, EVENT_HEAL_PLAYER, ENDOFLIST);
                                                 if(x < nx)
-                                                        queuemany(player, ACTION_PLAYER_MOVE_SW, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                        queuemany(player, EVENT_PLAYER_MOVE_SW, EVENT_HEAL_PLAYER, ENDOFLIST);
                                                 if(x == nx)
-                                                        queuemany(player, ACTION_PLAYER_MOVE_DOWN, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                        queuemany(player, EVENT_PLAYER_MOVE_DOWN, EVENT_HEAL_PLAYER, ENDOFLIST);
                                         }
 
                                         if(y < ny) {
                                                 if(x > nx)
-                                                        queuemany(player, ACTION_PLAYER_MOVE_NE, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                        queuemany(player, EVENT_PLAYER_MOVE_NE, EVENT_HEAL_PLAYER, ENDOFLIST);
                                                 if(x < nx)
-                                                        queuemany(player, ACTION_PLAYER_MOVE_NW, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                        queuemany(player, EVENT_PLAYER_MOVE_NW, EVENT_HEAL_PLAYER, ENDOFLIST);
                                                 if(x == nx)
-                                                        queuemany(player, ACTION_PLAYER_MOVE_UP, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                        queuemany(player, EVENT_PLAYER_MOVE_UP, EVENT_HEAL_PLAYER, ENDOFLIST);
                                         }
 
                                         if(y == ny) {
                                                 if(x > nx)
-                                                        queuemany(player, ACTION_PLAYER_MOVE_RIGHT, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                        queuemany(player, EVENT_PLAYER_MOVE_RIGHT, EVENT_HEAL_PLAYER, ENDOFLIST);
                                                 if(x < nx)
-                                                        queuemany(player, ACTION_PLAYER_MOVE_LEFT, ACTION_HEAL_PLAYER, ENDOFLIST);
+                                                        queuemany(player, EVENT_PLAYER_MOVE_LEFT, EVENT_HEAL_PLAYER, ENDOFLIST);
                                         }
                                         nx = x; ny = y;
                                         do_turn();

@@ -238,11 +238,11 @@ void save_player(actor_t *p, FILE *f)
         save_inventory(player->inventory, f);
 }
 
-void save_actionqueue(FILE *f)
+void save_eventqueue(FILE *f)
 {
         int i;
 
-        fwrite("ACTIONQUEUE", sizeof(char), 11, f);
+        fwrite("EVENTQUEUE", sizeof(char), 11, f);
         for(i = 0; i < MAXACT; i++) {
         } 
 }
@@ -309,8 +309,8 @@ bool save_game(char *filename)
         for(i=1; i<=game->createddungeons; i++)
                 save_level(&world->dng[i], f);
 
-        /* finally, the schedule / actionqueue */
-        save_actionqueue(f);
+        /* finally, the schedule / eventqueue */
+        save_eventqueue(f);
 
         fclose(f);
 
@@ -654,7 +654,7 @@ fprintf(stderr, "DEBUG: %s:%d - get object by oid failed!\n", __FILE__, __LINE__
         return true;
 }
 
-bool load_actionqueue(FILE *f)
+bool load_eventqueue(FILE *f)
 {
 
 }
@@ -751,8 +751,8 @@ bool load_game(char *filename, int ingame)
                 }
         }
 
-        /* schedule / actions */
-        load_actionqueue(f);
+        /* schedule / events */
+        load_eventqueue(f);
 
         fclose(f);
         printf("Loading successful!\n");

@@ -18,7 +18,7 @@
 #include "gt.h"
 #include "utils.h"
 
-char *action_name[] = { 
+char *event_name[] = { 
         "Nothing",
         "Player move left",
         "Player move right",
@@ -105,31 +105,12 @@ void dump_objects(inv_t *i)
 
 }
 
-void dump_action_queue_old()
-{
-        int i;
-        struct actionqueue *tmp;
-
-        tmp = aq;
-        i = 0;
-        //gtprintf("---------------------------------------------------------------------------------------------");
-        while(tmp) {
-                if(i == 0)
-                        gtprintf("HEAD -- number of actions in queue: %d", tmp->num);
-                else
-                        gtprintf("%d:   action %s (%d) - num %d - tick %d", i, action_name[tmp->action], tmp->action, tmp->num, tmp->tick);
-                tmp = tmp->next; 
-                i++;
-        }
-        //gtprintf("---------------------------------------------------------------------------------------------");
-}
-
-void dump_action_queue()
+void dump_event_queue()
 {
         int i;
 
         for(i = 0; i < MAXACT; i++) {
-                if(act[i].action != ACTION_FREESLOT)
-                        gtprintf("%d:   action %s (%d) - tick %d", i, action_name[act[i].action], act[i].action, act[i].tick);
+                if(eventlist[i].event != EVENT_FREESLOT)
+                        gtprintf("%d:   event %s (%d) - tick %d", i, event_name[eventlist[i].event], eventlist[i].event, eventlist[i].tick);
         }
 }

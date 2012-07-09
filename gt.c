@@ -64,15 +64,14 @@ game_t      *game;
 world_t     *world;
 actor_t     *player;
 gt_config_t gtconfig;
-long        actionnum;
+long        eventnum;
 FILE        *messagefile;
 bool        mapchanged;
 int         tempxsize, tempysize;
 bool        loadgame;
-void        *actiondata;
+void        *eventdata;
 actor_t     *a_attacker, *a_victim;
-struct      actionqueue *aq;
-action_t    *act;
+event_t    *eventlist;
 
 // Messages
 message_t messages[500];
@@ -104,9 +103,9 @@ void init_variables()
         objdefs = (obj_t *) gtmalloc(sizeof(obj_t));
         objdefs->head = objdefs;
 
-        act = (action_t *) gtmalloc(sizeof(action_t) * MAXACT);
+        eventlist = (event_t *) gtmalloc(sizeof(event_t) * MAXACT);
         for(i=0;i<MAXACT;i++)
-                act[i].action = ACTION_FREESLOT;
+                eventlist[i].event = EVENT_FREESLOT;
 
         world = (world_t *) gtmalloc(sizeof(world_t));
 
@@ -265,24 +264,24 @@ void open_door(int y, int x)
  */
 void setup_attack()
 {
-        schedule_action(ACTION_ATTACK, player);
+        schedule_event(EVENT_ATTACK, player);
 }
 
-void do_one_action(int action)
+void do_one_event(int event)
 {
-        action_t a;
+        event_t a;
 
-        a.action = action;
+        a.event = event;
         a.tick = game->tick;
 
-        do_action(&a);
+        do_event(&a);
 }
 
 /**
- * @brief Do an action.
+ * @brief Do an event.
  *
  */
-bool do_action(action_t *aqe)
+bool do_event(event_t *aqe)
 {
         int oldy, oldx;
         int tmpy, tmpx;
@@ -292,10 +291,10 @@ bool do_action(action_t *aqe)
 
         oldy = ply; oldx = plx;
         fullturn = true;
-        //gtprintf("Doing action %s %s", action_name[aqe->action], aqe ? (aqe->monster ? aqe->monster->name : " ") : " ");
+        //gtprintf("Doing event %s %s", event_name[aqe->event], aqe ? (aqe->monster ? aqe->monster->name : " ") : " ");
 
-        switch(aqe->action) {
-                case ACTION_PLAYER_MOVE_DOWN:
+        switch(aqe->event) {
+                case EVENT_PLAYER_MOVE_DOWN:
                         if(passable(world->curlevel, ply+1, plx)) {
                                 if(world->curlevel->c[ply+1][plx].monster) {
                                         a_attacker = player;
@@ -320,7 +319,7 @@ bool do_action(action_t *aqe)
                         if(ppy < 0)
                                 ppy = 0;
                         break;
-                case ACTION_PLAYER_MOVE_UP:
+                case EVENT_PLAYER_MOVE_UP:
                         if(passable(world->curlevel, ply-1,plx)) {
                                 if(world->curlevel->c[ply-1][plx].monster) {
                                         a_attacker = player;
@@ -343,7 +342,7 @@ bool do_action(action_t *aqe)
                         if(ppy < 0)
                                 ppy = 0;
                         break;
-                case ACTION_PLAYER_MOVE_LEFT:
+                case EVENT_PLAYER_MOVE_LEFT:
                         if(passable(world->curlevel, ply, plx-1)) {
                                 if(world->curlevel->c[ply][plx-1].monster) {
                                         a_attacker = player;
@@ -366,7 +365,7 @@ bool do_action(action_t *aqe)
                         if(ppx < 0)
                                 ppx = 0;
                         break;
-                case ACTION_PLAYER_MOVE_RIGHT:
+                case EVENT_PLAYER_MOVE_RIGHT:
                         if(passable(world->curlevel, ply,plx+1)) {
                                 if(world->curlevel->c[ply][plx+1].monster) {
                                         a_attacker = player;
@@ -391,7 +390,7 @@ bool do_action(action_t *aqe)
                         if(ppx < 0)
                                 ppx = 0;
                         break;
-                case ACTION_PLAYER_MOVE_NW:
+                case EVENT_PLAYER_MOVE_NW:
                         if(passable(world->curlevel, ply-1,plx-1)) {
                                 if(world->curlevel->c[ply-1][plx-1].monster) {
                                         a_attacker = player;
@@ -425,7 +424,7 @@ bool do_action(action_t *aqe)
                         if(ppx < 0)
                                 ppx = 0;
                         break;
-                case ACTION_PLAYER_MOVE_NE:
+                case EVENT_PLAYER_MOVE_NE:
                         if(passable(world->curlevel, ply-1,plx+1)) {
                                 if(world->curlevel->c[ply-1][plx+1].monster) {
                                         a_attacker = player;
@@ -462,7 +461,7 @@ bool do_action(action_t *aqe)
                         if(ppy < 0)
                                 ppy = 0;
                         break;
-                case ACTION_PLAYER_MOVE_SW:
+                case EVENT_PLAYER_MOVE_SW:
                         if(passable(world->curlevel, ply+1, plx-1)) {
                                 if(world->curlevel->c[ply+1][plx-1].monster) {
                                         a_attacker = player;
@@ -497,7 +496,7 @@ bool do_action(action_t *aqe)
                         if(ppx < 0)
                                 ppx = 0;
                         break;
-                case ACTION_PLAYER_MOVE_SE:
+                case EVENT_PLAYER_MOVE_SE:
                         if(passable(world->curlevel, ply+1, plx+1)) {
                                 if(world->curlevel->c[ply+1][plx+1].monster) {
                                         a_attacker = player;
@@ -538,7 +537,7 @@ bool do_action(action_t *aqe)
                         if(ppx < 0)
                                 ppx = 0;
                         break;
-                case ACTION_PICKUP:
+                case EVENT_PICKUP:
                         if(ci(ply, plx) && ci(ply, plx)->gold > 0) {
                                 player->inventory->gold += ci(ply, plx)->gold;
                                 ci(ply, plx)->gold -= ci(ply, plx)->gold;
@@ -554,15 +553,15 @@ bool do_action(action_t *aqe)
                         }
                         fullturn = false;
                         break;
-                case ACTION_ATTACK:
+                case EVENT_ATTACK:
                         attack(a_attacker, a_victim);
                         break;
-                case ACTION_MOVE_MONSTERS:
+                case EVENT_MOVE_MONSTERS:
 #ifdef GT_USE_NCURSES
                         makedistancemap(player->y, player->x);
 #endif
                         break;
-                case ACTION_GO_DOWN_STAIRS:
+                case EVENT_GO_DOWN_STAIRS:
                         if(game->currentlevel < game->createddungeons) {
                                 tmpy = world->curlevel->c[ply][plx].desty;
                                 tmpx = world->curlevel->c[ply][plx].destx;
@@ -588,7 +587,7 @@ bool do_action(action_t *aqe)
                         }
                         init_pathfinding(player);
                         break;
-                case ACTION_GO_UP_STAIRS:
+                case EVENT_GO_UP_STAIRS:
                         tmpy = ply; tmpx = plx;
                         ply = world->curlevel->c[tmpy][tmpx].desty;
                         plx = world->curlevel->c[tmpy][tmpx].destx;
@@ -605,49 +604,49 @@ bool do_action(action_t *aqe)
                         init_pathfinding(player);
                         //floodfill(world->curlevel, player->y, player->x);
                         break;
-                case ACTION_WIELDWEAR:
-                        o = (obj_t *) actiondata;
+                case EVENT_WIELDWEAR:
+                        o = (obj_t *) eventdata;
                         if(o)
                                 wieldwear(player, o);
                         else
                                 gtprintf("You don't have that!");
                         break;
-                case ACTION_UNWIELDWEAR:
-                        o = (obj_t *) actiondata;
+                case EVENT_UNWIELDWEAR:
+                        o = (obj_t *) eventdata;
                         if(o)
                                 unwieldwear(player, o);
                         else
                                 gtprintf("You don't have that!");
 
                         break;
-                case ACTION_QUAFF:
-                        o = (obj_t *) actiondata;
+                case EVENT_QUAFF:
+                        o = (obj_t *) eventdata;
                         if(o)
                                 quaff(player, o);
                         else
                                 gtprintf("You don't have that!");
                         break;
-                case ACTION_DROP:
-                        o = (obj_t *) actiondata;
+                case EVENT_DROP:
+                        o = (obj_t *) eventdata;
                         if(o)
                                 drop(player, o);
                         else
                                 gtprintf("You don't have that!");
                         break;  
-                case ACTION_FIX_VIEW:
+                case EVENT_FIX_VIEW:
                         fixview();
                         break;
-                case ACTION_HEAL_PLAYER:   // TODO: fix player healing!
+                case EVENT_HEAL_PLAYER:   // TODO: fix player healing!
                         increase_hp(player, 1);
                         break;
-                case ACTION_MAKE_DISTANCEMAP:
+                case EVENT_MAKE_DISTANCEMAP:
                         makedistancemap(player->y, player->x);
                         break;
-                case ACTION_MOVE_MONSTER:
+                case EVENT_MOVE_MONSTER:
                         if(aqe)
                                 move_monster(aqe->monster);
                         break;
-                case ACTION_PLAYER_NEXTMOVE:
+                case EVENT_PLAYER_NEXTMOVE:
                         process_player_input();
 
                         i = 17 - pphy;
@@ -656,36 +655,16 @@ bool do_action(action_t *aqe)
 
                         if(!(game->tick % i)) {
                                 if(perc(40+pphy))
-                                        schedule_action(ACTION_HEAL_PLAYER, player);
+                                        schedule_event(EVENT_HEAL_PLAYER, player);
                         }
                         
-                        schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 0, 1);
+                        schedule_event_delayed(EVENT_PLAYER_NEXTMOVE, player, 0, 1);
                         break;
-                /*case ACTION_DECREASE_INVISIBILITY:
-                        aqe->actor->temp[TEMP_INVISIBLE] -= 1;
-                        if(aqe->actor->temp[TEMP_INVISIBLE] == 0)
-                                oe_invisibility(aqe->actor, NULL, 0, false);
-                        break;
-                //case ACTION_DECREASE_TEMP_CHARISMA:
-                        //aqe->actor->temp[TEMP_CHARISMA] -= 1;
-                        //if(aqe->actor->temp[TEMP_CHARISMA] == 0)
-                                //oe_charisma(aqe->actor, 
-                        //break; 
-                case ACTION_DECREASE_TEMP_STRENGTH:
-                        aqe->actor->temp[TEMP_STRENGTH] -= 1;
-                        if(aqe->actor->temp[TEMP_STRENGTH] == 0)
-                                oe_strength(aqe->actor, aqe->object, aqe->gain, false);
-                        break;
-                case ACTION_DECREASE_TEMP_WISDOM:
-                        aqe->actor->temp[TEMP_WISDOM] -= 1;
-                        if(aqe->actor->temp[TEMP_WISDOM] == 0)
-                                oe_wisdom(aqe->actor, aqe->object, aqe->gain, false);
-                        break;*/
-                case ACTION_NOTHING:
+                case EVENT_NOTHING:
                         break;
                 default:
-                        fprintf(stderr, "DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, aqe->action);
-                        gtprintf("DEBUG: %s:%d - Unknown action %d attempted!\n", __FILE__, __LINE__, aqe->action);
+                        fprintf(stderr, "DEBUG: %s:%d - Unknown event %d attempted!\n", __FILE__, __LINE__, aqe->event);
+                        gtprintf("DEBUG: %s:%d - Unknown event %d attempted!\n", __FILE__, __LINE__, aqe->event);
                         break;
         }
 
@@ -698,86 +677,86 @@ bool do_action(action_t *aqe)
         return fullturn;
 }
 
-int get_next_free_action_slot()
+int get_next_free_event_slot()
 {
         int i;
 
         for(i = 1; i < MAXACT; i++) {
-                if(act[i].action == ACTION_FREESLOT)
+                if(eventlist[i].event == EVENT_FREESLOT)
                         return i;
         }
 
         return 0;
 }
 
-int schedule_action(int action, actor_t *actor)
+int schedule_event(int event, actor_t *actor)
 {
         int i;
 
-        i = get_next_free_action_slot();
+        i = get_next_free_event_slot();
         if(!i)
-                die("fatal! no free slots in action queue!");
+                die("fatal! no free slots in event queue!");
 
-        act[i].action = action;
-        act[i].tick = game->tick + actor->speed;
-        act[i].actor = actor;
-        //gtprintfc(COLOR_SKYBLUE, "Scheduled action %s at tick %d!", action_name[action], act[i].tick);
+        eventlist[i].event = event;
+        eventlist[i].tick = game->tick + actor->speed;
+        eventlist[i].actor = actor;
+        //gtprintfc(COLOR_SKYBLUE, "Scheduled event %s at tick %d!", event_name[event], eventlist[i].tick);
 
         return i;
 }
 
-int schedule_action_delayed(int action, actor_t *actor, obj_t *object, int delay)
+int schedule_event_delayed(int event, actor_t *actor, obj_t *object, int delay)
 {
         int i;
 
-        i = get_next_free_action_slot();
+        i = get_next_free_event_slot();
         if(!i)
-                die("fatal! no free slots in action queue!");
+                die("fatal! no free slots in event queue!");
 
-        act[i].action = action;
-        act[i].tick = game->tick + actor->speed + delay;
-        act[i].actor = actor;
-        act[i].object = object;
-        //gtprintfc(COLOR_SKYBLUE, "Scheduled delayed action %s at tick %d!", action_name[action], act[i].tick);
+        eventlist[i].event = event;
+        eventlist[i].tick = game->tick + actor->speed + delay;
+        eventlist[i].actor = actor;
+        eventlist[i].object = object;
+        //gtprintfc(COLOR_SKYBLUE, "Scheduled delayed event %s at tick %d!", event_name[event], eventlist[i].tick);
 
         return i;
 }
 
-int schedule_action_immediately(int action, actor_t *actor)
+int schedule_event_immediately(int event, actor_t *actor)
 {
         int i;
-        action_t a;
+        event_t a;
 
-        i = get_next_free_action_slot();
+        i = get_next_free_event_slot();
         if(!i)
-                die("fatal! no free slots in action queue!");
+                die("fatal! no free slots in event queue!");
 
-        a.action = action;
+        a.event = event;
         a.tick = game->tick;
 
 
-        //gtprintfc(COLOR_SKYBLUE, "Doing action immediately - %s at tick %d (game->tick = %d)!", action_name[action], act[i].tick, game->tick);
-        do_action(&a);
+        //gtprintfc(COLOR_SKYBLUE, "Doing event immediately - %s at tick %d (game->tick = %d)!", event_name[event], eventlist[i].tick, game->tick);
+        do_event(&a);
 
         return i;
 }
 
-void unschedule_action(int index)
+void unschedule_event(int index)
 {
-        act[index].action  = ACTION_FREESLOT;
-        act[index].tick    = 0;
-        act[index].monster = 0;
-        act[index].object  = 0;
+        eventlist[index].event  = EVENT_FREESLOT;
+        eventlist[index].tick    = 0;
+        eventlist[index].monster = 0;
+        eventlist[index].object  = 0;
 }
 
 void schedule_monster(monster_t *m)
 {
         int i;
 
-        i = schedule_action(ACTION_MOVE_MONSTER, m);
-        act[i].monster = m;
+        i = schedule_event(EVENT_MOVE_MONSTER, m);
+        eventlist[i].monster = m;
 
-        //gtprintfc(COLOR_SKYBLUE, "Scheduled monster %s at tick %d", m->name, act[i].tick);
+        //gtprintfc(COLOR_SKYBLUE, "Scheduled monster %s at tick %d", m->name, eventlist[i].tick);
 }
 
 void unschedule_all_monsters()
@@ -785,30 +764,30 @@ void unschedule_all_monsters()
         int i;
 
         for(i = 0; i < MAXACT; i++) {
-                if(act[i].action == ACTION_MOVE_MONSTERS || act[i].action == ACTION_MOVE_MONSTER)
-                        unschedule_action(i);
+                if(eventlist[i].event == EVENT_MOVE_MONSTERS || eventlist[i].event == EVENT_MOVE_MONSTER)
+                        unschedule_event(i);
         }
 }
 
 /**
- * @brief Queue more than one instance of the same action.
+ * @brief Queue more than one instance of the same event.
  *
  * @param num How many instances.
- * @param action Which action to queue - see \ref group_actions "ACTION-defines" in gt.h
+ * @param event Which event to queue - see \ref group_events "EVENT-defines" in gt.h
  */
-void schedule_actionx(int num, int action, actor_t *actor)
+void schedule_eventx(int num, int event, actor_t *actor)
 {
         int i;
 
         for(i=0; i<num; i++)
-                schedule_action(action, actor);
+                schedule_event(event, actor);
 }
 
 /**
- * @brief Add several, possibly different, actions to the action queue.
+ * @brief Add several, possibly different, events to the event queue.
  *
- * @param first The first action to add (see \ref group_actions "ACTION-defines")
- * @param ... Additional actions to add. The last argument has to be ENDOFLIST.
+ * @param first The first event to add (see \ref group_events "EVENT-defines")
+ * @param ... Additional events to add. The last argument has to be ENDOFLIST.
  */
 void queuemany(actor_t *actor, int first, ...)
 {
@@ -816,11 +795,11 @@ void queuemany(actor_t *actor, int first, ...)
         int i;
 
         va_start(args, first);
-        schedule_action(first, actor);
+        schedule_event(first, actor);
 
         i = va_arg(args, int);
         while(i != ENDOFLIST) {
-                schedule_action(i, actor);
+                schedule_event(i, actor);
                 i = va_arg(args, int);
         }
         va_end(args);
@@ -831,7 +810,7 @@ void process_autopickup()
         if(ci(ply, plx)) {
                 if(ci(ply, plx) && ci(ply, plx)->gold) {
                         if(gtconfig.ap[OT_GOLD])
-                                schedule_action_immediately(ACTION_PICKUP, player);
+                                schedule_event_immediately(EVENT_PICKUP, player);
                 }
 
                 if(ci(ply, plx)->num_used > 0) {
@@ -845,7 +824,7 @@ void process_autopickup()
 
                                 ob = ci(ply, plx)->object[slot];
                                 if(gtconfig.ap[ob->type] && !hasbit(ob->flags, OF_DONOTAP)) {
-                                        schedule_action_immediately(ACTION_PICKUP, player);
+                                        schedule_event_immediately(EVENT_PICKUP, player);
                                 }
                         }
                 }
@@ -923,10 +902,10 @@ void do_everything_at_tick(int tick)
         int i;
 
         for(i = 0; i < MAXACT; i++) {
-                if(act[i].action >= 0) {
-                        if(act[i].tick == tick) {
-                                do_action(&act[i]);
-                                unschedule_action(i);
+                if(eventlist[i].event >= 0) {
+                        if(eventlist[i].tick == tick) {
+                                do_event(&eventlist[i]);
+                                unschedule_event(i);
                         }
                 }
         }
@@ -939,7 +918,7 @@ void increase_ticks(int i)
 }
 
 /**
- * @brief Do a complete turn. This should take into account the player's speed, and schedule other actions accordingly.
+ * @brief Do a complete turn. This should take into account the player's speed, and schedule other events accordingly.
  */
 void do_turn()
 {
@@ -947,7 +926,7 @@ void do_turn()
 
         //gtprintf("Started do_turn. ---------------------------------------");
 
-        //dump_action_queue();
+        //dump_event_queue();
         //update_screen();
         //look();
         
@@ -978,7 +957,7 @@ void do_turn()
 }
 
 /**
- * @brief Catch a signal and perform an action (currently, that action is to exit).
+ * @brief Catch a signal and perform an event (currently, that event is to exit).
  */
 void catchsignal()
 {
@@ -990,7 +969,7 @@ void catchsignal()
 }
 
 /**
- * @brief Get a command from the player, and schedule the appropriate action.
+ * @brief Get a command from the player, and schedule the appropriate event.
  *
  */
 void process_player_input()
@@ -1012,69 +991,69 @@ void process_player_input()
                 case CMD_QUIT:
                         game->dead = 1;
                         break;
-                case CMD_DOWN:  schedule_action(ACTION_PLAYER_MOVE_DOWN, player); break;
-                case CMD_UP:    schedule_action(ACTION_PLAYER_MOVE_UP, player); break;
-                case CMD_LEFT:  schedule_action(ACTION_PLAYER_MOVE_LEFT, player); break;
-                case CMD_RIGHT: schedule_action(ACTION_PLAYER_MOVE_RIGHT, player); break;
-                case CMD_NW:    schedule_action(ACTION_PLAYER_MOVE_NW, player); break;
-                case CMD_NE:    schedule_action(ACTION_PLAYER_MOVE_NE, player); break;
-                case CMD_SW:    schedule_action(ACTION_PLAYER_MOVE_SW, player); break;
-                case CMD_SE:    schedule_action(ACTION_PLAYER_MOVE_SE, player); break;
+                case CMD_DOWN:  schedule_event(EVENT_PLAYER_MOVE_DOWN, player); break;
+                case CMD_UP:    schedule_event(EVENT_PLAYER_MOVE_UP, player); break;
+                case CMD_LEFT:  schedule_event(EVENT_PLAYER_MOVE_LEFT, player); break;
+                case CMD_RIGHT: schedule_event(EVENT_PLAYER_MOVE_RIGHT, player); break;
+                case CMD_NW:    schedule_event(EVENT_PLAYER_MOVE_NW, player); break;
+                case CMD_NE:    schedule_event(EVENT_PLAYER_MOVE_NE, player); break;
+                case CMD_SW:    schedule_event(EVENT_PLAYER_MOVE_SW, player); break;
+                case CMD_SE:    schedule_event(EVENT_PLAYER_MOVE_SE, player); break;
                 case CMD_WIELDWEAR:
                                 l = ask_char("Which item would you like to wield/wear?");
-                                actiondata = (void *) get_object_from_letter(l, player->inventory);
-                                schedule_action(ACTION_WIELDWEAR, player);
+                                eventdata = (void *) get_object_from_letter(l, player->inventory);
+                                schedule_event(EVENT_WIELDWEAR, player);
                                 break;
                 case CMD_UNWIELDWEAR:
                                 l = ask_char("Which item would you like to remove/unwield?");
-                                actiondata = (void *) get_object_from_letter(l, player->inventory);
-                                schedule_action(ACTION_UNWIELDWEAR, player);
+                                eventdata = (void *) get_object_from_letter(l, player->inventory);
+                                schedule_event(EVENT_UNWIELDWEAR, player);
                                 break;
                 case CMD_DROP:
                                 l = ask_char("Which item would you like to drop?");
-                                actiondata = (void *) get_object_from_letter(l, player->inventory);
-                                schedule_action(ACTION_DROP, player);
+                                eventdata = (void *) get_object_from_letter(l, player->inventory);
+                                schedule_event(EVENT_DROP, player);
                                 break;
                 case CMD_LONGDOWN:
-                                schedule_actionx(20, ACTION_PLAYER_MOVE_DOWN, player);
+                                schedule_eventx(20, EVENT_PLAYER_MOVE_DOWN, player);
                                 break;
                 case CMD_LONGUP:
-                                schedule_actionx(20, ACTION_PLAYER_MOVE_UP, player);
+                                schedule_eventx(20, EVENT_PLAYER_MOVE_UP, player);
                                 break;
                 case CMD_LONGLEFT:
-                                schedule_actionx(20, ACTION_PLAYER_MOVE_LEFT, player);
+                                schedule_eventx(20, EVENT_PLAYER_MOVE_LEFT, player);
                                 break;
                 case CMD_LONGRIGHT:
-                                schedule_actionx(20, ACTION_PLAYER_MOVE_RIGHT, player);
+                                schedule_eventx(20, EVENT_PLAYER_MOVE_RIGHT, player);
                                 break;
                 case CMD_TOGGLEFOV:
                                 gtprintf("Setting all cells to visible.");
                                 set_level_visited(world->curlevel);
-                                schedule_action(ACTION_NOTHING, player);
+                                schedule_event(EVENT_NOTHING, player);
                                 break;
                 case CMD_SPAWNMONSTER:
                                 spawn_monster_at(ply+5, plx+5, ri(1, game->monsterdefs), world->curlevel->monsters, world->curlevel, 100);
                                 //dump_monsters(world->curlevel->monsters);
-                                schedule_action(ACTION_NOTHING, player);
+                                schedule_event(EVENT_NOTHING, player);
                                 break;
                 case CMD_WIZARDMODE:
-                                game->wizardmode = (game->wizardmode ? false : true); schedule_action(ACTION_NOTHING, player);
+                                game->wizardmode = (game->wizardmode ? false : true); schedule_event(EVENT_NOTHING, player);
                                 gtprintf("Wizard mode %s!", game->wizardmode ? "on" : "off");
                                 break;
                 case CMD_SAVE:
                                 save_game(game->savefile);
-                                schedule_action(ACTION_NOTHING, player);
+                                schedule_event(EVENT_NOTHING, player);
                                 break;
                 case CMD_LOAD:
                                 if(!load_game(game->savefile, 1))
                                         gtprintf("Loading failed!");
                                 else
                                         gtprintf("Loading successful!");
-                                schedule_action(ACTION_NOTHING, player);
+                                schedule_event(EVENT_NOTHING, player);
                                 break;
                 case CMD_DUMPOBJECTS:
                                 dump_objects(world->curlevel->c[ply][plx].inventory);
-                                schedule_action(ACTION_NOTHING, player);
+                                schedule_event(EVENT_NOTHING, player);
                                 break;
                 case CMD_INCFOV:
                                 //player->viewradius++;
@@ -1082,7 +1061,7 @@ void process_player_input()
                                 //world->out->lakelimit++;
                                 //generate_terrain(1);
                                 //gtprintf("lakelimit = %d", world->out->lakelimit);
-                                schedule_action(ACTION_NOTHING, player);
+                                schedule_event(EVENT_NOTHING, player);
                                 break;
                 case CMD_DECFOV:
                                 //player->viewradius--;
@@ -1090,7 +1069,7 @@ void process_player_input()
                                 //world->out->lakelimit--;
                                 //generate_terrain(1);
                                 //gtprintf("lakelimit = %d", world->out->lakelimit);
-                                schedule_action(ACTION_NOTHING, player);
+                                schedule_event(EVENT_NOTHING, player);
                                 break;
                 case CMD_FLOODFILL:
                                 x = ri(11, world->curlevel->xsize);
@@ -1101,24 +1080,24 @@ void process_player_input()
                                 }
                                 gtprintf("floodfilling from %d, %d\n", y, x);
                                 floodfill(world->curlevel, y, x);
-                                schedule_action(ACTION_NOTHING, player);
+                                schedule_event(EVENT_NOTHING, player);
                                 break;
                 case CMD_INVENTORY:
-                                schedule_action(ACTION_NOTHING, player);
+                                schedule_event(EVENT_NOTHING, player);
                                 dump_objects(player->inventory);
                                 break;
                 case CMD_PICKUP:
-                                schedule_action(ACTION_PICKUP, player);
+                                schedule_event(EVENT_PICKUP, player);
                                 break;
                 case CMD_QUAFF:
                                 l = ask_char("Which potion would you like to drink?");
-                                actiondata = (void *) get_object_from_letter(l, player->inventory);
-                                schedule_action(ACTION_QUAFF, player);
+                                eventdata = (void *) get_object_from_letter(l, player->inventory);
+                                schedule_event(EVENT_QUAFF, player);
                                 break;
                 case CMD_DESCEND:
                                 if(hasbit(cf(ply,plx), CF_HAS_STAIRS_DOWN)) {
-                                        schedule_action(ACTION_GO_DOWN_STAIRS, player);
-                                        schedule_action(ACTION_FIX_VIEW, player);
+                                        schedule_event(EVENT_GO_DOWN_STAIRS, player);
+                                        schedule_event(EVENT_FIX_VIEW, player);
                                         unschedule_all_monsters();
                                 } else {
                                         gtprintf("You can't go up here!");
@@ -1126,25 +1105,25 @@ void process_player_input()
                                 break;
                 case CMD_ASCEND:
                                 if(hasbit(cf(ply,plx), CF_HAS_STAIRS_UP)) {
-                                        schedule_action(ACTION_GO_UP_STAIRS, player);
-                                        schedule_action(ACTION_FIX_VIEW, player);
+                                        schedule_event(EVENT_GO_UP_STAIRS, player);
+                                        schedule_event(EVENT_FIX_VIEW, player);
                                         unschedule_all_monsters();
                                 } else {
                                         gtprintf("You can't go up here!");
                                 }
                                 break;
                 case CMD_REST:
-                                schedule_action(ACTION_NOTHING, player);
+                                schedule_event(EVENT_NOTHING, player);
                                 break;
                 case CMD_PATHFINDER: break;
                 case CMD_AUTOEXPLORE:
                                      autoexplore();
                                      break;
                 case CMD_DUMPAQ:
-                                     dump_action_queue();
+                                     dump_event_queue();
                                      break;
                 default:
-                                     schedule_action(ACTION_NOTHING, player);
+                                     schedule_event(EVENT_NOTHING, player);
                                      break;
         }
 }
@@ -1218,14 +1197,14 @@ int main(int argc, char *argv[])
 
                 // then move down a level...
                 move_player_to_stairs_down(0);
-                do_one_action(ACTION_GO_DOWN_STAIRS);
+                do_one_event(EVENT_GO_DOWN_STAIRS);
                 fixview();
         }
 
         init_commands();
         init_pathfinding(player);
         initial_update_screen();
-        schedule_action_delayed(ACTION_PLAYER_NEXTMOVE, player, 0, 1);
+        schedule_event_delayed(EVENT_PLAYER_NEXTMOVE, player, 0, 1);
 
         game_loop();
 

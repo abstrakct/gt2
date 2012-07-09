@@ -59,21 +59,6 @@ effectfunctionpointer effecttable[] = {
         oe_invisibility
 };
 
-/*
-void add_temporary_effect(actor_t *actor, int duration, int effect, int action, obj_t *object, int gain)
-{
-        int i, j;
-
-        for(i = 0; i < (duration*10); i += 10) {
-                j = schedule_action_delayed(action, actor, object, i);
-                if(object->effect[effect].negative)
-                        act[j].gain = -gain;
-                else
-                        act[j].gain = gain;
-        }
-}
-*/
-
 int get_first_free_temp_effect_slot(actor_t *actor)
 {
         int i;

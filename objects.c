@@ -99,8 +99,10 @@ obj_t *get_object_by_oid(inv_t *i, int oid)
         int j;
 
         for(j = 0; j < 52; j++) {
-                if(i->object[j]->oid == oid)
-                        return i->object[j];;
+                if(i->object[j]) {
+                        if(i->object[j]->oid == oid)
+                                return i->object[j];;
+                }
         }
 
         return 0;

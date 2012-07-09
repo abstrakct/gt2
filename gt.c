@@ -637,7 +637,7 @@ bool do_action(action_t *aqe)
                 case ACTION_FIX_VIEW:
                         fixview();
                         break;
-                case ACTION_HEAL_PLAYER:
+                case ACTION_HEAL_PLAYER:   // TODO: fix player healing!
                         increase_hp(player, 1);
                         break;
                 case ACTION_MAKE_DISTANCEMAP:

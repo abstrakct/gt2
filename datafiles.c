@@ -72,6 +72,37 @@ int parse_roomdef_files()
         return parse_roomdef_file("data/room/despair.1.room");
 }
 
+/* Various functions for parsing stuff common to many objects */
+
+short parse_rarity(obj_t *o, char *name)
+{
+        const char *value;
+        short rarity;
+
+        config_lookup_string(cf, name, &value);
+        if(!strcmp(value, "very common"))
+                rarity = VERYCOMMON;
+        else if(!strcmp(value, "common"))
+                rarity = COMMON;
+        else if(!strcmp(value, "uncommon"))
+                rarity = UNCOMMON;
+        else if(!strcmp(value, "rare"))
+                rarity = RARE;
+        else if(!strcmp(value, "very rare"))
+                rarity = VERYRARE;
+        else {                                          // assume it's common if nothing else is specified
+                if(!hasbit(o->flags, OF_UNIQUE))
+                        rarity = COMMON;
+                else
+                        rarity = UNIQUE;
+        }
+
+        return rarity;
+}
+
+
+/* And now, the actual parsing of files */
+
 int parse_monsters()
 {
         config_setting_t *cfg_monsters;
@@ -243,23 +274,7 @@ int parse_armor()
                 o->ac = x;
 
                 sprintf(sname, "armor.[%d].rarity", j);
-                config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "very common"))
-                        o->rarity = VERYCOMMON;
-                else if(!strcmp(value, "common"))
-                        o->rarity = COMMON;
-                else if(!strcmp(value, "uncommon"))
-                        o->rarity = UNCOMMON;
-                else if(!strcmp(value, "rare"))
-                        o->rarity = RARE;
-                else if(!strcmp(value, "very rare"))
-                        o->rarity = VERYRARE;
-                else {                                          // assume it's common if nothing else is specified
-                        if(!hasbit(o->flags, OF_UNIQUE))
-                                o->rarity = COMMON;
-                        else
-                                o->rarity = UNIQUE;
-                }
+                o->rarity = parse_rarity(o, sname);
 
                 sprintf(sname, "armor.[%d].unique", j);
                 config_lookup_bool(cf, sname, &x);
@@ -381,22 +396,7 @@ int parse_weapons()
 
                 sprintf(sname, "weapon.[%d].rarity", j);
                 config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "very common"))
-                        o->rarity = VERYCOMMON;
-                else if(!strcmp(value, "common"))
-                        o->rarity = COMMON;
-                else if(!strcmp(value, "uncommon"))
-                        o->rarity = UNCOMMON;
-                else if(!strcmp(value, "rare"))
-                        o->rarity = RARE;
-                else if(!strcmp(value, "very rare"))
-                        o->rarity = VERYRARE;
-                else {                                          // assume it's common if nothing else is specified
-                        if(!hasbit(o->flags, OF_UNIQUE))
-                                o->rarity = COMMON;
-                        else
-                                o->rarity = UNIQUE;
-                }
+                o->rarity = parse_rarity(o, sname);
 
                 x = 0;
                 sprintf(sname, "weapon.[%d].mod", j);
@@ -464,23 +464,7 @@ int parse_amulet()
                         setbit(o->flags, OF_OBVIOUS);
 
                 sprintf(sname, "amulet.[%d].rarity", j);
-                config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "very common"))
-                        o->rarity = VERYCOMMON;
-                else if(!strcmp(value, "common"))
-                        o->rarity = COMMON;
-                else if(!strcmp(value, "uncommon"))
-                        o->rarity = UNCOMMON;
-                else if(!strcmp(value, "rare"))
-                        o->rarity = RARE;
-                else if(!strcmp(value, "very rare"))
-                        o->rarity = VERYRARE;
-                else {                                          // assume it's common if nothing else is specified
-                        if(!hasbit(o->flags, OF_UNIQUE))
-                                o->rarity = COMMON;
-                        else
-                                o->rarity = UNIQUE;
-                }
+                o->rarity = parse_rarity(o, sname);
 
                 x = 0;
                 /*sprintf(sname, "amulet.[%d].mod", j);
@@ -567,22 +551,7 @@ int parse_bracelet()
 
                 sprintf(sname, "bracelet.[%d].rarity", j);
                 config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "very common"))
-                        o->rarity = VERYCOMMON;
-                else if(!strcmp(value, "common"))
-                        o->rarity = COMMON;
-                else if(!strcmp(value, "uncommon"))
-                        o->rarity = UNCOMMON;
-                else if(!strcmp(value, "rare"))
-                        o->rarity = RARE;
-                else if(!strcmp(value, "very rare"))
-                        o->rarity = VERYRARE;
-                else {                                          // assume it's common if nothing else is specified
-                        if(!hasbit(o->flags, OF_UNIQUE))
-                                o->rarity = COMMON;
-                        else
-                                o->rarity = UNIQUE;
-                }
+                o->rarity = parse_rarity(o, sname);
 
                 x = 0;
                 sprintf(sname, "bracelet.[%d].mod", j);
@@ -760,22 +729,7 @@ int parse_potions()
 
                 sprintf(sname, "potion.[%d].rarity", j);
                 config_lookup_string(cf, sname, &value);
-                if(!strcmp(value, "very common"))
-                        o->rarity = VERYCOMMON;
-                else if(!strcmp(value, "common"))
-                        o->rarity = COMMON;
-                else if(!strcmp(value, "uncommon"))
-                        o->rarity = UNCOMMON;
-                else if(!strcmp(value, "rare"))
-                        o->rarity = RARE;
-                else if(!strcmp(value, "very rare"))
-                        o->rarity = VERYRARE;
-                else {                                          // assume it's common if nothing else is specified
-                        if(!hasbit(o->flags, OF_UNIQUE))
-                                o->rarity = COMMON;
-                        else
-                                o->rarity = UNIQUE;
-                }
+                o->rarity = parse_rarity(o, sname);
 
                 o->type = OT_POTION;
                 o->id = objid; objid++;

@@ -225,6 +225,7 @@ void save_player(actor_t *p, FILE *f)
         s.xp = p->xp;
         s.ac = p->ac;
         s.attr = p->attr;
+        s.attrmod = p->attrmod;
         s.level = p->level;
         s.race = p->race;
         s.cla = p->cla;
@@ -617,6 +618,7 @@ bool load_player(actor_t *p, FILE *f)
         p->xp = s.xp;
         p->ac = s.ac;
         p->attr = s.attr;
+        p->attrmod = s.attrmod;
         p->level = s.level;
         p->race = s.race;
         p->cla = s.cla;

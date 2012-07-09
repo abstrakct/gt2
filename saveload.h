@@ -59,6 +59,7 @@ struct player_save_struct {
         int     xp;
         short   ac;
         uattr_t attr;
+        sattr_t attrmod;
         int     level;
         short   race, cla;
         int     weapon;              // save OID of weapon!

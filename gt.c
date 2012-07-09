@@ -103,8 +103,8 @@ void init_variables()
         objdefs = (obj_t *) gtmalloc(sizeof(obj_t));
         objdefs->head = objdefs;
 
-        eventlist = (event_t *) gtmalloc(sizeof(event_t) * MAXACT);
-        for(i=0;i<MAXACT;i++)
+        eventlist = (event_t *) gtmalloc(sizeof(event_t) * MAXEVENTS);
+        for(i=0;i<MAXEVENTS;i++)
                 eventlist[i].event = EVENT_FREESLOT;
 
         world = (world_t *) gtmalloc(sizeof(world_t));
@@ -281,7 +281,7 @@ void do_one_event(int event)
  * @brief Do an event.
  *
  */
-bool do_event(event_t *aqe)
+bool do_event(event_t *ev)
 {
         int oldy, oldx;
         int tmpy, tmpx;
@@ -291,9 +291,9 @@ bool do_event(event_t *aqe)
 
         oldy = ply; oldx = plx;
         fullturn = true;
-        //gtprintf("Doing event %s %s", event_name[aqe->event], aqe ? (aqe->monster ? aqe->monster->name : " ") : " ");
+        //gtprintf("Doing event %s %s", event_name[ev->event], ev ? (ev->monster ? ev->monster->name : " ") : " ");
 
-        switch(aqe->event) {
+        switch(ev->event) {
                 case EVENT_PLAYER_MOVE_DOWN:
                         if(passable(world->curlevel, ply+1, plx)) {
                                 if(world->curlevel->c[ply+1][plx].monster) {
@@ -643,8 +643,8 @@ bool do_event(event_t *aqe)
                         makedistancemap(player->y, player->x);
                         break;
                 case EVENT_MOVE_MONSTER:
-                        if(aqe)
-                                move_monster(aqe->monster);
+                        if(ev)
+                                move_monster(ev->monster);
                         break;
                 case EVENT_PLAYER_NEXTMOVE:
                         process_player_input();
@@ -663,8 +663,8 @@ bool do_event(event_t *aqe)
                 case EVENT_NOTHING:
                         break;
                 default:
-                        fprintf(stderr, "DEBUG: %s:%d - Unknown event %d attempted!\n", __FILE__, __LINE__, aqe->event);
-                        gtprintf("DEBUG: %s:%d - Unknown event %d attempted!\n", __FILE__, __LINE__, aqe->event);
+                        fprintf(stderr, "DEBUG: %s:%d - Unknown event %d attempted!\n", __FILE__, __LINE__, ev->event);
+                        gtprintf("DEBUG: %s:%d - Unknown event %d attempted!\n", __FILE__, __LINE__, ev->event);
                         break;
         }
 
@@ -681,7 +681,7 @@ int get_next_free_event_slot()
 {
         int i;
 
-        for(i = 1; i < MAXACT; i++) {
+        for(i = 1; i < MAXEVENTS; i++) {
                 if(eventlist[i].event == EVENT_FREESLOT)
                         return i;
         }
@@ -763,7 +763,7 @@ void unschedule_all_monsters()
 {
         int i;
 
-        for(i = 0; i < MAXACT; i++) {
+        for(i = 0; i < MAXEVENTS; i++) {
                 if(eventlist[i].event == EVENT_MOVE_MONSTERS || eventlist[i].event == EVENT_MOVE_MONSTER)
                         unschedule_event(i);
         }
@@ -901,7 +901,7 @@ void do_everything_at_tick(int tick)
 {
         int i;
 
-        for(i = 0; i < MAXACT; i++) {
+        for(i = 0; i < MAXEVENTS; i++) {
                 if(eventlist[i].event >= 0) {
                         if(eventlist[i].tick == tick) {
                                 do_event(&eventlist[i]);

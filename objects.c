@@ -106,6 +106,18 @@ obj_t *get_object_by_oid(inv_t *i, int oid)
         return 0;
 }
 
+obj_t *get_object_by_oid_from_masterlist(int oid)
+{
+        int i;
+
+        for(i = 0; i < 2000; i++) {
+                if(game->objects[i]->oid == oid)
+                        return game->objects[i];
+        }
+
+        return 0;
+}
+
 int get_objdef_by_name(char *wanted)
 {
         obj_t *o;

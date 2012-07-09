@@ -109,7 +109,7 @@ void dump_event_queue()
 {
         int i;
 
-        for(i = 0; i < MAXACT; i++) {
+        for(i = 0; i < MAXEVENTS; i++) {
                 if(eventlist[i].event != EVENT_FREESLOT)
                         gtprintf("%d:   event %s (%d) - tick %d", i, event_name[eventlist[i].event], eventlist[i].event, eventlist[i].tick);
         }

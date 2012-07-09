@@ -76,27 +76,17 @@ typedef struct {                              // message_t
         char text[250];
 } message_t;
 
-struct eventqueue {                          // struct eventqueue
-        struct eventqueue *head;             //!< Pointer to the head of the eventqueue
-        struct eventqueue *next;             //!< Pointer to the next item in the queue
-        int event;                           //!< Which event is it? See \ref group_events "EVENT_defines"
-        long num;                             //!< In the head, this contains the number of events in the queue, for a specific event it signifies which number the event is overall (e.g. if it's the tenth event performed in the game, the two-thousandth, or whatever).
-        int  tick;                            //!< At which tick should this event be performed?
-        monster_t *monster;
-        obj_t *object;
-};
-
 typedef struct event {
-        int        event;
+        short      event;
         int        tick;
         monster_t *monster;
         obj_t     *object;
         actor_t   *actor;
-        int        gain;                      // for temporary effects
+        short      gain;                      // for temporary effects
 //        bool       completed;
 } event_t;
 
-#define MAXACT 100
+#define MAXEVENTS 100
 
 /** @defgroup group_events Group of event defines
  * @{
@@ -176,9 +166,6 @@ extern event_t            *eventlist;
 
 
 /* function prototypes */
-
-//struct eventqueue* schedule_event(int event, actor_t *actor);
-//struct eventqueue* schedule_event_delayed(int event, actor_t *actor, int delay);
 
 int get_next_free_event_slot();
 int schedule_event(int event, actor_t *actor);

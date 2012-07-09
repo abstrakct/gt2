@@ -24,6 +24,18 @@
 #include "utils.h"
 
 /*
+ * Rough structure of the save file:
+ *
+ * - header struct
+ * - gtconfig struct
+ * - game struct
+ * - the player (player_save_struct)
+ * - the monsterdefs (monsterdef_save_struct)
+ * - the objectdefs (objdef_save_struct)
+ * - the levels
+ */
+
+/*
  * write one object
  */
 void save_object(obj_t *o, FILE *f)
@@ -238,12 +250,24 @@ void save_player(actor_t *p, FILE *f)
         save_inventory(player->inventory, f);
 }
 
-void save_eventqueue(FILE *f)
+void save_eventlist(FILE *f)
 {
-        int i;
+        int i, x;
 
-        fwrite("EVENTQUEUE", sizeof(char), 11, f);
-        for(i = 0; i < MAXACT; i++) {
+        fwrite("EVENTLIST", sizeof(char), 9, f);
+        for(i = 0; i < MAXEVENTS; i++) {
+                fwrite(&eventlist[i].event, sizeof(short), 1, f);
+                fwrite(&eventlist[i].tick,  sizeof(int),   1, f);
+                fwrite(&eventlist[i].gain,  sizeof(short), 1, f);
+
+                x = eventlist[i].object ? eventlist[i].object->oid : 0;
+                fwrite(&x, sizeof(int), 1, f);
+
+                x = eventlist[i].monster ? eventlist[i].monster->mid : 0;
+                fwrite(&x, sizeof(int), 1, f);
+
+                x = eventlist[i].actor ? (eventlist[i].actor == player ? -577 : eventlist[i].actor->mid) : 0;
+                fwrite(&x, sizeof(int), 1, f);
         } 
 }
 
@@ -251,18 +275,6 @@ void generate_savefilename(char *filename)
 {
         sprintf(filename, "%s/%d.gtsave", SAVE_DIRECTORY, game->seed);
 }
-
-/*
- * Rough structure of the save file:
- *
- * - header struct
- * - gtconfig struct
- * - game struct
- * - the player (player_save_struct)
- * - the monsterdefs (monsterdef_save_struct)
- * - the objectdefs (objdef_save_struct)
- * - the levels
- */
 
 bool save_game(char *filename)
 {
@@ -309,8 +321,8 @@ bool save_game(char *filename)
         for(i=1; i<=game->createddungeons; i++)
                 save_level(&world->dng[i], f);
 
-        /* finally, the schedule / eventqueue */
-        save_eventqueue(f);
+        /* finally, the eventlist */
+        save_eventlist(f);
 
         fclose(f);
 
@@ -355,7 +367,7 @@ inv_t *load_inventory(FILE *f)
 
         fread(str, sizeof(char), 9, f);
         if(strncmp(str, "INVENTORY", 9)) {
-fprintf(stderr, "DEBUG: %s:%d - Inventory not where I expected!\n", __FILE__, __LINE__);
+                fprintf(stderr, "DEBUG: %s:%d - Inventory not where I expected!\n", __FILE__, __LINE__);
                 return false;
         }
 
@@ -654,9 +666,27 @@ fprintf(stderr, "DEBUG: %s:%d - get object by oid failed!\n", __FILE__, __LINE__
         return true;
 }
 
-bool load_eventqueue(FILE *f)
+bool load_eventlist(FILE *f)
 {
+        char str[9];
+        int i, id;
 
+        fread(str, sizeof(char), 9, f);
+        if(strncmp(str, "EVENTLIST", 9)) {
+                fprintf(stderr, "ERROR: %s:%d - Eventlist not where expected!\n", __FILE__, __LINE__);
+                return false;
+        }
+
+        for(i = 0; i < MAXEVENTS; i++) {
+                fread(&eventlist[i].event, sizeof(short), 1, f);
+                fread(&eventlist[i].tick,  sizeof(int),   1, f);
+                fread(&eventlist[i].gain,  sizeof(short), 1, f);
+
+                fread(&id, sizeof(int), 1, f);
+                eventlist[i].object = get_object_by_oid_from_masterlist(id);
+        }
+
+        return true;
 }
 
 bool load_game(char *filename, int ingame)
@@ -752,7 +782,10 @@ bool load_game(char *filename, int ingame)
         }
 
         /* schedule / events */
-        load_eventqueue(f);
+        if(!load_eventlist(f)) {
+                fprintf(stderr, "DEBUG: %s:%d - Loading failed in load_eventlist!\n", __FILE__, __LINE__);
+                return false;
+        }
 
         fclose(f);
         printf("Loading successful!\n");

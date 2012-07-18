@@ -249,9 +249,21 @@ char *pair(obj_t *o)
 char *plural(obj_t *o)
 {
         char *s;
+        int i;
+
         s = gtmalloc(300*sizeof(char));
 
-        sprintf(s, "%ss", o->displayname);
+        if(!is_identified(o))
+                sprintf(s, "%ss", o->displayname);
+        else {
+                if(is_potion(o)) {
+                        strcpy(s, o->displayname);
+                        for(i = strlen(o->basename); i >= 6; i--)
+                                s[i] = s[i-1];
+
+                        s[6] = 's';
+                }
+        }
 
         return s;
 }

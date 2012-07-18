@@ -638,19 +638,25 @@ bool do_event(event_t *ev)
                         break;
                 case EVENT_HEAL_PLAYER:
                         if(player->hp < player->maxhp) {
+                                int x;
                                 if(player->hp <= 0) {
                                         // add potentially life saving stuff here?
                                         break;
                                 }
 
-                                if(perc(62 + player->attr.phy)) {
-                                        int j;
+                                x = 17 - player->attr.phy;
+                                if(x <= 0)
+                                        x = 1;
+                                if(game->tick % x) {
+                                        if(perc(40 + player->attr.phy)) {
+                                                int j;
 
-                                        j = ability_modifier(player->attr.phy);
-                                        if(j < 1)
-                                                j = 1;
-                                        increase_hp(player, j);
-                                        gtprintf("You feel a little better! (%d hp)", j);
+                                                j = ability_modifier(player->attr.phy);
+                                                if(j < 1)
+                                                        j = 1;
+                                                increase_hp(player, j);
+                                                gtprintf("You feel a little better!");
+                                        }
                                 }
                         }
                         break;

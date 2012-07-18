@@ -246,6 +246,16 @@ char *pair(obj_t *o)
         return s;
 }
 
+char *plural(obj_t *o)
+{
+        char *s;
+        s = gtmalloc(300*sizeof(char));
+
+        sprintf(s, "%ss", o->displayname);
+
+        return s;
+}
+
 char *a_an(char *s)
 {
         static char ret[4];

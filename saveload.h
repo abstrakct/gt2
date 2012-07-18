@@ -49,6 +49,7 @@ struct objdef_save_struct {
         char         effects;
         oe_t         effect[MAX_EFFECTS];
         short        rarity;
+        bool         stackable;
 };
 
 struct player_save_struct {

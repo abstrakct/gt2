@@ -57,6 +57,7 @@ struct object {
         char          effects;
         oe_t          effect[MAX_EFFECTS];
         short         rarity;
+        bool          stackable;
 };
 
 typedef struct object obj_t;
@@ -217,6 +218,7 @@ extern int mats_potions[POTS];
 #define is_gloves(a)        (a->flags & OF_GLOVES)
 #define is_shield(a)        (a->flags & OF_SHIELD)
 #define obvious_effect(a)   (a->flags & OF_OBVIOUS)
+#define is_stackable(a)     (a->stackable)
 
 #define unapply_effects apply_effects
 

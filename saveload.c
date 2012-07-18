@@ -201,6 +201,7 @@ void save_objdef(obj_t *o, FILE *f)
         for(i = 0; i < MAX_EFFECTS; i++)
                 s.effect[i] = o->effect[i];
         s.rarity = o->rarity;
+        s.stackable = o->stackable;
 
         fwrite("OBJDEF", sizeof(char), 6, f);
         fwrite(&s, sizeof(struct objdef_save_struct), 1, f);
@@ -585,6 +586,7 @@ fprintf(stderr, "DEBUG: %s:%d - OBJDEF not where it should be?! str=%s\n", __FIL
         for(i = 0; i < MAX_EFFECTS; i++)
                 o->effect[i] = s.effect[i];
         o->rarity = s.rarity;
+        o->stackable = s.stackable;
 
         //printf("loaded objdef %s\n", o->basename);
         return true;

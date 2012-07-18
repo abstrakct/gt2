@@ -534,6 +534,7 @@ obj_t *spawn_object(int n, void *level)
         add_damagemod(new, level);
 
         generate_fullname(new);
+        new->quantity = 1;               // TODO: make it possible to spawn multiple stackable objects.
         add_to_master_object_list(new);
 
         return new;
@@ -557,6 +558,7 @@ obj_t *spawn_object_with_rarity(int rarity, void *level)
         add_damagemod(new, level);
 
         generate_fullname(new);
+        new->quantity = 1;               // TODO: make it possible to spawn multiple stackable objects.
         add_to_master_object_list(new);
 
         return new;
@@ -821,9 +823,12 @@ void quaff(void *a, obj_t *o)
                 }
 
                 slot = object_to_slot(o, actor->inventory);
-                actor->inventory->object[slot] = NULL;
-                actor->inventory->num_used--;
-                //unspawn_object(o);
+                actor->inventory->object[slot]->quantity--;
+
+                if(actor->inventory->object[slot]->quantity < 1) {
+                        actor->inventory->object[slot] = NULL;
+                        actor->inventory->num_used--;
+                } 
         }
 }
 
@@ -1087,6 +1092,54 @@ int get_next_used_slot_after(int n, inv_t *i)
         return -1;
 }
 
+/**
+ * @brief Check if two objects are identical.
+ *
+ * We'll probably want to expand this one later.
+ *
+ * @param a First object.
+ * @param b Second object.
+ *
+ * @return true if objects are identical, false if not.
+ */
+bool objects_are_identical(obj_t *a, obj_t *b)
+{
+        if(!strcmp(a->fullname, b->fullname))
+                return true;
+        else
+                return false;
+}
+
+bool has_identical_object(inv_t *i, obj_t *o)
+{
+        int j;
+
+        for(j = 0; j < 52; j++) {
+                if(i->object[j]) {
+                        if(objects_are_identical(o, i->object[j])) {
+                                return true;
+                        }
+                }
+        }
+
+        return false;
+}
+
+int get_slot_of_object(inv_t *i, obj_t *o)
+{
+        int j;
+
+        for(j = 0; j < 52; j++) {
+                if(i->object[j]) {
+                        if(objects_are_identical(o, i->object[j])) {
+                                return j;
+                        }
+                }
+        }
+
+        return -1;
+}
+
 void pick_up(obj_t *o, void *p)
 {
         actor_t *a;
@@ -1097,11 +1150,21 @@ void pick_up(obj_t *o, void *p)
         if(!a->inventory)
                 a->inventory = init_inventory();
 
-        slot = get_first_free_slot_in_inventory(a->inventory);
-        a->inventory->object[slot] = o;
-        a->inventory->num_used++;
+        if(!is_stackable(o)) {
+                slot = get_first_free_slot_in_inventory(a->inventory);
+                a->inventory->object[slot] = o;
+                a->inventory->num_used++;
+        } else {
+                if(has_identical_object(a->inventory, o)) {
+                        slot = get_slot_of_object(a->inventory, o);
+                        a->inventory->object[slot]->quantity += o->quantity;
+                } else {
+                        slot = get_first_free_slot_in_inventory(a->inventory);
+                        a->inventory->object[slot] = o;
+                        a->inventory->num_used++;
+                }
+        }
 
-        //assign_free_slot(o);
         gtprintfc(COLOR_WHITE, "  %c - %s", slot_to_letter(slot), a_an(pair(o)));
 }
 
@@ -1136,7 +1199,8 @@ void drop(void *actor, obj_t *o)
 }
 
 /*
- * Move object *o to first free slot in inventory *i
+ * Move object *o to first free slot in inventory *i,
+ * or stack it if appropriate.
  */
 bool move_to_inventory(obj_t *o, inv_t *i)
 {
@@ -1150,9 +1214,20 @@ bool move_to_inventory(obj_t *o, inv_t *i)
         } else {
                 int x;
 
-                x = get_first_free_slot_in_inventory(i);
-                i->object[x] = o;
-                i->num_used++;
+                if(!is_stackable(o)) {
+                        x = get_first_free_slot_in_inventory(i);
+                        i->object[x] = o;
+                        i->num_used++;
+                } else {
+                        if(has_identical_object(i, o)) {
+                                x = get_slot_of_object(i, o);
+                                i->object[x]->quantity += o->quantity;
+                        } else {
+                                x = get_first_free_slot_in_inventory(i);
+                                i->object[x] = o;
+                                i->num_used++;
+                        }
+                }
 
                 return true;
         }

@@ -321,6 +321,7 @@ int parse_armor()
                         }
                 }
 
+                o->stackable = false;
                 o->id = objid; objid++;
 
                 o->head = objdefs->head;
@@ -405,6 +406,7 @@ int parse_weapons()
 
                 o->id = objid; objid++;
                 o->color = COLOR_WHITE;
+                o->stackable = false;
 
                 o->head = objdefs->head;
                 objdefs->next = o;
@@ -474,6 +476,7 @@ int parse_amulet()
                 o->type = OT_AMULET;
                 o->id = objid; objid++;
                 o->color = COLOR_WHITE;
+                o->stackable = false;
 
                 o->material = mats_amulets[material];
                 material++;
@@ -562,6 +565,7 @@ int parse_bracelet()
                 o->id = objid; objid++;
                 o->color = COLOR_WHITE;
                 clearbit(o->flags, OF_IDENTIFIED);
+                o->stackable = false;
 
                 o->material = mats_bracelets[material];
                 material++;
@@ -730,6 +734,8 @@ int parse_potions()
                 sprintf(sname, "potion.[%d].rarity", j);
                 config_lookup_string(cf, sname, &value);
                 o->rarity = parse_rarity(o, sname);
+
+                o->stackable = true;
 
                 o->type = OT_POTION;
                 o->id = objid; objid++;

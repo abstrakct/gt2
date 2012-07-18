@@ -381,7 +381,7 @@ void move_monster(monster_t *m)
         }
 
         if(hasbit(m->flags, MF_ISDEAD)) {
-                fprintf(stderr, "DEBUG: %s:%d - monster is dead!\n", __FILE__, __LINE__);
+                //fprintf(stderr, "DEBUG: %s:%d - monster is dead!\n", __FILE__, __LINE__);
                 return;
         }
 

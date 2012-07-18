@@ -441,10 +441,11 @@ void attack(actor_t *attacker, actor_t *defender)
                         if(damage <= 0) {
                                 gtprintfc(COLOR_WHITE, "The %s hits you with %s, but does no damage!", attacker->name, attacker->weapon ? a_an(attacker->weapon->basename) : "a fistful of nothing");
                         } else {
+                                gtprintfc(COLOR_RED, "The %s hits you!", attacker->name);
                                 if(criticalhit)
                                         gtprintfc(COLOR_RED, "Ouch! That hurt real bad!");
                                 else
-                                        gtprintfc(COLOR_RED, "The %s hits you with %s for %d damage", attacker->name, attacker->weapon ? a_an(attacker->weapon->basename) : "a fistful of nothing", damage);
+                                        gtprintfc(COLOR_RED, "The %s hits you with %s for %d damage.", attacker->name, attacker->weapon ? a_an(attacker->weapon->basename) : "a fistful of nothing", damage);
                         }
                 }
 

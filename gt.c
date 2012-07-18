@@ -636,8 +636,23 @@ bool do_event(event_t *ev)
                 case EVENT_FIX_VIEW:
                         fixview();
                         break;
-                case EVENT_HEAL_PLAYER:   // TODO: fix player healing!
-                        increase_hp(player, 1);
+                case EVENT_HEAL_PLAYER:
+                        if(player->hp < player->maxhp) {
+                                if(player->hp <= 0) {
+                                        // add potentially life saving stuff here?
+                                        break;
+                                }
+
+                                if(perc(62 + player->attr.phy)) {
+                                        int j;
+
+                                        j = ability_modifier(player->attr.phy);
+                                        if(j < 1)
+                                                j = 1;
+                                        increase_hp(player, j);
+                                        gtprintf("You feel a little better! (%d hp)", j);
+                                }
+                        }
                         break;
                 case EVENT_MAKE_DISTANCEMAP:
                         makedistancemap(player->y, player->x);

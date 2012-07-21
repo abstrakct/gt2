@@ -12,9 +12,11 @@
 typedef struct queststruct {
         char *title;
         char *shortdescription;
-        bool (*initiate)();
+        int  (*initiate)();
         int  timer;
         void (*countdown)(struct queststruct *quest);
+        void (*timeout_consequence)();
+        bool quest_taken;
 } quest_t;
 
 /* Global variables */
@@ -24,7 +26,7 @@ extern quest_t quest_garan_heidl;
 #define MAX_QUESTS 10
 
 /* Prototypes */
-void add_quest(quest_t *quest);
+void add_quest(void *npc);
 void process_quests();
 
 #endif

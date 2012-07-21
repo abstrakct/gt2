@@ -8,6 +8,7 @@
 #ifndef _NPC_H
 #define _NPC_H
 
+#define NPC_GARAN_HEIDL 0
 
 typedef struct npc_struct {
         char     name[100];
@@ -18,6 +19,7 @@ typedef struct npc_struct {
         short    level;
         quest_t *quest;
         bool     quest_taken;
+        long     flags;
 } npc_t;
 
 extern npc_t predef_npcs[];

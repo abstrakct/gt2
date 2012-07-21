@@ -24,9 +24,12 @@
 #include "gt.h"
 #include "utils.h"
 
-void add_quest(quest_t *quest)
+void add_quest(void *npc)
 {
         int i;
+        npc_t *n;
+
+        n = (npc_t *)npc;
 
         i = 0;
         while(playerquests[i]) {
@@ -37,7 +40,9 @@ void add_quest(quest_t *quest)
                 }
         }
 
-        playerquests[i] = quest;
+        playerquests[i] = n->quest;
+        n->quest->quest_taken = true;
+        n->quest_taken = true;
 }
 
 void delete_quest(quest_t *quest)
@@ -62,21 +67,37 @@ void process_quests()
         }
 }
 
-bool quest_garan_heidl_initiate()
+int quest_garan_heidl_initiate()
 {
         gtkey key;
 
-        gtmsgbox(" Chat ", "\"Hello stranger... My name is... Garan... Heidl... Don't know what's happened to the world... My legs are broken... Can't walk... Please, friend, fetch me something to drink! I haven't... much time left... So thirsty...\"\n\nWhat would you like to do?\na) Help the dying man.\nb) Leave him to die.");
+        if(hasbit(predef_npcs[NPC_GARAN_HEIDL].flags, MF_ISDEAD)) {
+                gtprintf("The dried up corpse of %s has nothing more to say to you.", predef_npcs[NPC_GARAN_HEIDL].name);
+                return -1;
+        }
+
+        if(predef_npcs[NPC_GARAN_HEIDL].quest->quest_taken) {
+                gtprintf("The dehydrated man seems to be in too much pain to talk.");
+                return -1;
+        }
+
+        gtmsgbox(" Chat ", "\"Hello stranger... My name is... Garan... Heidl... Don't know what's happened to the world... My legs are broken... Can't walk... Please, friend, fetch me something to drink! I haven't... much time left... So thirsty...\"\n\nWhat would you like to do?\na) Help the dying man.\nb) Leave him to die.\n");
 
         while(key.c != 'a' && key.c != 'b')
                 key = gtgetch();
 
         if(key.c == 'a')
-                return true;
+                return 1;
         if(key.c == 'b')
-                return false;
+                return 0;
 
-        return false;
+        return 0;
+}
+
+void quest_garan_heidl_timeout()
+{
+        setbit(predef_npcs[NPC_GARAN_HEIDL].flags, MF_ISDEAD);
+        // drop inventory!?!?
 }
 
 void quest_countdown(quest_t *quest)
@@ -85,13 +106,15 @@ void quest_countdown(quest_t *quest)
                 quest->timer--;
 
                 if(quest->timer <= 0) {
-                        gtprintf("Oh no! Quest %s timed out!", quest->title);
+                        //gtprintf("Oh no! Quest %s timed out!", quest->title);
+
+                        quest->timeout_consequence();
                         delete_quest(quest);
                 }
         }
 }
 
 quest_t quest_garan_heidl = {
-        "Save a dying man.", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.", quest_garan_heidl_initiate, 2000, quest_countdown
+        "Save a dying man.", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.", quest_garan_heidl_initiate, 2000, quest_countdown, quest_garan_heidl_timeout
 };
 // vim: fdm=syntax guifont=Terminus\ 8

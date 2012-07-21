@@ -910,7 +910,7 @@ bool passable(level_t *l, int y, int x)
         if(type == AREA_NOTHING)
                 return false;
 
-        if(l->c[y][x].npc)         // change here if e.g bump to chat???
+        if(l->c[y][x].npc && !hasbit(l->c[y][x].npc->flags, MF_ISDEAD))         // change here if e.g bump to chat???
                 return false;
 
         return true;

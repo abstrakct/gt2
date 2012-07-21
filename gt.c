@@ -877,6 +877,9 @@ void look()
                         gtprintf("There is a staircase leading up here.");
         }
 
+        if(world->curlevel->c[ply][plx].npc && hasbit(world->curlevel->c[ply][plx].npc->flags, MF_ISDEAD))
+                gtprintf("You see here the corpse of %s.", world->curlevel->c[ply][plx].npc->name);
+
         if(ci(ply, plx)) {
                 if(ci(ply, plx) && ci(ply, plx)->gold) {
                                 gtprintf("There is %d gold %s here.", ci(ply, plx)->gold, (ci(ply, plx)->gold > 1) ? "pieces" : "piece");
@@ -1144,12 +1147,14 @@ void process_player_input()
                                 if(!i)
                                         gtmsgbox(" ... ", "There's no one to talk to nearby!");
                                 else {
+                                        int response;
                                         npc = get_nearest_npc(player);
                                         if(npc->has_quest) {
-                                                if(npc->quest->initiate()) {
-                                                        add_quest(npc->quest);
+                                                response = npc->quest->initiate();
+                                                if(response == 1) {
+                                                        add_quest(npc);
                                                         gtprintf("You accept the request, and make a mental note of it called \"%s\"", npc->quest->title);
-                                                } else {
+                                                } else if(response == 0) {
                                                         gtprintf("You decline.");
                                                 }
                                         } else {

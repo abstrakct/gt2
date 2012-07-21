@@ -25,8 +25,8 @@
 #include "utils.h"
 
 npc_t predef_npcs[] = {
-        // Name          spawned, has_quest, unique, chat func, level, quest,             quest_taken,
-        { "Garan Heidl", false,    true,     true,   chat_hello,  1,   &quest_garan_heidl, false }
+        // Name          spawned, has_quest, unique, chat func, level, quest,             quest_taken, flags
+        { "Garan Heidl", false,    true,     true,   chat_hello,  1,   &quest_garan_heidl, false,        0 }
 };
 
 void spawn_predef_npcs()

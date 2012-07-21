@@ -511,79 +511,6 @@ void draw_map()
         }
 }
 
-void draw_map_old()
-{
-        int i,j, slot;
-        int dx, dy;  // coordinates on screen!
-        gtcolor_t color;
-        level_t *level;
-
-        level = world->curlevel;             // make sure world->curlevel is correct!
-
-        /*
-         * in this function, (j,i) are the coordinates on the map,
-         * dx,dy = coordinates on screen.
-         * so, player->py/px describes the upper left corner of the map
-         */
-        for(i = ppx, dx = 0; i <= (ppx + game->mapw - 2); i++, dx++) {
-                for(j = ppy, dy = 0; j <= (ppy + game->maph - 2); j++, dy++) {
-                        if(j < level->ysize && i < level->xsize) {
-                                if(hasbit(level->c[j][i].flags, CF_VISITED)) {
-                                        color = cc(j,i);
-
-                                        if(hasbit(level->c[j][i].flags, CF_LIT))
-                                                color = level->c[j][i].litcolor;
-
-                                        gtmapaddch(dy, dx, color, mapchars[(int) level->c[j][i].type]);
-
-                                        /*
-                                        if(level->c[j][i].height < 0) {
-                                                color = COLOR_RED;
-                                                c = 48+(0 - level->c[j][i].height);
-                                        } else {
-                                                color = COLOR_BLUE;
-                                                c = 48+level->c[j][i].height;
-                                        }
-
-                                        gtmapaddch(dy, dx, color, c);
-                                        */
-
-                                        if(level->c[j][i].inventory) {
-                                                if(level->c[j][i].inventory->gold > 0) {
-                                                        gtmapaddch(dy, dx, COLOR_YELLOW, objchars[OT_GOLD]);
-                                                } else {                                                         // TODO ADD OBJECT COLORS!!!
-                                                        slot = get_first_used_slot(level->c[j][i].inventory);
-                                                        if(level->c[j][i].inventory->num_used > 0 && slot >= 0 && level->c[j][i].inventory->object[slot]) {
-                                                                color = level->c[j][i].inventory->object[slot]->color;
-                                                                gtmapaddch(dy, dx, color, objchars[level->c[j][i].inventory->object[slot]->type]);
-                                                        }
-                                                }
-                                        }
-
-                                        if(hasbit(level->c[j][i].flags, CF_HAS_DOOR_CLOSED))
-                                                gtmapaddch(dy, dx, color, '+');
-                                        else if(hasbit(level->c[j][i].flags, CF_HAS_DOOR_OPEN))
-                                                gtmapaddch(dy, dx, color, '\'');
-                                        else if(hasbit(level->c[j][i].flags, CF_HAS_STAIRS_DOWN))
-                                                gtmapaddch(dy, dx, COLOR_WHITE, '>');
-                                        else if(hasbit(level->c[j][i].flags, CF_HAS_STAIRS_UP))
-                                                gtmapaddch(dy, dx, COLOR_WHITE, '<');
-                                }
-
-
-                                if(level->c[j][i].visible && level->c[j][i].monster /*&& actor_in_lineofsight(player, level->c[j][i].monster)*/)
-                                        gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
-
-                                if(level->c[j][i].type == AREA_WALL) {
-                                        gtmapaddch(dy, dx, COLOR_PLAIN, mapchars[DNG_WALL]);
-                                }
-                        if(j == ply && i == plx)
-                                gtmapaddch(dy, dx, COLOR_PLAYER, '@');
-                        }
-                }
-        }
-}
-
 void draw_left()
 {
         int i;
@@ -925,8 +852,6 @@ void messc(gtcolor_t color, char *message)
         strcpy(messages[currmess].text, message);
         domess();
 }
-
-//
 
 
 // vim: fdm=syntax guifont=Terminus\ 8

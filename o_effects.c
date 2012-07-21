@@ -35,7 +35,7 @@ effectfunctionpointer effecttable[] = {
         oe_dexterity,
         oe_charisma,
         oe_speed,
-        0,
+        oe_water,
         0,
         0,
         0,
@@ -479,7 +479,6 @@ void oe_dexterity(actor_t *actor, void *data, int e, bool apply)
         }
 }
 
-
 void oe_charisma(actor_t *actor, void *data, int e, bool apply)
 {
         obj_t *o;
@@ -535,6 +534,12 @@ void oe_charisma(actor_t *actor, void *data, int e, bool apply)
         }
 }
 
+void oe_water(actor_t *actor, void *data, int e, bool apply)
+{
+        gtprintf("Ah! A refreshing drink of water!");
+        increase_hp(actor, 1);
+}
+
 void apply_effect(actor_t *actor, void *data, int i)
 {
         obj_t *o;
@@ -554,32 +559,6 @@ void apply_effects(actor_t *actor, obj_t *o)
         for(i = 0; i < o->effects; i++)
                 if(o->effect[i].effect)
                         apply_effect(actor, o, i);
-}
-
-void unapply_temp_effect(actor_t *actor)
-{
-        /*int old;
-
-        switch(actor->temp->effect) {
-                case OE_STRENGTH:
-                        old = actor->attr.str;
-                        actor->attr.str -= actor->temp->gain;
-                        if(actor == player)
-                                youc(COLOR_INFO, "feel %s again.", (old > actor->attr.str ? "weaker" : "stronger"));
-                        gtfree(actor->temp);
-                        actor->temp = NULL;
-                        break;
-                case OE_INVISIBILITY:
-                        if(actor == player)
-                                gtprintfc(COLOR_INFO, "Your body looks more solid again.");
-                        clearbit(actor->flags, MF_INVISIBLE);
-                        gtfree(actor->temp);
-                        actor->temp = NULL;
-                        break;
-                default:
-                        gtprintf("trying to unapply unknown effect %d.", actor->temp->effect);
-                        break;
-        }*/
 }
 
 void process_temp_effects(actor_t *actor)

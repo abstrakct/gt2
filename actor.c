@@ -47,7 +47,6 @@ int level_table[] = {
 
 #define MAX_PLAYER_LEVEL ((sizeof(level_table) / sizeof(int)) - 1)
 
-
 // object-to-letter and vise versa 
 
 char slot_to_letter(int i)

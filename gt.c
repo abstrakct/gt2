@@ -74,6 +74,7 @@ bool        loadgame;
 void        *eventdata;
 actor_t     *a_attacker, *a_victim;
 event_t    *eventlist;
+quest_t    *playerquests[MAX_QUESTS];
 
 // Messages
 message_t messages[500];
@@ -969,6 +970,8 @@ void do_turn()
         for(i = 0; i < 10; i++) {
                 do_everything_at_tick(game->tick);
                 look_for_monsters();
+                process_quests();
+
                 //update_screen();
                 increase_ticks(1);
         }
@@ -1142,10 +1145,16 @@ void process_player_input()
                                         gtmsgbox(" ... ", "There's no one to talk to nearby!");
                                 else {
                                         npc = get_nearest_npc(player);
-                                        if(npc->has_quest)
-                                                npc->quest->initiate();
-                                        else
+                                        if(npc->has_quest) {
+                                                if(npc->quest->initiate()) {
+                                                        add_quest(npc->quest);
+                                                        gtprintf("You accept the request, and make a mental note of it called \"%s\"", npc->quest->title);
+                                                } else {
+                                                        gtprintf("You decline.");
+                                                }
+                                        } else {
                                                 npc->chat(npc);
+                                        }
                                 }
                                 break;
                 case CMD_REST:

@@ -20,6 +20,7 @@
 #define OE_DEXTERITY               5
 #define OE_CHARISMA                6
 #define OE_SPEED                   7
+#define OE_WATER                   8
 
 #define OE_PROTECTION_LIFE         20 
 #define OE_PROTECTION_FIRE         21
@@ -44,6 +45,7 @@ void oe_protection_fire(actor_t *actor, void *data, int e, bool apply);
 void oe_heal_now(actor_t *actor, void *data, int e, bool apply);
 void oe_invisibility(actor_t *actor, void *data, int e, bool apply);
 void oe_speed(actor_t *actor, void *data, int e, bool apply);
+void oe_water(actor_t *actor, void *data, int e, bool apply);
 
 
 void add_effect_with_duration_dice_sides(obj_t *a, short b, short c, short d, short e, short f, short g);

@@ -664,10 +664,9 @@ int parse_potions()
                                                 add_effect_with_duration(o, OE_DEXTERITY, -1);
                                         if(!strcmp(value, "charisma"))
                                                 add_effect_with_duration(o, OE_CHARISMA, -1);
-                                }
-                        }
-
-                        if(!strcmp(value, "temporary")) {
+                                } else if(!strcmp(value, "water"))
+                                        add_effect(o, OE_WATER);
+                        } else if(!strcmp(value, "temporary")) {
                                 sprintf(sname, "potion.[%d].effect.[%d].brand", j, y);
                                 config_lookup_string(cf, sname, &value);
 
@@ -733,6 +732,13 @@ int parse_potions()
                 if(x)
                         setbit(o->flags, OF_OBVIOUS);
 
+                clearbit(o->flags, OF_IDENTIFIED);
+                x = 0;
+                sprintf(sname, "potion.[%d].autoid", j);
+                config_lookup_bool(cf, sname, &x);
+                if(x)
+                        setbit(o->flags, OF_IDENTIFIED);
+
                 sprintf(sname, "potion.[%d].rarity", j);
                 config_lookup_string(cf, sname, &value);
                 o->rarity = parse_rarity(o, sname);
@@ -741,8 +747,6 @@ int parse_potions()
 
                 o->type = OT_POTION;
                 o->id = objid; objid++;
-
-                clearbit(o->flags, OF_IDENTIFIED);
 
                 o->material = mats_potions[material];
                 material++;

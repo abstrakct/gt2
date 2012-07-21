@@ -163,6 +163,7 @@ extern int                 currmess, maxmess;
 extern gt_config_t         gtconfig;
 extern int                 tempxsize, tempysize;
 extern event_t            *eventlist;
+extern quest_t            *playerquests[MAX_QUESTS];
 
 
 /* function prototypes */

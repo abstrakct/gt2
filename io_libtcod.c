@@ -17,6 +17,7 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
+#include "npc.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"
@@ -108,7 +109,7 @@ cmd_t normalcommands[] = {
         { { TCODK_CHAR,       'n',   1,     0,   0,   0,    0,    0 }, CMD_SE,          "Move down-right" },
         { { TCODK_KP3,          0,   1,     0,   0,   0,    0,    0 }, CMD_SE,          "Move down-right" },
 
-        // events
+        // other actions
         { { TCODK_CHAR,       'w',   0,     0,   0,   0,    0,    0 }, CMD_WIELDWEAR,   "Wield or wear an item" },
         { { TCODK_CHAR,       'r',   0,     0,   0,   0,    0,    0 }, CMD_UNWIELDWEAR, "Remove or unwield an item" },
         { { TCODK_CHAR,       ',',   1,     0,   0,   0,    0,    0 }, CMD_PICKUP,      "Pick up something" },
@@ -118,6 +119,7 @@ cmd_t normalcommands[] = {
         { { TCODK_CHAR,       'd',   0,     0,   0,   0,    0,    0 }, CMD_DROP,        "Drop an object" },
         { { TCODK_CHAR,       'q',   0,     0,   0,   0,    0,    0 }, CMD_QUAFF,       "Quaff a potion" },
         { { TCODK_CHAR,       'o',   1,     0,   0,   0,    0,    0 }, CMD_AUTOEXPLORE, "Autoexplore" },
+        { { TCODK_CHAR,       'c',   1,     0,   0,   0,    0,    0 }, CMD_CHAT,        "Chat" },
         //{ { TCODK_CHAR,       'i', 1, 0, 0, 0, 0, 0 }, CMD_INVENTORY,   "Show inventory" },
         //{ TCODK_F5,  CMD_SAVE,        "Save" },
         //{ TCODK_F6,  CMD_LOAD,        "Load" },
@@ -493,6 +495,8 @@ void draw_map()
                                                 gtmapaddch(dy, dx, COLOR_WHITE, '<');
                                         if(TCOD_map_is_in_fov(level->map, i, j) && level->c[j][i].monster /*&& actor_in_lineofsight(player, level->c[j][i].monster)*/)
                                                 gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
+                                        if(TCOD_map_is_in_fov(level->map, i, j) && level->c[j][i].npc)
+                                                gtmapaddch(dy, dx, COLOR_WHITE, '@');
 
                                         if(hasbit(player->flags, MF_INVISIBLE))
                                                 color = COLOR_PINVIS;

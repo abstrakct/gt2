@@ -31,6 +31,7 @@
 #include "o_effects.h"
 #include "actor.h"
 #include "monsters.h"
+#include "npc.h"
 #include "world.h"
 #include "gt.h"
 #include "datafiles.h"
@@ -995,7 +996,8 @@ void catchsignal()
  */
 void process_player_input()
 {
-        int c, x, y, l;
+        int c, x, y, l, i;
+        npc_t *npc;
 
         look();
         process_autopickup();
@@ -1133,6 +1135,15 @@ void process_player_input()
                                         gtprintf("You can't go up here!");
                                 }
                                 break;
+                case CMD_CHAT:
+                                i = get_number_of_npcs_nearby(player);
+                                if(!i)
+                                        gtprintf("There's no one to talk to nearby!");
+                                else {
+                                        npc = get_nearest_npc(player);
+                                        npc->chat();
+                                }
+                                break;
                 case CMD_REST:
                                 schedule_event(EVENT_NOTHING, player);
                                 break;
@@ -1221,6 +1232,8 @@ int main(int argc, char *argv[])
                 do_one_event(EVENT_GO_DOWN_STAIRS);
                 fixview();
         }
+
+        world->dng[1].c[player->y+1][player->x+1].npc = &predef_npcs[0];
 
         init_commands();
         init_pathfinding(player);

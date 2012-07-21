@@ -55,6 +55,7 @@ typedef struct gtcommandstruct {
 #define CMD_PATHFINDER    29
 #define CMD_QUAFF         30
 #define CMD_AUTOEXPLORE   31
+#define CMD_CHAT          32
 
 // development/debug commands
 #define CMD_FLOODFILL     1001

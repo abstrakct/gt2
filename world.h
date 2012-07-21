@@ -62,6 +62,7 @@ typedef struct {   // cell_t
         signed int height;
         monster_t *monster;
         inv_t     *inventory;
+        npc_t     *npc;
 } cell_t;
 
 struct levelstruct {

@@ -19,6 +19,7 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
+#include "npc.h"
 #include "world.h"
 #include "io.h"
 #include "gt.h"

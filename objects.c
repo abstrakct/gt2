@@ -16,6 +16,7 @@
 #include "o_effects.h"
 #include "actor.h"
 #include "monsters.h"
+#include "npc.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"

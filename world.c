@@ -15,6 +15,7 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
+#include "npc.h"
 #include "world.h"
 #include "datafiles.h"
 #include "io.h"
@@ -1184,7 +1185,6 @@ void generate_world()
         spawn_monsters(ri(75,125), 3, world->out); 
         spawn_golds(ri(75,125), 100, world->out);
         spawn_objects(ri(world->out->xsize/4, world->out->ysize/4), world->out);
-
 
         printf(" done.\n");
 

@@ -8,13 +8,15 @@ debug.o: debug.c objects.h io.h io_libtcod.h actor.h monsters.h world.h \
 fractmod.o: fractmod.c fractmod.h
 gt.o: gt.c cards.h objects.h io.h io_libtcod.h o_effects.h actor.h \
  monsters.h world.h gt.h datafiles.h debug.h saveload.h commands.h \
- utils.h
+ utils.h npc.h
 io_libtcod.o: io_libtcod.c objects.h io.h io_libtcod.h actor.h monsters.h \
  world.h datafiles.h gt.h utils.h commands.h
 io_ncurses.o: io_ncurses.c objects.h io.h io_libtcod.h actor.h monsters.h \
  world.h datafiles.h commands.h gt.h utils.h
 monsters.o: monsters.c objects.h io.h io_libtcod.h actor.h monsters.h \
  world.h datafiles.h gt.h utils.h
+npc.o: npc.c objects.h io.h io_libtcod.h o_effects.h actor.h monsters.h \
+ world.h datafiles.h debug.h gt.h utils.h npc.h
 objects.o: objects.c objects.h io.h io_libtcod.h o_effects.h actor.h \
  monsters.h world.h datafiles.h gt.h utils.h
 o_effects.o: o_effects.c objects.h io.h io_libtcod.h o_effects.h actor.h \

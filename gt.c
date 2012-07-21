@@ -1142,7 +1142,7 @@ void process_player_input()
                                         gtprintf("You can't go up here!");
                                 }
                                 break;
-                case CMD_CHAT:
+                case CMD_CHAT:  // TODO: Move to its own function!
                                 i = get_number_of_npcs_nearby(player);
                                 if(!i)
                                         gtmsgbox(" ... ", "There's no one to talk to nearby!");
@@ -1150,12 +1150,20 @@ void process_player_input()
                                         int response;
                                         npc = get_nearest_npc(player);
                                         if(npc->has_quest) {
-                                                response = npc->quest->initiate();
-                                                if(response == 1) {
-                                                        add_quest(npc);
-                                                        gtprintf("You accept the request, and make a mental note of it called \"%s\"", npc->quest->title);
-                                                } else if(response == 0) {
-                                                        gtprintf("You decline.");
+                                                if(!npc->quest_taken) {
+                                                        response = npc->quest->initiate();
+                                                        if(response == 1) {
+                                                                add_quest(npc);
+                                                                gtprintfc(COLOR_GREEN, "You accept the request, and make a mental note of it called \"%s\"", npc->quest->title);
+                                                        } else if(response == 0) {
+                                                                gtprintf("You decline.");
+                                                        }
+                                                } else {
+                                                        if(npc->quest->fulfilled()) {
+                                                                npc->quest->fulfill();
+                                                        } else {
+                                                                npc->quest->initiate();
+                                                        }
                                                 }
                                         } else {
                                                 npc->chat(npc);

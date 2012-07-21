@@ -81,7 +81,7 @@ int quest_garan_heidl_initiate()
                 return -1;
         }
 
-        gtmsgbox(" Chat ", "\"Hello stranger... My name is... Garan... Heidl... Don't know what's happened to the world... My legs are broken... Can't walk... Please, friend, fetch me something to drink! I haven't... much time left... So thirsty...\"\n\nWhat would you like to do?\na) Help the dying man.\nb) Leave him to die.\n");
+        gtmsgbox(" Chat ", "\"Hello stranger... My name is... Garan... Heidl... I don't know what's happened to the world... I fell down a shaft, broke my legs... Can't walk... Please, friend, fetch me something to drink! I haven't much... time... left... Oh, the pain! So thirsty...\"\n\nWhat would you like to do?\na) Help the dying man.\nb) Leave him to die.\n");
 
         while(key.c != 'a' && key.c != 'b')
                 key = gtgetch();
@@ -100,6 +100,35 @@ void quest_garan_heidl_timeout()
         // drop inventory!?!?
 }
 
+bool quest_garan_heidl_fulfilled()
+{
+        if(has_in_inventory(player, "bottle of water"))
+                return true;
+        if(has_in_inventory(player, "bottle of ale"))
+                return true;
+        if(has_in_inventory(player, "bottle of beer"))
+                return true;
+        if(has_in_inventory(player, "bottle of wine"))
+                return true;
+        if(has_in_inventory(player, "bottle of mead"))
+                return true;
+
+        return false;
+}
+
+void quest_garan_heidl_fulfill()
+{
+        obj_t *o;
+        char m[1000];
+
+        if(has_in_inventory(player, "bottle of water")) {
+                o = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                move_to_inventory(o, player->inventory);
+                sprintf(m, "Garan Heidl gulps down the water. \"Oh, thank you my friend, for this bottle of water! Here, take this %s! I sure won't need it anymore.\"", o->displayname);
+                gtmsgbox(" Chat ", m);
+        }
+}
+
 void quest_countdown(quest_t *quest)
 {
         if(quest->timer > 0) {
@@ -115,6 +144,6 @@ void quest_countdown(quest_t *quest)
 }
 
 quest_t quest_garan_heidl = {
-        "Save a dying man.", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.", quest_garan_heidl_initiate, 2000, quest_countdown, quest_garan_heidl_timeout
+        "Save a dying man.", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.", quest_garan_heidl_initiate, 2000, quest_countdown, quest_garan_heidl_timeout, false, quest_garan_heidl_fulfilled, quest_garan_heidl_fulfill
 };
 // vim: fdm=syntax guifont=Terminus\ 8

@@ -226,6 +226,7 @@ extern int mats_potions[POTS];
 //
 
 void   spawn_objects(int num, void *p);
+obj_t *spawn_object_with_rarity(int rarity, void *level);
 bool   spawn_object_at(int y, int x, int n, void *level);
 void   unspawn_object(obj_t *m);
 obj_t *spawn_object(int n, void *level);

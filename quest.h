@@ -17,6 +17,8 @@ typedef struct queststruct {
         void (*countdown)(struct queststruct *quest);
         void (*timeout_consequence)();
         bool quest_taken;
+        bool (*fulfilled)();
+        void (*fulfill)();
 } quest_t;
 
 /* Global variables */

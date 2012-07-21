@@ -47,6 +47,19 @@ int level_table[] = {
 
 #define MAX_PLAYER_LEVEL ((sizeof(level_table) / sizeof(int)) - 1)
 
+bool has_in_inventory(actor_t *actor, char *name)
+{
+        int i;
+
+        for(i=0;i<52;i++) {
+                if(actor->inventory->object[i]) {
+                        if(!strcmp(actor->inventory->object[i]->displayname, name))
+                                return true;
+                }
+        }
+
+        return false;
+}
 // object-to-letter and vise versa 
 
 char slot_to_letter(int i)

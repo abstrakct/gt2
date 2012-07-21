@@ -124,6 +124,7 @@ typedef struct actorstruct {                               // actor_t
 
 #define PF_AUTOEXPLORING (1 << 1)
 
+bool has_in_inventory(actor_t *actor, char *name);
 char   get_first_free_letter();
 char   slot_to_letter(int i);
 int    letter_to_slot(char c);

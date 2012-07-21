@@ -1141,7 +1141,7 @@ void process_player_input()
                                         gtprintf("There's no one to talk to nearby!");
                                 else {
                                         npc = get_nearest_npc(player);
-                                        npc->chat();
+                                        npc->chat(npc);
                                 }
                                 break;
                 case CMD_REST:
@@ -1232,8 +1232,6 @@ int main(int argc, char *argv[])
                 do_one_event(EVENT_GO_DOWN_STAIRS);
                 fixview();
         }
-
-        world->dng[1].c[player->y+1][player->x+1].npc = &predef_npcs[0];
 
         init_commands();
         init_pathfinding(player);

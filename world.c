@@ -909,6 +909,9 @@ bool passable(level_t *l, int y, int x)
         if(type == AREA_NOTHING)
                 return false;
 
+        if(l->c[y][x].npc)         // change here if e.g bump to chat???
+                return false;
+
         return true;
 }
 
@@ -932,6 +935,8 @@ bool monster_passable(level_t *l, int y, int x)
         if(l->c[y][x].type == AREA_VILLAGE || l->c[y][x].type == AREA_CITY)
                 return false;
         if(l->c[y][x].monster)
+                return false;
+        if(l->c[y][x].npc)
                 return false;
         if(l->c[y][x].flags & CF_HAS_DOOR_CLOSED)
                 return false;
@@ -1210,6 +1215,8 @@ void generate_world()
         printf("done.\n");
 
         generate_stairs();
+
+        spawn_predef_npcs();
 
         // create the edge of the world
         for(x=0; x<world->out->xsize; x++) {

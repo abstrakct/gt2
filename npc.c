@@ -24,8 +24,34 @@
 #include "utils.h"
 
 npc_t predef_npcs[] = {
-        { "Garan Heidl", false, chat_garan_heidl }
+        // Name          spawned, has_quest, unique, chat func, level,  
+        { "Garan Heidl", false,   false,     true,   chat_hello,  1,  }
 };
+
+void spawn_predef_npcs()
+{
+        int i, max, x, y;
+        npc_t *npc;
+
+        max = sizeof(predef_npcs) / sizeof(npc_t);
+
+        for(i = 0; i < max; i++) {
+                npc = &predef_npcs[i];
+                if(npc->spawned)
+                        break;
+
+                printf("Spawning predef npc %d\n", i);
+
+                x = y = 0;
+                while(!passable(&world->dng[npc->level], y, x)) {
+                        x = ri(1, world->dng[npc->level].xsize - 1);
+                        y = ri(1, world->dng[npc->level].ysize - 1);
+                }
+
+                world->dng[npc->level].c[y][x].npc = npc;
+                npc->spawned = true;
+        }
+}
 
 npc_t* get_nearest_npc(actor_t *actor)
 {
@@ -74,7 +100,7 @@ int get_number_of_npcs_nearby(actor_t *actor)
         return i;
 }
 
-void chat_garan_heidl()
+void chat_hello(struct npc_struct *talker)
 {
-        gtprintf("Garan Heidl says: \"Hello there %s!\"", player->name);
+        gtprintf("%s says: \"Hello there %s!\"", talker->name, player->name);
 }

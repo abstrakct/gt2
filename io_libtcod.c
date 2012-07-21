@@ -856,7 +856,8 @@ void gtmsgbox(char *header, char *message)
 
         w = strlen(message);
         w += 2;
-        h = 3;
+        h = TCOD_console_get_height_rect(NULL, 1, 1, w, game->height, message);
+        h += 2;
 
         c = TCOD_console_new(w, h);
         

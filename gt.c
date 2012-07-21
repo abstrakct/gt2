@@ -1140,7 +1140,7 @@ void process_player_input()
                 case CMD_CHAT:
                                 i = get_number_of_npcs_nearby(player);
                                 if(!i)
-                                        gtprintf("There's no one to talk to nearby!");
+                                        gtmsgbox(" ... ", "There's no one to talk to nearby!");
                                 else {
                                         npc = get_nearest_npc(player);
                                         npc->chat(npc);

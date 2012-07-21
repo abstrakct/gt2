@@ -43,6 +43,8 @@ bool yesno(char *fmt, ...);
 void more();
 bool gt_checkforkeypress();
 
+void gtmsgbox(char *header, char *message);
+
 extern  gtcolor_t colors[];
 
 #define COLS  180                          // x

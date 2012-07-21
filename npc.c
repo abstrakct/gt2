@@ -102,5 +102,8 @@ int get_number_of_npcs_nearby(actor_t *actor)
 
 void chat_hello(struct npc_struct *talker)
 {
-        gtprintf("%s says: \"Hello there %s!\"", talker->name, player->name);
+        char m[100];
+        sprintf(m, "%s says: \"Hello there %s!\"", talker->name, player->name);
+
+        gtmsgbox(" Chat ", m);
 }

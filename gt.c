@@ -305,6 +305,8 @@ bool do_event(event_t *ev)
                                 } else
                                         ply++;
                         } else {
+                                if(world->curlevel->c[ply+1][plx].npc)
+                                        gtprintf("%s is standing in the way.", world->curlevel->c[ply+1][plx].npc->name);
                                 fullturn = false;
                                 break;
                         }

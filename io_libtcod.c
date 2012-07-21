@@ -438,12 +438,6 @@ void draw_map()
                         if(j < level->ysize && i < level->xsize) {
                                 if(TCOD_map_is_in_fov(level->map, i, j)) {
                                         set_cell_visited(level, j, i);
-                                  /*      if(level->c[j][i].monster) {
-                                                if(!hasbit(level->c[j][i].monster->flags, MF_SEENBYPLAYER)) {
-                                                        setbit(level->c[j][i].monster->flags, MF_SEENBYPLAYER);
-                                                        gtprintfc(COLOR_RED, "%s comes into view!", Upper(a_an(level->c[j][i].monster->name)));
-                                                }
-                                        }*/
                                         if(level->c[j][i].inventory && level->c[j][i].inventory->object[0]) {
                                                 if(!hasbit(level->c[j][i].inventory->object[0]->flags, OF_SEENBYPLAYER)) {
                                                         setbit(level->c[j][i].inventory->object[0]->flags, OF_SEENBYPLAYER);
@@ -495,7 +489,7 @@ void draw_map()
                                                 gtmapaddch(dy, dx, COLOR_WHITE, '<');
                                         if(TCOD_map_is_in_fov(level->map, i, j) && level->c[j][i].monster /*&& actor_in_lineofsight(player, level->c[j][i].monster)*/)
                                                 gtmapaddch(dy, dx, COLOR_RED, (char) level->c[j][i].monster->c);
-                                        if(TCOD_map_is_in_fov(level->map, i, j) && level->c[j][i].npc)
+                                        if(/*TCOD_map_is_in_fov(level->map, i, j) &&*/ level->c[j][i].npc)
                                                 gtmapaddch(dy, dx, COLOR_WHITE, '@');
 
                                         if(hasbit(player->flags, MF_INVISIBLE))
@@ -853,5 +847,41 @@ void messc(gtcolor_t color, char *message)
         domess();
 }
 
+// Messageboxes etc.
+
+void gtmsgbox(char *header, char *message)
+{
+        TCOD_console_t c;
+        int w, h, x, y;
+
+        w = strlen(message);
+        w += 2;
+        h = 3;
+
+        c = TCOD_console_new(w, h);
+        
+        TCOD_console_set_default_background(c, TCOD_black);
+        TCOD_console_set_default_foreground(c, TCOD_white);
+        //TCOD_console_clear(c);
+
+        //TCOD_console_print_rect(c, 0, 0, w, h, header);
+        // write msg
+        TCOD_console_print_frame(c, 0, 0, w, h, true, TCOD_BKGND_NONE, header);
+        TCOD_console_print(c, 1, 1, message);
+        //TCOD_console_print_rect_ex(c, 1, 1, w, h, TCOD_BKGND_NONE, TCOD_LEFT, header);
+
+        x = ((game->map.w + game->left.w + game->right.w) / 2) - (w / 2);
+        y = ((game->map.h + game->messages.h) / 2) - (h / 2);
+
+        TCOD_console_blit(c, 0, 0, w, h, NULL, x, y, 1.0, 1.0);
+        TCOD_console_flush();
+
+        while(!gt_checkforkeypress());
+        gt_checkforkeypress();
+
+        TCOD_console_clear(c);
+        TCOD_console_blit(c, 0, 0, w, h, NULL, x, y, 1.0, 1.0);
+        TCOD_console_flush();
+}
 
 // vim: fdm=syntax guifont=Terminus\ 8

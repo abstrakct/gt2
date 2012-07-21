@@ -14,6 +14,7 @@
 #include "objects.h"
 #include "o_effects.h"
 #include "actor.h"
+#include "quest.h"
 #include "npc.h"
 #include "monsters.h"
 #include "world.h"

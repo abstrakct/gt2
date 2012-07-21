@@ -15,6 +15,7 @@
 #include "o_effects.h"
 #include "actor.h"
 #include "monsters.h"
+#include "quest.h"
 #include "npc.h"
 #include "world.h"
 #include "datafiles.h"
@@ -24,8 +25,8 @@
 #include "utils.h"
 
 npc_t predef_npcs[] = {
-        // Name          spawned, has_quest, unique, chat func, level,  
-        { "Garan Heidl", false,   false,     true,   chat_hello,  1,  }
+        // Name          spawned, has_quest, unique, chat func, level, quest,             quest_taken,
+        { "Garan Heidl", false,    true,     true,   chat_hello,  1,   &quest_garan_heidl, false }
 };
 
 void spawn_predef_npcs()
@@ -107,3 +108,4 @@ void chat_hello(struct npc_struct *talker)
 
         gtmsgbox(" Chat ", m);
 }
+// vim: fdm=syntax guifont=Terminus\ 8

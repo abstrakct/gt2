@@ -22,10 +22,10 @@ CC = gcc
 DEFINES = #-DGT_USE_DUMMY
 LDFLAGS = $(LIBS)  # -pg ,-rpath=lib 
 
-SOURCES   = gt.c utils.c monsters.c datafiles.c world.c debug.c saveload.c actor.c objects.c o_effects.c cards.c fractmod.c npc.c io_ncurses.c io_libtcod.c 
-HEADERS   = gt.h utils.h monsters.h datafiles.h world.h debug.h saveload.h actor.h objects.h o_effects.h cards.h fractmod.h npc.h io_ncurses.h io_libtcod.h commands.h
-NCOBJS    = gt.o utils.o monsters.o datafiles.o world.o debug.o saveload.o actor.o objects.o o_effects.o cards.o fractmod.o npc.o io_ncurses.o 
-TCOBJS    = gt.o utils.o monsters.o datafiles.o world.o debug.o saveload.o actor.o objects.o o_effects.o cards.o fractmod.o npc.o io_libtcod.o 
+SOURCES   = gt.c utils.c monsters.c datafiles.c world.c debug.c saveload.c actor.c objects.c o_effects.c cards.c fractmod.c npc.c quest.c io_ncurses.c io_libtcod.c 
+HEADERS   = gt.h utils.h monsters.h datafiles.h world.h debug.h saveload.h actor.h objects.h o_effects.h cards.h fractmod.h npc.h quest.h io_ncurses.h io_libtcod.h commands.h
+NCOBJS    = gt.o utils.o monsters.o datafiles.o world.o debug.o saveload.o actor.o objects.o o_effects.o cards.o fractmod.o npc.o quest.o io_ncurses.o 
+TCOBJS    = gt.o utils.o monsters.o datafiles.o world.o debug.o saveload.o actor.o objects.o o_effects.o cards.o fractmod.o npc.o quest.o io_libtcod.o 
 
 #gt: $(OBJS)
 #	$(CC) $(LDFLAGS) -o $@ $(OBJS)

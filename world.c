@@ -15,6 +15,7 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
+#include "quest.h"
 #include "npc.h"
 #include "world.h"
 #include "datafiles.h"

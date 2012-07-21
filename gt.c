@@ -31,6 +31,7 @@
 #include "o_effects.h"
 #include "actor.h"
 #include "monsters.h"
+#include "quest.h"
 #include "npc.h"
 #include "world.h"
 #include "gt.h"
@@ -305,8 +306,6 @@ bool do_event(event_t *ev)
                                 } else
                                         ply++;
                         } else {
-                                if(world->curlevel->c[ply+1][plx].npc)
-                                        gtprintf("%s is standing in the way.", world->curlevel->c[ply+1][plx].npc->name);
                                 fullturn = false;
                                 break;
                         }
@@ -1143,7 +1142,10 @@ void process_player_input()
                                         gtmsgbox(" ... ", "There's no one to talk to nearby!");
                                 else {
                                         npc = get_nearest_npc(player);
-                                        npc->chat(npc);
+                                        if(npc->has_quest)
+                                                npc->quest->initiate();
+                                        else
+                                                npc->chat(npc);
                                 }
                                 break;
                 case CMD_REST:
@@ -1247,3 +1249,5 @@ int main(int argc, char *argv[])
 
         return 0;
 }
+
+// vim: fdm=syntax guifont=Terminus\ 8

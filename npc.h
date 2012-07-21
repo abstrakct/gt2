@@ -8,13 +8,16 @@
 #ifndef _NPC_H
 #define _NPC_H
 
+
 typedef struct npc_struct {
-        char  name[100];
-        bool  spawned;
-        bool  has_quest;
-        bool  unique;
-        void  (*chat)(struct npc_struct *talker);
-        short level;
+        char     name[100];
+        bool     spawned;
+        bool     has_quest;
+        bool     unique;
+        void   (*chat)(struct npc_struct *talker);
+        short    level;
+        quest_t *quest;
+        bool     quest_taken;
 } npc_t;
 
 extern npc_t predef_npcs[];

@@ -17,6 +17,7 @@
 #include "objects.h"
 #include "actor.h"
 #include "monsters.h"
+#include "quest.h"
 #include "npc.h"
 #include "world.h"
 #include "datafiles.h"
@@ -854,9 +855,9 @@ void gtmsgbox(char *header, char *message)
         TCOD_console_t c;
         int w, h, x, y;
 
-        w = strlen(message);
-        w += 2;
-        h = TCOD_console_get_height_rect(NULL, 1, 1, w, game->height, message);
+        w = game->width / 4;
+        w += 4;
+        h = TCOD_console_get_height_rect(NULL, 1, 1, w-4, game->height, message);
         h += 2;
 
         c = TCOD_console_new(w, h);
@@ -868,7 +869,7 @@ void gtmsgbox(char *header, char *message)
         //TCOD_console_print_rect(c, 0, 0, w, h, header);
         // write msg
         TCOD_console_print_frame(c, 0, 0, w, h, true, TCOD_BKGND_NONE, header);
-        TCOD_console_print(c, 1, 1, message);
+        TCOD_console_print_rect(c, 1, 1, w-4, game->height, message);
         //TCOD_console_print_rect_ex(c, 1, 1, w, h, TCOD_BKGND_NONE, TCOD_LEFT, header);
 
         x = ((game->map.w + game->left.w + game->right.w) / 2) - (w / 2);

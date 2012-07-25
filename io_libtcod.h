@@ -79,6 +79,7 @@ extern  gtcolor_t colors[];
 #define C_BLACK_DARKRED         25
 #define C_BLACK_SEAGREEN        26
 #define C_BLACK_PURPLE          27
+#define C_BLACK_BROWN           28
 
 
 #define C_RED_BLACK             8
@@ -147,6 +148,7 @@ extern  gtcolor_t colors[];
 #define COLOR_DARKRED   colors[C_BLACK_DARKRED]
 #define COLOR_SEAGREEN  colors[C_BLACK_SEAGREEN]
 #define COLOR_PURPLE    colors[C_BLACK_PURPLE]
+#define COLOR_BROWN     colors[C_BLACK_BROWN]
 
 // some special potion "colors"
 #define COLOR_FIZZY    colors[C_WHITE_BLACK]

@@ -748,10 +748,25 @@ int parse_potions()
                 o->type = OT_POTION;
                 o->id = objid; objid++;
 
-                o->material = mats_potions[material];
-                material++;
-                if(material > POTS)
-                        die("whoa! we ran out of material!");
+
+                sprintf(sname, "potion.[%d].color", j);
+                if(config_lookup_string(cf, sname, &value) == CONFIG_TRUE) {
+                        if(!strcmp(value, "amber"))
+                                o->material = POT_AMBER;
+                        else if(!strcmp(value, "brown"))
+                                o->material = POT_BROWN;
+                        else if(!strcmp(value, "dark red"))
+                                o->material = POT_DARKRED;
+                        else if(!strcmp(value, "white"))
+                                o->material = POT_CLEAR;
+                        else if(!strcmp(value, "yellow"))
+                                o->material = POT_YELLOW;
+                } else {
+                        o->material = mats_potions[material];
+                        material++;
+                        if(material > POTS)
+                                die("whoa! we ran out of material!");
+                }
 
                 switch(o->material) {
                         case POT_RED:       o->color = COLOR_RED; break;
@@ -775,6 +790,7 @@ int parse_potions()
                         case POT_PURPLE:    o->color = COLOR_PURPLE; break;
                         case POT_MAGENTA:   o->color = COLOR_MAGENTA; break;
                         case POT_FIZZY:     o->color = COLOR_FIZZY; break;
+                        case POT_BROWN:     o->color = COLOR_BROWN; break;
                         default:            o->color = COLOR_WHITE; break;
                 };
 

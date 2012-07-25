@@ -49,6 +49,7 @@
 #define RGB_DARKRED     {191,  0,  0}
 #define RGB_SEAGREEN    {  0,255,127}
 #define RGB_PURPLE      {191,  0,255}
+#define RGB_BROWN       { 64,  0,  0}
 
 gtcolor_t colors[] = { 
         { RGB_BLACK,       RGB_BLACK },
@@ -78,7 +79,8 @@ gtcolor_t colors[] = {
         { RGB_AZURE,       RGB_BLACK },
         { RGB_DARKRED,     RGB_BLACK },
         { RGB_SEAGREEN,    RGB_BLACK },
-        { RGB_PURPLE,      RGB_BLACK }
+        { RGB_PURPLE,      RGB_BLACK },
+        { RGB_BROWN,       RGB_BLACK },
 };
 
 extern int maxmess;

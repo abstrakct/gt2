@@ -106,7 +106,7 @@ bool quest_garan_heidl_fulfilled()
                 return true;
         if(has_in_inventory(player, "bottle of ale"))
                 return true;
-        if(has_in_inventory(player, "bottle of beer"))
+        if(has_in_inventory(player, "bottle of brown ale"))
                 return true;
         if(has_in_inventory(player, "bottle of wine"))
                 return true;

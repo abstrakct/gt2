@@ -267,7 +267,8 @@ void open_door(int y, int x)
  */
 void setup_attack()
 {
-        schedule_event(EVENT_ATTACK, player);
+        //schedule_event(EVENT_ATTACK, player);
+        do_one_event(EVENT_ATTACK);
 }
 
 void do_one_event(int event)
@@ -933,6 +934,7 @@ void do_everything_at_tick(int tick)
                         if(eventlist[i].tick == tick) {
                                 do_event(&eventlist[i]);
                                 unschedule_event(i);
+                                update_screen();
                         }
                 }
         }

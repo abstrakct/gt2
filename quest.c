@@ -129,11 +129,11 @@ void quest_garan_heidl_fulfill(quest_t *quest)
                         sprintf(m, "Garan Heidl slowly drinks the mead. \"Ah, thank you friend, for this orange blossom mead! A nice way to end my life... Please take these items as a token of my gratitude.\" Garan Heidl's head drops to one side. He seems to have stopped breathing.");
                         gtmsgbox(" Chat ", m);
 
-                        o  = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
-                        o2 = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
-                        o3 = spawn_object_with_rarity(COMMON, world->curlevel);
-                        o4 = spawn_object_with_rarity(COMMON, world->curlevel);
-                        o5 = spawn_object_with_rarity(COMMON, world->curlevel);
+                        o  = spawn_object_with_rarity_and_mask(VERYCOMMON, world->curlevel, SPAWN_NO_POTION);
+                        o2 = spawn_object_with_rarity_and_mask(VERYCOMMON, world->curlevel, SPAWN_NO_POTION);
+                        o3 = spawn_object_with_rarity_and_mask(COMMON,     world->curlevel, SPAWN_NO_POTION);
+                        o4 = spawn_object_with_rarity_and_mask(COMMON,     world->curlevel, SPAWN_NO_POTION);
+                        o5 = spawn_object_with_rarity_and_mask(COMMON,     world->curlevel, SPAWN_NO_POTION);
                         move_to_cell_inventory(o,  world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
                         move_to_cell_inventory(o2, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
                         move_to_cell_inventory(o3, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
@@ -145,10 +145,10 @@ void quest_garan_heidl_fulfill(quest_t *quest)
                         sprintf(m, "Garan Heidl slowly drinks the bottle wine. \"Ah, thank you friend, for this spiced wine! A fitting way to end my life... Please take these items as a token of my gratitude.\" Garan Heidl's head drops to one side. He seems to have stopped breathing.");
                         gtmsgbox(" Chat ", m);
 
-                        o  = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
-                        o2 = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
-                        o3 = spawn_object_with_rarity(COMMON, world->curlevel);
-                        o4 = spawn_object_with_rarity(COMMON, world->curlevel);
+                        o  = spawn_object_with_rarity_and_mask(VERYCOMMON, world->curlevel, SPAWN_NO_POTION);
+                        o2 = spawn_object_with_rarity_and_mask(VERYCOMMON, world->curlevel, SPAWN_NO_POTION);
+                        o3 = spawn_object_with_rarity_and_mask(COMMON,     world->curlevel, SPAWN_NO_POTION);
+                        o4 = spawn_object_with_rarity_and_mask(COMMON,     world->curlevel, SPAWN_NO_POTION);
                         move_to_cell_inventory(o,  world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
                         move_to_cell_inventory(o2, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
                         move_to_cell_inventory(o3, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
@@ -159,9 +159,9 @@ void quest_garan_heidl_fulfill(quest_t *quest)
                         sprintf(m, "Garan Heidl slowly drinks the brown ale. \"Ah, thank you friend, for this Armyllen Brown Ale! A quite nice way to end my life... Please take these items as a token of my gratitude.\" Garan Heidl's head drops to one side. He seems to have stopped breathing.");
                         gtmsgbox(" Chat ", m);
 
-                        o  = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
-                        o2 = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
-                        o3 = spawn_object_with_rarity(COMMON, world->curlevel);
+                        o  = spawn_object_with_rarity_and_mask(VERYCOMMON, world->curlevel, SPAWN_NO_POTION);
+                        o2 = spawn_object_with_rarity_and_mask(VERYCOMMON, world->curlevel, SPAWN_NO_POTION);
+                        o3 = spawn_object_with_rarity_and_mask(COMMON,     world->curlevel, SPAWN_NO_POTION);
                         move_to_cell_inventory(o,  world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
                         move_to_cell_inventory(o2, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
                         move_to_cell_inventory(o3, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
@@ -171,14 +171,14 @@ void quest_garan_heidl_fulfill(quest_t *quest)
                         sprintf(m, "Garan Heidl slowly drinks the ale. \"Ah, thank you friend, for this ale! It reminds me of when I was younger, the long summer days of working on my uncle's farm... Please take these items as a token of my gratitude.\" Garan Heidl's head drops to one side. He seems to have stopped breathing.");
                         gtmsgbox(" Chat ", m);
 
-                        o  = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
-                        o2 = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        o  = spawn_object_with_rarity_and_mask(VERYCOMMON, world->curlevel, SPAWN_NO_POTION);
+                        o2 = spawn_object_with_rarity_and_mask(VERYCOMMON, world->curlevel, SPAWN_NO_POTION);
                         move_to_cell_inventory(o,  world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
                         move_to_cell_inventory(o2, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
 
                         setbit(predef_npcs[NPC_GARAN_HEIDL].flags, MF_ISDEAD);
                 } else if(has_in_inventory(player, "bottle of water")) {
-                        o = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        o  = spawn_object_with_rarity_and_mask(VERYCOMMON, world->curlevel, SPAWN_NO_POTION);
                         move_to_inventory(o, player->inventory);
                         sprintf(m, "Garan Heidl gulps down the water. \"Oh, thank you my friend, for this bottle of water! Here, take this %s! I sure won't need it anymore.\"", o->displayname);
                         gtmsgbox(" Chat ", m);

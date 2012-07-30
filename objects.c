@@ -518,6 +518,27 @@ void add_damagemod(obj_t *new, void *level)
         }
 }
 
+bool object_matches_mask(obj_t *o, long mask)
+{
+        bool result;
+
+        result = true;
+
+        // There's gotta be a better way of doing this...?!!!
+
+        if(mask & SPAWN_NO_POTION) {
+                if(is_potion(o))
+                        result = false;
+        }
+
+        if(mask & SPAWN_NO_WEAPON) {
+                if(is_weapon(o))
+                        result = false;
+        }
+
+        return result;
+}
+
 obj_t *spawn_object(int n, void *level)
 {
         obj_t *new;
@@ -564,6 +585,34 @@ obj_t *spawn_object_with_rarity(int rarity, void *level)
         add_to_master_object_list(new);
 
         return new;
+}
+
+obj_t *spawn_object_with_rarity_and_mask(int rarity, void *level, long mask)
+{
+        obj_t *new;
+
+        new = gtmalloc(sizeof(obj_t));
+        if(!new)
+                return false;
+        
+
+        *new = get_random_objdef_with_rarity(rarity);
+        while(!object_matches_mask(new, mask))
+                *new = get_random_objdef_with_rarity(rarity);
+
+        oid_counter++;
+        new->oid = oid_counter;
+
+        // maybe this object is magical?
+        add_attackmod(new, level);
+        add_damagemod(new, level);
+
+        generate_fullname(new);
+        new->quantity = 1;               // TODO: make it possible to spawn multiple stackable objects.
+        add_to_master_object_list(new);
+
+        return new;
+        
 }
 
 /*

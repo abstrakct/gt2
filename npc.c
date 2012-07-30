@@ -50,6 +50,8 @@ void spawn_predef_npcs()
                 }
 
                 world->dng[npc->level].c[y][x].npc = npc;
+                npc->y = y;
+                npc->x = x;
                 npc->spawned = true;
         }
 }

@@ -1237,6 +1237,26 @@ bool move_to_inventory(obj_t *o, inv_t *i)
         return false;
 }
 
+/**
+ * @brief Move a spawned object to the inventory of cell at y,x in curlevel
+ *
+ * @param o Pointer to object.
+ * @param level Pointer to level_t.
+ * @param y Y coordinate.
+ * @param x X coordinate.
+ */
+bool move_to_cell_inventory(obj_t *o, void *level, int y, int x)
+{
+        level_t *l;
+
+        l = (level_t *) level;
+
+        if(!l->c[y][x].inventory)
+                l->c[y][x].inventory = init_inventory();
+
+        return move_to_inventory(o, l->c[y][x].inventory);
+}
+
 void init_objects()
 {
         int i, j;

@@ -116,16 +116,75 @@ bool quest_garan_heidl_fulfilled()
         return false;
 }
 
-void quest_garan_heidl_fulfill()
+void quest_garan_heidl_fulfill(quest_t *quest)
 {
-        obj_t *o;
+        obj_t *o, *o2, *o3, *o4, *o5;
         char m[1000];
 
-        if(has_in_inventory(player, "bottle of water")) {
-                o = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
-                move_to_inventory(o, player->inventory);
-                sprintf(m, "Garan Heidl gulps down the water. \"Oh, thank you my friend, for this bottle of water! Here, take this %s! I sure won't need it anymore.\"", o->displayname);
-                gtmsgbox(" Chat ", m);
+        if(hasbit(predef_npcs[NPC_GARAN_HEIDL].flags, MF_ISDEAD))
+                gtprintf("The dried up corpse of %s has nothing more to say to you.", predef_npcs[NPC_GARAN_HEIDL].name);
+
+        if(!quest->quest_finished) {
+                if(has_in_inventory(player, "bottle of mead")) {
+                        sprintf(m, "Garan Heidl slowly drinks the mead. \"Ah, thank you friend, for this orange blossom mead! A nice way to end my life... Please take these items as a token of my gratitude.\" Garan Heidl's head drops to one side. He seems to have stopped breathing.");
+                        gtmsgbox(" Chat ", m);
+
+                        o  = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        o2 = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        o3 = spawn_object_with_rarity(COMMON, world->curlevel);
+                        o4 = spawn_object_with_rarity(COMMON, world->curlevel);
+                        o5 = spawn_object_with_rarity(COMMON, world->curlevel);
+                        move_to_cell_inventory(o,  world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+                        move_to_cell_inventory(o2, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+                        move_to_cell_inventory(o3, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+                        move_to_cell_inventory(o4, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+                        move_to_cell_inventory(o5, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+
+                        setbit(predef_npcs[NPC_GARAN_HEIDL].flags, MF_ISDEAD);
+                } else if(has_in_inventory(player, "bottle of wine")) {
+                        sprintf(m, "Garan Heidl slowly drinks the bottle wine. \"Ah, thank you friend, for this spiced wine! A fitting way to end my life... Please take these items as a token of my gratitude.\" Garan Heidl's head drops to one side. He seems to have stopped breathing.");
+                        gtmsgbox(" Chat ", m);
+
+                        o  = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        o2 = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        o3 = spawn_object_with_rarity(COMMON, world->curlevel);
+                        o4 = spawn_object_with_rarity(COMMON, world->curlevel);
+                        move_to_cell_inventory(o,  world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+                        move_to_cell_inventory(o2, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+                        move_to_cell_inventory(o3, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+                        move_to_cell_inventory(o4, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+
+                        setbit(predef_npcs[NPC_GARAN_HEIDL].flags, MF_ISDEAD);
+                } else if(has_in_inventory(player, "bottle of brown ale")) {    // TODO: PLACE NAMES FOR DRINKS!!!
+                        sprintf(m, "Garan Heidl slowly drinks the brown ale. \"Ah, thank you friend, for this Armyllen Brown Ale! A quite nice way to end my life... Please take these items as a token of my gratitude.\" Garan Heidl's head drops to one side. He seems to have stopped breathing.");
+                        gtmsgbox(" Chat ", m);
+
+                        o  = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        o2 = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        o3 = spawn_object_with_rarity(COMMON, world->curlevel);
+                        move_to_cell_inventory(o,  world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+                        move_to_cell_inventory(o2, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+                        move_to_cell_inventory(o3, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+
+                        setbit(predef_npcs[NPC_GARAN_HEIDL].flags, MF_ISDEAD);
+                } else if(has_in_inventory(player, "bottle of amber ale")) {
+                        sprintf(m, "Garan Heidl slowly drinks the ale. \"Ah, thank you friend, for this ale! It reminds me of when I was younger, the long summer days of working on my uncle's farm... Please take these items as a token of my gratitude.\" Garan Heidl's head drops to one side. He seems to have stopped breathing.");
+                        gtmsgbox(" Chat ", m);
+
+                        o  = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        o2 = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        move_to_cell_inventory(o,  world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+                        move_to_cell_inventory(o2, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
+
+                        setbit(predef_npcs[NPC_GARAN_HEIDL].flags, MF_ISDEAD);
+                } else if(has_in_inventory(player, "bottle of water")) {
+                        o = spawn_object_with_rarity(VERYCOMMON, world->curlevel);
+                        move_to_inventory(o, player->inventory);
+                        sprintf(m, "Garan Heidl gulps down the water. \"Oh, thank you my friend, for this bottle of water! Here, take this %s! I sure won't need it anymore.\"", o->displayname);
+                        gtmsgbox(" Chat ", m);
+                }
+
+                quest->quest_finished = true;
         }
 }
 
@@ -144,6 +203,8 @@ void quest_countdown(quest_t *quest)
 }
 
 quest_t quest_garan_heidl = {
-        "Save a dying man.", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.", quest_garan_heidl_initiate, 2000, quest_countdown, quest_garan_heidl_timeout, false, quest_garan_heidl_fulfilled, quest_garan_heidl_fulfill
+        "Save a dying man.", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.",\
+                2500, false, false,\
+                quest_garan_heidl_initiate, quest_countdown, quest_garan_heidl_timeout, quest_garan_heidl_fulfilled, quest_garan_heidl_fulfill
 };
 // vim: fdm=syntax guifont=Terminus\ 8

@@ -244,6 +244,7 @@ bool   is_pair(obj_t *o);
 bool   is_worn(obj_t *o);      // worn by player, that is..
 
 bool   move_to_inventory(obj_t *o, inv_t *i);
+bool   move_to_cell_inventory(obj_t *o, void *l, int y, int x);
 int    get_first_used_slot(inv_t *i);
 int    get_next_used_slot_after(int n, inv_t *i);
 

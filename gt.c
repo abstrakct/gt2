@@ -1162,7 +1162,7 @@ void process_player_input()
                                                         }
                                                 } else {
                                                         if(npc->quest->fulfilled()) {
-                                                                npc->quest->fulfill();
+                                                                npc->quest->fulfill(npc->quest);
                                                         } else {
                                                                 npc->quest->initiate();
                                                         }

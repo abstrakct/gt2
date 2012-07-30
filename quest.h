@@ -10,15 +10,21 @@
 
 /* Structs */
 typedef struct queststruct {
+        // Descriptions
         char *title;
         char *shortdescription;
-        int  (*initiate)();
+
+        // Variables
         int  timer;
+        bool quest_taken;
+        bool quest_finished;
+
+        // Functions
+        int  (*initiate)();
         void (*countdown)(struct queststruct *quest);
         void (*timeout_consequence)();
-        bool quest_taken;
         bool (*fulfilled)();
-        void (*fulfill)();
+        void (*fulfill)(struct queststruct *quest);
 } quest_t;
 
 /* Global variables */

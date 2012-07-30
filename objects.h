@@ -240,6 +240,7 @@ obj_t *spawn_object(int n, void *level);
 bool   place_object_at(obj_t *obj, int y, int x, void *p);
 void   add_to_master_object_list(obj_t *o);
 void   clear_master_object_list();
+bool   remove_named_object_from_inventory(char *name, void *actor, int quantity);
 
 obj_t  get_objdef(int n);
 int    get_objdef_by_name(char *wanted);

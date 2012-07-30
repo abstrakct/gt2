@@ -1306,6 +1306,33 @@ bool move_to_cell_inventory(obj_t *o, void *level, int y, int x)
         return move_to_inventory(o, l->c[y][x].inventory);
 }
 
+bool remove_named_object_from_inventory(char *name, void *actor, int quantity)
+{
+        actor_t *a;
+        int i;
+
+        a = (actor_t *) actor;
+        if(!has_in_inventory(a, name))
+                return false;
+
+        for(i=0;i<52;i++) {
+                if(a->inventory->object[i]) {
+                        if(!strcmp(a->inventory->object[i]->displayname, name)) {
+                                if(a->inventory->object[i]->quantity > 1)
+                                        a->inventory->object[i]->quantity --;
+                                else {
+                                        a->inventory->object[i] = NULL;
+                                        a->inventory->num_used--;
+                                }
+
+                                return true;
+                        }
+                }
+        }
+
+        return false;
+}
+
 void init_objects()
 {
         int i, j;

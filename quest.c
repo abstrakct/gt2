@@ -141,6 +141,7 @@ void quest_garan_heidl_fulfill(quest_t *quest)
                         move_to_cell_inventory(o5, world->curlevel, predef_npcs[NPC_GARAN_HEIDL].y, predef_npcs[NPC_GARAN_HEIDL].x);
 
                         setbit(predef_npcs[NPC_GARAN_HEIDL].flags, MF_ISDEAD);
+                        remove_named_object_from_inventory("bottle of mead", player, 1);
                 } else if(has_in_inventory(player, "bottle of wine")) {
                         sprintf(m, "Garan Heidl slowly drinks the bottle wine. \"Ah, thank you friend, for this spiced wine! A fitting way to end my life... Please take these items as a token of my gratitude.\" Garan Heidl's head drops to one side. He seems to have stopped breathing.");
                         gtmsgbox(" Chat ", m);

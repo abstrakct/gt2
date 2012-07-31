@@ -67,6 +67,27 @@ void process_quests()
         }
 }
 
+/**
+ * @brief A generic function for quest timeout countdown.
+ *
+ * It will apply the consequences and delete the quest from the player's quests when countdown reaches zero.
+ *
+ * @param quest Pointer to the quest in question (sic).
+ */
+void quest_countdown(quest_t *quest)
+{
+        if(quest->timer > 0) {
+                quest->timer--;
+
+                if(quest->timer <= 0) {
+                        //gtprintf("Oh no! Quest %s timed out!", quest->title);
+
+                        quest->timeout_consequence();
+                        delete_quest(quest);
+                }
+        }
+}
+
 /*
  * Quest: Garan Heidl
  * {{{
@@ -208,28 +229,5 @@ quest_t quest_garan_heidl = {
 /*
  * }}}
  */
-
-
-
-/**
- * @brief A generic function for quest timeout countdown.
- *
- * It will apply the consequences and delete the quest from the player's quests when countdown reaches zero.
- *
- * @param quest Pointer to the quest in question (sic).
- */
-void quest_countdown(quest_t *quest)
-{
-        if(quest->timer > 0) {
-                quest->timer--;
-
-                if(quest->timer <= 0) {
-                        //gtprintf("Oh no! Quest %s timed out!", quest->title);
-
-                        quest->timeout_consequence();
-                        delete_quest(quest);
-                }
-        }
-}
 
 // vim: fdm=marker guifont=Terminus\ 8

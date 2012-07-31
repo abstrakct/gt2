@@ -572,7 +572,7 @@ bool do_event(event_t *ev)
                                 if(game->currentlevel == 0) {
                                         world->dng[1].c[tmpy][tmpx].desty = ply;
                                         world->dng[1].c[tmpy][tmpx].destx = plx;
-                                        gtprintf("setting return destination to %d,%d", ply, plx);
+                                        //gtprintf("setting return destination to %d,%d", ply, plx);
                                 }
 
                                 game->currentlevel++;
@@ -789,8 +789,10 @@ void unschedule_all_monsters()
         int i;
 
         for(i = 0; i < MAXEVENTS; i++) {
-                if(eventlist[i].event == EVENT_MOVE_MONSTERS || eventlist[i].event == EVENT_MOVE_MONSTER)
+                if(eventlist[i].event == EVENT_MOVE_MONSTER) {
+                        clearbit(eventlist[i].monster->flags, MF_SEENBYPLAYER);
                         unschedule_event(i);
+                }
         }
 }
 

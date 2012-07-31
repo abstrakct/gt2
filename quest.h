@@ -35,6 +35,8 @@ extern quest_t quest_garan_heidl;
 
 /* Prototypes */
 void add_quest(void *npc);
+void delete_quest(quest_t *quest);
 void process_quests();
+void show_player_quests();
 
 #endif

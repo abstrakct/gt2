@@ -1174,6 +1174,9 @@ void process_player_input()
                                         }
                                 }
                                 break;
+                case CMD_SHOW_QUESTS:
+                                show_player_quests();
+                                break;
                 case CMD_REST:
                                 schedule_event(EVENT_NOTHING, player);
                                 break;

@@ -88,6 +88,22 @@ void quest_countdown(quest_t *quest)
         }
 }
 
+void show_player_quests()
+{
+        int i;
+
+        gtprintf("");
+        gtprintf("QUESTS:");
+
+        for(i = 0; i < MAX_QUESTS; i++) {
+                if(playerquests[i]) {
+                        gtprintfc(COLOR_SKYBLUE, "* %s", playerquests[i]->title);
+                        gtprintfc(COLOR_GREEN,   "  %s", playerquests[i]->shortdescription);
+                }
+        }
+}
+
+
 /*
  * Quest: Garan Heidl
  * {{{

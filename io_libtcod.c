@@ -123,6 +123,7 @@ cmd_t normalcommands[] = {
         { { TCODK_CHAR,       'q',   0,     0,   0,   0,    0,    0 }, CMD_QUAFF,       "Quaff a potion" },
         { { TCODK_CHAR,       'o',   1,     0,   0,   0,    0,    0 }, CMD_AUTOEXPLORE, "Autoexplore" },
         { { TCODK_CHAR,       'c',   1,     0,   0,   0,    0,    0 }, CMD_CHAT,        "Chat" },
+        { { TCODK_CHAR,       'Q',   1,     0,   0,   0,    0,    1 }, CMD_SHOW_QUESTS, "Show current quests" },
         //{ { TCODK_CHAR,       'i', 1, 0, 0, 0, 0, 0 }, CMD_INVENTORY,   "Show inventory" },
         //{ TCODK_F5,  CMD_SAVE,        "Save" },
         //{ TCODK_F6,  CMD_LOAD,        "Load" },

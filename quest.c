@@ -101,11 +101,16 @@ int quest_garan_heidl_initiate()
                 return -1;
         }
 
-        if(predef_npcs[NPC_GARAN_HEIDL].quest->quest_taken) {
+        if(predef_npcs[NPC_GARAN_HEIDL].quest->quest_taken && !predef_npcs[NPC_GARAN_HEIDL].quest->quest_finished) {
                 gtprintf("The dehydrated man seems to be in too much pain to talk.");
                 return -1;
         }
 
+        if(predef_npcs[NPC_GARAN_HEIDL].quest->quest_finished) {
+                gtmsgbox(" Chat ", "Thank you again for that water... I might be able to make it.");
+        }
+
+        // If none of the above conditions are met, then we go to the initial chat.
         gtmsgbox(" Chat ", "\"Hello stranger... My name is... Garan... Heidl... I don't know what's happened to the world... I fell down a shaft, broke my legs... Can't walk... Please, friend, fetch me something to drink! I haven't much... time... left... Oh, the pain! So thirsty...\"\n\nWhat would you like to do?\na) Help the dying man.\nb) Leave him to die.\n");
 
         while(key.c != 'a' && key.c != 'b')

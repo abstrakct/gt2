@@ -68,7 +68,8 @@ void process_quests()
 }
 
 /*
- * Quest: Garan Heidl - Start
+ * Quest: Garan Heidl
+ * {{{
  */
 int quest_garan_heidl_initiate()
 {
@@ -192,9 +193,31 @@ void quest_garan_heidl_fulfill(quest_t *quest)
                 }
 
                 quest->quest_finished = true;
+                delete_quest(quest);
         }
 }
 
+// TODO: Move all quests to an array? Could be useful, perhaps? Or, I currently don't see how...
+//
+quest_t quest_garan_heidl = {
+        "Save a dying man.", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.",\
+                2500, false, false,\
+                quest_garan_heidl_initiate, quest_countdown, quest_garan_heidl_timeout, quest_garan_heidl_fulfilled, quest_garan_heidl_fulfill
+};
+
+/*
+ * }}}
+ */
+
+
+
+/**
+ * @brief A generic function for quest timeout countdown.
+ *
+ * It will apply the consequences and delete the quest from the player's quests when countdown reaches zero.
+ *
+ * @param quest Pointer to the quest in question (sic).
+ */
 void quest_countdown(quest_t *quest)
 {
         if(quest->timer > 0) {
@@ -209,16 +232,4 @@ void quest_countdown(quest_t *quest)
         }
 }
 
-// TODO: Move all quests to an array? Could be useful, perhaps? Or, I currently don't see how...
-//
-quest_t quest_garan_heidl = {
-        "Save a dying man.", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.",\
-                2500, false, false,\
-                quest_garan_heidl_initiate, quest_countdown, quest_garan_heidl_timeout, quest_garan_heidl_fulfilled, quest_garan_heidl_fulfill
-};
-
-/*
- * Quest: Garan Heidl - End
- */
-
-// vim: fdm=syntax guifont=Terminus\ 8
+// vim: fdm=marker guifont=Terminus\ 8

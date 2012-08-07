@@ -242,7 +242,7 @@ void quest_garan_heidl_fulfill(quest_t *quest)
 // TODO: Move all quests to an array? Could be useful, perhaps? Or, I currently don't see how...
 //
 quest_t quest_garan_heidl = {
-        "Save a dying man.", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.",\
+        "Save a dying man", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.",\
                 2500, false, false,\
                 quest_garan_heidl_initiate, quest_countdown, quest_garan_heidl_timeout, quest_garan_heidl_fulfilled, quest_garan_heidl_fulfill
 };

@@ -8,7 +8,7 @@
 
 #define GT_VERSION_MAJ 0
 #define GT_VERSION_MIN 0
-#define GT_VERSION_REV 2
+#define GT_VERSION_REV 3
 
 #define GAME_NAME "Gullible's Travails"
 

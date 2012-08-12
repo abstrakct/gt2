@@ -223,17 +223,24 @@ extern int mats_potions[POTS];
 
 #define unapply_effects apply_effects
 
+// Now, some flags, for spawning objects where you want to exclude certain types etc.
+#define SPAWN_NO_POTION     (1 << 1)
+#define SPAWN_NO_WEAPON     (1 << 2)
+
+
 // Prototypes
 //
 
 void   spawn_objects(int num, void *p);
 obj_t *spawn_object_with_rarity(int rarity, void *level);
+obj_t *spawn_object_with_rarity_and_mask(int rarity, void *level, long mask);
 bool   spawn_object_at(int y, int x, int n, void *level);
 void   unspawn_object(obj_t *m);
 obj_t *spawn_object(int n, void *level);
 bool   place_object_at(obj_t *obj, int y, int x, void *p);
 void   add_to_master_object_list(obj_t *o);
 void   clear_master_object_list();
+bool   remove_named_object_from_inventory(char *name, void *actor, int quantity);
 
 obj_t  get_objdef(int n);
 int    get_objdef_by_name(char *wanted);
@@ -244,6 +251,7 @@ bool   is_pair(obj_t *o);
 bool   is_worn(obj_t *o);      // worn by player, that is..
 
 bool   move_to_inventory(obj_t *o, inv_t *i);
+bool   move_to_cell_inventory(obj_t *o, void *l, int y, int x);
 int    get_first_used_slot(inv_t *i);
 int    get_next_used_slot_after(int n, inv_t *i);
 

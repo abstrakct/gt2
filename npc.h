@@ -20,6 +20,7 @@ typedef struct npc_struct {
         quest_t *quest;
         bool     quest_taken;
         long     flags;
+        int      x, y;
 } npc_t;
 
 extern npc_t predef_npcs[];

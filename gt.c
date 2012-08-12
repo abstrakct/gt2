@@ -267,7 +267,8 @@ void open_door(int y, int x)
  */
 void setup_attack()
 {
-        schedule_event(EVENT_ATTACK, player);
+        //schedule_event(EVENT_ATTACK, player);
+        do_one_event(EVENT_ATTACK);
 }
 
 void do_one_event(int event)
@@ -571,7 +572,7 @@ bool do_event(event_t *ev)
                                 if(game->currentlevel == 0) {
                                         world->dng[1].c[tmpy][tmpx].desty = ply;
                                         world->dng[1].c[tmpy][tmpx].destx = plx;
-                                        gtprintf("setting return destination to %d,%d", ply, plx);
+                                        //gtprintf("setting return destination to %d,%d", ply, plx);
                                 }
 
                                 game->currentlevel++;
@@ -788,8 +789,10 @@ void unschedule_all_monsters()
         int i;
 
         for(i = 0; i < MAXEVENTS; i++) {
-                if(eventlist[i].event == EVENT_MOVE_MONSTERS || eventlist[i].event == EVENT_MOVE_MONSTER)
+                if(eventlist[i].event == EVENT_MOVE_MONSTER) {
+                        clearbit(eventlist[i].monster->flags, MF_SEENBYPLAYER);
                         unschedule_event(i);
+                }
         }
 }
 
@@ -933,6 +936,7 @@ void do_everything_at_tick(int tick)
                         if(eventlist[i].tick == tick) {
                                 do_event(&eventlist[i]);
                                 unschedule_event(i);
+                                update_screen();
                         }
                 }
         }
@@ -1160,7 +1164,7 @@ void process_player_input()
                                                         }
                                                 } else {
                                                         if(npc->quest->fulfilled()) {
-                                                                npc->quest->fulfill();
+                                                                npc->quest->fulfill(npc->quest);
                                                         } else {
                                                                 npc->quest->initiate();
                                                         }
@@ -1169,6 +1173,9 @@ void process_player_input()
                                                 npc->chat(npc);
                                         }
                                 }
+                                break;
+                case CMD_SHOW_QUESTS:
+                                show_player_quests();
                                 break;
                 case CMD_REST:
                                 schedule_event(EVENT_NOTHING, player);

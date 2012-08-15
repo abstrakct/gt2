@@ -8,7 +8,7 @@
 
 #define GT_VERSION_MAJ 0
 #define GT_VERSION_MIN 0
-#define GT_VERSION_REV 2
+#define GT_VERSION_REV 3
 
 #define GAME_NAME "Gullible's Travails"
 
@@ -36,7 +36,7 @@ typedef struct {                              // gt_config_t
         int  rows, cols;                      //!< Window size
 } gt_config_t;
 
-typedef struct {
+typedef struct {                              // win_t
         int x, y, w, h;
 #ifdef GT_USE_LIBTCOD
         TCOD_console_t c;

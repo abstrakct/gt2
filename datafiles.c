@@ -764,8 +764,10 @@ int parse_potions()
                 } else {
                         o->material = mats_potions[material];
                         material++;
-                        if(material > POTS)
-                                die("whoa! we ran out of material!");
+                        if(material > POTS) {
+                                material = ri(1, POTS);
+                                fprintf(stderr, "DEBUG: whoa! we ran out of material! going random!");
+                        }
                 }
 
                 switch(o->material) {

@@ -124,7 +124,7 @@ cmd_t normalcommands[] = {
         { { TCODK_CHAR,       'o',   1,     0,   0,   0,    0,    0 }, CMD_AUTOEXPLORE, "Autoexplore" },
         { { TCODK_CHAR,       'c',   1,     0,   0,   0,    0,    0 }, CMD_CHAT,        "Chat" },
         { { TCODK_CHAR,       'Q',   1,     0,   0,   0,    0,    1 }, CMD_SHOW_QUESTS, "Show current quests" },
-        //{ { TCODK_CHAR,       'i', 1, 0, 0, 0, 0, 0 }, CMD_INVENTORY,   "Show inventory" },
+        { { TCODK_CHAR,       'i',   1,     0,   0,   0,    0,    0 }, CMD_INVENTORY,   "Show inventory" },
         //{ TCODK_F5,  CMD_SAVE,        "Save" },
         //{ TCODK_F6,  CMD_LOAD,        "Load" },
 #ifdef DEVELOPMENT_MODE
@@ -887,6 +887,79 @@ void gtmsgbox(char *header, char *message)
         TCOD_console_clear(c);
         TCOD_console_blit(c, 0, 0, w, h, NULL, x, y, 1.0, 1.0);
         TCOD_console_flush();
+}
+
+void show_inventory(void *inv_p)
+{
+        TCOD_console_t c;
+        int w, h, x, y;
+        obj_t *o;
+        inv_t *inv;
+        int i, j;
+
+        inv = (inv_t *) inv_p;
+
+        w = game->width / 4;
+        w += 4;
+        h = get_num_used_slots(inv); //TCOD_console_get_height_rect(NULL, 1, 1, w-4, game->height, message);
+        h += 2;
+
+        c = TCOD_console_new(w, h);
+        
+        TCOD_console_set_default_background(c, TCOD_black);
+        TCOD_console_set_default_foreground(c, TCOD_white);
+
+        TCOD_console_print_frame(c, 0, 0, w, h, true, TCOD_BKGND_NONE, "* INVENTORY *");
+
+        TCOD_console_set_default_foreground(game->right.c, TCOD_white);
+        
+        i = 1;
+        for(j = 0; j < 52; j++) {
+                if(inv->object[j]) {
+                        //TODO:SIMPLIFY
+                        o = inv->object[j];
+                        if(is_worn(o)) {
+                                TCOD_console_print(c, 1, i, "%c", slot_to_letter(j));
+                                TCOD_console_put_char_ex(c, 3, i, '*', TCOD_light_green, TCOD_black);
+                                TCOD_console_set_default_foreground(c, o->color.fore);
+                                TCOD_console_set_default_background(c, o->color.back);
+                                TCOD_console_print(c, 5, i, "%s %s", a_an(pair(o)), is_bracelet(o) ? (o == pw_leftbracelet ? "[<]" : "[>]") : "\0");
+                                TCOD_console_set_default_foreground(c, TCOD_white);
+                                TCOD_console_set_default_background(c, TCOD_black);
+                        } else {
+                                TCOD_console_print(c, 1, i, "%c", slot_to_letter(j));
+                                TCOD_console_put_char_ex(c, 3, i, '-', TCOD_white, TCOD_black);
+                                TCOD_console_set_default_foreground(c, o->color.fore);
+                                TCOD_console_set_default_background(c, o->color.back);
+                                if(o->quantity <= 1)
+                                        TCOD_console_print(c, 5, i, "%s", a_an(pair(o)));
+                                else if(o->quantity > 1) 
+                                        TCOD_console_print(c, 5, i, "%d %s", o->quantity, plural(o));
+                                TCOD_console_set_default_foreground(c, TCOD_white);
+                                TCOD_console_set_default_background(c, TCOD_black);
+                        }
+                        i++;
+                }
+        }
+
+        x = ((game->map.w + game->left.w + game->right.w) / 2) - (w / 2);
+        y = ((game->map.h + game->messages.h) / 2) - (h / 2);
+
+        TCOD_console_blit(c, 0, 0, w, h, NULL, x, y, 1.0, 1.0);
+        TCOD_console_flush();
+
+        while(!gt_checkforkeypress());
+        gt_checkforkeypress();
+
+        TCOD_console_clear(c);
+        TCOD_console_blit(c, 0, 0, w, h, NULL, x, y, 1.0, 1.0);
+        TCOD_console_flush();
+
+}
+
+void show_player_inventory()
+{
+        show_inventory(player->inventory);
 }
 
 // vim: fdm=syntax guifont=Terminus\ 8

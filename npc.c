@@ -110,4 +110,41 @@ void chat_hello(struct npc_struct *talker)
 
         gtmsgbox(" Chat ", m);
 }
+
+
+void chat()
+{
+        int i;
+        npc_t *npc;
+
+        i = get_number_of_npcs_nearby(player);
+        if(!i)
+                gtmsgbox(" ... ", "There's no one to talk to nearby!");
+        else {
+                int response;
+                npc = get_nearest_npc(player);
+                if(npc->has_quest) {
+                        if(!npc->quest_taken) {
+                                response = npc->quest->initiate();
+                                if(response == 1) {
+                                        add_quest(npc);
+                                        gtprintfc(COLOR_GREEN, "You accept the request, and make a mental note of it called \"%s\"", npc->quest->title);
+                                } else if(response == 0) {
+                                        gtprintf("You decline.");
+                                }
+                        } else {
+                                if(npc->quest->fulfilled()) {
+                                        npc->quest->finish(npc->quest);
+                                } else {
+                                        npc->quest->initiate();
+                                }
+                        }
+                } else {
+                        npc->chat(npc);
+                }
+        }
+}
+
+
+
 // vim: fdm=syntax guifont=Terminus\ 8

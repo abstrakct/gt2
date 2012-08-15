@@ -161,7 +161,7 @@ bool quest_garan_heidl_fulfilled()
         return false;
 }
 
-void quest_garan_heidl_fulfill(quest_t *quest)
+void quest_garan_heidl_finish(quest_t *quest)
 {
         obj_t *o, *o2, *o3, *o4, *o5;
         char m[1000];
@@ -170,6 +170,8 @@ void quest_garan_heidl_fulfill(quest_t *quest)
                 gtprintf("The dried up corpse of %s has nothing more to say to you.", predef_npcs[NPC_GARAN_HEIDL].name);
 
         if(!quest->quest_finished) {
+
+                
                 if(has_in_inventory(player, "bottle of mead")) {
                         sprintf(m, "Garan Heidl slowly drinks the mead. \"Ah, thank you friend, for this orange blossom mead! A nice way to end my life... Please take these items as a token of my gratitude.\" Garan Heidl's head drops to one side. He seems to have stopped breathing.");
                         gtmsgbox(" Chat ", m);
@@ -244,7 +246,7 @@ void quest_garan_heidl_fulfill(quest_t *quest)
 quest_t quest_garan_heidl = {
         "Save a dying man", "Garan Heidl wants you to fetch him something to drink before he dies of dehydration.",\
                 2500, false, false,\
-                quest_garan_heidl_initiate, quest_countdown, quest_garan_heidl_timeout, quest_garan_heidl_fulfilled, quest_garan_heidl_fulfill
+                quest_garan_heidl_initiate, quest_countdown, quest_garan_heidl_timeout, quest_garan_heidl_fulfilled, quest_garan_heidl_finish
 };
 
 /*

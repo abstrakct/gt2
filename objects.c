@@ -1143,6 +1143,19 @@ int get_next_used_slot_after(int n, inv_t *i)
         return -1;
 }
 
+int get_num_used_slots(inv_t *i)
+{
+        int j, num;
+
+        num=0;
+        for(j=0;j<52;j++) {
+                if(i->object[j])
+                        num++;
+        }
+
+        return num;
+}
+
 /**
  * @brief Check if two objects are identical.
  *
@@ -1361,3 +1374,5 @@ void init_objects()
                 mats_potions[j] = i;
         }
 }
+
+// vim: fdm=marker guifont=Terminus\ 8

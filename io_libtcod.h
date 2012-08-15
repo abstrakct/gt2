@@ -44,6 +44,8 @@ void more();
 bool gt_checkforkeypress();
 
 void gtmsgbox(char *header, char *message);
+void show_inventory(void *inv_p);
+void show_player_inventory();
 
 extern  gtcolor_t colors[];
 

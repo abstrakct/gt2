@@ -686,6 +686,7 @@ bool do_event(event_t *ev)
                         schedule_event_delayed(EVENT_PLAYER_NEXTMOVE, player, 0, 1);
                         break;
                 case EVENT_NOTHING:
+                        fullturn = false;
                         break;
                 default:
                         fprintf(stderr, "DEBUG: %s:%d - Unknown event %d attempted!\n", __FILE__, __LINE__, ev->event);
@@ -930,11 +931,12 @@ void look()
 void do_everything_at_tick(int tick)
 {
         int i;
+        bool result;
 
         for(i = 0; i < MAXEVENTS; i++) {
                 if(eventlist[i].event >= 0) {
                         if(eventlist[i].tick == tick) {
-                                do_event(&eventlist[i]);
+                                result = do_event(&eventlist[i]);
                                 unschedule_event(i);
                                 update_screen();
                         }
@@ -1007,8 +1009,8 @@ void catchsignal()
  */
 void process_player_input()
 {
-        int c, x, y, l, i;
-        npc_t *npc;
+        int c, x, y, l;
+        //npc_t *npc;
 
         look();
         process_autopickup();
@@ -1117,8 +1119,9 @@ void process_player_input()
                                 schedule_event(EVENT_NOTHING, player);
                                 break;
                 case CMD_INVENTORY:
-                                schedule_event(EVENT_NOTHING, player);
-                                dump_objects(player->inventory);
+                                schedule_event_immediately(EVENT_NOTHING, player);
+                                show_player_inventory();
+                                //game->tick -= player->speed;
                                 break;
                 case CMD_PICKUP:
                                 schedule_event(EVENT_PICKUP, player);
@@ -1147,32 +1150,7 @@ void process_player_input()
                                 }
                                 break;
                 case CMD_CHAT:  // TODO: Move to its own function!
-                                i = get_number_of_npcs_nearby(player);
-                                if(!i)
-                                        gtmsgbox(" ... ", "There's no one to talk to nearby!");
-                                else {
-                                        int response;
-                                        npc = get_nearest_npc(player);
-                                        if(npc->has_quest) {
-                                                if(!npc->quest_taken) {
-                                                        response = npc->quest->initiate();
-                                                        if(response == 1) {
-                                                                add_quest(npc);
-                                                                gtprintfc(COLOR_GREEN, "You accept the request, and make a mental note of it called \"%s\"", npc->quest->title);
-                                                        } else if(response == 0) {
-                                                                gtprintf("You decline.");
-                                                        }
-                                                } else {
-                                                        if(npc->quest->fulfilled()) {
-                                                                npc->quest->fulfill(npc->quest);
-                                                        } else {
-                                                                npc->quest->initiate();
-                                                        }
-                                                }
-                                        } else {
-                                                npc->chat(npc);
-                                        }
-                                }
+                                chat();
                                 break;
                 case CMD_SHOW_QUESTS:
                                 show_player_quests();

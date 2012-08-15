@@ -24,7 +24,7 @@ typedef struct queststruct {
         void (*countdown)(struct queststruct *quest);  // Countdown for timed quests
         void (*timeout_consequence)();                 // Perform whatever is the consequence if running out of time without completing the quest.
         bool (*fulfilled)();                           // Check if the quest's requirements/goals have been met.
-        void (*fulfill)(struct queststruct *quest);    // Do the fulfillment of the quest (reward player or whatever).
+        void (*finish)(struct queststruct *quest);     // Finish the quest (reward player or whatever).
 } quest_t;
 
 /* Global variables */

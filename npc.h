@@ -31,6 +31,7 @@ npc_t* get_nearest_npc(actor_t *a);
 void spawn_predef_npcs();
 
 // chat functions
+void chat();
 void chat_hello(struct npc_struct *talker);
 
 #endif

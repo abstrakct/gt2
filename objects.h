@@ -254,6 +254,7 @@ bool   move_to_inventory(obj_t *o, inv_t *i);
 bool   move_to_cell_inventory(obj_t *o, void *l, int y, int x);
 int    get_first_used_slot(inv_t *i);
 int    get_next_used_slot_after(int n, inv_t *i);
+int    get_num_used_slots(inv_t *i);
 
 void   pick_up(obj_t *o, void *a);
 void   wieldwear(void *a, obj_t *o);

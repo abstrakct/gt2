@@ -1046,8 +1046,8 @@ void meta_generate_dungeon(int d, int type)
                 int num_monsters, mino, maxo;
 
                 if(type == 3) {
-                        world->dng[d].ysize = ri(100, 200);
-                        world->dng[d].xsize = ri(200, 300);
+                        world->dng[d].ysize = ri(400, 700);
+                        world->dng[d].xsize = ri(450, 750);
                 } else {
                         world->dng[d].xsize = (ri(55, 100));  // let's start within reasonable sizes!
                         world->dng[d].ysize = (ri(40, 80));
@@ -1067,7 +1067,7 @@ void meta_generate_dungeon(int d, int type)
                         generate_dungeon_type_3(d);   // "cave"
 
                 if(type == 3) {
-                        num_monsters = ((world->dng[d].xsize + world->dng[d].ysize) / 100) * d;
+                        num_monsters = (((world->dng[d].xsize + world->dng[d].ysize) / 100) * d) / 2;
                         mino = (world->dng[d].ysize + world->dng[d].xsize) / 80;
                         maxo = (world->dng[d].ysize + world->dng[d].xsize) / 60;
                 } else {

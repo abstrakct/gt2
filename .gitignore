@@ -7,7 +7,9 @@ asdf.c
 interestingseeds
 misc
 fracttest*
-vimsession*
+*vimsession*
 badseeds
 doc
 obsolete
+tags
+*cscope*

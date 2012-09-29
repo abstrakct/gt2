@@ -1375,4 +1375,5 @@ void init_objects()
         }
 }
 
-// vim: fdm=marker guifont=Terminus\ 8
+
+// vim: fdm=syntax guifont=Terminus\ 8
